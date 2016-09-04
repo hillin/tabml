@@ -47,7 +47,10 @@ namespace TabML.Core
                 case 6: baseValue = 8; break;
                 case 7: baseValue = 10; break;
                 case 8: baseValue = 12; break;
+                default: throw new NotImplementedException();
             }
+
+            return rounded + baseValue;
         }
     }
 }
