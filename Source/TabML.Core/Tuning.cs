@@ -8,9 +8,9 @@ namespace TabML.Core
 {
     public class Tuning
     {
-        public AbsoluteNoteName[] StringTunings { get; }
+        public Pitch[] StringTunings { get; }
 
-        public Tuning(params AbsoluteNoteName[] stringTunings)
+        public Tuning(params Pitch[] stringTunings)
         {
             StringTunings = stringTunings;
         }

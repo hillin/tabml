@@ -8,13 +8,14 @@ namespace TabML.Core
 {
     public struct Interval
     {
+
         public static bool IsValid(int number, IntervalQuality quality)
         {
             if (number < 1)
                 throw new ArgumentOutOfRangeException(nameof(number));
 
-            var normalizedIntervalBase = number % 12;
-            if (normalizedIntervalBase == 0 || normalizedIntervalBase == 4 || normalizedIntervalBase == 5)
+            var normalizedNumber = (number - 1) % 7;
+            if (normalizedNumber == 0 || normalizedNumber == 3 || normalizedNumber == 4)
                 return quality != IntervalQuality.Major && quality != IntervalQuality.Minor;
             else
                 return quality != IntervalQuality.Perfect;
@@ -22,6 +23,18 @@ namespace TabML.Core
 
         public int Number { get; }
         public IntervalQuality Quality { get; }
+
+        public int Octaves => (this.Number - 1) / 7;
+        public int NormalizedNumber => (this.Number - 1) % 7;
+
+        public bool CouldBePerfect
+        {
+            get
+            {
+                var normalizedNumber = this.NormalizedNumber;
+                return normalizedNumber == 0 || normalizedNumber == 3 || normalizedNumber == 4;
+            }
+        }
 
         public Interval(int number, IntervalQuality quality)
         {
@@ -32,25 +45,43 @@ namespace TabML.Core
             this.Quality = quality;
         }
 
-        public int GetSemitones()
+        public int GetSemitoneOffset()
         {
-            var rounded = (this.Number - 1) / 8 * 12;
-            var baseNumber = (this.Number - 1) % 8 + 1;
             int baseValue;
-            switch (baseNumber)
+            var normalizedNumber = this.NormalizedNumber;
+            switch (normalizedNumber)
             {
-                case 1: baseValue = 0; break;
-                case 2: baseValue = 1; break;
-                case 3: baseValue = 3; break;
-                case 4: baseValue = 5; break;
-                case 5: baseValue = 7; break;
-                case 6: baseValue = 8; break;
-                case 7: baseValue = 10; break;
-                case 8: baseValue = 12; break;
+                case 0: baseValue = 0; break;
+                case 1: baseValue = 1; break;
+                case 2: baseValue = 3; break;
+                case 3: baseValue = 5; break;
+                case 4: baseValue = 7; break;
+                case 5: baseValue = 8; break;
+                case 6: baseValue = 10; break;
                 default: throw new NotImplementedException();
             }
 
-            return rounded + baseValue;
+            switch (this.Quality)
+            {
+                case IntervalQuality.Major:
+                    baseValue += 1; break;
+                case IntervalQuality.Augmented:
+                    if (this.CouldBePerfect)
+                        baseValue += 1;
+                    else
+                        baseValue += 2;
+                    break;
+                case IntervalQuality.Dimished:
+                    baseValue -= 1; break;
+            }
+
+            return this.Octaves * 12 + baseValue;
+        }
+
+        public static NoteName operator +(NoteName noteName, Interval interval)
+        {
+            var degrees = noteName.GetAbsoluteDegree() + interval.NormalizedNumber;
+            return NoteNames.FromAbsoluteDegree(degrees, noteName.GetAccidental());
         }
     }
 }

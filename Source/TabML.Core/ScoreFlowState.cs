@@ -8,7 +8,7 @@ namespace TabML.Core
 {
     public class ScoreFlowState
     {
-        public NoteName Key { get; set; }
+        public BaseNoteName Key { get; set; }
         public TimeSignature TimeSignature { get; set; }
         public int Tempo { get; set; }
         public int Capo { get; set; }

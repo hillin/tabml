@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace TabML.Core
 {
-    public static class Chords
+    public enum BaseNoteName
     {
-
+        C,
+        D,
+        E,
+        F,
+        G,
+        A,
+        B,
     }
 }

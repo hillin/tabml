@@ -6,28 +6,26 @@ using System.Threading.Tasks;
 
 namespace TabML.Core
 {
-    public enum NoteName
+    public struct NoteName
     {
-        BSharp,
-        C,
-        CSharp,
-        DFlat,
-        D,
-        DSharp,
-        EFlat,
-        E,
-        FFlat,
-        ESharp,
-        F,
-        FSharp,
-        GFlat,
-        G,
-        GSharp,
-        AFlat,
-        A,
-        ASharp,
-        BFlat,
-        B,
-        CFlat
+        public static NoteName FromSemitones(int semitones)
+        {
+            
+        }
+
+        public BaseNoteName BaseName { get; }
+        public Accidental Accidental { get; }
+
+        public NoteName(BaseNoteName baseName, Accidental accidental)
+        {
+            this.BaseName = baseName;
+            this.Accidental = accidental;
+        }
+
+        public int GetSemitones()
+        {
+            return (this.BaseName.GetSemitones() + this.Accidental.GetSemitoneOffset() + 12) % 12;
+        }
+
     }
 }

@@ -8,7 +8,7 @@ namespace TabML.Core
 {
     public static class AccidentalExtensions
     {
-        public static int GetTET12Offset(this Accidental accidental)
+        public static int GetSemitoneOffset(this Accidental accidental)
         {
             switch (accidental)
             {
@@ -18,10 +18,18 @@ namespace TabML.Core
                     return 1;
                 case Accidental.Flat:
                     return -1;
+                case Accidental.DoubleSharp:
+                    return 2;
+                case Accidental.DoubleFlat:
+                    return -2;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(accidental), accidental, null);
             }
         }
 
+        public static bool GetIsDoubleAccidental(this Accidental accidental)
+        {
+            return accidental == Accidental.DoubleFlat || accidental == Accidental.DoubleSharp;
+        }
     }
 }

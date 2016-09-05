@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace TabML.Core
 {
-    public class Chord
+    public sealed partial class Chord
     {
-        public NoteName[] Notes { get; }
+        public BaseNoteName[] Notes { get; }
         public string Name { get; }
 
-        internal Chord(NoteName[] notes, string name)
+        internal Chord(BaseNoteName[] notes, string name)
         {
             if (notes.Length < 2)
                 throw new ArgumentException("a chord must be consisted by 2 or more notes", nameof(notes));

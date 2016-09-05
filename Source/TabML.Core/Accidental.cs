@@ -10,6 +10,8 @@ namespace TabML.Core
     {
         Natural,
         Sharp,
-        Flat
+        Flat,
+        DoubleSharp,
+        DoubleFlat
     }
 }
