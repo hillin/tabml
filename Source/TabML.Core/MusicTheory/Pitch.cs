@@ -2,9 +2,9 @@
 
 namespace TabML.Core.MusicTheory
 {
-    public partial struct Pitch
+    public partial struct Pitch : IEquatable<Pitch>
     {
-        public const int NeutralOctaveGroup = 0;
+        public const int NeutralOctaveGroup = -1;
 
         public NoteName NoteName { get; }
         public int OctaveGroup { get; }
@@ -28,6 +28,12 @@ namespace TabML.Core.MusicTheory
         public int GetSemitones()
         {
             return this.OctaveGroup * 12 + this.NoteName.GetSemitones();
+        }
+
+        public bool Equals(Pitch other)
+        {
+            return this.NoteName == other.NoteName
+                   && this.OctaveGroup == other.OctaveGroup;
         }
 
         public override string ToString()

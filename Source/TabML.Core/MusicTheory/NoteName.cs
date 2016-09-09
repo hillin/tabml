@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TabML.Core.MusicTheory
 {
-    public struct NoteName
+    public struct NoteName : IEquatable<NoteName>
     {
         private static readonly NoteName[] SemitoneToNoteNameLookup = { NoteNames.C, NoteNames.CSharp, NoteNames.D, NoteNames.DSharp, NoteNames.E, NoteNames.F, NoteNames.FSharp, NoteNames.G, NoteNames.GSharp, NoteNames.A, NoteNames.ASharp, NoteNames.B };
 
@@ -51,6 +51,17 @@ namespace TabML.Core.MusicTheory
         public int GetSemitones()
         {
             return (this.BaseName.GetSemitones() + this.Accidental.GetSemitoneOffset() + 12) % 12;
+        }
+
+        public bool Equals(NoteName other)
+        {
+            return this.BaseName == other.BaseName
+                   && this.Accidental == other.Accidental;
+        }
+
+        public static bool operator ==(NoteName name1, NoteName name2)
+        {
+            
         }
 
         public override string ToString()
