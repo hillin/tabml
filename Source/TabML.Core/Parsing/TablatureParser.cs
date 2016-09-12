@@ -11,8 +11,6 @@ namespace TabML.Core.Parsing
 {
     class TablatureParser : ParserBase<TablatureNode>
     {
-        public override bool IsRecoverable => false;
-
         public override bool TryParse(Scanner scanner, out TablatureNode result)
         {
             result = new TablatureNode();
@@ -31,10 +29,14 @@ namespace TabML.Core.Parsing
             switch (scanner.Peek())
             {
                 case '+':
-                    tablature.Nodes.Add(new CommandletParser().TryParse(scanner));
+                    CommandletNode commandlet;
+                    if (CommandletParser.Create(scanner).TryParse(scanner, out commandlet))
+                        tablature.Nodes.Add(commandlet);
                     break;
                 case '|':
-                    tablature.Nodes.Add(new BarParser().TryParse(scanner));
+                    BarNode bar;
+                    if (new BarParser().TryParse(scanner, out bar))
+                        tablature.Nodes.Add(bar);
                     break;
             }
         }

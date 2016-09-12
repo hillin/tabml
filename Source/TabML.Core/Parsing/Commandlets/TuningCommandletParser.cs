@@ -11,9 +11,7 @@ namespace TabML.Core.Parsing.Commandlets
     [CommandletParser("tuning")]
     class TuningCommandletParser : CommandletParserBase<TuningCommandletNode>
     {
-
-
-        private static Tuning ParseExplicitTuning(string tuningString)
+        private static Tuning ParseExplicitTuning(string tuningString, string name = null)
         {
             var scanner = new Scanner(tuningString);
             var pitches = new List<Pitch>();
@@ -37,7 +35,7 @@ namespace TabML.Core.Parsing.Commandlets
                 scanner.SkipOptional(',');
             }
 
-            return new Tuning(pitches.ToArray());
+            return new Tuning(name, pitches.ToArray());
         }
 
 
@@ -53,23 +51,30 @@ namespace TabML.Core.Parsing.Commandlets
             }
 
             var parts = tuningString.Split(':');
-            
+
             if (parts.Length >= 2)
             {
                 var namePart = string.Join(":", parts.Take(parts.Length - 1));
                 var tuningPart = parts[parts.Length - 1];
 
-                var explicitTuning = TuningCommandletParser.ParseExplicitTuning(tuningPart);
+                var explicitTuning = TuningCommandletParser.ParseExplicitTuning(tuningPart, namePart);
                 if (explicitTuning != null)
                 {
-                    var namedTuning = Tunings.GetNamedTuning(namePart);
-                    commandlet = new TuningCommandletNode(explicitTuning);
+                    var namedTuning = Tunings.GetKnownTuning(namePart);
+                    if (namedTuning != null && namedTuning.InOctaveEquals(explicitTuning))
+                    {
+                        this.Report(ParserReportLevel.Hint, scanner.LastReadRange,
+                                    ParseMessages.Hint_RedundantTuningSpecifier, namedTuning.Name);
+                        commandlet = new TuningCommandletNode(namedTuning);
+                    }
+                    else
+                        commandlet = new TuningCommandletNode(explicitTuning);
                     return true;
                 }
             }
             else if (parts.Length == 1)
             {
-                var tuning = Tunings.GetNamedTuning(tuningString);
+                var tuning = Tunings.GetKnownTuning(tuningString);
                 if (tuning != null)
                 {
                     commandlet = new TuningCommandletNode(tuning);
@@ -83,8 +88,6 @@ namespace TabML.Core.Parsing.Commandlets
                     return true;
                 }
             }
-
-            
 
             this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_InvalidTuning);
             commandlet = null;

@@ -14,15 +14,6 @@ namespace TabML.Core.Parsing
         {
             throw new NotImplementedException();
         }
-
-        protected override BarNode Recover()
-        {
-            return base.Recover();
-        }
-
-        protected override void Skip(Scanner scanner)
-        {
-            base.Skip(scanner);
-        }
+        
     }
 }

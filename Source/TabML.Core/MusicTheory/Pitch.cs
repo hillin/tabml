@@ -4,6 +4,16 @@ namespace TabML.Core.MusicTheory
 {
     public partial struct Pitch : IEquatable<Pitch>
     {
+
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (this.NoteName.GetHashCode() * 397) ^ this.OctaveGroup;
+            }
+        }
+
         public const int NeutralOctaveGroup = -1;
 
         public NoteName NoteName { get; }
@@ -32,8 +42,15 @@ namespace TabML.Core.MusicTheory
 
         public bool Equals(Pitch other)
         {
-            return this.NoteName == other.NoteName
-                   && this.OctaveGroup == other.OctaveGroup;
+            return this.NoteName.Equals(other.NoteName) && this.OctaveGroup == other.OctaveGroup;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (object.ReferenceEquals(null, obj))
+                return false;
+
+            return obj is Pitch && this.Equals((Pitch)obj);
         }
 
         public override string ToString()
@@ -46,7 +63,7 @@ namespace TabML.Core.MusicTheory
             return $"{this.NoteName}{this.OctaveGroup}";
         }
 
-        public bool SemitoneEquals(Pitch other)
+        public bool EnharmoniclyEquals(Pitch other)
         {
             return this.OctaveGroup == other.OctaveGroup &&
                    this.GetNormalizedSemitones() == other.GetNormalizedSemitones();
@@ -64,6 +81,14 @@ namespace TabML.Core.MusicTheory
             return Pitch.Resolve(semitones, degrees);
         }
 
+        public static bool operator ==(Pitch p1, Pitch p2)
+        {
+            return p1.Equals(p2);
+        }
 
+        public static bool operator !=(Pitch p1, Pitch p2)
+        {
+            return !p1.Equals(p2);
+        }
     }
 }

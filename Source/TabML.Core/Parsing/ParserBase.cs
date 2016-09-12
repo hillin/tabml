@@ -16,7 +16,7 @@ namespace TabML.Core.Parsing
             return null;
         }
         
-        protected void Report(ParserReportLevel level, TextRange position, string message)
+        protected void Report(ParserReportLevel level, TextRange position, string message, params object[] args)
         {
             //todo
         }

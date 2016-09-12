@@ -42,8 +42,10 @@
   <ItemGroup>
     <Compile Include="MusicTheory\Accidentals.cs" />
     <Compile Include="MusicTheory\BaseNoteNames.cs" />
-    <Compile Include="MusicTheory\NamedTuningAttribute.cs" />
+    <Compile Include="MusicTheory\BaseNoteValues.cs" />
+    <Compile Include="MusicTheory\KnownTuningAttribute.cs" />
     <Compile Include="Parsing\AST\BarNode.cs" />
+    <Compile Include="Parsing\AST\ChordCommandletNode.cs" />
     <Compile Include="Parsing\AST\CommandletNode.cs" />
     <Compile Include="Parsing\AST\Node.cs" />
     <Compile Include="Document\TextRange.cs" />
@@ -83,6 +85,7 @@
     <Compile Include="Document\Tablature.cs" />
     <Compile Include="Parsing\AST\StringsCommandletNode.cs" />
     <Compile Include="Parsing\AST\TablatureNode.cs" />
+    <Compile Include="Parsing\AST\TimeSignatureCommandletNode.cs" />
     <Compile Include="Parsing\AST\TopLevelNode.cs" />
     <Compile Include="Parsing\AST\TuningCommandletNode.cs" />
     <Compile Include="Parsing\BarParser.cs" />
@@ -90,6 +93,8 @@
     <Compile Include="Parsing\CommandletParser.cs" />
     <Compile Include="Parsing\CommandletParserAttribute.cs" />
     <Compile Include="Parsing\CommandletParserBase.cs" />
+    <Compile Include="Parsing\Commandlets\ChordCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\TimeSignatureCommandletParser.cs" />
     <Compile Include="Parsing\Commandlets\TuningCommandletParser.cs" />
     <Compile Include="Parsing\ParseMessages.cs" />
     <Compile Include="Parsing\ParserReportLevel.cs" />

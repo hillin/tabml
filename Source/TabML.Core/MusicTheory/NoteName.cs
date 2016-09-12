@@ -5,6 +5,16 @@ namespace TabML.Core.MusicTheory
 {
     public struct NoteName : IEquatable<NoteName>
     {
+
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((int)this.BaseName * 397) ^ (int)this.Accidental;
+            }
+        }
+
         private static readonly NoteName[] SemitoneToNoteNameLookup = { NoteNames.C, NoteNames.CSharp, NoteNames.D, NoteNames.DSharp, NoteNames.E, NoteNames.F, NoteNames.FSharp, NoteNames.G, NoteNames.GSharp, NoteNames.A, NoteNames.ASharp, NoteNames.B };
 
 
@@ -55,13 +65,29 @@ namespace TabML.Core.MusicTheory
 
         public bool Equals(NoteName other)
         {
-            return this.BaseName == other.BaseName
-                   && this.Accidental == other.Accidental;
+            return this.BaseName == other.BaseName && this.Accidental == other.Accidental;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (object.ReferenceEquals(null, obj))
+                return false;
+            return obj is NoteName && this.Equals((NoteName)obj);
+        }
+
+        public bool EnharmoniclyEquals(NoteName other)
+        {
+            return this.GetSemitones() == other.GetSemitones();
         }
 
         public static bool operator ==(NoteName name1, NoteName name2)
         {
-            
+            return name1.Equals(name2);
+        }
+
+        public static bool operator !=(NoteName name1, NoteName name2)
+        {
+            return !name1.Equals(name2);
         }
 
         public override string ToString()

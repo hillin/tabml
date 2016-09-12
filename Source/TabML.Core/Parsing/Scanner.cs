@@ -229,5 +229,63 @@ namespace TabML.Core.Parsing
             var text = this.Read(char.IsDigit);
             return int.TryParse(text, out value);
         }
+
+        public enum ParenthesisReadResult
+        {
+            Success,
+            MissingOpen,
+            MissingClose,
+        }
+
+        public ParenthesisReadResult TryReadParenthesis(out string result,
+            char open = '(',
+            char close = ')',
+            bool includeParenthesis = false,
+            bool allowNesting = true,
+            bool includeNewline = false)
+        {
+            if (!this.Expect(open))
+            {
+                result = string.Empty;
+                return ParenthesisReadResult.MissingOpen;
+            }
+
+            var builder = new StringBuilder();
+
+            if (includeParenthesis)
+                builder.Append(open);
+
+            var nestLevel = 1;  // won't be increased if allowNesting is false
+
+            while (!this.EndOfFile)
+            {
+                var chr = this.Peek();
+                if ((chr == '\r' || chr == '\n') && !includeNewline)
+                    break;
+
+                if (chr == open && allowNesting)
+                {
+                    ++nestLevel;
+                }
+                else if (chr == close)
+                {
+                    --nestLevel;
+                    if (nestLevel == 0)
+                    {
+                        if (includeParenthesis)
+                            builder.Append(this.Read());
+                        else
+                            this.MoveNext();
+
+                        break;
+                    }
+                }
+
+                builder.Append(this.Read());
+            }
+
+            result = builder.ToString();
+            return nestLevel == 0 ? ParenthesisReadResult.Success : ParenthesisReadResult.MissingClose;
+        }
     }
 }

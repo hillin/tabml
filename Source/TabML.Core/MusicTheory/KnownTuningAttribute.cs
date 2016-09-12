@@ -7,13 +7,7 @@ using System.Threading.Tasks;
 namespace TabML.Core.MusicTheory
 {
     [AttributeUsage(AttributeTargets.Field)]
-    internal sealed class NamedTuningAttribute : Attribute
+    internal sealed class KnownTuningAttribute : Attribute
     {
-        public string Name { get; }
-
-        public NamedTuningAttribute(string name)
-        {
-            this.Name = name;
-        }
     }
 }
