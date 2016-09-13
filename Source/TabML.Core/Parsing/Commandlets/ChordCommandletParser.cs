@@ -52,7 +52,7 @@ namespace TabML.Core.Parsing.Commandlets
             {
                 if (containsWhitespace)
                 {
-                    this.Report(ParserReportLevel.Error, scanner.LastReadRange,
+                    this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
                                 ParseMessages.Warning_BothChordFingeringDelimiterUsed);
                     definitionString = Regex.Replace(definitionString, @"\s+", ",");
                 }

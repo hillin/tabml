@@ -18,6 +18,13 @@ namespace TabML.Core.Parsing.Commandlets
                 return false;
             }
 
+            if (stringCount < Constants.MinStringCount || stringCount > Constants.MaxStringCount)
+            {
+                this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_StringCountOutOfRange, Constants.MinStringCount, Constants.MaxStringCount);
+                commandlet = null;
+                return false;
+            }
+
             commandlet = new StringsCommandletNode(stringCount);
             return true;
         }

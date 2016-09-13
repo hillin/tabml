@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,20 +18,14 @@ namespace TabML.Core.Parsing.Commandlets
             var pitches = new List<Pitch>();
             while (!scanner.EndOfFile)
             {
-                var noteNameChar = scanner.Read();
-                BaseNoteName noteName;
-                if (!BaseNoteNames.TryParse(noteNameChar, out noteName))
-                    return null;
-
-                var accidentalText = scanner.Read("[#b♯♭\u1d12a\u1d12b]*");
-                Accidental accidental;
-                Accidentals.TryParse(accidentalText, out accidental);
+                NoteName noteName;
+                Debug.Assert(Common.TryParseNoteName(scanner, out noteName));
 
                 int octave;
                 if (!scanner.TryReadInteger(out octave))
                     octave = Pitch.NeutralOctaveGroup;
 
-                pitches.Add(new Pitch(new NoteName(noteName, accidental), octave));
+                pitches.Add(new Pitch(noteName, octave));
 
                 scanner.SkipOptional(',');
             }

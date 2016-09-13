@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace TabML.Core.Document
 {
-    public class RhythmSegment 
+    public class VoiceSegment 
     {
         public List<RhythmUnit> Units { get; } = new List<RhythmUnit>();
         public ChordDefinition Chord { get; set; }

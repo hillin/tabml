@@ -9,7 +9,7 @@ using TabML.Core.Parsing.AST;
 namespace TabML.Core.Parsing.Commandlets
 {
     [CommandletParser("time")]
-    class TimeSignatureCommandletParser : CommandletParserBase<TimeSignatureCommandletNode>
+    class TimeCommandletParser : CommandletParserBase<TimeSignatureCommandletNode>
     {
         public override bool TryParse(Scanner scanner, out TimeSignatureCommandletNode commandlet)
         {
@@ -51,6 +51,11 @@ namespace TabML.Core.Parsing.Commandlets
             commandlet = new TimeSignatureCommandletNode(timeSignature);
 
             return true;
+        }
+
+        protected override CommandletNode Recover(Scanner scanner)
+        {
+            return new TimeSignatureCommandletNode(TimeSignatures.T44);
         }
     }
 }

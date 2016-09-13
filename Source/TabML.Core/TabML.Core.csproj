@@ -40,13 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="MusicTheory\Accidentals.cs" />
     <Compile Include="MusicTheory\BaseNoteNames.cs" />
     <Compile Include="MusicTheory\BaseNoteValues.cs" />
+    <Compile Include="MusicTheory\CapoInfo.cs" />
     <Compile Include="MusicTheory\KnownTuningAttribute.cs" />
+    <Compile Include="MusicTheory\TempoSignature.cs" />
     <Compile Include="Parsing\AST\BarNode.cs" />
+    <Compile Include="Parsing\AST\CapoCommandletNode.cs" />
     <Compile Include="Parsing\AST\ChordCommandletNode.cs" />
     <Compile Include="Parsing\AST\CommandletNode.cs" />
+    <Compile Include="Parsing\AST\KeyCommandletNode.cs" />
     <Compile Include="Parsing\AST\Node.cs" />
     <Compile Include="Document\TextRange.cs" />
     <Compile Include="MusicTheory\Accidental.cs" />
@@ -67,7 +72,7 @@
     <Compile Include="MusicTheory\NoteName.cs" />
     <Compile Include="MusicTheory\NoteNames.cs" />
     <Compile Include="MusicTheory\Pitches.cs" />
-    <Compile Include="Document\RhythmSegment.cs" />
+    <Compile Include="Document\VoiceSegment.cs" />
     <Compile Include="MusicTheory\Pitch.cs" />
     <Compile Include="MusicTheory\BaseNoteValueExtensions.cs" />
     <Compile Include="Document\CloseBarLine.cs" />
@@ -83,8 +88,12 @@
     <Compile Include="Document\ScoreFlowState.cs" />
     <Compile Include="MusicTheory\StrumTechnique.cs" />
     <Compile Include="Document\Tablature.cs" />
+    <Compile Include="Parsing\AST\RhythmCommandletNode.cs" />
+    <Compile Include="Parsing\AST\RhythmNode.cs" />
+    <Compile Include="Parsing\AST\RhythmUnitNode.cs" />
     <Compile Include="Parsing\AST\StringsCommandletNode.cs" />
     <Compile Include="Parsing\AST\TablatureNode.cs" />
+    <Compile Include="Parsing\AST\TempoCommandletNode.cs" />
     <Compile Include="Parsing\AST\TimeSignatureCommandletNode.cs" />
     <Compile Include="Parsing\AST\TopLevelNode.cs" />
     <Compile Include="Parsing\AST\TuningCommandletNode.cs" />
@@ -93,9 +102,13 @@
     <Compile Include="Parsing\CommandletParser.cs" />
     <Compile Include="Parsing\CommandletParserAttribute.cs" />
     <Compile Include="Parsing\CommandletParserBase.cs" />
+    <Compile Include="Parsing\Commandlets\CapoCommandletParser.cs" />
     <Compile Include="Parsing\Commandlets\ChordCommandletParser.cs" />
-    <Compile Include="Parsing\Commandlets\TimeSignatureCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\KeyCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\TempoCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\TimeCommandletParser.cs" />
     <Compile Include="Parsing\Commandlets\TuningCommandletParser.cs" />
+    <Compile Include="Parsing\Common.cs" />
     <Compile Include="Parsing\ParseMessages.cs" />
     <Compile Include="Parsing\ParserReportLevel.cs" />
     <Compile Include="Parsing\Scanner.cs" />

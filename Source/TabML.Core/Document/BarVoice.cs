@@ -6,12 +6,12 @@ namespace TabML.Core.Document
     public class BarVoice
     {
         public bool IsMainVoice { get; }
-        public List<RhythmSegment> RhythmSegments { get; }
+        public List<VoiceSegment> RhythmSegments { get; }
 
         public BarVoice(bool isMainVoice = true)
         {
             this.IsMainVoice = isMainVoice;
-            this.RhythmSegments = new List<RhythmSegment>();
+            this.RhythmSegments = new List<VoiceSegment>();
         }
 
         public double GetDuration()
