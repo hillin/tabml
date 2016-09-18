@@ -41,19 +41,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Document\RhythmUnitNote.cs" />
     <Compile Include="MusicTheory\Accidentals.cs" />
     <Compile Include="MusicTheory\BaseNoteNames.cs" />
     <Compile Include="MusicTheory\BaseNoteValues.cs" />
     <Compile Include="MusicTheory\CapoInfo.cs" />
     <Compile Include="MusicTheory\KnownTuningAttribute.cs" />
+    <Compile Include="MusicTheory\PostNoteConnection.cs" />
+    <Compile Include="MusicTheory\PreNoteConnection.cs" />
     <Compile Include="MusicTheory\TempoSignature.cs" />
     <Compile Include="Parsing\AST\BarNode.cs" />
     <Compile Include="Parsing\AST\CapoCommandletNode.cs" />
     <Compile Include="Parsing\AST\ChordCommandletNode.cs" />
     <Compile Include="Parsing\AST\CommandletNode.cs" />
+    <Compile Include="Parsing\AST\IRequireStringValidation.cs" />
     <Compile Include="Parsing\AST\KeyCommandletNode.cs" />
     <Compile Include="Parsing\AST\Node.cs" />
-    <Compile Include="Document\TextRange.cs" />
     <Compile Include="MusicTheory\Accidental.cs" />
     <Compile Include="MusicTheory\AccidentalExtensions.cs" />
     <Compile Include="Document\Bar.cs" />
@@ -89,6 +92,7 @@
     <Compile Include="MusicTheory\StrumTechnique.cs" />
     <Compile Include="Document\Tablature.cs" />
     <Compile Include="Parsing\AST\RhythmCommandletNode.cs" />
+    <Compile Include="Parsing\AST\RhythmCommandletParser.cs" />
     <Compile Include="Parsing\AST\RhythmNode.cs" />
     <Compile Include="Parsing\AST\RhythmUnitNode.cs" />
     <Compile Include="Parsing\AST\StringsCommandletNode.cs" />
@@ -109,8 +113,11 @@
     <Compile Include="Parsing\Commandlets\TimeCommandletParser.cs" />
     <Compile Include="Parsing\Commandlets\TuningCommandletParser.cs" />
     <Compile Include="Parsing\Common.cs" />
+    <Compile Include="Parsing\IParseReporter.cs" />
     <Compile Include="Parsing\ParseMessages.cs" />
     <Compile Include="Parsing\ParserReportLevel.cs" />
+    <Compile Include="Parsing\RhythmParser.cs" />
+    <Compile Include="Parsing\RhythmUnitParser.cs" />
     <Compile Include="Parsing\Scanner.cs" />
     <Compile Include="Parsing\ParserBase.cs" />
     <Compile Include="Parsing\Commandlets\StringsCommandletParser.cs" />

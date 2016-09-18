@@ -22,5 +22,10 @@ namespace TabML.Core.Parsing
         {
 
         }
+
+        public TextRange Offset(TextPointer @base)
+        {
+            return new TextRange(this.From.Offset(@base), this.To.Offset(@base));
+        }
     }
 }

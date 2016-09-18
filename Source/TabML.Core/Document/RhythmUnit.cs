@@ -1,16 +1,17 @@
-﻿namespace TabML.Core.Document
+﻿using TabML.Core.MusicTheory;
+
+namespace TabML.Core.Document
 {
     public class RhythmUnit
     {
-        public MusicTheory.NoteValue NoteValue { get; set; }
-        public int[] Strings { get; set; }
-        public MusicTheory.StrumTechnique StrumTechnique { get; set; } = MusicTheory.StrumTechnique.None;
-        public MusicTheory.NoteConnection UnitConnection { get; set; } = MusicTheory.NoteConnection.None;
-        public MusicTheory.NoteEffectTechnique EffectTechnique { get; set; } = MusicTheory.NoteEffectTechnique.None;
+        public NoteValue NoteValue { get; set; }
+        public RhythmUnitNote[] Notes { get; set; }
+        public StrumTechnique StrumTechnique { get; set; } = StrumTechnique.None;
+        public NoteEffectTechnique EffectTechnique { get; set; } = NoteEffectTechnique.None;
         public double EffectTechniqueParameter { get; set; }
-        public MusicTheory.NoteDurationEffect DurationEffect { get; set; } = MusicTheory.NoteDurationEffect.None;
-        public MusicTheory.NoteAccent Accent { get; set; } = MusicTheory.NoteAccent.Normal;
-        
+        public NoteDurationEffect DurationEffect { get; set; } = NoteDurationEffect.None;
+        public NoteAccent Accent { get; set; } = NoteAccent.Normal;
+
 
         public double GetDuration()
         {

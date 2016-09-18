@@ -7,7 +7,7 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Parsing.AST
 {
-    class TuningCommandletNode : CommandletNode
+    class TuningCommandletNode : CommandletNode, IRequireStringValidation
     {
         public Tuning Tuning { get; }
 

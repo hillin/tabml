@@ -15,7 +15,7 @@ namespace TabML.Core.Parsing
         {
             result = new TablatureNode();
 
-            while (!scanner.EndOfFile)
+            while (!scanner.EndOfInput)
             {
                 this.ParseNode(scanner, result);
             }

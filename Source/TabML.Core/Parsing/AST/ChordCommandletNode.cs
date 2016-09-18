@@ -7,7 +7,7 @@ using TabML.Core.Document;
 
 namespace TabML.Core.Parsing.AST
 {
-    class ChordCommandletNode : CommandletNode
+    class ChordCommandletNode : CommandletNode, IRequireStringValidation
     {
         public ChordDefinition ChordDefinition { get; }
 

@@ -70,5 +70,37 @@ namespace TabML.Core.Parsing
             "Use either comma or whitespace to separate string numbers, don't use both";
 
         public const string Warning_RedundantCapoStringSpecifier = "String #{0} is specified for more than once";
+
+        public const string Warning_RhythmCommandletMissingCloseBracket =
+            "Missing close bracket, please use both brackets or don't use brackets at all";
+        public const string Error_RhythmCommandletMissingCloseBracket =
+            "Missing close bracket";
+
+        public const string Error_RhythmCommandletMissingCloseParenthesisInStringsSpecifier =
+            "Missing close parenthesis in strings specifier";
+
+        public const string Error_RhythmUnitInvalidStringNumberInStringsSpecifier =
+            "Unrecognizable string number";
+
+        public const string Error_RhythmNodeExpectOpeningBracket = "'[' expceted to declare a rhythm";
+
+        public const string Error_RhythmUnitBodyExpected =
+            "Note value, strings specification or all-string strum technique expected";
+        public const string Error_RhythmUnitModifierExpected =
+            "Strum technique, note effect technique, duration effect, accent or connection expected";
+        public const string Warning_RhythmUnitStrumTechniqueAlreadySpecified =
+            "Strum technique is already specified for this note, this one will be ignored";
+        public const string Warning_RhythmUnitNoteEffectTechniqueAlreadySpecified =
+            "Note effect technique is already specified for this note, this one will be ignored";
+        public const string Warning_RhythmUnitNoteDurationEffectAlreadySpecified =
+            "Duration effect is already specified for this note, this one will be ignored";
+        public const string Warning_RhythmUnitAccentAlreadySpecified =
+            "Accent is already specified for this note, this one will be ignored";
+        public const string Warning_RhythmUnitConnectionAlreadySpecified =
+            "Connection is already specified for this note, this one will be ignored";
+
+
+        public const string Error_ArtificialHarmonicFretSpecifierNotEnclosed =
+            "Artificial harmonic fret specifier is not enclosed with '>'";
     }
 }

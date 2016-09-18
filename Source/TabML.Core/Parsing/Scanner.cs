@@ -31,7 +31,7 @@ namespace TabML.Core.Parsing
 
         private TextPointer _textPointer;
         public TextPointer Pointer => _textPointer;
-        public bool EndOfFile { get; private set; }
+        public bool EndOfInput { get; private set; }
 
         private TextPointer _readRangeFrom;
         public TextRange LastReadRange { get; private set; }
@@ -52,7 +52,7 @@ namespace TabML.Core.Parsing
         {
             _textPointer.Row = 0;
             _textPointer.Column = 0;
-            this.EndOfFile = false;
+            this.EndOfInput = false;
         }
 
         private void CarriageReturn()
@@ -65,19 +65,19 @@ namespace TabML.Core.Parsing
         private void CheckEndOfFile()
         {
             if (_textPointer.Row >= _lines.Length)
-                this.EndOfFile = true;
+                this.EndOfInput = true;
             else if (_textPointer.Row == _lines.Length - 1 && _textPointer.Column >= _lines[_lines.Length - 1].Length)
-                this.EndOfFile = true;
+                this.EndOfInput = true;
 
-            this.EndOfFile = false;
+            this.EndOfInput = false;
         }
 
-        private void MoveNext()
+        private void MoveNext(int offset = 1)
         {
-            if (this.EndOfFile)
+            if (this.EndOfInput)
                 return;
 
-            ++_textPointer.Column;
+            _textPointer.Column += offset;
             if (_textPointer.Column >= _lines[_textPointer.Row].Length)
                 this.CarriageReturn();
             else
@@ -96,7 +96,7 @@ namespace TabML.Core.Parsing
 
         public void Skip(Predicate<char> predicate)
         {
-            while (!this.EndOfFile && predicate(this.Peek()))
+            while (!this.EndOfInput && predicate(this.Peek()))
                 this.Skip();
         }
 
@@ -105,7 +105,7 @@ namespace TabML.Core.Parsing
             this.Skip(char.IsWhiteSpace);
         }
 
-        public void SkipOptional(char optionalChar, bool skipWhitespaces = false)
+        public bool SkipOptional(char optionalChar, bool skipWhitespaces = false)
         {
             if (skipWhitespaces)
                 this.SkipWhitespaces();
@@ -115,7 +115,11 @@ namespace TabML.Core.Parsing
                 this.Skip();
                 if (skipWhitespaces)
                     this.SkipWhitespaces();
+
+                return true;
             }
+
+            return false;
         }
 
         public void SkipLine()
@@ -125,7 +129,7 @@ namespace TabML.Core.Parsing
 
         public void SkipUntil(char nextChar)
         {
-            while (!this.EndOfFile && this.Peek() != nextChar)
+            while (!this.EndOfInput && this.Peek() != nextChar)
                 this.Skip();
         }
 
@@ -136,6 +140,23 @@ namespace TabML.Core.Parsing
                 if (this.Peek() == expectedChar)
                 {
                     this.Skip();
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+
+        public bool Expect(string value, bool ignoreCase = false)
+        {
+            using (this.RecordReadRange())
+            {
+                var remainingLine = this.GetRemainingLine();
+                var stringComparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
+                if (remainingLine.StartsWith(value, stringComparison))
+                {
+                    this.MoveNext(value.Length);
                     return true;
                 }
 
@@ -159,7 +180,7 @@ namespace TabML.Core.Parsing
             using (this.RecordReadRange())
             {
                 var result = new StringBuilder();
-                while (!this.EndOfFile)
+                while (!this.EndOfInput)
                 {
                     var chr = _lines[_textPointer.Row][_textPointer.Column];
                     if (predicate(chr))
@@ -224,6 +245,19 @@ namespace TabML.Core.Parsing
             }
         }
 
+        public bool MatchSingle(string pattern, out string result)
+        {
+            var match = this.Match(pattern);
+            if (!match.Success || match.Groups.Count < 2)
+            {
+                result = string.Empty;
+                return false;
+            }
+
+            result = match.Groups[1].Value;
+            return true;
+        }
+
         public bool TryReadInteger(out int value)
         {
             var text = this.Read(char.IsDigit);
@@ -257,7 +291,7 @@ namespace TabML.Core.Parsing
 
             var nestLevel = 1;  // won't be increased if allowNesting is false
 
-            while (!this.EndOfFile)
+            while (!this.EndOfInput)
             {
                 var chr = this.Peek();
                 if ((chr == '\r' || chr == '\n') && !includeNewline)

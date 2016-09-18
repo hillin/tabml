@@ -12,14 +12,14 @@ namespace TabML.Core.Parsing.Commandlets
     [CommandletParser("tuning")]
     class TuningCommandletParser : CommandletParserBase<TuningCommandletNode>
     {
-        private static Tuning ParseExplicitTuning(string tuningString, string name = null)
+        private Tuning ParseExplicitTuning(string tuningString, string name = null)
         {
             var scanner = new Scanner(tuningString);
             var pitches = new List<Pitch>();
-            while (!scanner.EndOfFile)
+            while (!scanner.EndOfInput)
             {
                 NoteName noteName;
-                Debug.Assert(Common.TryParseNoteName(scanner, out noteName));
+                Debug.Assert(Common.TryParseNoteName(scanner, this, out noteName));
 
                 int octave;
                 if (!scanner.TryReadInteger(out octave))
@@ -52,7 +52,7 @@ namespace TabML.Core.Parsing.Commandlets
                 var namePart = string.Join(":", parts.Take(parts.Length - 1));
                 var tuningPart = parts[parts.Length - 1];
 
-                var explicitTuning = TuningCommandletParser.ParseExplicitTuning(tuningPart, namePart);
+                var explicitTuning = this.ParseExplicitTuning(tuningPart, namePart);
                 if (explicitTuning != null)
                 {
                     var namedTuning = Tunings.GetKnownTuning(namePart);
@@ -76,7 +76,7 @@ namespace TabML.Core.Parsing.Commandlets
                     return true;
                 }
 
-                tuning = TuningCommandletParser.ParseExplicitTuning(tuningString);
+                tuning = this.ParseExplicitTuning(tuningString);
                 if (tuning != null)
                 {
                     commandlet = new TuningCommandletNode(tuning);

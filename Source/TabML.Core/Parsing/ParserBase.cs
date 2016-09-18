@@ -7,7 +7,8 @@ using TabML.Core.Parsing.AST;
 
 namespace TabML.Core.Parsing
 {
-    abstract class ParserBase<TNode> where TNode : Node
+    abstract class ParserBase<TNode> : IParseReporter
+        where TNode : Node
     {
         public abstract bool TryParse(Scanner scanner, out TNode result);
 
@@ -21,5 +22,9 @@ namespace TabML.Core.Parsing
             //todo
         }
 
+        void IParseReporter.Report(ParserReportLevel level, TextRange position, string message, params object[] args)
+        {
+            this.Report(level, position, message, args);
+        }
     }
 }

@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace TabML.Core.Parsing.AST
 {
-    class RhythmCommandletNode
+    class RhythmCommandletNode : CommandletNode
     {
+        public RhythmNode RhythmNode { get; }
+
+        public RhythmCommandletNode(RhythmNode rhythmNode)
+        {
+            this.RhythmNode = rhythmNode;
+        }
     }
 }

@@ -8,6 +8,11 @@ namespace TabML.Core.Parsing.AST
 {
     class RhythmNode : Node
     {
+        public List<RhythmUnitNode> Units { get; }
 
+        public RhythmNode()
+        {
+            this.Units = new List<RhythmUnitNode>();
+        }
     }
 }

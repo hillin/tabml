@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TabML.Core.Document
+namespace TabML.Core.Parsing.AST
 {
-    struct TextRange
+    interface IRequireStringValidation
     {
     }
 }
