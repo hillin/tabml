@@ -8,12 +8,12 @@ namespace TabML.Core.Document
         public int Strings { get; set; }
         public MusicTheory.Tuning Tuning { get; set; }
         public List<ChordDefinition> ChordDefinitions { get; }
-        public List<Bar> Bars { get; }
+        public List<Staff> Staffs { get; }
 
         public Tablature()
         {
             this.ChordDefinitions = new List<ChordDefinition>();
-            this.Bars = new List<Bar>();
+            this.Staffs = new List<Staff>();
         }
     }
 }

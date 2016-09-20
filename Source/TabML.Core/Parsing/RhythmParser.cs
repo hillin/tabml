@@ -3,62 +3,46 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TabML.Core.MusicTheory;
 using TabML.Core.Parsing.AST;
+using TabML.Core.Parsing.Bar;
 
 namespace TabML.Core.Parsing
 {
     class RhythmParser : ParserBase<RhythmNode>
     {
-        public bool OptionalBrackets { get; }
+        private readonly BarParser _ownerBarParser;
 
-        public RhythmParser(bool optionalBrackets = false)
+
+        public RhythmParser(BarParser ownerBarParser)
         {
-            this.OptionalBrackets = optionalBrackets;
+            _ownerBarParser = ownerBarParser;
+        }
+
+        public bool IsEndOfRhythm(Scanner scanner)
+        {
+            return _ownerBarParser.IsEndOfBar(scanner) || scanner.Peek() == '@';
         }
 
         public override bool TryParse(Scanner scanner, out RhythmNode result)
         {
-            var hasBrackets = scanner.Expect('[');
-
-            if (!this.OptionalBrackets)
-            {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                            ParseMessages.Error_RhythmNodeExpectOpeningBracket);
-                result = null;
-                return false;
-            }
-
 
             result = new RhythmNode();
 
-            RhythmUnitNode unit;
             scanner.SkipWhitespaces();
-            while (new RhythmUnitParser().TryParse(scanner, out unit))
+            while (!this.IsEndOfRhythm(scanner))
             {
-                result.Units.Add(unit);
-                scanner.SkipWhitespaces();
-            }
-
-            if (hasBrackets)
-            {
-                if (scanner.Expect(']'))
-                    return true;
-
-                if (this.OptionalBrackets)
-                    this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                ParseMessages.Warning_RhythmCommandletMissingCloseBracket);
-                else
+                RhythmSegmentNode rhythmSegment;
+                if (!new RhythmSegmentParser().TryParse(scanner, out rhythmSegment))
                 {
-                    this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                                ParseMessages.Error_RhythmCommandletMissingCloseBracket);
                     result = null;
                     return false;
                 }
+
+                result.Segments.Add(rhythmSegment);
             }
 
             return true;
-        }
 
+        }
     }
 }

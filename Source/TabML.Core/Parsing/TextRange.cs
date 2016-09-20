@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace TabML.Core.Parsing
 {
     public struct TextRange
     {
-        public TextPointer From { get; }
-        public TextPointer To { get; }
+        public TextPointer From { get; set; }
+        public TextPointer To { get; set; }
 
         public TextRange(TextPointer from, TextPointer to)
         {
@@ -19,6 +20,24 @@ namespace TabML.Core.Parsing
 
         public TextRange(TextPointer position)
             : this(position, position)
+        {
+
+        }
+
+        public TextRange(TextPointer from, int length)
+            : this(from, new TextPointer(from.Row, from.Column + length))
+        {
+
+        }
+
+        public TextRange(TextPointer @base, int offset, int length)
+            : this(new TextPointer(@base.Row, @base.Column + offset), length)
+        {
+
+        }
+
+        public TextRange(TextRange readRange, Capture capture)
+            : this(readRange.From, capture.Index, capture.Length)
         {
 
         }

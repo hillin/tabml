@@ -16,6 +16,11 @@ namespace TabML.Core.Parsing
             TCommandlet commandlet;
             var success = this.TryParse(scanner, out commandlet);
             result = commandlet;
+            if (commandlet != null)
+            {
+                commandlet.CommandletNameNode = this.CommandletNameNode;
+                commandlet.Range = new TextRange(this.CommandletNameNode.Range.From, scanner.LastReadRange.To);
+            }
             return success;
         }
 

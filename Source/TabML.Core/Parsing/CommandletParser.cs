@@ -27,22 +27,22 @@ namespace TabML.Core.Parsing
             }
         }
 
-        public static CommandletParserBase Create(string commandletName)
-        {
-            Type parserType;
-            if (!CommandletParsers.TryGetValue(commandletName.ToLowerInvariant(), out parserType))
-                return null;
-
-            return (CommandletParserBase)Activator.CreateInstance(parserType);
-        }
-
         public static CommandletParserBase Create(Scanner scanner)
         {
+            var anchor = scanner.MakeAnchor();
             if (!scanner.Expect('+'))
                 return null;
 
             var name = scanner.Read(c => char.IsLetterOrDigit(c) || c == '-');
-            return CommandletParser.Create(name);
+            Type parserType;
+            if (!CommandletParsers.TryGetValue(name.ToLowerInvariant(), out parserType))
+                return null;
+
+            var nameNode = new StringNode($"+{name}", anchor.Range);
+
+            var parser = (CommandletParserBase)Activator.CreateInstance(parserType);
+            parser.CommandletNameNode = nameNode;
+            return parser;
         }
 
 

@@ -10,6 +10,20 @@ namespace TabML.Core.Parsing
 {
     class Scanner
     {
+        public class Anchor
+        {
+            private readonly Scanner _owner;
+            private readonly TextPointer _from;
+
+            public TextRange Range => new TextRange(_from, _owner._textPointer);
+
+            public Anchor(Scanner owner)
+            {
+                _owner = owner;
+                _from = _owner._textPointer;
+            }
+        }
+
         private class ReadRangeScope : IDisposable
         {
             private readonly Scanner _owner;
@@ -32,14 +46,26 @@ namespace TabML.Core.Parsing
         private TextPointer _textPointer;
         public TextPointer Pointer => _textPointer;
         public bool EndOfInput { get; private set; }
-
-        private TextPointer _readRangeFrom;
+        public bool EndOfLine => _textPointer.Column >= _lines[_textPointer.Row].Length;
         public TextRange LastReadRange { get; private set; }
 
         public Scanner(string input)
         {
             _lines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
             this.Reset();
+        }
+
+        public Anchor MakeAnchor()
+        {
+            return new Anchor(this);
+        }
+
+        private char GetCharacter(int row, int column)
+        {
+            if (column == _lines[row].Length && row != _lines.Length - 1)
+                return '\n';
+
+            return _lines[row][column];
         }
 
         private IDisposable RecordReadRange()
@@ -78,16 +104,48 @@ namespace TabML.Core.Parsing
                 return;
 
             _textPointer.Column += offset;
-            if (_textPointer.Column >= _lines[_textPointer.Row].Length)
+
+            if (this.EndOfLine)
                 this.CarriageReturn();
             else
                 this.CheckEndOfFile();
         }
 
+
+        private void SetPointer(TextPointer pointer)
+        {
+            _textPointer = pointer;
+            this.CheckEndOfFile();
+        }
+
         public char Peek()
         {
-            return _lines[_textPointer.Row][_textPointer.Column];
+            return this.GetCharacter(_textPointer.Row, _textPointer.Column);
         }
+
+        public string Peek(int length, bool inline = true)
+        {
+            var savedPointer = _textPointer;
+
+            var result = new StringBuilder();
+            while (!this.EndOfInput && length > 0)
+            {
+                var chr = this.Peek();
+
+                if (!Scanner.CheckInline(chr, inline))
+                    break;
+
+                result.Append(chr);
+                this.MoveNext();
+
+                --length;
+            }
+
+            this.SetPointer(savedPointer);
+
+            return result.ToString();
+        }
+
 
         public void Skip()
         {
@@ -175,7 +233,7 @@ namespace TabML.Core.Parsing
             }
         }
 
-        public string Read(Predicate<char> predicate)
+        public string Read(Predicate<char> predicate, bool inline = true)
         {
             using (this.RecordReadRange())
             {
@@ -183,13 +241,18 @@ namespace TabML.Core.Parsing
                 while (!this.EndOfInput)
                 {
                     var chr = _lines[_textPointer.Row][_textPointer.Column];
-                    if (predicate(chr))
+
+                    if (!Scanner.CheckInline(chr, inline))
                     {
-                        result.Append(chr);
-                        this.MoveNext();
-                    }
-                    else
+                        this.MoveNext();    // move to the next line if new line encountered
                         break;
+                    }
+
+                    if (!predicate(chr))
+                        break;
+
+                    result.Append(chr);
+                    this.MoveNext();
                 }
 
                 return result.ToString();
@@ -276,7 +339,7 @@ namespace TabML.Core.Parsing
             char close = ')',
             bool includeParenthesis = false,
             bool allowNesting = true,
-            bool includeNewline = false)
+            bool inline = true)
         {
             if (!this.Expect(open))
             {
@@ -294,8 +357,13 @@ namespace TabML.Core.Parsing
             while (!this.EndOfInput)
             {
                 var chr = this.Peek();
-                if ((chr == '\r' || chr == '\n') && !includeNewline)
-                    break;
+
+                if (!Scanner.CheckInline(chr, inline))
+                {
+                    this.MoveNext();
+                    result = builder.ToString();
+                    return ParenthesisReadResult.MissingClose;
+                }
 
                 if (chr == open && allowNesting)
                 {
@@ -320,6 +388,11 @@ namespace TabML.Core.Parsing
 
             result = builder.ToString();
             return nestLevel == 0 ? ParenthesisReadResult.Success : ParenthesisReadResult.MissingClose;
+        }
+
+        private static bool CheckInline(char c, bool inline)
+        {
+            return !(inline && c == '\n');
         }
     }
 }

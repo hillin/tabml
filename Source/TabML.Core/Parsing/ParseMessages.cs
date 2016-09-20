@@ -27,7 +27,7 @@ namespace TabML.Core.Parsing
         public const string Error_MissingChordDisplayNameNotEnclosed =
             "Chord display name specifier is not enclosed with '>'";
 
-        public const string Error_MissingChordFingering = "Missing chord fingering";
+        public const string Error_ChordCommandletMissingFingering = "Missing chord fingering";
 
         public const string Warning_BothChordFingeringDelimiterUsed =
             "Use either comma or whitespace to separate chord fingering numbers, don't use both";
@@ -58,23 +58,25 @@ namespace TabML.Core.Parsing
             "Tempo speed is too fast, the maximum tempo speed is 10000";
 
         public const string Error_InvalidCapoPosition = "Unrecognizable capo position, capo instruction ignored";
-        public const string Error_CapoTooHigh = "Capo position is too high, maximum capo position is 12";
+        public const string Warning_CapoTooHigh = "Capo position is too high, maximum capo position is 12";
 
         public const string Warning_CapoStringsSpecifierNotEnclosed =
             "Capo strings specifier is not enclosed with ')', all strings assumed";
 
         public const string Warning_CapoStringsSpecifierInvalidStringNumber =
             "Invalid string number, all strings assumed";
-
-        public const string Warning_BothCapoStringsSpecifierDelimiterUsed =
-            "Use either comma or whitespace to separate string numbers, don't use both";
-
+        
         public const string Warning_RedundantCapoStringSpecifier = "String #{0} is specified for more than once";
 
-        public const string Warning_RhythmCommandletMissingCloseBracket =
+        public const string Warning_RhythmSegmentMissingCloseBracket =
             "Missing close bracket, please use both brackets or don't use brackets at all";
-        public const string Error_RhythmCommandletMissingCloseBracket =
+        public const string Error_RhythmSegmentMissingCloseBracket =
             "Missing close bracket";
+        public const string Warning_EmptyRhythmSegment =
+            "This rhythm segment is empty. To use a rhythm template, omit this rhythm segment";
+
+        public const string Error_UnrecognizableRhythmSegmentElement =
+            "Unrecognizable note";
 
         public const string Error_RhythmCommandletMissingCloseParenthesisInStringsSpecifier =
             "Missing close parenthesis in strings specifier";
@@ -82,7 +84,10 @@ namespace TabML.Core.Parsing
         public const string Error_RhythmUnitInvalidStringNumberInStringsSpecifier =
             "Unrecognizable string number";
 
-        public const string Error_RhythmNodeExpectOpeningBracket = "'[' expceted to declare a rhythm";
+        public const string Error_RhythmUnitInvalidFretNumberInStringsSpecifier =
+            "Unrecognizable fret number";
+
+        public const string Error_RhythmSegmentExpectOpeningBracket = "'[' expceted to declare a rhythm";
 
         public const string Error_RhythmUnitBodyExpected =
             "Note value, strings specification or all-string strum technique expected";
@@ -102,5 +107,33 @@ namespace TabML.Core.Parsing
 
         public const string Error_ArtificialHarmonicFretSpecifierNotEnclosed =
             "Artificial harmonic fret specifier is not enclosed with '>'";
+
+        public const string Warning_SectionNameMissingCloseQuoteMark = "Missing close quote mark";
+        public const string Warning_EmptySectionName = "Empty section name, ignored";
+
+        public const string Warning_StaffCommandletUnknownStaffType =
+            "Unknown or unsupported staff type, guitar assumed";
+
+        public const string Warning_MissingEndBarLine = "Missing end bar line";
+
+        public const string Error_UnexpectedLyrics =
+            "Unexpected lyrics, lyrics should only appear at the end of a bar for not more than once";
+
+        public const string Warning_UnexpectedBarVoice =
+            "Unexpected voice, rhythm or chord here, ignored. Please place them before lyrics";
+
+        public const string Error_InvalidBarContent =
+            "Unrecognizable bar content, voice, rhythm, chord or lyrics expected";
+
+        public const string Error_InvalidBarContent_EndBarLineExpected =
+            "Unrecognizable bar content, end bar line expected";
+
+        public const string Warning_TiedLyricsNotEnclosed = "Tied lyrics not enclosed with ')'";
+        public const string Error_RhythmSegmentMissingFingering = "Missing chord fingering";
+
+        public const string Error_RhythmSegmentChordFingeringNotEnclosed =
+            "Chord fingering is not enclosed with ')'";
+
+        public const string Error_RhythmDefinitionExpected = "rhythm definition or chord name expected";
     }
 }

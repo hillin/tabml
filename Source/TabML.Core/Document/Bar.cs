@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TabML.Core.Parsing.AST;
 
 namespace TabML.Core.Document
@@ -60,6 +61,8 @@ namespace TabML.Core.Document
 
         public OpenBarLine OpenLine { get; set; }
         public CloseBarLine CloseLine { get; set; }
-        public BarVoice[] Voices { get; set; }
+        public Rhythm Rhythm { get; set; }
+        public string[] Lyrics { get; set; }
+
     }
 }

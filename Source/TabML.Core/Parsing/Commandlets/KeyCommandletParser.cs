@@ -15,7 +15,7 @@ namespace TabML.Core.Parsing.Commandlets
         {
             scanner.SkipOptional(':', true);
             NoteName noteName;
-            if (!Common.TryParseNoteName(scanner, this, out noteName))
+            if (!Parser.TryParseNoteName(scanner, this, out noteName))
             {
                 this.Report(ParserReportLevel.Warning, scanner.LastReadRange, ParseMessages.Error_InvalidKeySignature);
                 commandlet = null;

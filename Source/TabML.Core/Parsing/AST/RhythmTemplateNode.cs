@@ -7,13 +7,13 @@ using TabML.Core.Document;
 
 namespace TabML.Core.Parsing.AST
 {
-    class RhythmNode : Node
+    class RhythmTemplateNode : Node
     {
-        public List<RhythmSegmentNode> Segments { get; }
+        public List<RhythmTemplateSegmentNode> Segments { get; }
 
-        public RhythmNode()
+        public RhythmTemplateNode()
         {
-            this.Segments = new List<RhythmSegmentNode>();
+            this.Segments = new List<RhythmTemplateSegmentNode>();
         }
     }
 }

@@ -17,10 +17,20 @@ namespace TabML.Core.Parsing
             this.Column = column;
         }
 
-
         public TextPointer Offset(TextPointer @base)
         {
             return new TextPointer(@base.Row + this.Row, @base.Column + this.Column);
         }
+
+        public TextPointer OffsetColumn(int columnOffset)
+        {
+            return new TextPointer(this.Row, this.Column + columnOffset);
+        }
+
+        public TextRange AsRange()
+        {
+            return new TextRange(this, this);
+        }
+        
     }
 }

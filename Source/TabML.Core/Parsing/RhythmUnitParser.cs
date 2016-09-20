@@ -39,7 +39,7 @@ namespace TabML.Core.Parsing
             if (noteValueIndetemined && stringsSpecifier == null)
             {
                 StrumTechnique strumTechnique;
-                if (!Common.TryParseHeadStrumTechnique(scanner, this, out strumTechnique))
+                if (!Parser.TryParseHeadStrumTechnique(scanner, this, out strumTechnique))
                 {
                     this.Report(ParserReportLevel.Error, scanner.LastReadRange,
                                 ParseMessages.Error_RhythmUnitBodyExpected);
@@ -79,7 +79,7 @@ namespace TabML.Core.Parsing
         private bool TryReadModifier(Scanner scanner, object[] modifiers)
         {
             StrumTechnique strumTechnique;
-            if (Common.TryParseStrumTechnique(scanner, this, out strumTechnique))
+            if (Parser.TryParseStrumTechnique(scanner, this, out strumTechnique))
             {
                 if (modifiers[(int)ModifierIndex.StrumTechnique] != null)
                     this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
@@ -90,7 +90,7 @@ namespace TabML.Core.Parsing
             }
 
             NoteAccent accent;
-            if (Common.TryParseNoteAccent(scanner, this, out accent))
+            if (Parser.TryParseNoteAccent(scanner, this, out accent))
             {
                 if (modifiers[(int)ModifierIndex.NoteAccent] != null)
                     this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
@@ -102,7 +102,7 @@ namespace TabML.Core.Parsing
 
             NoteEffectTechnique noteEffectTechnique;
             double? techniqueParameter;
-            if (Common.TryParseNoteEffectTechnique(scanner, this, out noteEffectTechnique, out techniqueParameter))
+            if (Parser.TryParseNoteEffectTechnique(scanner, this, out noteEffectTechnique, out techniqueParameter))
             {
                 if (modifiers[(int)ModifierIndex.NoteEffectTechnique] != null)
                     this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
@@ -117,7 +117,7 @@ namespace TabML.Core.Parsing
             }
 
             NoteDurationEffect durationEffect;
-            if (Common.TryParseNoteDurationEffect(scanner, this, out durationEffect))
+            if (Parser.TryParseNoteDurationEffect(scanner, this, out durationEffect))
             {
                 if (modifiers[(int)ModifierIndex.NoteDurationEffect] != null)
                     this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
@@ -146,7 +146,7 @@ namespace TabML.Core.Parsing
                         scanner.SkipWhitespaces();
 
                         PreNoteConnection preConnection;
-                        Common.TryParsePreNoteConnection(scanner, this, out preConnection);
+                        Parser.TryParsePreNoteConnection(scanner, this, out preConnection);
 
                         int stringNumber;
                         if (!scanner.TryReadInteger(out stringNumber))
@@ -158,10 +158,23 @@ namespace TabML.Core.Parsing
                             return false;
                         }
 
-                        PostNoteConnection postConnection;
-                        Common.TryParsePostNoteConnection(scanner, this, out postConnection);
+                        var fret = RhythmUnitNote.UnspecifiedFret;
+                        if (scanner.Expect('='))
+                        {
+                            if (!scanner.TryReadInteger(out fret))
+                            {
+                                this.Report(ParserReportLevel.Error,
+                                            scanner.LastReadRange.Offset(baseScanner.LastReadRange.From),
+                                            ParseMessages.Error_RhythmUnitInvalidFretNumberInStringsSpecifier);
+                                notesSpecifier = null;
+                                return false;
+                            }
+                        }
 
-                        notesSpecifierList.Add(new RhythmUnitNote(stringNumber, preConnection, postConnection));
+                        PostNoteConnection postConnection;
+                        Parser.TryParsePostNoteConnection(scanner, this, out postConnection);
+
+                        notesSpecifierList.Add(new RhythmUnitNote(stringNumber, fret, preConnection, postConnection));
                     }
 
                     notesSpecifier = notesSpecifierList.ToArray();

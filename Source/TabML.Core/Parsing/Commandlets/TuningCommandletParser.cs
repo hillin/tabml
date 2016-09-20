@@ -19,7 +19,7 @@ namespace TabML.Core.Parsing.Commandlets
             while (!scanner.EndOfInput)
             {
                 NoteName noteName;
-                Debug.Assert(Common.TryParseNoteName(scanner, this, out noteName));
+                Debug.Assert(Parser.TryParseNoteName(scanner, this, out noteName));
 
                 int octave;
                 if (!scanner.TryReadInteger(out octave))

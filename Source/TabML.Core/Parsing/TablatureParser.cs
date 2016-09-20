@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TabML.Core.Document;
 using TabML.Core.Parsing.AST;
+using TabML.Core.Parsing.Bar;
 
 namespace TabML.Core.Parsing
 {
@@ -35,7 +36,7 @@ namespace TabML.Core.Parsing
                     break;
                 case '|':
                     BarNode bar;
-                    if (new BarParser().TryParse(scanner, out bar))
+                    if (new BarParser(false).TryParse(scanner, out bar))
                         tablature.Nodes.Add(bar);
                     break;
             }

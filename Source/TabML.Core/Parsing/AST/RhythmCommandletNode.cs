@@ -8,11 +8,11 @@ namespace TabML.Core.Parsing.AST
 {
     class RhythmCommandletNode : CommandletNode
     {
-        public RhythmNode RhythmNode { get; }
+        public RhythmTemplateNode TemplateNode { get; }
 
-        public RhythmCommandletNode(RhythmNode rhythmNode)
+        public RhythmCommandletNode(RhythmTemplateNode templateNode)
         {
-            this.RhythmNode = rhythmNode;
+            this.TemplateNode = templateNode;
         }
     }
 }

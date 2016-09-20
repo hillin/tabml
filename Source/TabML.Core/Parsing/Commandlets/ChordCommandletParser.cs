@@ -14,8 +14,8 @@ namespace TabML.Core.Parsing.Commandlets
     {
         public override bool TryParse(Scanner scanner, out ChordCommandletNode commandlet)
         {
-            var chordName = scanner.Read(c => c != '<' && c != ':' && !char.IsWhiteSpace(c));
-            if (string.IsNullOrEmpty(chordName))
+            string chordName;
+            if (!Parser.TryReadChordName(scanner, this, out chordName) || string.IsNullOrEmpty(chordName))
             {
                 this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_MissingChordName);
                 commandlet = null;
@@ -36,38 +36,12 @@ namespace TabML.Core.Parsing.Commandlets
 
             scanner.SkipOptional(':', true);
 
-            var definitionString = scanner.Read(@"[\dxX ,]+").Trim();
-            if (string.IsNullOrEmpty(definitionString))
+            int[] fingering;
+            if (!Parser.TryReadChordFingering(scanner, this, out fingering))
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_MissingChordFingering);
                 commandlet = null;
                 return false;
             }
-
-            var containsComma = definitionString.Contains(',');
-            var containsWhitespace = definitionString.Any(char.IsWhiteSpace);
-            IEnumerable<string> fingeringTokens;
-
-            if (containsComma)
-            {
-                if (containsWhitespace)
-                {
-                    this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                ParseMessages.Warning_BothChordFingeringDelimiterUsed);
-                    definitionString = Regex.Replace(definitionString, @"\s+", ",");
-                }
-                fingeringTokens = definitionString.Split(',');
-            }
-            else if (containsWhitespace)
-                fingeringTokens = Regex.Split(definitionString, @"\s+");
-            else
-                fingeringTokens = definitionString.Select(char.ToString).ToArray();
-
-            var fingering =
-                fingeringTokens.Select(
-                    f => f.Equals("x", StringComparison.InvariantCultureIgnoreCase)
-                        ? ChordDefinition.FingeringSkipString
-                        : int.Parse(f)).ToArray();
 
             var chordDefinition = new ChordDefinition(chordName, displayName, fingering);
             commandlet = new ChordCommandletNode(chordDefinition);
