@@ -11,6 +11,7 @@ namespace TabML.Core.Parsing.Commandlets
         {
             scanner.SkipOptional(':', true);
             int stringCount;
+
             if (!scanner.TryReadInteger(out stringCount))
             {
                 this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_InvalidStringCount);
@@ -25,14 +26,12 @@ namespace TabML.Core.Parsing.Commandlets
                 return false;
             }
 
-            commandlet = new StringsCommandletNode(stringCount);
-            return true;
-        }
+            commandlet = new StringsCommandletNode
+            {
+                StringCount = new LiteralNode<int>(stringCount, scanner.LastReadRange)
+            };
 
-        protected override CommandletNode Recover(Scanner scanner)
-        {
-            scanner.SkipLine();
-            return new StringsCommandletNode(6);
+            return true;
         }
     }
 }

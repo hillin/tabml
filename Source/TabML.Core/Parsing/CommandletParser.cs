@@ -38,7 +38,7 @@ namespace TabML.Core.Parsing
             if (!CommandletParsers.TryGetValue(name.ToLowerInvariant(), out parserType))
                 return null;
 
-            var nameNode = new StringNode($"+{name}", anchor.Range);
+            var nameNode = new LiteralNode<string>($"+{name}", anchor.Range);
 
             var parser = (CommandletParserBase)Activator.CreateInstance(parserType);
             parser.CommandletNameNode = nameNode;

@@ -2,6 +2,6 @@
 {
     abstract class CommandletNode : TopLevelNode
     {
-        public StringNode CommandletNameNode { get; set; }
+        public LiteralNode<string> CommandletNameNode { get; set; }
     }
 }

@@ -9,11 +9,6 @@ namespace TabML.Core.Parsing.AST
 {
     class KeyCommandletNode : CommandletNode
     {
-        public NoteName Key { get; }
-
-        public KeyCommandletNode(NoteName key)
-        {
-            this.Key = key;
-        }
+        public NoteNameNode Key { get; set; }
     }
 }

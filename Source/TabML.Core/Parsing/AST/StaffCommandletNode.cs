@@ -9,13 +9,7 @@ namespace TabML.Core.Parsing.AST
 {
     class StaffCommandletNode : CommandletNode
     {
-        public string StaffName { get; }
-        public StaffType? StaffType { get; }
-
-        public StaffCommandletNode(string staffName, StaffType? staffType = null)
-        {
-            this.StaffName = staffName;
-            this.StaffType = staffType;
-        }
+        public LiteralNode<string> StaffName { get; set; }
+        public LiteralNode<StaffType> StaffType { get; set; }
     }
 }

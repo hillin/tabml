@@ -13,7 +13,7 @@ namespace TabML.Core.Parsing
     internal static class Parser
     {
 
-        public static bool TryParseInteger(Scanner scanner, out IntegerNode node)
+        public static bool TryParseInteger(Scanner scanner, out LiteralNode<int> node)
         {
             int value;
             if (!scanner.TryReadInteger(out value))
@@ -22,51 +22,45 @@ namespace TabML.Core.Parsing
                 return false;
             }
 
-            node = new IntegerNode(value, scanner.LastReadRange);
+            node = new LiteralNode<int>(value, scanner.LastReadRange);
             return true;
         }
 
-        public static bool TryReadChordName(Scanner scanner, IParseReporter reporter, out string chordName)
+        public static bool TryReadChordName(Scanner scanner, IParseReporter reporter, out LiteralNode<string> chordName)
         {
-            chordName = scanner.Read(@"[a-zA-Z0-9\*\$\#♯♭\-\+\?'\`\~\&\^\!]+");
+            var name = scanner.Read(@"[a-zA-Z0-9\*\$\#♯♭\-\+\?'\`\~\&\^\!]+");
+            chordName = new LiteralNode<string>(name, scanner.LastReadRange);
             return true;
         }
 
-        public static bool TryReadChordFingering(Scanner scanner, IParseReporter reporter, out int[] fingering)
+        public static bool TryReadBaseNoteName(Scanner scanner, IParseReporter reporter,
+                                               out LiteralNode<BaseNoteName> baseNoteNameNode)
         {
-            var definitionString = scanner.Read(@"[\dxX ,]+").Trim();
-            if (string.IsNullOrEmpty(definitionString))
+            var noteNameChar = scanner.Read();
+            BaseNoteName baseNoteName;
+            if (!BaseNoteNames.TryParse(noteNameChar, out baseNoteName))
             {
-                reporter.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_ChordCommandletMissingFingering);
-                fingering = null;
+                baseNoteNameNode = null;
                 return false;
             }
 
-            var containsComma = definitionString.Contains(',');
-            var containsWhitespace = definitionString.Any(char.IsWhiteSpace);
-            IEnumerable<string> fingeringTokens;
+            baseNoteNameNode = new LiteralNode<BaseNoteName>(baseNoteName, scanner.LastReadRange);
+            return true;
+        }
 
-            if (containsComma)
+        public static bool TryReadAccidental(Scanner scanner, IParseReporter reporter,
+                                             out LiteralNode<Accidental> accidentalNode)
+        {
+            var accidentalText = scanner.Read(@"[\#|\#\#|b|bb|♯|♯♯|♭|♭♭|\u1d12a|\u1d12b]*");
+            Accidental accidental;
+            if (!Accidentals.TryParse(accidentalText, out accidental))
             {
-                if (containsWhitespace)
-                {
-                    reporter.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                    ParseMessages.Warning_BothChordFingeringDelimiterUsed);
-                    definitionString = Regex.Replace(definitionString, @"\s+", ",");
-                }
-                fingeringTokens = definitionString.Split(',');
+                reporter.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_InvalidAccidental);
+                accidentalNode = null;
+                return false;
             }
-            else if (containsWhitespace)
-                fingeringTokens = Regex.Split(definitionString, @"\s+");
-            else
-                fingeringTokens = definitionString.Select(char.ToString).ToArray();
 
-            fingering =
-                fingeringTokens.Select(
-                    f => f.Equals("x", StringComparison.InvariantCultureIgnoreCase)
-                        ? ChordDefinition.FingeringSkipString
-                        : int.Parse(f)).ToArray();
-
+            accidentalNode = new LiteralNode<Accidental>(accidental, scanner.LastReadRange);
             return true;
         }
 
@@ -350,40 +344,44 @@ namespace TabML.Core.Parsing
             return false;
         }
 
-        public static bool TryReadStaffType(Scanner scanner, IParseReporter reporter, out StaffType staffType)
+        public static bool TryReadStaffType(Scanner scanner, IParseReporter reporter, out LiteralNode<StaffType> staffTypeNode)
         {
+            StaffType staffType;
             switch (scanner.ReadToLineEnd().Trim().ToLowerInvariant())
             {
                 case "guitar":
                 case "acoustic guitar":
-                    staffType = StaffType.Guitar; return true;
+                    staffType = StaffType.Guitar; break;
                 case "steel":
                 case "steel guitar":
-                    staffType = StaffType.SteelGuitar; return true;
+                    staffType = StaffType.SteelGuitar; break;
                 case "nylon":
                 case "nylon guitar":
                 case "classical":
                 case "classical guitar":
-                    staffType = StaffType.NylonGuitar; return true;
+                    staffType = StaffType.NylonGuitar; break;
                 case "electric guitar":
-                    staffType = StaffType.ElectricGuitar; return true;
+                    staffType = StaffType.ElectricGuitar; break;
                 case "bass":
-                    staffType = StaffType.Bass; return true;
+                    staffType = StaffType.Bass; break;
                 case "acoustic bass":
-                    staffType = StaffType.AcousticBass; return true;
+                    staffType = StaffType.AcousticBass; break;
                 case "electric bass":
-                    staffType = StaffType.ElectricBass; return true;
+                    staffType = StaffType.ElectricBass; break;
                 case "ukulele":
                 case "uku":
-                    staffType = StaffType.Ukulele; return true;
+                    staffType = StaffType.Ukulele; break;
                 case "mandolin":
-                    staffType = StaffType.Mandolin; return true;
+                    staffType = StaffType.Mandolin; break;
                 case "vocal":
-                    staffType = StaffType.Vocal; return true;
+                    staffType = StaffType.Vocal; break;
+                default:
+                    staffTypeNode = null;
+                    return false;
             }
 
-            staffType = StaffType.Guitar;
-            return false;
+            staffTypeNode = new LiteralNode<StaffType>(staffType, scanner.LastReadRange);
+            return true;
         }
     }
 }

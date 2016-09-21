@@ -36,7 +36,13 @@ namespace TabML.Core.Parsing.Commandlets
             if (string.IsNullOrEmpty(sectionName))
                 this.Report(ParserReportLevel.Warning, scanner.LastReadRange, ParseMessages.Warning_EmptySectionName);
 
-            commandlet = new SectionCommandletNode(sectionName);
+            var sectionNameNode = new LiteralNode<string>(sectionName, scanner.LastReadRange);
+
+            commandlet = new SectionCommandletNode
+            {
+                SectionName = sectionNameNode
+            };
+
             return true;
         }
     }

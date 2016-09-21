@@ -8,8 +8,8 @@ namespace TabML.Core.Parsing.AST
 {
     class CapoRangeStringsSpecifierNode : CapoStringsSpecifierNode
     {
-        public IntegerNode From { get; set; }
-        public IntegerNode To { get; set; }
+        public LiteralNode<int> From { get; set; }
+        public LiteralNode<int> To { get; set; }
         public override int[] GetStringNumbers()
         {
             return

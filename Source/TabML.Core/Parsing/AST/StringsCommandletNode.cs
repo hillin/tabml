@@ -8,11 +8,6 @@ namespace TabML.Core.Parsing.AST
 {
     class StringsCommandletNode : CommandletNode
     {
-        public int StringCount { get; }
-
-        public StringsCommandletNode(int stringCount)
-        {
-            this.StringCount = stringCount;
-        }
+        public LiteralNode<int> StringCount { get; set; }
     }
 }

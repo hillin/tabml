@@ -63,8 +63,8 @@
     <Compile Include="Parsing\AST\CapoRangeStringsSpecifierNode.cs" />
     <Compile Include="Parsing\AST\CapoStringsSpecifierNode.cs" />
     <Compile Include="Parsing\AST\ChordCommandletNode.cs" />
+    <Compile Include="Parsing\AST\ChordFingeringNode.cs" />
     <Compile Include="Parsing\AST\CommandletNode.cs" />
-    <Compile Include="Parsing\AST\IntegerNode.cs" />
     <Compile Include="Parsing\AST\IRequireStringValidation.cs" />
     <Compile Include="Parsing\AST\KeyCommandletNode.cs" />
     <Compile Include="Parsing\AST\LyricsNode.cs" />
@@ -103,16 +103,18 @@
     <Compile Include="Document\ScoreFlowState.cs" />
     <Compile Include="MusicTheory\StrumTechnique.cs" />
     <Compile Include="Document\Tablature.cs" />
+    <Compile Include="Parsing\AST\NoteNameNode.cs" />
     <Compile Include="Parsing\AST\RhythmCommandletNode.cs" />
     <Compile Include="Parsing\AST\RhythmSegmentNodeBase.cs" />
     <Compile Include="Parsing\AST\RhythmTemplateNode.cs" />
     <Compile Include="Parsing\AST\RhythmTemplateSegmentNode.cs" />
     <Compile Include="Parsing\AST\RhythmVoiceNode.cs" />
+    <Compile Include="Parsing\AST\LiteralNode.cs" />
     <Compile Include="Parsing\AST\StaffCommandletNode.cs" />
     <Compile Include="Parsing\AST\RhythmSegmentNode.cs" />
-    <Compile Include="Parsing\AST\StringNode.cs" />
     <Compile Include="Parsing\Bar\LyricsParser.cs" />
     <Compile Include="Parsing\Bar\LyricsSegmentParser.cs" />
+    <Compile Include="Parsing\ChordFingeringParser.cs" />
     <Compile Include="Parsing\Commandlets\CapoStringsSpecifierParser.cs" />
     <Compile Include="Parsing\Commandlets\RhythmCommandletParser.cs" />
     <Compile Include="Parsing\AST\RhythmNode.cs" />
@@ -137,6 +139,7 @@
     <Compile Include="Parsing\Commandlets\TempoCommandletParser.cs" />
     <Compile Include="Parsing\Commandlets\TimeCommandletParser.cs" />
     <Compile Include="Parsing\Commandlets\TuningCommandletParser.cs" />
+    <Compile Include="Parsing\NoteNameParser.cs" />
     <Compile Include="Parsing\Parser.cs" />
     <Compile Include="Parsing\IParseReporter.cs" />
     <Compile Include="Parsing\ParseMessages.cs" />

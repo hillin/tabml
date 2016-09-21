@@ -10,6 +10,9 @@ namespace TabML.Core.Parsing
 {
     internal static class ParseMessages
     {
+        public const string Error_InvalidNoteName = "Unrecognizable note name";
+        public const string Error_InvalidAccidental = "Unrecognizable accidental";
+
         public const string Suggestion_TuningNotSpecified = "Redundant empty tuning specifier (standard tuning used)";
         public const string Error_InvalidTuning = "Unrecognizable tuning specifier, standard tuning assumed";
 
@@ -29,8 +32,7 @@ namespace TabML.Core.Parsing
 
         public const string Error_ChordCommandletMissingFingering = "Missing chord fingering";
 
-        public const string Warning_BothChordFingeringDelimiterUsed =
-            "Use either comma or whitespace to separate chord fingering numbers, don't use both";
+        public const string Error_ChordFingeringInvalidFingering = "Unrecognizable chord fingering";
 
         public const string Error_InvalidTimeSignature =
             "Unrecognizable time signature, please use a time signature like 4/4. 4/4 assumed.";
@@ -65,7 +67,7 @@ namespace TabML.Core.Parsing
 
         public const string Warning_CapoStringsSpecifierInvalidStringNumber =
             "Invalid string number, all strings assumed";
-        
+
         public const string Warning_RedundantCapoStringSpecifier = "String #{0} is specified for more than once";
 
         public const string Warning_RhythmSegmentMissingCloseBracket =
@@ -134,6 +136,6 @@ namespace TabML.Core.Parsing
         public const string Error_RhythmSegmentChordFingeringNotEnclosed =
             "Chord fingering is not enclosed with ')'";
 
-        public const string Error_RhythmDefinitionExpected = "rhythm definition or chord name expected";
+        public const string Error_RhythmDefinitionExpected = "rhythm definition, chord name or anonymous chord fingering expected";
     }
 }

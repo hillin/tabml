@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace TabML.Core.Parsing.AST
 {
-    class StringNode : Node
+    class LiteralNode<T> : Node
     {
-        public string Value { get; set; }
+        public T Value { get; set; }
 
-        public StringNode()
+        public LiteralNode()
         {
 
         }
 
-        public StringNode(string value, TextRange range)
+        public LiteralNode(T value, TextRange range)
         {
             this.Value = value;
             this.Range = range;

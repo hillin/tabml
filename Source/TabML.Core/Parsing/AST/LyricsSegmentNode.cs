@@ -8,16 +8,16 @@ namespace TabML.Core.Parsing.AST
 {
     class LyricsSegmentNode : Node
     {
-        public string LyricsSegment { get; set; }
+        public LiteralNode<string> LyricsSegment { get; set; }
 
         public LyricsSegmentNode()
         {
             
         }
 
-        public LyricsSegmentNode(string lyricsSegment)
+        public LyricsSegmentNode(string lyricsSegment, TextRange range)
         {
-            this.LyricsSegment = lyricsSegment;
+            this.LyricsSegment = new LiteralNode<string>(lyricsSegment, range);
         }
     }
 

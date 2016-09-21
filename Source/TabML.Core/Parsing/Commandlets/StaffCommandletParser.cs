@@ -13,21 +13,22 @@ namespace TabML.Core.Parsing.Commandlets
     {
         public override bool TryParse(Scanner scanner, out StaffCommandletNode commandlet)
         {
+            commandlet = new StaffCommandletNode();
+
             scanner.SkipWhitespaces();
             var name = scanner.Read(@"[\w ]*").Trim();
+            commandlet.StaffName = new LiteralNode<string>(name, scanner.LastReadRange);
 
-            StaffType? staffType = null;
             if (scanner.Expect(':'))
             {
-                StaffType staffTypeValue;
-                if (!Parser.TryReadStaffType(scanner, this, out staffTypeValue))
+                LiteralNode<StaffType> staffTypeNode;
+                if (!Parser.TryReadStaffType(scanner, this, out staffTypeNode))
                     this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
                                 ParseMessages.Warning_StaffCommandletUnknownStaffType);
                 else
-                    staffType = staffTypeValue;
+                    commandlet.StaffType = staffTypeNode;
             }
 
-            commandlet = new StaffCommandletNode(name, staffType);
             return true;
         }
     }

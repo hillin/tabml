@@ -19,7 +19,7 @@ namespace TabML.Core.Parsing.Commandlets
 
             scanner.SkipOptional(':', true);
 
-            IntegerNode positionNode;
+            LiteralNode<int> positionNode;
             if (!Parser.TryParseInteger(scanner, out positionNode))
             {
                 this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_InvalidCapoPosition);

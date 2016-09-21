@@ -9,7 +9,7 @@ namespace TabML.Core.Parsing.AST
 {
     class CapoCommandletNode : CommandletNode, IRequireStringValidation
     {
-        public IntegerNode Position { get; set; }
+        public LiteralNode<int> Position { get; set; }
         public CapoStringsSpecifierNode StringsSpecifier { get; set; }
     }
 }

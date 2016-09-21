@@ -8,12 +8,6 @@ namespace TabML.Core.Parsing.AST
 {
     class SectionCommandletNode : CommandletNode
     {
-        public string SectionName { get; }
-
-        public SectionCommandletNode(string sectionName)
-        {
-            this.SectionName = sectionName;
-        }
-        
+        public LiteralNode<string> SectionName { get; set; }        
     }
 }

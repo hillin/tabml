@@ -8,7 +8,7 @@ namespace TabML.Core.Parsing.AST
 {
     class RhythmSegmentNode : RhythmSegmentNodeBase
     {
-        public string ChordName { get; set; }
-        public int[] Fingering { get; set; }
+        public LiteralNode<string> ChordName { get; set; }
+        public ChordFingeringNode Fingering { get; set; }
     }
 }

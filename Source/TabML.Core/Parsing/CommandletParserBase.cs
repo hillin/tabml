@@ -9,6 +9,6 @@ namespace TabML.Core.Parsing
 {
     abstract class CommandletParserBase : ParserBase<CommandletNode>
     {
-        public StringNode CommandletNameNode { get; set; }
+        public LiteralNode<string> CommandletNameNode { get; set; }
     }
 }

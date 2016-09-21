@@ -14,6 +14,9 @@ namespace TabML.Core.Parsing.Commandlets
         public override bool TryParse(Scanner scanner, out TempoCommandletNode commandlet)
         {
             scanner.SkipOptional(':', true);
+
+            commandlet = new TempoCommandletNode();
+
             var match = scanner.Match(@"((\d+)\s*=\s*)?(\d+)");
 
             if (!match.Success)
@@ -35,9 +38,12 @@ namespace TabML.Core.Parsing.Commandlets
                 return false;
             }
 
+            commandlet.NoteValue = new LiteralNode<BaseNoteValue>(noteValue,
+                                                                  new TextRange(scanner.LastReadRange, match.Groups[2]));
+
             var beats = int.Parse(match.Groups[3].Value);
 
-            if(beats==0)
+            if (beats == 0)
             {
                 this.Report(ParserReportLevel.Error, scanner.LastReadRange,
                             ParseMessages.Error_TempoSignatureSpeedTooLow);
@@ -53,7 +59,8 @@ namespace TabML.Core.Parsing.Commandlets
                 return false;
             }
 
-            commandlet = new TempoCommandletNode(new TempoSignature(beats, noteValue));
+            commandlet.Beats = new LiteralNode<int>(beats, new TextRange(scanner.LastReadRange, match.Groups[3]));
+            
             return true;
         }
     }

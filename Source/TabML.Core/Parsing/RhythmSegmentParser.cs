@@ -38,16 +38,23 @@ namespace TabML.Core.Parsing
             }
 
             scanner.SkipWhitespaces();
-            string chordName;
-            if (Parser.TryReadChordName(scanner, this, out chordName))
+            LiteralNode<string> chordNameNode;
+            if (Parser.TryReadChordName(scanner, this, out chordNameNode))
             {
-                result.ChordName = chordName;
+                result.ChordName = chordNameNode;
 
                 scanner.SkipWhitespaces();
                 if (scanner.Expect('('))
                 {
-                    int[] fingering;
-                    if (!Parser.TryReadChordFingering(scanner, this, out fingering))
+                    ChordFingeringNode fingeringNode;
+                    if (!new ChordFingeringParser(s => s.EndOfLine || s.Peek() == ')').TryParse(scanner, out fingeringNode))
+                    {
+                        result = null;
+                        return false;
+                    }
+
+
+                    if (fingeringNode.Fingerings.Count == 0)
                     {
                         this.Report(ParserReportLevel.Error, scanner.LastReadRange,
                                     ParseMessages.Error_RhythmSegmentMissingFingering);
@@ -55,7 +62,7 @@ namespace TabML.Core.Parsing
                         return false;
                     }
 
-                    result.Fingering = fingering;
+                    result.Fingering = fingeringNode;
 
                     if (!scanner.Expect(')'))
                     {
@@ -67,7 +74,7 @@ namespace TabML.Core.Parsing
                 }
             }
 
-            if (!rhythmDefined && string.IsNullOrEmpty(chordName))
+            if (!rhythmDefined && string.IsNullOrEmpty(chordNameNode.Value) && result.Fingering == null)
             {
                 this.Report(ParserReportLevel.Error, scanner.LastReadRange,
                             ParseMessages.Error_RhythmDefinitionExpected);

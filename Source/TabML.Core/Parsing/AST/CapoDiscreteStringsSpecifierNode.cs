@@ -8,10 +8,10 @@ namespace TabML.Core.Parsing.AST
 {
     class CapoDiscreteStringsSpecifierNode : CapoStringsSpecifierNode
     {
-        public List<IntegerNode> Strings { get; }
+        public List<LiteralNode<int>> Strings { get; }
         public CapoDiscreteStringsSpecifierNode()
         {
-            this.Strings = new List<IntegerNode>();
+            this.Strings = new List<LiteralNode<int>>();
         }
 
         public override int[] GetStringNumbers()

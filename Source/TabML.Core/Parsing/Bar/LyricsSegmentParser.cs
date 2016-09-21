@@ -19,6 +19,7 @@ namespace TabML.Core.Parsing.Bar
         public override bool TryParse(Scanner scanner, out LyricsSegmentNode result)
         {
             var builder = new StringBuilder();
+            var anchor = scanner.MakeAnchor();
 
             if (scanner.Peek() == '(')
             {
@@ -26,12 +27,12 @@ namespace TabML.Core.Parsing.Bar
                 switch (scanner.TryReadParenthesis(out groupedLyrics))
                 {
                     case Scanner.ParenthesisReadResult.Success:
-                        result = new LyricsSegmentNode(groupedLyrics);
+                        result = new LyricsSegmentNode(groupedLyrics, scanner.LastReadRange);
                         return true;
                     case Scanner.ParenthesisReadResult.MissingClose:
                         this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
                                     ParseMessages.Warning_TiedLyricsNotEnclosed);
-                        result = new LyricsSegmentNode(groupedLyrics);
+                        result = new LyricsSegmentNode(groupedLyrics, scanner.LastReadRange);
                         return true;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -45,23 +46,23 @@ namespace TabML.Core.Parsing.Bar
                 switch (chr)
                 {
                     case ' ':
-                        result = new LyricsSegmentNode(string.Empty);
+                        result = new LyricsSegmentNode(string.Empty, scanner.LastReadRange.From.AsRange());
                         return true;
                     case '-':
                         if (builder.Length > 0)
                         {
                             if (scanner.Peek() == ' ')
                             {
-                                result = new LyricsSegmentNode(builder.ToString());
+                                result = new LyricsSegmentNode(builder.ToString(), anchor.Range);
                                 return true;
                             }
 
                             builder.Append(chr);
-                            result = new LyricsSegmentNode(builder.ToString());
+                            result = new LyricsSegmentNode(builder.ToString(), anchor.Range);
                             return true;
                         }
 
-                        result = new LyricsSegmentNode(string.Empty);
+                        result = new LyricsSegmentNode(string.Empty, scanner.LastReadRange.From.AsRange());
                         return true;
                     default:
                         builder.Append(chr);
@@ -69,7 +70,7 @@ namespace TabML.Core.Parsing.Bar
                 }
             }
 
-            result = new LyricsSegmentNode(builder.ToString());
+            result = new LyricsSegmentNode(builder.ToString(), anchor.Range);
             return true;
         }
     }

@@ -341,11 +341,19 @@ namespace TabML.Core.Parsing
             bool allowNesting = true,
             bool inline = true)
         {
+            Anchor anchor = null;
+
+            if (includeParenthesis)
+                anchor = this.MakeAnchor();
+
             if (!this.Expect(open))
             {
                 result = string.Empty;
                 return ParenthesisReadResult.MissingOpen;
             }
+
+            if (!includeParenthesis)
+                anchor = this.MakeAnchor();
 
             var builder = new StringBuilder();
 
@@ -375,9 +383,15 @@ namespace TabML.Core.Parsing
                     if (nestLevel == 0)
                     {
                         if (includeParenthesis)
+                        {
                             builder.Append(this.Read());
+                            this.LastReadRange = anchor.Range;
+                        }
                         else
+                        {
+                            this.LastReadRange = anchor.Range;
                             this.MoveNext();
+                        }
 
                         break;
                     }

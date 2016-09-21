@@ -7,10 +7,9 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Parsing.AST
 {
-    class TempoCommandletNode : CommandletNode
+    class NoteNameNode : Node
     {
-        public LiteralNode<BaseNoteValue> NoteValue { get; set; }
-        public LiteralNode<int> Beats { get; set; }
-
+        public LiteralNode<BaseNoteName> BaseNoteName { get; set; }
+        public LiteralNode<Accidental> Accidental { get; set; }
     }
 }

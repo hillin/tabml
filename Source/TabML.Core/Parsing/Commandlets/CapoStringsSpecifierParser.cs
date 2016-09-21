@@ -11,7 +11,6 @@ namespace TabML.Core.Parsing.Commandlets
     {
         public override bool TryParse(Scanner scanner, out CapoStringsSpecifierNode result)
         {
-            var anchor = scanner.MakeAnchor();
             scanner.Expect('(');
             scanner.SkipWhitespaces();
 
@@ -42,8 +41,8 @@ namespace TabML.Core.Parsing.Commandlets
 
                 result = new CapoRangeStringsSpecifierNode
                 {
-                    From = new IntegerNode(from, new TextRange(scanner.LastReadRange, match.Groups[1])),
-                    To = new IntegerNode(to, new TextRange(scanner.LastReadRange, match.Groups[2]))
+                    From = new LiteralNode<int>(from, new TextRange(scanner.LastReadRange, match.Groups[1])),
+                    To = new LiteralNode<int>(to, new TextRange(scanner.LastReadRange, match.Groups[2]))
                 };
             }
             else
@@ -71,7 +70,7 @@ namespace TabML.Core.Parsing.Commandlets
                                     ParseMessages.Warning_RedundantCapoStringSpecifier, stringNumber);
                     }
                     else
-                        discreteResult.Strings.Add(new IntegerNode(stringNumber, scanner.LastReadRange));
+                        discreteResult.Strings.Add(new LiteralNode<int>(stringNumber, scanner.LastReadRange));
 
                     scanner.SkipWhitespaces();
                 }
@@ -82,8 +81,7 @@ namespace TabML.Core.Parsing.Commandlets
                 this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
                             ParseMessages.Warning_CapoStringsSpecifierNotEnclosed);
             }
-
-            result.Range = anchor.Range;
+            
             return true;
         }
     }

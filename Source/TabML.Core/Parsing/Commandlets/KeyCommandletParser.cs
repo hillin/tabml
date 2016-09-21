@@ -14,15 +14,18 @@ namespace TabML.Core.Parsing.Commandlets
         public override bool TryParse(Scanner scanner, out KeyCommandletNode commandlet)
         {
             scanner.SkipOptional(':', true);
-            NoteName noteName;
-            if (!Parser.TryParseNoteName(scanner, this, out noteName))
+
+            commandlet = new KeyCommandletNode();
+
+            NoteNameNode keyNode;
+            if (!new NoteNameParser().TryParse(scanner, out keyNode))
             {
-                this.Report(ParserReportLevel.Warning, scanner.LastReadRange, ParseMessages.Error_InvalidKeySignature);
                 commandlet = null;
                 return false;
             }
 
-            commandlet = new KeyCommandletNode(noteName);
+            commandlet.Key = keyNode;
+
             return true;
         }
     }
