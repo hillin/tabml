@@ -13,6 +13,7 @@ namespace TabML.Core.Parsing.Commandlets
     {
         public override bool TryParse(Scanner scanner, out TimeSignatureCommandletNode commandlet)
         {
+            commandlet = new TimeSignatureCommandletNode();
             scanner.SkipOptional(':', true);
             var match = scanner.Match(@"(\d+)\s*\/\s*(\d+)");
             if (!match.Success)
@@ -23,7 +24,6 @@ namespace TabML.Core.Parsing.Commandlets
             }
 
             var beats = int.Parse(match.Groups[1].Value);
-            var noteValueNumber = int.Parse(match.Groups[2].Value);
 
             if (beats > 32)
             {
@@ -32,6 +32,9 @@ namespace TabML.Core.Parsing.Commandlets
                 return false;
             }
 
+            commandlet.Beats = new LiteralNode<int>(beats, new TextRange(scanner.LastReadRange, match.Groups[1]));
+
+            var noteValueNumber = int.Parse(match.Groups[2].Value);
             if (noteValueNumber > 32)
             {
                 this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_UnsupportedNoteValueInTimeSignature);
@@ -47,15 +50,10 @@ namespace TabML.Core.Parsing.Commandlets
                 return false;
             }
 
-            var timeSignature = new TimeSignature(beats, noteValue);
-            commandlet = new TimeSignatureCommandletNode(timeSignature);
-
+            commandlet.NoteValue = new LiteralNode<BaseNoteValue>(noteValue,
+                                                                  new TextRange(scanner.LastReadRange, match.Groups[2]));
+            
             return true;
-        }
-
-        protected override CommandletNode Recover(Scanner scanner)
-        {
-            return new TimeSignatureCommandletNode(TimeSignatures.T44);
         }
     }
 }

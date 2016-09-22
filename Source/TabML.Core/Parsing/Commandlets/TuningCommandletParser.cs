@@ -12,74 +12,101 @@ namespace TabML.Core.Parsing.Commandlets
     [CommandletParser("tuning")]
     class TuningCommandletParser : CommandletParserBase<TuningCommandletNode>
     {
-        private Tuning ParseExplicitTuning(string tuningString, string name = null)
+        private bool TryParseExplicitTuning(Scanner scanner, List<PitchNode> stringTunings, string name = null)
         {
-            var scanner = new Scanner(tuningString);
-            var pitches = new List<Pitch>();
-            while (!scanner.EndOfInput)
+            while (!scanner.EndOfLine)
             {
-                NoteName noteName;
-                Debug.Assert(Parser.TryParseNoteName(scanner, this, out noteName));
+                PitchNode pitchNode;
+                if (!new PitchParser().TryParse(scanner, out pitchNode))
+                {
+                    return false;
+                }
 
-                int octave;
-                if (!scanner.TryReadInteger(out octave))
-                    octave = Pitch.NeutralOctaveGroup;
-
-                pitches.Add(new Pitch(noteName, octave));
-
-                scanner.SkipOptional(',');
+                stringTunings.Add(pitchNode);
+                scanner.SkipOptional(',', true);
             }
 
-            return new Tuning(name, pitches.ToArray());
+            return true;
         }
 
 
         public override bool TryParse(Scanner scanner, out TuningCommandletNode commandlet)
         {
             scanner.SkipOptional(':', true);
+
+            commandlet = new TuningCommandletNode();
+
             var tuningString = scanner.ReadToLineEnd().Trim();
             if (string.IsNullOrEmpty(tuningString))
             {
                 this.Report(ParserReportLevel.Suggestion, scanner.LastReadRange, ParseMessages.Suggestion_TuningNotSpecified);
-                commandlet = new TuningCommandletNode(Tunings.Standard);
                 return true;
             }
 
-            var parts = tuningString.Split(':');
+            var colonIndex = tuningString.LastIndexOf(':');
 
-            if (parts.Length >= 2)
+            if (colonIndex >= 0)
             {
-                var namePart = string.Join(":", parts.Take(parts.Length - 1));
-                var tuningPart = parts[parts.Length - 1];
+                var namePart = tuningString.Substring(0, colonIndex);
 
-                var explicitTuning = this.ParseExplicitTuning(tuningPart, namePart);
-                if (explicitTuning != null)
+                var namePartIsEmpty = namePart == string.Empty;
+                if (namePartIsEmpty)
                 {
-                    var namedTuning = Tunings.GetKnownTuning(namePart);
-                    if (namedTuning != null && namedTuning.InOctaveEquals(explicitTuning))
+                    this.Report(ParserReportLevel.Hint, scanner.LastReadRange.From.AsRange(),
+                                ParseMessages.Hint_RedundantColonInTuningSpecifier);
+                }
+                else
+                {
+                    commandlet.Name = new LiteralNode<string>(namePart,
+                                                              new TextRange(scanner.LastReadRange.From, namePart.Length));
+                }
+
+                var tuningPart = tuningString.Substring(colonIndex + 1).Trim();
+                if (tuningPart == string.Empty)
+                {
+                    if (namePartIsEmpty)
                     {
-                        this.Report(ParserReportLevel.Hint, scanner.LastReadRange,
-                                    ParseMessages.Hint_RedundantTuningSpecifier, namedTuning.Name);
-                        commandlet = new TuningCommandletNode(namedTuning);
+                        this.Report(ParserReportLevel.Suggestion, scanner.LastReadRange,
+                                    ParseMessages.Suggestion_TuningNotSpecified);
+                        return true;
                     }
-                    else
-                        commandlet = new TuningCommandletNode(explicitTuning);
-                    return true;
+
+                    this.Report(ParserReportLevel.Hint, scanner.LastReadRange.From.OffsetColumn(colonIndex).AsRange(),
+                                ParseMessages.Hint_RedundantColonInTuningSpecifier);
+                }
+                else
+                {
+                    scanner.SetPointer(scanner.LastReadRange.From.OffsetColumn(colonIndex + 1));
+                    if (this.TryParseExplicitTuning(scanner, commandlet.StringTunings, namePart))
+                    {
+                        // todo: validate
+                        //if (!namePartIsEmpty)
+                        //{
+                        //    var namedTuning = Tunings.GetKnownTuning(namePart);
+                        //    if (namedTuning != null && namedTuning.InOctaveEquals(explicitTuning))
+                        //    {
+                        //        this.Report(ParserReportLevel.Hint, scanner.LastReadRange,
+                        //                    ParseMessages.Hint_RedundantKnownTuningSpecifier, namedTuning.Name);
+                        //    }
+                        //}
+                        return true;
+                    }
+
+                    return false;
                 }
             }
-            else if (parts.Length == 1)
+            else
             {
                 var tuning = Tunings.GetKnownTuning(tuningString);
                 if (tuning != null)
                 {
-                    commandlet = new TuningCommandletNode(tuning);
+                    commandlet.Name = new LiteralNode<string>(tuningString, scanner.LastReadRange);
                     return true;
                 }
 
-                tuning = this.ParseExplicitTuning(tuningString);
-                if (tuning != null)
+                scanner.SetPointer(scanner.LastReadRange.From);
+                if (this.TryParseExplicitTuning(scanner, commandlet.StringTunings))
                 {
-                    commandlet = new TuningCommandletNode(tuning);
                     return true;
                 }
             }
@@ -88,12 +115,6 @@ namespace TabML.Core.Parsing.Commandlets
             commandlet = null;
             return false;
         }
-
-
-        protected override CommandletNode Recover(Scanner scanner)
-        {
-            scanner.SkipLine();
-            return new TuningCommandletNode(Tunings.Standard);
-        }
+        
     }
 }

@@ -104,6 +104,8 @@
     <Compile Include="MusicTheory\StrumTechnique.cs" />
     <Compile Include="Document\Tablature.cs" />
     <Compile Include="Parsing\AST\NoteNameNode.cs" />
+    <Compile Include="Parsing\AST\NoteValueNode.cs" />
+    <Compile Include="Parsing\AST\PitchNode.cs" />
     <Compile Include="Parsing\AST\RhythmCommandletNode.cs" />
     <Compile Include="Parsing\AST\RhythmSegmentNodeBase.cs" />
     <Compile Include="Parsing\AST\RhythmTemplateNode.cs" />
@@ -144,6 +146,7 @@
     <Compile Include="Parsing\IParseReporter.cs" />
     <Compile Include="Parsing\ParseMessages.cs" />
     <Compile Include="Parsing\ParserReportLevel.cs" />
+    <Compile Include="Parsing\PitchParser.cs" />
     <Compile Include="Parsing\RhythmParser.cs" />
     <Compile Include="Parsing\RhythmSegmentParser.cs" />
     <Compile Include="Parsing\RhythmSegmentParserBase.cs" />

@@ -112,7 +112,7 @@ namespace TabML.Core.Parsing
         }
 
 
-        private void SetPointer(TextPointer pointer)
+        public void SetPointer(TextPointer pointer)
         {
             _textPointer = pointer;
             this.CheckEndOfFile();

@@ -27,19 +27,22 @@ namespace TabML.Core.Parsing.Commandlets
                 return false;
             }
 
-            var noteValueNumber = int.Parse(match.Groups[2].Value);
-
-            BaseNoteValue noteValue;
-            if (!BaseNoteValues.TryParse(noteValueNumber, out noteValue))
+            if (match.Groups[1].Success)
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                            ParseMessages.Error_IrrationalNoteValueInTempoSignatureNotSupported);
-                commandlet = null;
-                return false;
-            }
+                var noteValueNumber = int.Parse(match.Groups[2].Value);
 
-            commandlet.NoteValue = new LiteralNode<BaseNoteValue>(noteValue,
-                                                                  new TextRange(scanner.LastReadRange, match.Groups[2]));
+                BaseNoteValue noteValue;
+                if (!BaseNoteValues.TryParse(noteValueNumber, out noteValue))
+                {
+                    this.Report(ParserReportLevel.Error, scanner.LastReadRange,
+                                ParseMessages.Error_IrrationalNoteValueInTempoSignatureNotSupported);
+                    commandlet = null;
+                    return false;
+                }
+
+                commandlet.NoteValue
+                    = new LiteralNode<BaseNoteValue>(noteValue, new TextRange(scanner.LastReadRange, match.Groups[2]));
+            }
 
             var beats = int.Parse(match.Groups[3].Value);
 
@@ -60,7 +63,7 @@ namespace TabML.Core.Parsing.Commandlets
             }
 
             commandlet.Beats = new LiteralNode<int>(beats, new TextRange(scanner.LastReadRange, match.Groups[3]));
-            
+
             return true;
         }
     }

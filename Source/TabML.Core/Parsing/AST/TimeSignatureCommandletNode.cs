@@ -9,10 +9,7 @@ namespace TabML.Core.Parsing.AST
 {
     class TimeSignatureCommandletNode : CommandletNode
     {
-        public TimeSignature TimeSignature { get; }
-        public TimeSignatureCommandletNode(TimeSignature timeSignature)
-        {
-            this.TimeSignature = timeSignature;
-        }
+        public LiteralNode<int> Beats { get; set; }
+        public LiteralNode<BaseNoteValue> NoteValue { get; set; }
     }
 }

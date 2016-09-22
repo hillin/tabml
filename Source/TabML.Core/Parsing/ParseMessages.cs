@@ -16,8 +16,10 @@ namespace TabML.Core.Parsing
         public const string Suggestion_TuningNotSpecified = "Redundant empty tuning specifier (standard tuning used)";
         public const string Error_InvalidTuning = "Unrecognizable tuning specifier, standard tuning assumed";
 
-        public const string Hint_RedundantTuningSpecifier =
+        public const string Hint_RedundantKnownTuningSpecifier =
             "\"{0}\" is a well-known tuning, so you don't have to explicitly define it";
+
+        public const string Hint_RedundantColonInTuningSpecifier = "Redundant ':' in tuning specifier";
 
         public const string Error_InvalidStringCount =
             "Unrecognizable string count, 6 strings assumed";

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TabML.Core.Document;
 
 namespace TabML.Core.Parsing.AST
 {
-    class RhythmUnitNode : Node, IRequireStringValidation
+    class PitchNode : Node
     {
-        public NoteValueNode NoteValue { get; set; }
+        public NoteNameNode NoteName { get; set; }
+        public LiteralNode<int> OctaveGroup { get; set; }
     }
 }

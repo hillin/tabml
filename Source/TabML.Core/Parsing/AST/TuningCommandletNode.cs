@@ -9,12 +9,7 @@ namespace TabML.Core.Parsing.AST
 {
     class TuningCommandletNode : CommandletNode, IRequireStringValidation
     {
-        public Tuning Tuning { get; }
-
-        public TuningCommandletNode(Tuning tuning)
-        {
-            this.Tuning = tuning;
-        }
-
+        public LiteralNode<string> Name { get; set; }
+        public List<PitchNode> StringTunings { get; set; }
     }
 }
