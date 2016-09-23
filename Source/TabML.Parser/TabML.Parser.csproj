@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{847CEAC8-742A-4E4E-BD86-424FE1BAD537}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TabML.Parser</RootNamespace>
+    <AssemblyName>TabML.Parser</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Class1.cs" />
+    <Compile Include="AST\BarNode.cs" />
+    <Compile Include="AST\CapoCommandletNode.cs" />
+    <Compile Include="AST\CapoDiscreteStringsSpecifierNode.cs" />
+    <Compile Include="AST\CapoRangeStringsSpecifierNode.cs" />
+    <Compile Include="AST\CapoStringsSpecifierNode.cs" />
+    <Compile Include="AST\ChordCommandletNode.cs" />
+    <Compile Include="AST\ChordFingeringNode.cs" />
+    <Compile Include="AST\CommandletNode.cs" />
+    <Compile Include="AST\IRequireStringValidation.cs" />
+    <Compile Include="AST\KeyCommandletNode.cs" />
+    <Compile Include="AST\LiteralNode.cs" />
+    <Compile Include="AST\LyricsNode.cs" />
+    <Compile Include="AST\LyricsSegmentNode.cs" />
+    <Compile Include="AST\Node.cs" />
+    <Compile Include="AST\NoteNameNode.cs" />
+    <Compile Include="AST\NoteValueNode.cs" />
+    <Compile Include="AST\PitchNode.cs" />
+    <Compile Include="AST\RhythmCommandletNode.cs" />
+    <Compile Include="AST\RhythmNode.cs" />
+    <Compile Include="AST\RhythmSegmentNode.cs" />
+    <Compile Include="AST\RhythmSegmentNodeBase.cs" />
+    <Compile Include="AST\RhythmTemplateNode.cs" />
+    <Compile Include="AST\RhythmTemplateSegmentNode.cs" />
+    <Compile Include="AST\RhythmUnitNode.cs" />
+    <Compile Include="AST\RhythmUnitNoteNode.cs" />
+    <Compile Include="AST\RhythmVoiceNode.cs" />
+    <Compile Include="AST\SectionCommandletNode.cs" />
+    <Compile Include="AST\StaffCommandletNode.cs" />
+    <Compile Include="AST\StringsCommandletNode.cs" />
+    <Compile Include="AST\TablatureNode.cs" />
+    <Compile Include="AST\TempoCommandletNode.cs" />
+    <Compile Include="AST\TimeSignatureCommandletNode.cs" />
+    <Compile Include="AST\TopLevelNode.cs" />
+    <Compile Include="AST\TuningCommandletNode.cs" />
+    <Compile Include="Parsing\Bar\BarParser.cs" />
+    <Compile Include="Parsing\Bar\LyricsParser.cs" />
+    <Compile Include="Parsing\Bar\LyricsSegmentParser.cs" />
+    <Compile Include="Parsing\ChordFingeringParser.cs" />
+    <Compile Include="Parsing\CommandletParser.cs" />
+    <Compile Include="Parsing\CommandletParserAttribute.cs" />
+    <Compile Include="Parsing\CommandletParserBase.cs" />
+    <Compile Include="Parsing\CommandletParserBase.generic.cs" />
+    <Compile Include="Parsing\Commandlets\CapoCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\CapoStringsSpecifierParser.cs" />
+    <Compile Include="Parsing\Commandlets\ChordCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\KeyCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\RhythmCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\SectionCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\StaffCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\StringsCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\TempoCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\TimeCommandletParser.cs" />
+    <Compile Include="Parsing\Commandlets\TuningCommandletParser.cs" />
+    <Compile Include="Parsing\IParseReporter.cs" />
+    <Compile Include="Parsing\NoteNameParser.cs" />
+    <Compile Include="Parsing\NoteValueParser.cs" />
+    <Compile Include="Parsing\ParseMessages.cs" />
+    <Compile Include="Parsing\Parser.cs" />
+    <Compile Include="Parsing\ParserBase.cs" />
+    <Compile Include="Parsing\ParserReportLevel.cs" />
+    <Compile Include="Parsing\PitchParser.cs" />
+    <Compile Include="Parsing\RhythmParser.cs" />
+    <Compile Include="Parsing\RhythmSegmentParser.cs" />
+    <Compile Include="Parsing\RhythmSegmentParserBase.cs" />
+    <Compile Include="Parsing\RhythmTemplateParser.cs" />
+    <Compile Include="Parsing\RhythmTemplateSegmentParser.cs" />
+    <Compile Include="Parsing\RhythmUnitNoteParser.cs" />
+    <Compile Include="Parsing\RhythmUnitParser.cs" />
+    <Compile Include="Parsing\RhythmVoiceParser.cs" />
+    <Compile Include="Parsing\Scanner.cs" />
+    <Compile Include="Parsing\TablatureParser.cs" />
+    <Compile Include="Parsing\TextPointer.cs" />
+    <Compile Include="Parsing\TextRange.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TabML.Core\TabML.Core.csproj">
+      <Project>{4e66bea1-871b-45c6-bf04-f2e4972dd720}</Project>
+      <Name>TabML.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

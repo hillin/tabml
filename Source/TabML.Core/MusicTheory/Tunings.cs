@@ -37,9 +37,9 @@ namespace TabML.Core.MusicTheory
         }
 
         [KnownTuning]
-        public static Tuning Standard = new Tuning("Standard", E(2), A(2), D(3), G(3), B(3), E(4));
+        public static Tuning Standard = new Tuning("Standard", Pitches.E(2), Pitches.A(2), Pitches.D(3), Pitches.G(3), Pitches.B(3), Pitches.E(4));
 
         [KnownTuning]
-        public static Tuning DropD = new Tuning("Drop D", D(2), A(2), D(3), G(3), B(3), E(4));
+        public static Tuning DropD = new Tuning("Drop D", Pitches.D(2), Pitches.A(2), Pitches.D(3), Pitches.G(3), Pitches.B(3), Pitches.E(4));
     }
 }

@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -57,19 +61,6 @@
     <Compile Include="MusicTheory\PostNoteConnection.cs" />
     <Compile Include="MusicTheory\PreNoteConnection.cs" />
     <Compile Include="MusicTheory\TempoSignature.cs" />
-    <Compile Include="Parsing\AST\BarNode.cs" />
-    <Compile Include="Parsing\AST\CapoCommandletNode.cs" />
-    <Compile Include="Parsing\AST\CapoDiscreteStringsSpecifierNode.cs" />
-    <Compile Include="Parsing\AST\CapoRangeStringsSpecifierNode.cs" />
-    <Compile Include="Parsing\AST\CapoStringsSpecifierNode.cs" />
-    <Compile Include="Parsing\AST\ChordCommandletNode.cs" />
-    <Compile Include="Parsing\AST\ChordFingeringNode.cs" />
-    <Compile Include="Parsing\AST\CommandletNode.cs" />
-    <Compile Include="Parsing\AST\IRequireStringValidation.cs" />
-    <Compile Include="Parsing\AST\KeyCommandletNode.cs" />
-    <Compile Include="Parsing\AST\LyricsNode.cs" />
-    <Compile Include="Parsing\AST\LyricsSegmentNode.cs" />
-    <Compile Include="Parsing\AST\Node.cs" />
     <Compile Include="MusicTheory\Accidental.cs" />
     <Compile Include="MusicTheory\AccidentalExtensions.cs" />
     <Compile Include="Document\Bar.cs" />
@@ -103,68 +94,14 @@
     <Compile Include="Document\ScoreFlowState.cs" />
     <Compile Include="MusicTheory\StrumTechnique.cs" />
     <Compile Include="Document\Tablature.cs" />
-    <Compile Include="Parsing\AST\NoteNameNode.cs" />
-    <Compile Include="Parsing\AST\NoteValueNode.cs" />
-    <Compile Include="Parsing\AST\PitchNode.cs" />
-    <Compile Include="Parsing\AST\RhythmCommandletNode.cs" />
-    <Compile Include="Parsing\AST\RhythmSegmentNodeBase.cs" />
-    <Compile Include="Parsing\AST\RhythmTemplateNode.cs" />
-    <Compile Include="Parsing\AST\RhythmTemplateSegmentNode.cs" />
-    <Compile Include="Parsing\AST\RhythmVoiceNode.cs" />
-    <Compile Include="Parsing\AST\LiteralNode.cs" />
-    <Compile Include="Parsing\AST\StaffCommandletNode.cs" />
-    <Compile Include="Parsing\AST\RhythmSegmentNode.cs" />
-    <Compile Include="Parsing\Bar\LyricsParser.cs" />
-    <Compile Include="Parsing\Bar\LyricsSegmentParser.cs" />
-    <Compile Include="Parsing\ChordFingeringParser.cs" />
-    <Compile Include="Parsing\Commandlets\CapoStringsSpecifierParser.cs" />
-    <Compile Include="Parsing\Commandlets\RhythmCommandletParser.cs" />
-    <Compile Include="Parsing\AST\RhythmNode.cs" />
-    <Compile Include="Parsing\AST\RhythmUnitNode.cs" />
-    <Compile Include="Parsing\AST\StringsCommandletNode.cs" />
-    <Compile Include="Parsing\AST\TablatureNode.cs" />
-    <Compile Include="Parsing\AST\SectionCommandletNode.cs" />
-    <Compile Include="Parsing\AST\TempoCommandletNode.cs" />
-    <Compile Include="Parsing\AST\TimeSignatureCommandletNode.cs" />
-    <Compile Include="Parsing\AST\TopLevelNode.cs" />
-    <Compile Include="Parsing\AST\TuningCommandletNode.cs" />
-    <Compile Include="Parsing\Bar\BarParser.cs" />
-    <Compile Include="Parsing\CommandletParserBase.generic.cs" />
-    <Compile Include="Parsing\CommandletParser.cs" />
-    <Compile Include="Parsing\CommandletParserAttribute.cs" />
-    <Compile Include="Parsing\CommandletParserBase.cs" />
-    <Compile Include="Parsing\Commandlets\CapoCommandletParser.cs" />
-    <Compile Include="Parsing\Commandlets\ChordCommandletParser.cs" />
-    <Compile Include="Parsing\Commandlets\KeyCommandletParser.cs" />
-    <Compile Include="Parsing\Commandlets\SectionCommandletParser.cs" />
-    <Compile Include="Parsing\Commandlets\StaffCommandletParser.cs" />
-    <Compile Include="Parsing\Commandlets\TempoCommandletParser.cs" />
-    <Compile Include="Parsing\Commandlets\TimeCommandletParser.cs" />
-    <Compile Include="Parsing\Commandlets\TuningCommandletParser.cs" />
-    <Compile Include="Parsing\NoteNameParser.cs" />
-    <Compile Include="Parsing\Parser.cs" />
-    <Compile Include="Parsing\IParseReporter.cs" />
-    <Compile Include="Parsing\ParseMessages.cs" />
-    <Compile Include="Parsing\ParserReportLevel.cs" />
-    <Compile Include="Parsing\PitchParser.cs" />
-    <Compile Include="Parsing\RhythmParser.cs" />
-    <Compile Include="Parsing\RhythmSegmentParser.cs" />
-    <Compile Include="Parsing\RhythmSegmentParserBase.cs" />
-    <Compile Include="Parsing\RhythmTemplateParser.cs" />
-    <Compile Include="Parsing\RhythmTemplateSegmentParser.cs" />
-    <Compile Include="Parsing\RhythmUnitParser.cs" />
-    <Compile Include="Parsing\RhythmVoiceParser.cs" />
-    <Compile Include="Parsing\Scanner.cs" />
-    <Compile Include="Parsing\ParserBase.cs" />
-    <Compile Include="Parsing\Commandlets\StringsCommandletParser.cs" />
-    <Compile Include="Parsing\TablatureParser.cs" />
-    <Compile Include="Parsing\TextPointer.cs" />
-    <Compile Include="Parsing\TextRange.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MusicTheory\TimeSignature.cs" />
     <Compile Include="MusicTheory\TimeSignatures.cs" />
     <Compile Include="MusicTheory\Tuning.cs" />
     <Compile Include="MusicTheory\Tunings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

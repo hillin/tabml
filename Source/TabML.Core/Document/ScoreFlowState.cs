@@ -1,9 +1,11 @@
-﻿namespace TabML.Core.Document
+﻿using TabML.Core.MusicTheory;
+
+namespace TabML.Core.Document
 {
     public class ScoreFlowState
     {
-        public MusicTheory.BaseNoteName Key { get; set; }
-        public MusicTheory.TimeSignature TimeSignature { get; set; }
+        public BaseNoteName Key { get; set; }
+        public TimeSignature TimeSignature { get; set; }
         public int Tempo { get; set; }
         public int Capo { get; set; }
 

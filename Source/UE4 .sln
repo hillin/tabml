@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TabML.Editor", "TabML.Edito
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TabML.Core", "TabML.Core\TabML.Core.csproj", "{4E66BEA1-871B-45C6-BF04-F2E4972DD720}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TabML.Parser", "TabML.Parser\TabML.Parser.csproj", "{847CEAC8-742A-4E4E-BD86-424FE1BAD537}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4E66BEA1-871B-45C6-BF04-F2E4972DD720}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E66BEA1-871B-45C6-BF04-F2E4972DD720}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E66BEA1-871B-45C6-BF04-F2E4972DD720}.Release|Any CPU.Build.0 = Release|Any CPU
+		{847CEAC8-742A-4E4E-BD86-424FE1BAD537}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{847CEAC8-742A-4E4E-BD86-424FE1BAD537}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{847CEAC8-742A-4E4E-BD86-424FE1BAD537}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{847CEAC8-742A-4E4E-BD86-424FE1BAD537}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

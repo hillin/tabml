@@ -4,6 +4,21 @@ namespace TabML.Core.MusicTheory
 {
     public struct NoteValue : IComparable<NoteValue>
     {
+        public static bool IsValidTuplet(int tuplet)
+        {
+            if (tuplet < 3)
+                return false;
+
+            if (tuplet > 64)
+                return false;
+
+            var log = Math.Log(tuplet, 2);
+            if (log - (int)log < 0.001)
+                return false;
+
+            return true;
+        }
+
         public BaseNoteValue Base { get; }
         public NoteValueAugment Augment { get; }
         public int Tuplet { get; }
@@ -12,7 +27,7 @@ namespace TabML.Core.MusicTheory
         {
             if (tuplet != null)
             {
-                if (tuplet != 1 && tuplet < 3)
+                if (!NoteValue.IsValidTuplet(tuplet.Value))
                     throw new ArgumentOutOfRangeException(nameof(tuplet), "invalid tuplet value");
 
                 if (baseValue >= 0)
