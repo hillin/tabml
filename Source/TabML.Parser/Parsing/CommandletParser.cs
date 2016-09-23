@@ -13,9 +13,9 @@ namespace TabML.Parser.Parsing
         {
             CommandletParsers = new Dictionary<string, Type>();
 
-            foreach (var type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.ExportedTypes))
+            foreach (var type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.DefinedTypes))
             {
-                if (!type.IsSubclassOf(typeof(CommandletParserBase)))
+                if (!(typeof(CommandletParserBase)).IsAssignableFrom(type))
                     continue;
 
                 var attributes = type.GetCustomAttributes(typeof(CommandletParserAttribute), false);

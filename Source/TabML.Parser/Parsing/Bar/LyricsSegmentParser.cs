@@ -40,31 +40,32 @@ namespace TabML.Parser.Parsing.Bar
             {
                 var chr = scanner.Read();
 
-                switch (chr)
+                if (char.IsWhiteSpace(chr))
                 {
-                    case ' ':
-                        result = new LyricsSegmentNode(string.Empty, scanner.LastReadRange.From.AsRange());
-                        return true;
-                    case '-':
-                        if (builder.Length > 0)
-                        {
-                            if (scanner.Peek() == ' ')
-                            {
-                                result = new LyricsSegmentNode(builder.ToString(), anchor.Range);
-                                return true;
-                            }
+                    result = new LyricsSegmentNode(builder.ToString(), anchor.Range.Extend(-1));
+                    return true;
+                }
 
-                            builder.Append(chr);
-                            result = new LyricsSegmentNode(builder.ToString(), anchor.Range);
+                if (chr == '-')
+                {
+                    if (builder.Length > 0)
+                    {
+                        if (char.IsWhiteSpace(scanner.Peek()))
+                        {
+                            result = new LyricsSegmentNode(builder.ToString(), anchor.Range.Extend(-1));
                             return true;
                         }
 
-                        result = new LyricsSegmentNode(string.Empty, scanner.LastReadRange.From.AsRange());
-                        return true;
-                    default:
                         builder.Append(chr);
-                        break;
+                        result = new LyricsSegmentNode(builder.ToString(), anchor.Range.Extend(-1));
+                        return true;
+                    }
+
+                    result = new LyricsSegmentNode(string.Empty, scanner.LastReadRange);
+                    return true;
                 }
+
+                builder.Append(chr);
             }
 
             result = new LyricsSegmentNode(builder.ToString(), anchor.Range);

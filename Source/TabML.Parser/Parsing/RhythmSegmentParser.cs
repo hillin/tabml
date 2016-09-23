@@ -16,6 +16,7 @@ namespace TabML.Parser.Parsing
 
         public override bool TryParse(Scanner scanner, out RhythmSegmentNode result)
         {
+            var anchor = scanner.MakeAnchor();
             result = new RhythmSegmentNode();
 
             scanner.SkipWhitespaces();
@@ -77,6 +78,7 @@ namespace TabML.Parser.Parsing
                 return false;
             }
 
+            result.Range = anchor.Range;
             return true;
         }
     }

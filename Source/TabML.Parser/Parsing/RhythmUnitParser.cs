@@ -27,20 +27,21 @@ namespace TabML.Parser.Parsing
                 return false;
             }
 
+            LiteralNode<StrumTechnique> strumTechnique;
+            Parser.TryReadHeadStrumTechnique(scanner, this, out strumTechnique);
 
-            if (noteValueIndetemined && result.Notes.Count == 0)
+            if (noteValueIndetemined && result.Notes.Count == 0 && strumTechnique == null)
             {
-                LiteralNode<StrumTechnique> strumTechnique;
-                if (!Parser.TryReadHeadStrumTechnique(scanner, this, out strumTechnique))
-                {
+
                     this.Report(ParserReportLevel.Error, scanner.LastReadRange,
                                 ParseMessages.Error_RhythmUnitBodyExpected);
                     result = null;
                     return false;
-                }
-
-                result.StrumTechnique = strumTechnique;
             }
+
+            result.StrumTechnique = strumTechnique;
+
+            scanner.SkipWhitespaces();
 
             if (scanner.Expect(':'))
             {

@@ -30,7 +30,7 @@ namespace TabML.Parser.Parsing
 
         public const string Error_MissingChordName = "Please specify a chord name";
 
-        public const string Error_MissingChordDisplayNameNotEnclosed =
+        public const string Error_ChordDisplayNameNotEnclosed =
             "Chord display name specifier is not enclosed with '>'";
 
         public const string Error_ChordCommandletMissingFingering = "Missing chord fingering";
@@ -116,6 +116,10 @@ namespace TabML.Parser.Parsing
         public const string Warning_SectionNameMissingCloseQuoteMark = "Missing close quote mark";
         public const string Warning_EmptySectionName = "Empty section name, ignored";
 
+        public const string Warning_AlternationTextMissingCloseQuoteMark = "Missing close quote mark";
+        public const string Hint_EmptyAlternationText = "Empty alternation text, will use automatic index";
+        public const string Error_InvalidAlternationText= "Unrecognizable alternation text, use 1 to 9 (arabic numerals) or I to IX (roman numerals)";
+
         public const string Warning_StaffCommandletUnknownStaffType =
             "Unknown or unsupported staff type, guitar assumed";
 
@@ -140,5 +144,11 @@ namespace TabML.Parser.Parsing
             "Chord fingering is not enclosed with ')'";
 
         public const string Error_RhythmDefinitionExpected = "rhythm definition, chord name or anonymous chord fingering expected";
+
+        public const string Warning_PatternBodyNotEnclosed =
+            "pattern body is not enclosed with '}'";
+
+        public const string Error_InvalidBarLineInPattern = "Only standard bar line allowed in patterns";
+
     }
 }

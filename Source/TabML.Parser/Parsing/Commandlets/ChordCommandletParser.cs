@@ -9,6 +9,8 @@ namespace TabML.Parser.Parsing.Commandlets
         {
             commandlet = new ChordCommandletNode();
 
+            scanner.SkipWhitespaces();
+
             LiteralNode<string> chordName;
             if (!Parser.TryReadChordName(scanner, this, out chordName) || string.IsNullOrEmpty(chordName.Value))
             {
@@ -25,7 +27,7 @@ namespace TabML.Parser.Parsing.Commandlets
             if (scanner.TryReadParenthesis(out displayName, '<', '>', allowNesting: false) == Scanner.ParenthesisReadResult.MissingClose)
             {
                 this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                            ParseMessages.Error_MissingChordDisplayNameNotEnclosed);
+                            ParseMessages.Error_ChordDisplayNameNotEnclosed);
                 commandlet = null;
                 return false;
             }

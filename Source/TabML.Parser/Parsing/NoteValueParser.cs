@@ -7,6 +7,7 @@ namespace TabML.Parser.Parsing
     {
         public override bool TryParse(Scanner scanner, out NoteValueNode result)
         {
+            var anchor = scanner.MakeAnchor();
             result = new NoteValueNode();
 
             LiteralNode<BaseNoteValue> baseNoteValue;
@@ -47,6 +48,7 @@ namespace TabML.Parser.Parsing
 
             result.Augment = augment;
 
+            result.Range = anchor.Range;
             return true;
         }
     }

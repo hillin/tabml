@@ -1,5 +1,8 @@
-﻿namespace TabML.Parser.Parsing
+﻿using System.Diagnostics;
+
+namespace TabML.Parser.Parsing
 {
+    [DebuggerDisplay("{Row}:{Column}")]
     public struct TextPointer
     {
         public int Row { get; set; }
@@ -25,6 +28,11 @@
         {
             return new TextRange(this, this);
         }
-        
+
+        public override string ToString()
+        {
+            return $"{this.Row}:{this.Column}";
+        }
+
     }
 }

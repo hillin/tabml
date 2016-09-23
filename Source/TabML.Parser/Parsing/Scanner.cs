@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace TabML.Parser.Parsing
 {
+    [DebuggerDisplay("{Pointer}: ...{RemainingLine}...")]
     class Scanner
     {
         public class Anchor
@@ -42,12 +44,28 @@ namespace TabML.Parser.Parsing
         private TextPointer _textPointer;
         public TextPointer Pointer => _textPointer;
         public bool EndOfInput { get; private set; }
-        public bool EndOfLine => _textPointer.Column >= _lines[_textPointer.Row].Length;
+        public bool EndOfLine => _textPointer.Column >= _lines[_textPointer.Row].Length || this.Peek() == '\n';
         public TextRange LastReadRange { get; private set; }
+
+        public string RemainingLine
+        {
+            get
+            {
+                var result = _lines[_textPointer.Row].Substring(_textPointer.Column);
+                return result[result.Length - 1] == '\n' ? result.Substring(0, result.Length - 1) : result;
+            }
+        }
 
         public Scanner(string input)
         {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+
             _lines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+            for (var i = 0; i < _lines.Length - 1; ++i)
+                _lines[i] = string.Concat(_lines[i], "\n");
+
             this.Reset();
         }
 
@@ -56,19 +74,10 @@ namespace TabML.Parser.Parsing
             return new Anchor(this);
         }
 
-        private char GetCharacter(int row, int column)
-        {
-            if (column == _lines[row].Length && row != _lines.Length - 1)
-                return '\n';
-
-            return _lines[row][column];
-        }
-
         private IDisposable RecordReadRange()
         {
             return new ReadRangeScope(this);
         }
-
 
         public void Reset()
         {
@@ -99,12 +108,16 @@ namespace TabML.Parser.Parsing
             if (this.EndOfInput)
                 return;
 
-            _textPointer.Column += offset;
-
             if (this.EndOfLine)
+            {
                 this.CarriageReturn();
+            }
             else
-                this.CheckEndOfFile();
+            {
+                _textPointer.Column += offset;
+            }
+
+            this.CheckEndOfFile();
         }
 
 
@@ -116,7 +129,7 @@ namespace TabML.Parser.Parsing
 
         public char Peek()
         {
-            return this.GetCharacter(_textPointer.Row, _textPointer.Column);
+            return _lines[_textPointer.Row][_textPointer.Column];
         }
 
         public string Peek(int length, bool inline = true)
@@ -154,9 +167,12 @@ namespace TabML.Parser.Parsing
                 this.Skip();
         }
 
-        public void SkipWhitespaces()
+        public void SkipWhitespaces(bool inline = true)
         {
-            this.Skip(char.IsWhiteSpace);
+            if (inline)
+                this.Skip(c => char.IsWhiteSpace(c) && c != '\n');
+            else
+                this.Skip(char.IsWhiteSpace);
         }
 
         public bool SkipOptional(char optionalChar, bool skipWhitespaces = false)
@@ -206,7 +222,7 @@ namespace TabML.Parser.Parsing
         {
             using (this.RecordReadRange())
             {
-                var remainingLine = this.GetRemainingLine();
+                var remainingLine = this.RemainingLine;
                 var stringComparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
                 if (remainingLine.StartsWith(value, stringComparison))
                 {
@@ -236,11 +252,10 @@ namespace TabML.Parser.Parsing
                 var result = new StringBuilder();
                 while (!this.EndOfInput)
                 {
-                    var chr = _lines[_textPointer.Row][_textPointer.Column];
+                    var chr = this.Peek();
 
                     if (!Scanner.CheckInline(chr, inline))
                     {
-                        this.MoveNext();    // move to the next line if new line encountered
                         break;
                     }
 
@@ -259,7 +274,7 @@ namespace TabML.Parser.Parsing
         {
             using (this.RecordReadRange())
             {
-                var remainingLine = this.GetRemainingLine();
+                var remainingLine = this.RemainingLine;
                 var match = Regex.Match(remainingLine, $"^{pattern}");
 
                 if (!match.Success)
@@ -276,22 +291,18 @@ namespace TabML.Parser.Parsing
         {
             using (this.RecordReadRange())
             {
-                var result = this.GetRemainingLine();
-                this.CarriageReturn();
+                var result = this.RemainingLine;
+                this.SetPointer(_textPointer.OffsetColumn(result.Length));
                 return result;
             }
         }
 
-        private string GetRemainingLine()
-        {
-            return _lines[_textPointer.Row].Substring(_textPointer.Column);
-        }
 
         public Match Match(string pattern)
         {
             using (this.RecordReadRange())
             {
-                var remainingLine = this.GetRemainingLine();
+                var remainingLine = this.RemainingLine;
                 var match = Regex.Match(remainingLine, $"^{pattern}");
 
                 if (match.Success)

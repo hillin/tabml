@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using TabML.Core.Document;
 using TabML.Parser.AST;
 
@@ -17,10 +18,11 @@ namespace TabML.Parser.Parsing
         {
             result = new ChordFingeringNode();
             var anchor = scanner.MakeAnchor();
+            var containsDelimiter = scanner.RemainingLine.Trim().Any(char.IsWhiteSpace);
 
             while (!_terminatorPredicate(scanner))
             {
-                var str = scanner.Read(@"\d+|[xX\-]");
+                var str = containsDelimiter ? scanner.Read(@"\d+|[xX\-]") : scanner.Read(@"[\dxX\-]");
 
                 if (string.IsNullOrEmpty(str))
                 {

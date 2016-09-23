@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
+using TabML.Parser;
 
 namespace TabML.Editor
 {
@@ -10,6 +12,8 @@ namespace TabML.Editor
         public MainWindow()
         {
             InitializeComponent();
+
+            TabMLParser.TryParse(File.ReadAllText(@"E:\Documents\Guitar\hg-syntax.txt"));
         }
     }
 }

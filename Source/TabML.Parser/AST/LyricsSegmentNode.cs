@@ -14,6 +14,7 @@ namespace TabML.Parser.AST
         public LyricsSegmentNode(string lyricsSegment, TextRange range)
         {
             this.LyricsSegment = new LiteralNode<string>(lyricsSegment, range);
+            this.Range = range;
         }
     }
 

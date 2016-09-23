@@ -1,7 +1,9 @@
-﻿using TabML.Parser.Parsing;
+﻿using System.Diagnostics;
+using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
+    [DebuggerDisplay("{Value}")]
     class LiteralNode<T> : Node
     {
         public T Value { get; set; }

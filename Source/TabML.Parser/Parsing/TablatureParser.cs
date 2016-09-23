@@ -19,20 +19,19 @@ namespace TabML.Parser.Parsing
 
         private void ParseNode(Scanner scanner, TablatureNode tablature)
         {
-            scanner.SkipWhitespaces();
-            switch (scanner.Peek())
+            scanner.SkipWhitespaces(false);
+            if (scanner.Peek() == '+')
             {
-                case '+':
-                    CommandletNode commandlet;
-                    if (CommandletParser.Create(scanner).TryParse(scanner, out commandlet))
-                        tablature.Nodes.Add(commandlet);
-                    break;
-                case '|':
-                    BarNode bar;
-                    if (new BarParser(false).TryParse(scanner, out bar))
-                        tablature.Nodes.Add(bar);
-                    break;
+                CommandletNode commandlet;
+                if (CommandletParser.Create(scanner).TryParse(scanner, out commandlet))
+                    tablature.Nodes.Add(commandlet);
+
+                return;
             }
+
+            BarNode bar;
+            if (new BarParser(false).TryParse(scanner, out bar))
+                tablature.Nodes.Add(bar);
         }
     }
 }

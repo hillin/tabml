@@ -95,6 +95,16 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TabML.Core\TabML.Core.csproj">
+      <Project>{4e66bea1-871b-45c6-bf04-f2e4972dd720}</Project>
+      <Name>TabML.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TabML.Parser\TabML.Parser.csproj">
+      <Project>{847ceac8-742a-4e4e-bd86-424fe1bad537}</Project>
+      <Name>TabML.Parser</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

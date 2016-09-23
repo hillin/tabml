@@ -20,10 +20,11 @@ namespace TabML.Parser.Parsing
 
         public override bool TryParse(Scanner scanner, out RhythmNode result)
         {
-
             result = new RhythmNode();
 
-            scanner.SkipWhitespaces();
+            scanner.SkipWhitespaces(false);
+
+            var anchor = scanner.MakeAnchor();
             while (!this.IsEndOfRhythm(scanner))
             {
                 RhythmSegmentNode rhythmSegment;
@@ -34,7 +35,11 @@ namespace TabML.Parser.Parsing
                 }
 
                 result.Segments.Add(rhythmSegment);
+
+                scanner.SkipWhitespaces(false);
             }
+
+            result.Range = anchor.Range;
 
             return true;
 

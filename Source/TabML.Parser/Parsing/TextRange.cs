@@ -1,7 +1,9 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace TabML.Parser.Parsing
 {
+    [DebuggerDisplay("{From} - {To}")]
     public struct TextRange
     {
         public TextPointer From { get; set; }
@@ -40,6 +42,11 @@ namespace TabML.Parser.Parsing
         public TextRange Offset(TextPointer @base)
         {
             return new TextRange(this.From.Offset(@base), this.To.Offset(@base));
+        }
+
+        public TextRange Extend(int size)
+        {
+            return new TextRange(this.From, this.To.OffsetColumn(size));
         }
     }
 }

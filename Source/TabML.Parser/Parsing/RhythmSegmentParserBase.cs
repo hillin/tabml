@@ -16,9 +16,10 @@ namespace TabML.Parser.Parsing
 
         protected bool TryParseRhythmDefinition(Scanner scanner, ref TNode node)
         {
+            var anchor = scanner.MakeAnchor();
             var hasBrackets = scanner.Expect('[');
 
-            if (!this.OptionalBrackets)
+            if (!this.OptionalBrackets && !hasBrackets)
             {
                 this.Report(ParserReportLevel.Error, scanner.LastReadRange,
                             ParseMessages.Error_RhythmSegmentExpectOpeningBracket);
@@ -71,6 +72,7 @@ namespace TabML.Parser.Parsing
                             ParseMessages.Warning_EmptyRhythmSegment);
             }
 
+            node.Range = anchor.Range;
             return true;
         }
     }

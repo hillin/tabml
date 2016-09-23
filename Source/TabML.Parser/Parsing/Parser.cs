@@ -342,7 +342,7 @@ namespace TabML.Parser.Parsing
                 return true;
             }
 
-            if (!scanner.Expect('|'))
+            if (scanner.Expect('|'))
             {
                 barLine = new LiteralNode<OpenBarLine>(OpenBarLine.Standard, scanner.LastReadRange);
                 return true;
@@ -415,5 +415,6 @@ namespace TabML.Parser.Parsing
             staffTypeNode = new LiteralNode<StaffType>(staffType, scanner.LastReadRange);
             return true;
         }
+        
     }
 }
