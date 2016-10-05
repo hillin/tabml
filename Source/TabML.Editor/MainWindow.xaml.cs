@@ -13,7 +13,7 @@ namespace TabML.Editor
         {
             InitializeComponent();
 
-            TabMLParser.TryParse(File.ReadAllText(@"E:\Documents\Guitar\hg-syntax.txt"));
+            TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\Documentations\samples\hg-syntax.txt"));
         }
     }
 }

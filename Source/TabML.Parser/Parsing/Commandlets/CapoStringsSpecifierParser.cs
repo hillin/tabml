@@ -38,8 +38,8 @@ namespace TabML.Parser.Parsing.Commandlets
 
                 result = new CapoRangeStringsSpecifierNode
                 {
-                    From = new LiteralNode<int>(from, new TextRange(scanner.LastReadRange, match.Groups[1])),
-                    To = new LiteralNode<int>(to, new TextRange(scanner.LastReadRange, match.Groups[2]))
+                    From = new LiteralNode<int>(from, new TextRange(scanner.LastReadRange, match.Groups[1], scanner)),
+                    To = new LiteralNode<int>(to, new TextRange(scanner.LastReadRange, match.Groups[2], scanner))
                 };
             }
             else

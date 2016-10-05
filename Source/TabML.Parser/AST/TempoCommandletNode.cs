@@ -1,4 +1,5 @@
-﻿using TabML.Core.MusicTheory;
+﻿using System.Collections.Generic;
+using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.AST
 {
@@ -7,5 +8,15 @@ namespace TabML.Parser.AST
         public LiteralNode<BaseNoteValue> NoteValue { get; set; }
         public LiteralNode<int> Beats { get; set; }
 
+        protected override IEnumerable<Node> CommandletChildNodes
+        {
+            get
+            {
+                if (this.NoteValue != null)
+                    yield return this.NoteValue;
+
+                yield return this.Beats;
+            }
+        }
     }
 }

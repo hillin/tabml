@@ -6,11 +6,11 @@ namespace TabML.Parser.Parsing.Bar
 {
     class LyricsSegmentParser : ParserBase<LyricsSegmentNode>
     {
-        private readonly BarParser _ownerBarParser;
+        private readonly LyricsParser _owner;
 
-        public LyricsSegmentParser(BarParser ownerBarParser)
+        public LyricsSegmentParser(LyricsParser owner)
         {
-            _ownerBarParser = ownerBarParser;
+            _owner = owner;
         }
 
         public override bool TryParse(Scanner scanner, out LyricsSegmentNode result)
@@ -36,13 +36,13 @@ namespace TabML.Parser.Parsing.Bar
                 }
             }
 
-            while (!_ownerBarParser.IsEndOfBar(scanner))
+            while (!_owner.IsEndOfLyrics(scanner))
             {
                 var chr = scanner.Read();
 
                 if (char.IsWhiteSpace(chr))
                 {
-                    result = new LyricsSegmentNode(builder.ToString(), anchor.Range.Extend(-1));
+                    result = new LyricsSegmentNode(builder.ToString(), anchor.Range);
                     return true;
                 }
 
@@ -52,12 +52,12 @@ namespace TabML.Parser.Parsing.Bar
                     {
                         if (char.IsWhiteSpace(scanner.Peek()))
                         {
-                            result = new LyricsSegmentNode(builder.ToString(), anchor.Range.Extend(-1));
+                            result = new LyricsSegmentNode(builder.ToString(), anchor.Range);
                             return true;
                         }
 
                         builder.Append(chr);
-                        result = new LyricsSegmentNode(builder.ToString(), anchor.Range.Extend(-1));
+                        result = new LyricsSegmentNode(builder.ToString(), anchor.Range);
                         return true;
                     }
 

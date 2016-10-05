@@ -2,13 +2,13 @@
 {
     public enum StrumTechnique
     {
-        None,
-        BrushDown,
-        BrushUp,
-        ArpeggioDown,
-        ArpeggioUp,
-        Rasgueado,
-        PickstrokeDown,
-        PickstrokeUp
+        None = 0,
+        BrushDown = 1,
+        BrushUp = 2,
+        ArpeggioDown = 3,
+        ArpeggioUp = 4,
+        Rasgueado = 5,
+        PickstrokeDown = 6,
+        PickstrokeUp = 7
     }
 }

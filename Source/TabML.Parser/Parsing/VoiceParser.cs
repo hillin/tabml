@@ -2,26 +2,26 @@
 
 namespace TabML.Parser.Parsing
 {
-    class RhythmVoiceParser : ParserBase<RhythmVoiceNode>
+    class VoiceParser : ParserBase<VoiceNode>
     {
         public static bool IsEndOfVoice(Scanner scanner)
         {
             return scanner.Peek() == ';' || RhythmSegmentParser.IsEndOfSegment(scanner);
         }
 
-        public override bool TryParse(Scanner scanner, out RhythmVoiceNode result)
+        public override bool TryParse(Scanner scanner, out VoiceNode result)
         {
             var anchor = scanner.MakeAnchor();
             scanner.SkipWhitespaces();
 
-            result = new RhythmVoiceNode();
-            RhythmUnitNode unit;
-            while (new RhythmUnitParser().TryParse(scanner, out unit))
+            result = new VoiceNode();
+            BeatNode unit;
+            while (new BeatParser().TryParse(scanner, out unit))
             {
                 result.Units.Add(unit);
                 scanner.SkipWhitespaces();
 
-                if (RhythmVoiceParser.IsEndOfVoice(scanner))
+                if (VoiceParser.IsEndOfVoice(scanner))
                     break;
             }
 

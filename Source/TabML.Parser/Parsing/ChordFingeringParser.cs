@@ -22,7 +22,7 @@ namespace TabML.Parser.Parsing
 
             while (!_terminatorPredicate(scanner))
             {
-                var str = containsDelimiter ? scanner.Read(@"\d+|[xX\-]") : scanner.Read(@"[\dxX\-]");
+                var str = containsDelimiter ? scanner.ReadAny(@"\d+", @"[xX\-]") : scanner.Read(@"[\dxX\-]");
 
                 if (string.IsNullOrEmpty(str))
                 {

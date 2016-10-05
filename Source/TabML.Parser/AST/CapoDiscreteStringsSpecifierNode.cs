@@ -15,5 +15,7 @@ namespace TabML.Parser.AST
         {
             return this.Strings.Select(s => s.Value).ToArray();
         }
+
+        public override IEnumerable<Node> Children => this.Strings;
     }
 }

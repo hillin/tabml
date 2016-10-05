@@ -7,8 +7,9 @@ namespace TabML.Parser.Parsing
         public override bool TryParse(Scanner scanner, out RhythmTemplateNode result)
         {
             result = new RhythmTemplateNode();
-
             scanner.SkipWhitespaces();
+
+            var anchor = scanner.MakeAnchor();
 
             if (scanner.Peek() != '[')  // handle optional brackets
             {
@@ -35,6 +36,8 @@ namespace TabML.Parser.Parsing
                 result.Segments.Add(segment);
                 scanner.SkipWhitespaces();
             }
+
+            result.Range = anchor.Range;
 
             return true;
         }

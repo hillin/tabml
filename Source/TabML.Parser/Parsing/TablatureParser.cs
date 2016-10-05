@@ -14,6 +14,8 @@ namespace TabML.Parser.Parsing
                 this.ParseNode(scanner, result);
             }
 
+            result.Range = new TextRange(TextPointer.Zero, scanner.Pointer, scanner);
+
             return true;
         }
 
@@ -22,10 +24,19 @@ namespace TabML.Parser.Parsing
             scanner.SkipWhitespaces(false);
             if (scanner.Peek() == '+')
             {
-                CommandletNode commandlet;
-                if (CommandletParser.Create(scanner).TryParse(scanner, out commandlet))
-                    tablature.Nodes.Add(commandlet);
+                CommandletParserBase commandletParser; ;
+                if (!CommandletParser.TryCreate(scanner, this, out commandletParser))
+                {
+                    return;
+                }
 
+                CommandletNode commandlet;
+                if (!commandletParser.TryParse(scanner, out commandlet))
+                {
+                    return;
+                }
+
+                tablature.Nodes.Add(commandlet);
                 return;
             }
 

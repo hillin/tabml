@@ -3,7 +3,7 @@ using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing
 {
-    class RhythmUnitNoteParser : ParserBase<RhythmUnitNoteNode>
+    class BeatNoteParser : ParserBase<RhythmUnitNoteNode>
     {
         public override bool TryParse(Scanner scanner, out RhythmUnitNoteNode result)
         {

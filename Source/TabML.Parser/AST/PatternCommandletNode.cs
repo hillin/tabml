@@ -6,15 +6,19 @@ using System.Threading.Tasks;
 
 namespace TabML.Parser.AST
 {
-    class PatternCommandletNode : CommandletNode
+    partial class PatternCommandletNode : CommandletNode
     {
-        public List<BarNode> PatternBars { get; }
-        public List<BarNode> InstanceBars { get; }
+        public TemplateBarsNode TemplateBars { get; set; }
+        public InstanceBarsNode InstanceBars { get; set; }
+        
 
-        public PatternCommandletNode()
+        protected override IEnumerable<Node> CommandletChildNodes
         {
-            this.PatternBars = new List<BarNode>();
-            this.InstanceBars = new List<BarNode>();
+            get
+            {
+                yield return this.TemplateBars;
+                yield return this.InstanceBars;
+            }
         }
     }
 }

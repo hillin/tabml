@@ -103,7 +103,7 @@ namespace TabML.Parser.Parsing
         public static bool TryReadAccidental(Scanner scanner, IParseReporter reporter,
                                              out LiteralNode<Accidental> accidentalNode)
         {
-            var accidentalText = scanner.Read(@"[\#|\#\#|b|bb|♯|♯♯|♭|♭♭|\u1d12a|\u1d12b]*");
+            var accidentalText = scanner.ReadAny(@"\#", @"\#\#", "b", "bb", "♯", "♯♯", "♭", "♭♭", "\u1d12a", "\u1d12b");
             Accidental accidental;
             if (!Accidentals.TryParse(accidentalText, out accidental))
             {
@@ -115,34 +115,32 @@ namespace TabML.Parser.Parsing
             accidentalNode = new LiteralNode<Accidental>(accidental, scanner.LastReadRange);
             return true;
         }
-        
 
-        public static bool TryReadHeadStrumTechnique(Scanner scanner, IParseReporter reporter,
-                                                      out LiteralNode<StrumTechnique> technique)
+        public static bool TryReadAllStringStrumTechnique(Scanner scanner, IParseReporter reporter,
+                                                      out LiteralNode<AllStringStrumTechnique> technique)
         {
-            switch (scanner.Read(@"\||x|d|↑|u|↓|ad|au|rasg|r").ToLowerInvariant())
+            switch (scanner.ReadAny(@"\|", "x", "d", "↑", "u", "↓", "ad", "au", "rasg"))
             {
                 case "|":
                 case "x":
-                    technique = new LiteralNode<StrumTechnique>(StrumTechnique.None, scanner.LastReadRange);
+                    technique = new LiteralNode<AllStringStrumTechnique>(AllStringStrumTechnique.None, scanner.LastReadRange);
                     return true;
                 case "d":
                 case "↑":
-                    technique = new LiteralNode<StrumTechnique>(StrumTechnique.BrushDown, scanner.LastReadRange);
+                    technique = new LiteralNode<AllStringStrumTechnique>(AllStringStrumTechnique.BrushDown, scanner.LastReadRange);
                     return true;
                 case "u":
                 case "↓":
-                    technique = new LiteralNode<StrumTechnique>(StrumTechnique.BrushUp, scanner.LastReadRange);
+                    technique = new LiteralNode<AllStringStrumTechnique>(AllStringStrumTechnique.BrushUp, scanner.LastReadRange);
                     return true;
                 case "ad":
-                    technique = new LiteralNode<StrumTechnique>(StrumTechnique.ArpeggioDown, scanner.LastReadRange);
+                    technique = new LiteralNode<AllStringStrumTechnique>(AllStringStrumTechnique.ArpeggioDown, scanner.LastReadRange);
                     return true;
                 case "au":
-                    technique = new LiteralNode<StrumTechnique>(StrumTechnique.ArpeggioUp, scanner.LastReadRange);
+                    technique = new LiteralNode<AllStringStrumTechnique>(AllStringStrumTechnique.ArpeggioUp, scanner.LastReadRange);
                     return true;
                 case "rasg":
-                case "r":
-                    technique = new LiteralNode<StrumTechnique>(StrumTechnique.Rasgueado, scanner.LastReadRange);
+                    technique = new LiteralNode<AllStringStrumTechnique>(AllStringStrumTechnique.Rasgueado, scanner.LastReadRange);
                     return true;
             }
 
@@ -150,9 +148,10 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
+
         public static bool TryReadStrumTechnique(Scanner scanner, IParseReporter reporter, out LiteralNode<StrumTechnique> technique)
         {
-            switch (scanner.Read(@"d|↑|u|↓|ad|au|rasg|r|pu|pd").ToLowerInvariant())
+            switch (scanner.ReadAny("d", "D", "↑", "u", "U", "↓", "ad", "au", "rasg", "r", "pu", "pd"))
             {
                 case "d":
                 case "↑":
@@ -188,23 +187,24 @@ namespace TabML.Parser.Parsing
         public static bool TryReadPreNoteConnection(Scanner scanner, IParseReporter reporter,
                                                      out LiteralNode<PreNoteConnection> connection)
         {
-            switch (scanner.Read(@"~|\/|\\|\.\/|\`\\|h|p").ToLowerInvariant())
+            switch (scanner.ReadAny("~", @"\/", @"\\", @"\.\/", @"\`\\", "h", "p"))
+
             {
-                case "~":
+                case @"~":
                     connection = new LiteralNode<PreNoteConnection>(PreNoteConnection.Tie, scanner.LastReadRange);
                     return true;
-                case "/":
-                case "\\":
+                case @"/":
+                case @"\":
                     connection = new LiteralNode<PreNoteConnection>(PreNoteConnection.Slide, scanner.LastReadRange);
                     return true;
-                case "./":
-                case "`\\":
+                case @"./":
+                case @"`\":
                     connection = new LiteralNode<PreNoteConnection>(PreNoteConnection.SlideIn, scanner.LastReadRange);
                     return true;
-                case "h":
+                case @"h":
                     connection = new LiteralNode<PreNoteConnection>(PreNoteConnection.Hammer, scanner.LastReadRange);
                     return true;
-                case "p":
+                case @"p":
                     connection = new LiteralNode<PreNoteConnection>(PreNoteConnection.Pull, scanner.LastReadRange);
                     return true;
             }
@@ -217,10 +217,10 @@ namespace TabML.Parser.Parsing
         public static bool TryReadPostNoteConnection(Scanner scanner, IParseReporter reporter,
                                                       out LiteralNode<PostNoteConnection> connection)
         {
-            switch (scanner.Read(@"\/\`|\\\.").ToLowerInvariant())
+            switch (scanner.ReadAny(@"\/\`", @"\\\.").ToLowerInvariant())
             {
-                case "/`":
-                case "\\.":
+                case @"/`":
+                case @"\.":
                     connection = new LiteralNode<PostNoteConnection>(PostNoteConnection.SlideOut, scanner.LastReadRange);
                     return true;
             }
@@ -234,7 +234,7 @@ namespace TabML.Parser.Parsing
         {
             argument = null;
 
-            switch (scanner.Read(@"dead|x|ah|◆|nh|◇|b|bend|tr|tremolo|vib|vibrato").ToLowerInvariant())
+            switch (scanner.ReadAny("dead", "x", "ah", "◆", "nh", "◇", "b", "bend", "tr", "tremolo", "vib", "vibrato"))
             {
                 case "x":
                 case "dead":
@@ -292,7 +292,7 @@ namespace TabML.Parser.Parsing
         public static bool TryReadNoteDurationEffect(Scanner scanner, IParseReporter reporter,
                                                       out LiteralNode<NoteDurationEffect> technique)
         {
-            switch (scanner.Read(@"fermata|staccato").ToLowerInvariant())
+            switch (scanner.ReadAny("fermata", "staccato"))
             {
                 case "fermata":
                     technique = new LiteralNode<NoteDurationEffect>(NoteDurationEffect.Fermata, scanner.LastReadRange);
@@ -308,7 +308,7 @@ namespace TabML.Parser.Parsing
 
         public static bool TryReadNoteAccent(Scanner scanner, IParseReporter reporter, out LiteralNode<NoteAccent> accent)
         {
-            switch (scanner.Read(@"a|accented|h|heavy|g|ghost").ToLowerInvariant())
+            switch (scanner.ReadAny("a", "accented", "h", "heavy", "g", "ghost"))
             {
                 case "a":
                 case "accented":
@@ -415,6 +415,5 @@ namespace TabML.Parser.Parsing
             staffTypeNode = new LiteralNode<StaffType>(staffType, scanner.LastReadRange);
             return true;
         }
-        
     }
 }

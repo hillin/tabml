@@ -1,4 +1,5 @@
-﻿using TabML.Parser.Parsing;
+﻿using System.Collections.Generic;
+using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
@@ -6,9 +7,14 @@ namespace TabML.Parser.AST
     {
         public LiteralNode<string> LyricsSegment { get; set; }
 
+        public override IEnumerable<Node> Children
+        {
+            get { yield return this.LyricsSegment; }
+        }
+
         public LyricsSegmentNode()
         {
-            
+
         }
 
         public LyricsSegmentNode(string lyricsSegment, TextRange range)
@@ -16,6 +22,8 @@ namespace TabML.Parser.AST
             this.LyricsSegment = new LiteralNode<string>(lyricsSegment, range);
             this.Range = range;
         }
+
+
     }
 
 }

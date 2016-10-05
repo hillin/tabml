@@ -30,8 +30,8 @@ namespace TabML.Parser.Parsing
 
             if (!RhythmSegmentParser.IsEndOfSegment(scanner))
             {
-                RhythmVoiceNode voice;
-                while (new RhythmVoiceParser().TryParse(scanner, out voice))
+                VoiceNode voice;
+                while (new VoiceParser().TryParse(scanner, out voice))
                 {
                     node.Voices.Add(voice);
                     scanner.SkipWhitespaces();
@@ -42,7 +42,7 @@ namespace TabML.Parser.Parsing
                     if (scanner.Peek() == ';')
                         continue;
 
-                    this.Report(ParserReportLevel.Error, scanner.Pointer.AsRange(),
+                    this.Report(ParserReportLevel.Error, scanner.Pointer.AsRange(scanner),
                                 ParseMessages.Error_UnrecognizableRhythmSegmentElement);
                     node = null;
                     return false;

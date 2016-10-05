@@ -2,7 +2,7 @@
 
 namespace TabML.Core.Document
 {
-    public struct RhythmUnitNote
+    public struct BeatNote
     {
         public const int UnspecifiedFret = -1;
 
@@ -11,9 +11,9 @@ namespace TabML.Core.Document
         public PreNoteConnection PreConnection { get; }
         public PostNoteConnection PostConnection { get; }
 
-        public RhythmUnitNote(int stringNumber, int fret = UnspecifiedFret,
-                              PreNoteConnection preConnection = PreNoteConnection.None,
-                              PostNoteConnection postConnection = PostNoteConnection.None)
+        public BeatNote(int stringNumber, int fret = UnspecifiedFret,
+                        PreNoteConnection preConnection = PreNoteConnection.None,
+                        PostNoteConnection postConnection = PostNoteConnection.None)
         {
             this.String = stringNumber;
             this.Fret = fret;

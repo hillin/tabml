@@ -13,12 +13,44 @@ namespace TabML.Parser.Parsing
             private readonly Scanner _owner;
             private readonly TextPointer _from;
 
-            public TextRange Range => new TextRange(_from, _owner._textPointer);
+            public bool TrimTailingWhitespaces { get; set; }
 
-            public Anchor(Scanner owner)
+            public TextRange Range
+            {
+                get
+                {
+                    var to = _owner._textPointer;
+
+                    if (!this.TrimTailingWhitespaces)
+                        return new TextRange(_from, to, _owner);
+
+                    var row = _owner._lines[to.Row];
+
+                    while (to > _from)
+                    {
+                        if (to.Column == 0)
+                        {
+                            --to.Row;
+                            to.Column = _owner._lines[to.Row].Length - 1; // should be '\n'
+                            row = _owner._lines[to.Row];
+                            continue;
+                        }
+
+                        if (!char.IsWhiteSpace(row[to.Column - 1]))
+                            break;
+
+                        --to.Column;
+                    }
+
+                    return new TextRange(_from, to, _owner);
+                }
+            }
+
+            public Anchor(Scanner owner, bool trimTailingWhitespaces)
             {
                 _owner = owner;
                 _from = _owner._textPointer;
+                this.TrimTailingWhitespaces = trimTailingWhitespaces;
             }
         }
 
@@ -35,7 +67,7 @@ namespace TabML.Parser.Parsing
 
             public void Dispose()
             {
-                _owner.LastReadRange = new TextRange(_from, _owner._textPointer);
+                _owner.LastReadRange = new TextRange(_from, _owner._textPointer, _owner);
             }
         }
 
@@ -51,7 +83,11 @@ namespace TabML.Parser.Parsing
         {
             get
             {
-                var result = _lines[_textPointer.Row].Substring(_textPointer.Column);
+                var row = _lines[_textPointer.Row];
+                if (_textPointer.Column >= row.Length - 1)
+                    return string.Empty;
+
+                var result = row.Substring(_textPointer.Column);
                 return result[result.Length - 1] == '\n' ? result.Substring(0, result.Length - 1) : result;
             }
         }
@@ -69,9 +105,9 @@ namespace TabML.Parser.Parsing
             this.Reset();
         }
 
-        public Anchor MakeAnchor()
+        public Anchor MakeAnchor(bool trimTailingWhitespaces = true)
         {
-            return new Anchor(this);
+            return new Anchor(this, trimTailingWhitespaces);
         }
 
         private IDisposable RecordReadRange()
@@ -97,10 +133,11 @@ namespace TabML.Parser.Parsing
         {
             if (_textPointer.Row >= _lines.Length)
                 this.EndOfInput = true;
-            else if (_textPointer.Row == _lines.Length - 1 && _textPointer.Column >= _lines[_lines.Length - 1].Length)
+            else if (_textPointer.Row == _lines.Length - 1
+                     && _textPointer.Column >= _lines[_textPointer.Row].Length)
                 this.EndOfInput = true;
-
-            this.EndOfInput = false;
+            else
+                this.EndOfInput = false;
         }
 
         private void MoveNext(int offset = 1)
@@ -115,9 +152,8 @@ namespace TabML.Parser.Parsing
             else
             {
                 _textPointer.Column += offset;
+                this.CheckEndOfFile();
             }
-
-            this.CheckEndOfFile();
         }
 
 
@@ -205,6 +241,9 @@ namespace TabML.Parser.Parsing
 
         public bool Expect(char expectedChar)
         {
+            if (this.EndOfInput)
+                return false;
+
             using (this.RecordReadRange())
             {
                 if (this.Peek() == expectedChar)
@@ -220,6 +259,9 @@ namespace TabML.Parser.Parsing
 
         public bool Expect(string value, bool ignoreCase = false)
         {
+            if (this.EndOfInput)
+                return false;
+
             using (this.RecordReadRange())
             {
                 var remainingLine = this.RemainingLine;
@@ -270,6 +312,10 @@ namespace TabML.Parser.Parsing
             }
         }
 
+        /// <remarks>
+        /// if an OR ('|') syntax is used, you must enclose the pattern
+        /// with parenthesises
+        /// </remarks>
         public string Read(string pattern)
         {
             using (this.RecordReadRange())
@@ -285,6 +331,23 @@ namespace TabML.Parser.Parsing
                 this.MoveNext();
                 return result;
             }
+        }
+
+        public string ReadAny(params string[] patterns)
+        {
+            if (patterns == null || patterns.Length == 0)
+                return string.Empty;
+
+            if (patterns.Length == 1)
+                return this.Read(patterns[0]);
+
+            var builder = new StringBuilder();
+            builder.Append('^');
+            builder.Append('(');
+            builder.Append(string.Join("|", patterns));
+            builder.Append(')');
+
+            return this.Read(builder.ToString());
         }
 
         public string ReadToLineEnd()
@@ -414,6 +477,25 @@ namespace TabML.Parser.Parsing
         private static bool CheckInline(char c, bool inline)
         {
             return !(inline && c == '\n');
+        }
+
+        public string Substring(TextRange textRange)
+        {
+            var builder = new StringBuilder();
+
+            for (var p = textRange.From; p < textRange.To;)
+            {
+                var row = _lines[p.Row];
+                builder.Append(row[p.Column]);
+                ++p.Column;
+                if (p.Column >= row.Length)
+                {
+                    ++p.Row;
+                    p.Column = 0;
+                }
+            }
+
+            return builder.ToString();
         }
     }
 }

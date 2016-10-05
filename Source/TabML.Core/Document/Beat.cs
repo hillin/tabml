@@ -2,10 +2,12 @@
 
 namespace TabML.Core.Document
 {
-    public class RhythmUnit
+    public class Beat
     {
         public NoteValue NoteValue { get; set; }
-        public RhythmUnitNote[] Notes { get; set; }
+        public BeatNote[] Notes { get; set; }
+        public bool IsRest { get; set; }
+        public bool IsTied { get; set; }
         public StrumTechnique StrumTechnique { get; set; } = StrumTechnique.None;
         public NoteEffectTechnique EffectTechnique { get; set; } = NoteEffectTechnique.None;
         public double EffectTechniqueParameter { get; set; }

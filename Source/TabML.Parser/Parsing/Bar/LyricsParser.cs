@@ -8,6 +8,17 @@ namespace TabML.Parser.Parsing.Bar
     {
         private readonly BarParser _owner;
 
+        public bool IsEndOfLyrics(Scanner scanner)
+        {
+            if (_owner.IsEndOfBar(scanner))
+                return true;
+
+            if (scanner.Peek() == '\n')
+                return true;
+
+            return false;
+        }
+
         public LyricsParser(BarParser owner)
         {
             _owner = owner;
@@ -21,10 +32,10 @@ namespace TabML.Parser.Parsing.Bar
 
             result = new LyricsNode();
 
-            while (!_owner.IsEndOfBar(scanner))
+            while (!this.IsEndOfLyrics(scanner))
             {
                 LyricsSegmentNode lyricsSegmentNode;
-                if (new LyricsSegmentParser(_owner).TryParse(scanner, out lyricsSegmentNode))
+                if (new LyricsSegmentParser(this).TryParse(scanner, out lyricsSegmentNode))
                     result.LyricsSegments.Add(lyricsSegmentNode);
                 else
                     Debug.Assert(false, "LyricsSegmentParser.TryParse() should not return false");
@@ -39,8 +50,8 @@ namespace TabML.Parser.Parsing.Bar
             }
 
             result.Range = result.LyricsSegments.Count > 0
-                ? new TextRange(rangeFrom, result.LyricsSegments.Last().Range.To)
-                : rangeFrom.AsRange();
+                ? new TextRange(rangeFrom, result.LyricsSegments.Last().Range.To, scanner)
+                : rangeFrom.AsRange(scanner);
             return true;
         }
     }

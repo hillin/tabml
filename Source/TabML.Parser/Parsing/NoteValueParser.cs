@@ -19,7 +19,7 @@ namespace TabML.Parser.Parsing
 
             result.Base = baseNoteValue;
 
-            if (scanner.Expect('/'))
+            if (scanner.Expect('/'))    //tuplet
             {
                 LiteralNode<int> tuplet;
                 if (!Parser.TryReadInteger(scanner, out tuplet))

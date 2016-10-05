@@ -1,9 +1,31 @@
-﻿using TabML.Parser.Parsing;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
+    [DebuggerDisplay("{GetType().Name, nq}: {Range.Content}")]
+    [DebuggerTypeProxy(typeof(DebugView))]
     public abstract class Node
     {
+        internal class DebugView
+        {
+            private readonly Node _node;
+#if DEBUG
+            public string Source => _node.Range.Content;
+#endif
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public Node[] Children => _node.Children.ToArray();
+
+            public DebugView(Node node)
+            {
+                _node = node;
+            }
+        }
+
+        protected virtual string DebuggerDisplay => $"{this.GetType().Name}: {this.Range.Content}";
+
         private TextRange _range;
 
         public TextRange Range
@@ -11,6 +33,8 @@ namespace TabML.Parser.AST
             get { return _range; }
             set { _range = value; }
         }
+
+        public abstract IEnumerable<Node> Children { get; }
 
         public void SetRangeFrom(TextPointer from)
         {

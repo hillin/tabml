@@ -5,11 +5,11 @@ namespace TabML.Core.Document
 {
     public abstract class RhythmSegmentBase
     {
-        public List<RhythmVoice> Voices { get; }
+        public List<Voice> Voices { get; }
 
         protected RhythmSegmentBase()
         {
-            this.Voices = new List<RhythmVoice>();
+            this.Voices = new List<Voice>();
         }
         public double GetDuration()
         {

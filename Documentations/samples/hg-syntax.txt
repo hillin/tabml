@@ -2,15 +2,15 @@
 +tuning: standard
 +chord C*<C>: 032013
 +chord G*<G>: 320033
-+rhythm: [8d 8da 8d 16d 16u 8d 8d 8da 16d 16u]
++rhythm: [8d 8d:a 8d 16d 16u 8d 8d 8d:a 16d 16u]
 +time: 4/4
 +key: D
 +tempo: 4=120
 +capo: 2
 
 +section "Intro"
-||: [8da 8d 8da 8da 8d 8d 8d 8da 16d 16u] A 
-|   [8da 8d 8da 8da 8d 8d 8d 8da 16d 16u] Asus4 :||
+||: [8d:a 8d 8d:a 8d:a 8d 8d 8d 8d:a 16d 16u] A 
+|   [8d:a 8d 8d:a 8d:a 8d 8d 8d 8d:a 16d 16u] Asus4 :||
 
 ||: A | Asus4 | E | Esus4 | D | Dsus2 | A | Asus4 |
 
@@ -44,8 +44,8 @@
 | D       @ --and your- skin
 
 +pattern 
-    [8d 8d 8d] F#m [8d~8d 8d 8da 16d 16u] E
-    | [4d 8da 8d 8d 8d 8da 16d 16u]       D |
+    [8d 8d 8d] F#m [8d~8d 8d 8d:a 16d 16u] E
+    | [4d 8d:a 8d 8d 8d 8d:a 16d 16u]       D |
 { 
   @ -oh yeah your skin and bones
 | @ - turn- in

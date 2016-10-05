@@ -47,13 +47,13 @@ namespace TabML.Parser.Parsing.Commandlets
                 var namePartIsEmpty = namePart == string.Empty;
                 if (namePartIsEmpty)
                 {
-                    this.Report(ParserReportLevel.Hint, scanner.LastReadRange.From.AsRange(),
+                    this.Report(ParserReportLevel.Hint, scanner.LastReadRange.From.AsRange(scanner),
                                 ParseMessages.Hint_RedundantColonInTuningSpecifier);
                 }
                 else
                 {
                     commandlet.Name = new LiteralNode<string>(namePart,
-                                                              new TextRange(scanner.LastReadRange.From, namePart.Length));
+                                                              new TextRange(scanner.LastReadRange.From, namePart.Length, scanner));
                 }
 
                 var tuningPart = tuningString.Substring(colonIndex + 1).Trim();
@@ -66,7 +66,7 @@ namespace TabML.Parser.Parsing.Commandlets
                         return true;
                     }
 
-                    this.Report(ParserReportLevel.Hint, scanner.LastReadRange.From.OffsetColumn(colonIndex).AsRange(),
+                    this.Report(ParserReportLevel.Hint, scanner.LastReadRange.From.OffsetColumn(colonIndex).AsRange(scanner),
                                 ParseMessages.Hint_RedundantColonInTuningSpecifier);
                 }
                 else
@@ -110,6 +110,6 @@ namespace TabML.Parser.Parsing.Commandlets
             commandlet = null;
             return false;
         }
-        
+
     }
 }

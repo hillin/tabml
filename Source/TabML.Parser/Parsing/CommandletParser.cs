@@ -25,22 +25,30 @@ namespace TabML.Parser.Parsing
             }
         }
 
-        public static CommandletParserBase Create(Scanner scanner)
+        public static bool TryCreate(Scanner scanner, IParseReporter reporter, out CommandletParserBase parser)
         {
             var anchor = scanner.MakeAnchor();
             if (!scanner.Expect('+'))
-                return null;
+            {
+                reporter.Report(ParserReportLevel.Error, scanner.Pointer.AsRange(scanner), ParseMessages.Error_InstructionExpected);
+                parser = null;
+                return false;
+            }
 
             var name = scanner.Read(c => char.IsLetterOrDigit(c) || c == '-');
             Type parserType;
             if (!CommandletParsers.TryGetValue(name.ToLowerInvariant(), out parserType))
-                return null;
+            {
+                reporter.Report(ParserReportLevel.Error, scanner.Pointer.AsRange(scanner), ParseMessages.Error_UnknownInstruction);
+                parser = null;
+                return false;
+            }
 
             var nameNode = new LiteralNode<string>($"+{name}", anchor.Range);
 
-            var parser = (CommandletParserBase)Activator.CreateInstance(parserType);
+            parser = (CommandletParserBase)Activator.CreateInstance(parserType);
             parser.CommandletNameNode = nameNode;
-            return parser;
+            return true;
         }
 
 

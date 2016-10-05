@@ -4,6 +4,9 @@ namespace TabML.Parser.Parsing
 {
     internal static class ParseMessages
     {
+        public const string Error_InstructionExpected = "An instruction is expected";
+        public const string Error_UnknownInstruction = "Unrecognizable instruction";
+
         public const string Error_NoteValueExpected = "Note value expected";
         public const string Error_InvalidReciprocalNoteValue = "Reciprocal value must be power of 2 (e.g. 4, 8, 16 etc.)";
         public const string Error_TupletValueExpected = "Tuplet value expected";
@@ -96,15 +99,15 @@ namespace TabML.Parser.Parsing
 
         public const string Error_RhythmUnitBodyExpected =
             "Note value, strings specification or all-string strum technique expected";
-        public const string Error_RhythmUnitModifierExpected =
+        public const string Error_BeatModifierExpected =
             "Strum technique, note effect technique, duration effect, accent or connection expected";
-        public const string Warning_RhythmUnitStrumTechniqueAlreadySpecified =
+        public const string Warning_BeatStrumTechniqueAlreadySpecified =
             "Strum technique is already specified for this note, this one will be ignored";
-        public const string Warning_RhythmUnitNoteEffectTechniqueAlreadySpecified =
+        public const string Warning_BeatNoteEffectTechniqueAlreadySpecified =
             "Note effect technique is already specified for this note, this one will be ignored";
-        public const string Warning_RhythmUnitNoteDurationEffectAlreadySpecified =
+        public const string Warning_BeatNoteDurationEffectAlreadySpecified =
             "Duration effect is already specified for this note, this one will be ignored";
-        public const string Warning_RhythmUnitAccentAlreadySpecified =
+        public const string Warning_BeatAccentAlreadySpecified =
             "Accent is already specified for this note, this one will be ignored";
         public const string Warning_RhythmUnitConnectionAlreadySpecified =
             "Connection is already specified for this note, this one will be ignored";
@@ -122,21 +125,13 @@ namespace TabML.Parser.Parsing
 
         public const string Warning_StaffCommandletUnknownStaffType =
             "Unknown or unsupported staff type, guitar assumed";
-
-        public const string Warning_MissingEndBarLine = "Missing end bar line";
-
+        
         public const string Error_UnexpectedLyrics =
             "Unexpected lyrics, lyrics should only appear at the end of a bar for not more than once";
 
         public const string Warning_UnexpectedBarVoice =
             "Unexpected voice, rhythm or chord here, ignored. Please place them before lyrics";
-
-        public const string Error_InvalidBarContent =
-            "Unrecognizable bar content, voice, rhythm, chord or lyrics expected";
-
-        public const string Error_InvalidBarContent_EndBarLineExpected =
-            "Unrecognizable bar content, end bar line expected";
-
+        
         public const string Warning_TiedLyricsNotEnclosed = "Tied lyrics not enclosed with ')'";
         public const string Error_RhythmSegmentMissingFingering = "Missing chord fingering";
 
@@ -150,5 +145,10 @@ namespace TabML.Parser.Parsing
 
         public const string Error_InvalidBarLineInPattern = "Only standard bar line allowed in patterns";
 
+        public const string Warning_RedundantModifiersInRestBeat =
+            "This beat is a rest, so all other specifiers are omitted";
+
+        public const string Hint_RedundantModifiersInTiedBeat =
+            "This is a tied beat a rest, you don't need to write it again";
     }
 }

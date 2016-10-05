@@ -10,5 +10,7 @@ namespace TabML.Parser.AST
         {
             this.Fingerings = new List<LiteralNode<int>>();
         }
+
+        public override IEnumerable<Node> Children => this.Fingerings;
     }
 }

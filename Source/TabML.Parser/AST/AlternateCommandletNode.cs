@@ -9,5 +9,10 @@ namespace TabML.Parser.AST
     class AlternateCommandletNode : CommandletNode
     {
         public LiteralNode<string> AlternationText { get; set; }
+
+        protected override IEnumerable<Node> CommandletChildNodes
+        {
+            get { yield return this.AlternationText; }
+        }
     }
 }

@@ -44,7 +44,6 @@ namespace TabML.Parser.Parsing.Bar
 
             var isLyricsRead = false;
 
-            LiteralNode<CloseBarLine> closeLine = null;
 
             while (!this.IsEndOfBlock(scanner))
             {
@@ -66,39 +65,33 @@ namespace TabML.Parser.Parsing.Bar
                     else
                         Debug.Assert(false, "LyricsParser.TryParse() should not return false");
 
-                    scanner.SkipWhitespaces();
+                    scanner.SkipWhitespaces(false);
                     continue;
                 }
 
+                LiteralNode<CloseBarLine> closeLine;
                 if (Parser.TryReadCloseBarLine(scanner, this, out closeLine))
                 {
                     result.CloseLine = closeLine;
                     break;
                 }
 
-                RhythmNode rhythmNode;
-                if (new RhythmParser(this).TryParse(scanner, out rhythmNode))
+                if (!isLyricsRead && result.Rhythm == null)
                 {
-                    result.Rhythm = rhythmNode;
-                    continue;
+                    RhythmNode rhythmNode;
+                    if (new RhythmParser(this).TryParse(scanner, out rhythmNode))
+                    {
+                        result.Rhythm = rhythmNode;
+                        continue;
+                    }
                 }
 
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                            isLyricsRead
-                                ? ParseMessages.Error_InvalidBarContent_EndBarLineExpected
-                                : ParseMessages.Error_InvalidBarContent);
-                result = null;
-                return false;
-            }
-
-            if (closeLine == null)
-            {
-                this.Report(ParserReportLevel.Warning, scanner.LastReadRange, ParseMessages.Warning_MissingEndBarLine);
+                break;
             }
 
             result.Range = anchor.Range;
             return true;
         }
-        
+
     }
 }

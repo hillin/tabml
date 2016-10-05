@@ -36,7 +36,7 @@ namespace TabML.Parser.Parsing.Commandlets
                 }
 
                 commandlet.NoteValue
-                    = new LiteralNode<BaseNoteValue>(noteValue, new TextRange(scanner.LastReadRange, match.Groups[2]));
+                    = new LiteralNode<BaseNoteValue>(noteValue, new TextRange(scanner.LastReadRange, match.Groups[2], scanner));
             }
 
             var beats = int.Parse(match.Groups[3].Value);
@@ -57,7 +57,7 @@ namespace TabML.Parser.Parsing.Commandlets
                 return false;
             }
 
-            commandlet.Beats = new LiteralNode<int>(beats, new TextRange(scanner.LastReadRange, match.Groups[3]));
+            commandlet.Beats = new LiteralNode<int>(beats, new TextRange(scanner.LastReadRange, match.Groups[3], scanner));
 
             return true;
         }

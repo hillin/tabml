@@ -10,5 +10,7 @@ namespace TabML.Parser.AST
         {
             this.Segments = new List<RhythmSegmentNode>();
         }
+
+        public override IEnumerable<Node> Children => this.Segments;
     }
 }

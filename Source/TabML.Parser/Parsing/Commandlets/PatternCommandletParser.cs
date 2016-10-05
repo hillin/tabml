@@ -18,11 +18,14 @@ namespace TabML.Parser.Parsing.Commandlets
             scanner.SkipOptional(':', true);
             scanner.SkipWhitespaces(false); // allow a new line here
 
+            var anchor = scanner.MakeAnchor();
+            commandlet.TemplateBars = new PatternCommandletNode.TemplateBarsNode();
+
             while (!scanner.EndOfInput)
             {
                 BarNode bar;
                 if (new BarParser(false).TryParse(scanner, out bar))
-                    commandlet.PatternBars.Add(bar);
+                    commandlet.TemplateBars.Bars.Add(bar);
                 else
                 {
                     commandlet = null;
@@ -35,9 +38,11 @@ namespace TabML.Parser.Parsing.Commandlets
                     break;
             }
 
+            commandlet.TemplateBars.Range = anchor.Range;
+
             foreach (
                 var barLine in
-                    commandlet.PatternBars.Select(b => b.OpenLine)
+                    commandlet.TemplateBars.Bars.Select(b => b.OpenLine)
                               .Where(l => l != null)
                               .Where(barLine => barLine.Value != OpenBarLine.Standard))
             {
@@ -48,7 +53,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
             foreach (
                 var barLine in
-                    commandlet.PatternBars.Select(b => b.CloseLine)
+                    commandlet.TemplateBars.Bars.Select(b => b.CloseLine)
                               .Where(l => l != null)
                               .Where(barLine => barLine.Value != CloseBarLine.Standard))
             {
@@ -65,11 +70,14 @@ namespace TabML.Parser.Parsing.Commandlets
 
             scanner.SkipWhitespaces(false);
 
+            anchor = scanner.MakeAnchor();
+            commandlet.InstanceBars = new PatternCommandletNode.InstanceBarsNode();
+
             while (!scanner.EndOfInput && scanner.Peek() != '}')
             {
                 BarNode bar;
                 if (new BarParser(true).TryParse(scanner, out bar))
-                    commandlet.InstanceBars.Add(bar);
+                    commandlet.InstanceBars.Bars.Add(bar);
                 else
                 {
                     commandlet = null;
@@ -78,6 +86,8 @@ namespace TabML.Parser.Parsing.Commandlets
 
                 scanner.SkipWhitespaces(false);
             }
+
+            commandlet.InstanceBars.Range = anchor.Range;
 
             if (!scanner.Expect('}'))
             {

@@ -49,14 +49,15 @@
     <Compile Include="Document\RhythmSegmentBase.cs" />
     <Compile Include="Document\RhythmTemplate.cs" />
     <Compile Include="Document\RhythmTemplateSegment.cs" />
-    <Compile Include="Document\RhythmVoice.cs" />
-    <Compile Include="Document\RhythmUnitNote.cs" />
+    <Compile Include="Document\Voice.cs" />
+    <Compile Include="Document\BeatNote.cs" />
     <Compile Include="Document\Staff.cs" />
     <Compile Include="Document\StaffType.cs" />
     <Compile Include="MusicTheory\Accidentals.cs" />
     <Compile Include="MusicTheory\BaseNoteNames.cs" />
     <Compile Include="MusicTheory\BaseNoteValues.cs" />
     <Compile Include="MusicTheory\CapoInfo.cs" />
+    <Compile Include="MusicTheory\AllStringStrumTechnique.cs" />
     <Compile Include="MusicTheory\KnownTuningAttribute.cs" />
     <Compile Include="MusicTheory\PostNoteConnection.cs" />
     <Compile Include="MusicTheory\PreNoteConnection.cs" />
@@ -89,7 +90,7 @@
     <Compile Include="MusicTheory\NoteValueAugment.cs" />
     <Compile Include="MusicTheory\NoteValueAugmentExtensions.cs" />
     <Compile Include="Document\OpenBarLine.cs" />
-    <Compile Include="Document\RhythmUnit.cs" />
+    <Compile Include="Document\Beat.cs" />
     <Compile Include="MusicTheory\NoteConnection.cs" />
     <Compile Include="Document\ScoreFlowState.cs" />
     <Compile Include="MusicTheory\StrumTechnique.cs" />

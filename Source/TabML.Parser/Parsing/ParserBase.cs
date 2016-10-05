@@ -12,12 +12,14 @@ namespace TabML.Parser.Parsing
         {
             return null;
         }
-        
+
         protected void Report(ParserReportLevel level, TextRange position, string message, params object[] args)
         {
             if (level == ParserReportLevel.Error)
                 this.HasError = true;
 
+            if (level == ParserReportLevel.Error)
+                throw new System.Exception(message);
             //todo
         }
 

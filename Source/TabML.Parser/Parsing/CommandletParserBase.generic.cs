@@ -13,7 +13,9 @@ namespace TabML.Parser.Parsing
             if (commandlet != null)
             {
                 commandlet.CommandletNameNode = this.CommandletNameNode;
-                commandlet.Range = new TextRange(this.CommandletNameNode.Range.From, scanner.LastReadRange.To);
+                commandlet.Range = new TextRange(this.CommandletNameNode.Range.From,
+                                                 scanner.LastReadRange.To,
+                                                 scanner);
             }
             return success;
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace TabML.Parser.AST
@@ -12,6 +13,15 @@ namespace TabML.Parser.AST
             return
                 Enumerable.Range(Math.Min(this.From.Value, this.To.Value), Math.Abs(this.To.Value - this.From.Value))
                           .ToArray();
+        }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                yield return this.From;
+                yield return this.To;
+            }
         }
     }
 }

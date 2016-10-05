@@ -1,12 +1,15 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    [DebuggerDisplay("{Value}")]
+    [DebuggerDisplay("literal: {Value}")]
     class LiteralNode<T> : Node
     {
         public T Value { get; set; }
+
+        public override IEnumerable<Node> Children => null;
 
         public LiteralNode()
         {
@@ -18,5 +21,6 @@ namespace TabML.Parser.AST
             this.Value = value;
             this.Range = range;
         }
+
     }
 }
