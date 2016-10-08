@@ -4,6 +4,11 @@ namespace TabML.Parser.Parsing
 {
     internal static class Messages
     {
+        public const string Warning_TemplateBarCannotContainLyrics =
+            "Pattern templates cannot contain lyrics. These lyrics will be omitted";
+
+        public const string Suggestion_LyricsTooLong =
+            "This line of lyrics is splitted into too many parts to match the rhythm. You can group words in the same beat with parenthesises.";
         public const string Error_InstructionExpected = "An instruction is expected";
         public const string Error_UnknownInstruction = "Unrecognizable instruction";
 
@@ -24,8 +29,13 @@ namespace TabML.Parser.Parsing
             "\"{0}\" is a well-known tuning, so you don't have to explicitly define it";
 
         public const string Hint_RedundantColonInTuningSpecifier = "Redundant ':' in tuning specifier";
-        
-        
+
+        public const string Error_TuningInstructionAfterBarAppeared = "Tuning instruction must appear before all bars";
+
+        public const string Warning_RedefiningTuningInstruction =
+            "Tuning is already defined, this instruction will be ignored";
+
+
         public const string Error_MissingChordName = "Please specify a chord name";
 
         public const string Error_ChordDisplayNameNotEnclosed =
@@ -56,6 +66,11 @@ namespace TabML.Parser.Parsing
         public const string Error_IrrationalNoteValueInTimeSignatureNotSupported =
             "Time signature with an irrational note value is not supported. 4/4 assumed.";
 
+        public const string Suggestion_UselessTimeInstruction =
+            "Redundant time instruction, the score is already in this time";
+
+        public const string Error_TimeInstructionAfterBarAppearedOrRhythmInstruction = "Time signature instruction must appear before all bars and rhythm instructions";
+
         public const string Error_InvalidKeySignature = "Unrecognizable key signature, key signature ignored";
 
         public const string Suggestion_RedundantKeySignature =
@@ -71,6 +86,9 @@ namespace TabML.Parser.Parsing
 
         public const string Error_TempoSignatureSpeedTooFast =
             "Tempo speed is too fast, the maximum tempo speed is 10000";
+
+        public const string Suggestion_UselessTempoInstruction =
+            "Redundant tempo instruction, the score is already in this tempo";
 
         public const string Error_InvalidCapoPosition = "Unrecognizable capo position, capo instruction ignored";
         public const string Warning_CapoTooHigh = "Capo position is too high, maximum capo position is 12";
@@ -98,16 +116,22 @@ namespace TabML.Parser.Parsing
         public const string Error_UnrecognizableRhythmSegmentElement =
             "Unrecognizable note";
 
-        public const string Error_RhythmCommandletMissingCloseParenthesisInStringsSpecifier =
+        public const string Error_RhythmInstructionMissingCloseParenthesisInStringsSpecifier =
             "Missing close parenthesis in strings specifier";
 
-        public const string Error_RhythmUnitInvalidStringNumberInStringsSpecifier =
+        public const string Error_BeatInvalidStringNumberInStringsSpecifier =
             "Unrecognizable string number";
 
-        public const string Error_RhythmUnitInvalidFretNumberInStringsSpecifier =
+        public const string Error_BeatInvalidFretNumberInStringsSpecifier =
             "Unrecognizable fret number";
 
+        public const string Warning_FretUnderCapo =
+            "The note on the #{1} fret of #{0} string cannot be played because it's under fret position";
+
         public const string Error_RhythmSegmentExpectOpeningBracket = "'[' expceted to declare a rhythm";
+
+        public const string Suggestion_UselessRhythmInstruction =
+            "Redundant rhythm instruction, the score is already in this rhythm";
 
         public const string Error_BeatBodyExpected =
             "Note value, strings specification or all-string strum technique expected";
@@ -123,7 +147,7 @@ namespace TabML.Parser.Parsing
             "Accent is already specified for this note, this one will be ignored";
         public const string Warning_BeatConnectionAlreadySpecified =
             "Connection is already specified for this note, this one will be ignored";
-        
+
         public const string Warning_BeatsNotMatchingTimeSignature = "Beats in this bar does not match time signature";
 
         public const string Error_ArtificialHarmonicFretSpecifierNotEnclosed =
@@ -131,20 +155,27 @@ namespace TabML.Parser.Parsing
 
         public const string Warning_SectionNameMissingCloseQuoteMark = "Missing close quote mark";
         public const string Warning_EmptySectionName = "Empty section name, ignored";
+        public const string Warning_DuplicatedSectionName = "Section {0} is already defined";
 
         public const string Warning_AlternationTextExpectedAfterColon = "Alternation text expected. If you want to use implicit alternation text, omit the colon";
         public const string Hint_EmptyAlternationText = "Empty alternation text, will use automatic index";
-        public const string Error_InvalidAlternationText= "Unrecognizable alternation text, use 1 to 9 (arabic numerals) or I to IX (roman numerals)";
+        public const string Error_InvalidAlternationText = "Unrecognizable alternation text, use 1 to 9 (arabic numerals) or I to IX (roman numerals)";
 
         public const string Warning_StaffCommandletUnknownStaffType =
             "Unknown or unsupported staff type, guitar assumed";
-        
+
         public const string Error_UnexpectedLyrics =
             "Unexpected lyrics, lyrics should only appear at the end of a bar for not more than once";
 
         public const string Warning_UnexpectedBarVoice =
             "Unexpected voice, rhythm or chord here, ignored. Please place them before lyrics";
-        
+
+        public const string Suggestion_InconsistentVoiceDuration =
+            "This voice is shorter than other voices in this segment, it will be filled with rest";
+
+        public const string Error_InconsistentVoiceDurationCannotBeFilledWithRest =
+            "This voice is shorter than other voices in this segment, but its shortage cannot be resolved to rest of simple note values. Please fix the voice to match duration of other voices";
+
         public const string Warning_TiedLyricsNotEnclosed = "Tied lyrics not enclosed with ')'";
         public const string Error_RhythmSegmentMissingFingering = "Missing chord fingering";
 
@@ -179,5 +210,11 @@ namespace TabML.Parser.Parsing
         public const string Hint_FirstOpenBarLineMissing = "Missing first open bar line, standard line assumed";
         public const string Hint_LastCloseBarLineMissing = "Missing close bar line, end line assumed";
         public const string Warning_BarLineMissing = "Missing bar line, standard line assumed";
+
+        public const string Warning_TooManyChordsToMatchRhythmTemplate =
+            "This bar has more chords than it's allowed in the rhythm template. The exceeding chords will be omitted";
+
+        public const string Warning_InsufficientChordsToMatchRhythmTemplate =
+            "This bar has less chords than it's defined in the rhythm template. The shortage will be filled with the last chord";
     }
 }

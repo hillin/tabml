@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
@@ -12,6 +15,26 @@ namespace TabML.Parser.AST
             {
                 yield return this.SectionName;
             }
+        }
+
+        internal override bool Apply(TablatureContext context, IReporter reporter)
+        {
+            if (context.DocumentState.DefinedSections.Any(
+                    s =>
+                        s.SectionName.Value.Equals(this.SectionName.Value,
+                                                   StringComparison.InvariantCultureIgnoreCase)))
+            {
+                reporter.Report(ReportLevel.Warning, this.Range, Messages.Warning_DuplicatedSectionName, this.SectionName.Value);
+                return true;
+            }
+
+            using (var state = context.AlterDocumentState())
+            {
+                state.DefinedSections.Add(this);
+                state.CurrentSection = this;
+            }
+
+            return true;
         }
     }
 }

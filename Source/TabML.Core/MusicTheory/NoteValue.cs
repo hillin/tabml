@@ -32,7 +32,6 @@ namespace TabML.Core.MusicTheory
                         var augmentedDuration = baseDuration * augment.GetDurationMultiplier();
                         if (Math.Abs(duration - augmentedDuration) < tolerance)
                         {
-
                             noteValue = new NoteValue(baseNoteValue, augment);
                             return true;
                         }
@@ -46,10 +45,6 @@ namespace TabML.Core.MusicTheory
                             }
                         }
                     }
-
-
-                    noteValue = new NoteValue(baseNoteValue);
-                    return true;
                 }
             }
 

@@ -94,7 +94,7 @@ namespace TabML.Parser
             return this.Clone();
         }
 
-        public void CloneAndAppend(SealableCollection<T> other)
+        public void AppendClone(SealableCollection<T> other)
         {
             if (typeof(ICloneable).IsAssignableFrom(typeof(T)))
             {

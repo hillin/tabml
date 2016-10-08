@@ -1,4 +1,5 @@
-﻿using TabML.Core.MusicTheory;
+﻿using System.Linq;
+using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.Document
 {
@@ -18,6 +19,30 @@ namespace TabML.Parser.Document
         public double GetDuration()
         {
             return this.NoteValue.GetDuration();
+        }
+
+        public void ClearRange()
+        {
+            this.Range = null;
+            foreach (var note in this.Notes)
+                note.ClearRange();
+        }
+
+        public Beat Clone()
+        {
+            return new Beat
+            {
+                Range = this.Range,
+                NoteValue = this.NoteValue,
+                IsRest = this.IsRest,
+                IsTied = this.IsTied,
+                StrumTechnique = this.StrumTechnique,
+                EffectTechnique = this.EffectTechnique,
+                EffectTechniqueParameter = this.EffectTechniqueParameter,
+                DurationEffect = this.DurationEffect,
+                Accent = this.Accent,
+                Notes = this.Notes?.Select(n => n.Clone()).ToArray()
+            };
         }
     }
 }

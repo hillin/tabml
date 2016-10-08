@@ -6,9 +6,10 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.AST
 {
-    class VoiceNode : Node
+    class VoiceNode : Node, IValueEquatable<VoiceNode>, IDocumentElementFactory<Voice>
     {
         public List<BeatNode> Beats { get; }
+        public double ExpectedDuration { get; set; }
 
         public override IEnumerable<Node> Children => this.Beats;
 
@@ -17,6 +18,7 @@ namespace TabML.Parser.AST
             this.Beats = new List<BeatNode>();
         }
 
+        public double GetDuration() => this.Beats.Sum(b => b.NoteValue.ToNoteValue().GetDuration());
 
         public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Voice voice)
         {
@@ -24,14 +26,6 @@ namespace TabML.Parser.AST
             {
                 Range = this.Range
             };
-
-            //var timeSignature = context.DocumentState.Time;
-            //var sumExplicitBeats = this.Beats.Sum(beat => beat.NoteValue.ToNoteValue().GetBeats(timeSignature.NoteValue.Value));
-
-            //if (timeSignature.Beats.Value < sumExplicitBeats)
-            //{
-
-            //}
 
             foreach (var beat in this.Beats)
             {
@@ -42,7 +36,45 @@ namespace TabML.Parser.AST
                 voice.Beats.Add(documentBeat);
             }
 
+            var duration = this.GetDuration();
+            if (duration < this.ExpectedDuration)
+            {
+                BaseNoteValue[] factors;
+                if (!BaseNoteValues.TryFactorize(this.ExpectedDuration - duration, out factors))
+                {
+                    reporter.Report(ReportLevel.Error, this.Range,
+                                    Messages.Error_InconsistentVoiceDurationCannotBeFilledWithRest);
+                    return false;
+                }
+
+                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_InconsistentVoiceDuration);
+
+                var isFirstFactor = true;
+                foreach (var factor in factors)
+                {
+                    var beat = new Beat
+                    {
+                        NoteValue = new NoteValue(factor),
+                        IsRest = true,
+                        IsTied = !isFirstFactor
+                    };
+
+                    isFirstFactor = false;
+
+                    voice.Beats.Add(beat);
+                }
+            }
+
             return true;
+        }
+
+        public bool ValueEquals(VoiceNode other)
+        {
+            if (other == null)
+                return false;
+
+            return other.Beats.Count == this.Beats.Count
+                   && this.Beats.Where((b, i) => !b.ValueEquals(other.Beats[i])).Any();
         }
     }
 }

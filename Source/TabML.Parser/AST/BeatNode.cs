@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TabML.Core.MusicTheory;
 using TabML.Parser.Document;
 using TabML.Parser.Parsing;
+using StrumTechniqueEnum = TabML.Core.MusicTheory.StrumTechnique;
 
 namespace TabML.Parser.AST
 {
-    class BeatNode : Node
+    class BeatNode : Node, IValueEquatable<BeatNode>, IDocumentElementFactory<Beat>
     {
         public NoteValueNode NoteValue { get; set; }
         public RestNode Rest { get; set; }
@@ -20,6 +22,7 @@ namespace TabML.Parser.AST
         public List<Node> Modifiers { get; }
 
         public bool HasRedunantSpecifierForRest => this.Notes.Count > 0
+                                                   || this.AllStringStrumTechnique != null
                                                    || this.StrumTechnique != null
                                                    || this.EffectTechnique != null
                                                    || this.EffectTechniqueParameter != null
@@ -27,6 +30,7 @@ namespace TabML.Parser.AST
                                                    || this.Accent != null;
 
         public bool HasRedunantSpecifierForTied => this.Rest != null
+                                                   || this.AllStringStrumTechnique != null
                                                    || this.Notes.Count > 0
                                                    || this.StrumTechnique != null
                                                    || this.EffectTechnique != null
@@ -68,7 +72,7 @@ namespace TabML.Parser.AST
             beat = new Beat
             {
                 Range = this.Range,
-                StrumTechnique = this.StrumTechnique?.Value ?? Core.MusicTheory.StrumTechnique.None,
+                StrumTechnique = this.StrumTechnique?.Value ?? ((StrumTechniqueEnum?)this.AllStringStrumTechnique?.Value) ?? StrumTechniqueEnum.None,
                 Accent = this.Accent?.Value ?? NoteAccent.Normal,
                 DurationEffect = this.DurationEffect?.Value ?? NoteDurationEffect.None,
                 EffectTechnique = this.EffectTechnique?.Value ?? NoteEffectTechnique.None,
@@ -77,6 +81,42 @@ namespace TabML.Parser.AST
                 IsTied = this.Tied != null,
                 NoteValue = this.NoteValue.ToNoteValue(),
             };
+
+            var notes = new List<BeatNote>();
+            foreach (var note in this.Notes)
+            {
+                BeatNote documentNote;
+                if (!note.ToDocumentElement(context, reporter, out documentNote))
+                    return false;
+
+                notes.Add(documentNote);
+            }
+
+            beat.Notes = notes.ToArray();
+
+            return true;
+        }
+
+        public bool ValueEquals(BeatNode other)
+        {
+            if (other == null)
+                return false;
+
+            if (!ValueEquatable.ValueEquals(this.AllStringStrumTechnique, other.AllStringStrumTechnique)
+                || !ValueEquatable.ValueEquals(this.StrumTechnique, other.StrumTechnique)
+                || !ValueEquatable.ValueEquals(this.NoteValue, other.NoteValue)
+                || !ValueEquatable.ValueEquals(this.Rest, other.Rest)
+                || !ValueEquatable.ValueEquals(this.Tied, other.Tied)
+                || !ValueEquatable.ValueEquals(this.EffectTechnique, other.EffectTechnique)
+                || !ValueEquatable.ValueEquals(this.EffectTechniqueParameter, other.EffectTechniqueParameter)
+                || !ValueEquatable.ValueEquals(this.DurationEffect, other.DurationEffect)
+                || !ValueEquatable.ValueEquals(this.Accent, other.Accent))
+                return false;
+
+            if (other.Notes.Count != this.Notes.Count)
+                return false;
+
+            return !this.Notes.Where((n, i) => !n.ValueEquals(other.Notes[i])).Any();
         }
     }
 }

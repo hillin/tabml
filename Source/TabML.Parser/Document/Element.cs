@@ -8,6 +8,6 @@ namespace TabML.Parser.Document
 {
     public abstract class Element
     {
-        public TextRange Range { get; set; }
+        public TextRange? Range { get; set; }
     }
 }

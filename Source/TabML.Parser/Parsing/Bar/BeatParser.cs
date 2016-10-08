@@ -200,7 +200,7 @@ namespace TabML.Parser.Parsing.Bar
             if (!parenthesisClosed)
             {
                 this.Report(ReportLevel.Error, scanner.LastReadRange,
-                            Messages.Error_RhythmCommandletMissingCloseParenthesisInStringsSpecifier);
+                            Messages.Error_RhythmInstructionMissingCloseParenthesisInStringsSpecifier);
                 return false;
             }
 

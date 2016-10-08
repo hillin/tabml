@@ -1,4 +1,6 @@
-﻿namespace TabML.Parser.Document
+﻿using System;
+
+namespace TabML.Parser.Document
 {
     class Chord : Element
     {
@@ -6,6 +8,14 @@
 
         public string Name { get; set; }
         public int[] Fingering { get; set; }
-        
+
+        public Chord Clone()
+        {
+            return new Chord
+            {
+                Name = this.Name,
+                Fingering = (int[])this.Fingering.Clone()
+            };
+        }
     }
 }

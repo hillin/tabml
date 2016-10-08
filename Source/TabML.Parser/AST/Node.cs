@@ -50,6 +50,5 @@ namespace TabML.Parser.AST
         {
             return true;
         }
-
     }
 }

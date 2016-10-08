@@ -11,22 +11,28 @@ namespace TabML.Parser.Document
 
         protected static void Clone(DocumentState from, DocumentState to)
         {
-            to._currentAlternationIndices = (int[])from._currentAlternationIndices.Clone();
+            to._currentAlternation = from._currentAlternation;
             to._alternationTextType = from._alternationTextType;
-            to._currentSectionName = from._currentSectionName;
             to._alternationTextExplicity = from._alternationTextExplicity;
-            to._definedAlternationIndices.CloneAndAppend(from._definedAlternationIndices);
+            to._definedAlternationIndices.AppendClone(from._definedAlternationIndices);
             to._barAppeared = from._barAppeared;
-            to._capoInstructions.CloneAndAppend(from._capoInstructions);
+            to._capoInstructions.AppendClone(from._capoInstructions);
             to._capoFretOffsets = (int[])from._capoFretOffsets.Clone();
-            to._definedChords.CloneAndAppend(from._definedChords);
+            to.MinimumCapoFret = from.MinimumCapoFret;
+            to._definedChords.AppendClone(from._definedChords);
             to._key = from._key;
             to._time = from._time;
+            to._tempo = from._tempo;
+            to._tuning = from._tuning;
+            to._rhythmTemplate = from._rhythmTemplate;
+            to._rhythmInstruction = from._rhythmInstruction;
+            to._currentSection = from._currentSection;
+            to._definedSections.AppendClone(from._definedSections);
         }
 
-        private int[] _currentAlternationIndices = new int[0];
+        private AlternateCommandletNode _currentAlternation;
         private AlternationTextType? _alternationTextType;
-        private string _currentSectionName;
+        private SectionCommandletNode _currentSection;
         private Explicity _alternationTextExplicity;
         private readonly SealableCollection<int> _definedAlternationIndices = new SealableCollection<int>();
         private bool _barAppeared;
@@ -42,14 +48,22 @@ namespace TabML.Parser.Document
         private KeyCommandletNode _key;
         private TimeSignatureCommandletNode _time;
 
+        private readonly SealableCollection<SectionCommandletNode> _definedSections =
+            new SealableCollection<SectionCommandletNode>();
 
-        public int[] CurrentAlternationIndices
+        private TempoCommandletNode _tempo;
+        private TuningCommandletNode _tuning;
+        private RhythmCommandletNode _rhythmInstruction;
+        private Rhythm _rhythmTemplate;
+
+
+        public AlternateCommandletNode CurrentAlternation
         {
-            get { return _currentAlternationIndices; }
+            get { return _currentAlternation; }
             set
             {
                 this.CheckSealed();
-                _currentAlternationIndices = value;
+                _currentAlternation = value;
             }
         }
 
@@ -63,15 +77,6 @@ namespace TabML.Parser.Document
             }
         }
 
-        public string CurrentSectionName
-        {
-            get { return _currentSectionName; }
-            set
-            {
-                this.CheckSealed();
-                _currentSectionName = value;
-            }
-        }
 
         public Explicity AlternationTextExplicity
         {
@@ -104,8 +109,11 @@ namespace TabML.Parser.Document
             {
                 this.CheckSealed();
                 _capoFretOffsets = value;
+                this.MinimumCapoFret = _capoFretOffsets.Min();
             }
         }
+
+        public int MinimumCapoFret { get; private set; }
 
         public ICollection<ChordCommandletNode> DefinedChords => _definedChords;
 
@@ -129,6 +137,58 @@ namespace TabML.Parser.Document
             }
         }
 
+        public TempoCommandletNode Tempo
+        {
+            get { return _tempo; }
+            set
+            {
+                this.CheckSealed();
+                _tempo = value;
+            }
+        }
+
+        public TuningCommandletNode Tuning
+        {
+            get { return _tuning; }
+            set
+            {
+                this.CheckSealed();
+                _tuning = value;
+            }
+        }
+
+        public Rhythm RhythmTemplate
+        {
+            get { return _rhythmTemplate; }
+            set
+            {
+                this.CheckSealed();
+                _rhythmTemplate = value;
+            }
+        }
+
+        public RhythmCommandletNode RhythmInstruction
+        {
+            get { return _rhythmInstruction; }
+            set
+            {
+                this.CheckSealed();
+                _rhythmInstruction = value;
+            }
+        }
+
+        public SectionCommandletNode CurrentSection
+        {
+            get { return _currentSection; }
+            set
+            {
+                this.CheckSealed();
+                _currentSection = value;
+            }
+        }
+
+        public ICollection<SectionCommandletNode> DefinedSections => _definedSections;
+
         public bool IsSealed { get; private set; }
 
 
@@ -138,6 +198,7 @@ namespace TabML.Parser.Document
             _definedAlternationIndices.Seal();
             _capoInstructions.Seal();
             _definedChords.Seal();
+            _definedSections.Seal();
         }
 
         private void CheckSealed()

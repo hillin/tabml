@@ -34,7 +34,7 @@ namespace TabML.Parser.AST
 
                     var implicitIndex = state.DefinedAlternationIndices.Max() + 1;
                     state.DefinedAlternationIndices.Add(implicitIndex);
-                    state.CurrentAlternationIndices = new[] { implicitIndex };
+                    state.CurrentAlternation = this;
 
                     return true;
                 }
@@ -67,6 +67,6 @@ namespace TabML.Parser.AST
                 return true;
             }
         }
-        
+
     }
 }

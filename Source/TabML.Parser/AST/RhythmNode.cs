@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class RhythmNode : Node
+    class RhythmNode : Node, IDocumentElementFactory<Rhythm>
     {
         public List<RhythmSegmentNode> Segments { get; }
 
@@ -22,8 +23,7 @@ namespace TabML.Parser.AST
                 Range = this.Range
             };
 
-            // todo: check voice count consistency
-            // todo: check duration consistency
+            var duration = 0.0;
 
             foreach (var segment in this.Segments)
             {
@@ -32,6 +32,14 @@ namespace TabML.Parser.AST
                     return false;
 
                 rhythm.Segments.Add(rhythmSegment);
+                if (segment.Voices.Count > 0)
+                    duration += segment.Voices[0].GetDuration();
+            }
+
+            if (Math.Abs(duration - context.DocumentState.Time.GetDuration()) > 1e-7)
+            {
+                reporter.Report(ReportLevel.Warning, this.Range, Messages.Warning_BeatsNotMatchingTimeSignature);
+                rhythm.NotMatchingTime = true;
             }
 
             return true;

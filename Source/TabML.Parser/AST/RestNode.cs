@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace TabML.Parser.AST
 {
-    class RestNode : Node
+    class RestNode : Node, IValueEquatable<RestNode>
     {
         public override IEnumerable<Node> Children => null;
+        public bool ValueEquals(RestNode other)
+        {
+            return other != null;
+        }
     }
 }

@@ -4,8 +4,9 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
+
     [DebuggerDisplay("literal: {Value}")]
-    class LiteralNode<T> : Node
+    class LiteralNode<T> : Node, IValueEquatable<LiteralNode<T>>
     {
         public T Value { get; set; }
 
@@ -22,5 +23,9 @@ namespace TabML.Parser.AST
             this.Range = range;
         }
 
+        public bool ValueEquals(LiteralNode<T> other)
+        {
+            return other != null && this.Value.Equals(other.Value);
+        }
     }
 }

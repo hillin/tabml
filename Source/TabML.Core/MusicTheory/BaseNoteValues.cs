@@ -1,4 +1,7 @@
-﻿namespace TabML.Core.MusicTheory
+﻿using System;
+using System.Collections.Generic;
+
+namespace TabML.Core.MusicTheory
 {
     public static class BaseNoteValues
     {
@@ -21,6 +24,29 @@
             }
 
             return true;
+        }
+
+        public static bool TryFactorize(double duration, out BaseNoteValue[] values)
+        {
+            var valueList = new List<BaseNoteValue>();
+            var currentNoteValue = BaseNoteValue.Large;
+            var currentDuration = currentNoteValue.GetDuration();
+            while (currentNoteValue >= BaseNoteValue.TwoHundredFiftySixth)
+            {
+                if (duration < currentDuration)
+                {
+                    --currentNoteValue;
+                    currentDuration = currentNoteValue.GetDuration();
+                    continue;
+                }
+
+                valueList.Add(currentNoteValue);
+                duration -= currentDuration;
+            }
+
+            values = valueList.ToArray();
+
+            return Math.Abs(duration) < 1e-7;
         }
     }
 }

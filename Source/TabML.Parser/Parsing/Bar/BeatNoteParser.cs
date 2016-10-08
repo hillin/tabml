@@ -1,7 +1,7 @@
 ﻿using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
 
-namespace TabML.Parser.Parsing
+namespace TabML.Parser.Parsing.Bar
 {
     class BeatNoteParser : ParserBase<BeatNoteNode>
     {
@@ -18,7 +18,7 @@ namespace TabML.Parser.Parsing
             if (!Parser.TryReadInteger(scanner, out stringNumber))
             {
                 this.Report(ReportLevel.Error, scanner.LastReadRange,
-                            Messages.Error_RhythmUnitInvalidStringNumberInStringsSpecifier);
+                            Messages.Error_BeatInvalidStringNumberInStringsSpecifier);
                 result = null;
                 return false;
             }
@@ -31,7 +31,7 @@ namespace TabML.Parser.Parsing
                 if (!Parser.TryReadInteger(scanner, out fret))
                 {
                     this.Report(ReportLevel.Error, scanner.LastReadRange,
-                                Messages.Error_RhythmUnitInvalidFretNumberInStringsSpecifier);
+                                Messages.Error_BeatInvalidFretNumberInStringsSpecifier);
                     result = null;
                     return false;
                 }
