@@ -36,7 +36,8 @@ namespace TabML.Parser.AST
                     duration += segment.Voices[0].GetDuration();
             }
 
-            if (Math.Abs(duration - context.DocumentState.Time.GetDuration()) > 1e-7)
+            // duration could be 0 if rhythm is not defined (only chord defined), rhythm will be determined by the rhythm instruction
+            if (duration > 0 && Math.Abs(duration - context.DocumentState.Time.GetDuration()) > 1e-7)
             {
                 reporter.Report(ReportLevel.Warning, this.Range, Messages.Warning_BeatsNotMatchingTimeSignature);
                 rhythm.NotMatchingTime = true;

@@ -25,95 +25,67 @@ namespace TabML.Parser.AST
 
         internal override bool Apply(TablatureContext context, IReporter reporter)
         {
-            var templateBars = this.TemplateBars.Bars;
-            var instanceBars = this.InstanceBars.Bars;
-            if (instanceBars.Count < templateBars.Count)
+            var templateBarNodes = this.TemplateBars.Bars;
+            var instanceBarNodes = this.InstanceBars.Bars;
+            if (instanceBarNodes.Count < templateBarNodes.Count)
             {
                 reporter.Report(ReportLevel.Warning, this.InstanceBars.Range,
                                 Messages.Warning_PatternInstanceBarsLessThanTemplateBars);
             }
 
-            foreach (var bar in templateBars)
+            var templateBars = new List<Bar>();
+            foreach (var barNode in templateBarNodes)
             {
-                if (bar.Lyrics != null)
+                if (barNode.Lyrics != null)
                 {
-                    reporter.Report(ReportLevel.Warning, bar.Lyrics.Range,
+                    reporter.Report(ReportLevel.Warning, barNode.Lyrics.Range,
                                     Messages.Warning_TemplateBarCannotContainLyrics);
                 }
 
-                bar.ApplyRhythmTemplate
-            }
+                Bar bar;
+                if (!barNode.ToDocumentElement(context, reporter, out bar))
+                    return false;
 
-            
+                templateBars.Add(bar);
+            }
 
             var templateIndex = 0;
-            foreach (var instanceBar in instanceBars)
+            foreach (var barNode in instanceBarNodes)
             {
                 var templateBar = templateBars[templateIndex];
-                
-                var bar 
+
+                Bar instanceBar;
+                if (this.ApplyTemplateBar(templateBar, barNode, out instanceBar, context, reporter))
+                {
+                    context.AddBar(instanceBar);
+                }
 
                 ++templateIndex;
-                if (templateIndex == templateBars.Count)
+                if (templateIndex == templateBarNodes.Count)
                     templateIndex = 0;
             }
+
+            return true;
         }
 
 
-        public Rhythm ApplyRhythmTemplate(Rhythm template, Rhythm rhythm, IReporter reporter)
+        public bool ApplyTemplateBar(Bar template, BarNode instanceNode, out Bar instanceBar, TablatureContext context, IReporter reporter)
         {
-            if (rhythm == null)
-                return template;
-
-            if (rhythm.Segments.Count == 0) // empty rhythm, should be filled with rest
-                return rhythm;
-
-            if (rhythm.Segments.Any(s => s.Voices.Count != 0))  // rhythm already defined
-                return rhythm;
-
-            if (rhythm.Segments.Count > template.Segments.Count)
+            if (instanceNode == null)
             {
-                reporter.Report(ReportLevel.Warning, rhythm.Range,
-                                Messages.Warning_TooManyChordsToMatchRhythmTemplate);
-
-                for (var i = 0; i < template.Segments.Count; ++i)
-                {
-                    rhythm.Segments[i].Voices.AddRange(template.Segments[i].Voices);
-                }
-
-                for (var i = template.Segments.Count; i < rhythm.Segments.Count; ++i)
-                {
-                    rhythm.Segments[i].IsOmittedByTemplate = true;
-                }
-            }
-            else if (rhythm.Segments.Count < template.Segments.Count && rhythm.Segments.Count != 1)
-            {
-                reporter.Report(ReportLevel.Warning, rhythm.Range,
-                                Messages.Warning_InsufficientChordsToMatchRhythmTemplate);
-
-                var lastChord = rhythm.Segments[rhythm.Segments.Count - 1].Chord;
-
-                for (var i = 0; i < rhythm.Segments.Count; ++i)
-                {
-                    rhythm.Segments[i].Voices.AddRange(template.Segments[i].Voices);
-                }
-
-                for (var i = rhythm.Segments.Count; i < template.Segments.Count; ++i)
-                {
-                    var segment = template.Segments[i].Clone();
-                    segment.Chord = lastChord;
-                    rhythm.Segments.Add(segment);
-                }
-            }
-            else
-            {
-                for (var i = 0; i < template.Segments.Count; ++i)
-                {
-                    rhythm.Segments[i].Voices.AddRange(template.Segments[i].Voices);
-                }
+                instanceBar = template;
+                return true;
             }
 
-            return rhythm;
+            if (!instanceNode.ToDocumentElement(context, reporter, out instanceBar))
+                return false;
+
+            if (instanceBar.Rhythm != null && instanceBar.Rhythm.Segments.Count > 0) // rhythm already defined
+                return true;
+
+            instanceBar.Rhythm = template.Rhythm.Clone();
+
+            return true;
         }
     }
 }

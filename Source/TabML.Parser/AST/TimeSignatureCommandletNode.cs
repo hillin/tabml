@@ -4,7 +4,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class TimeSignatureCommandletNode : CommandletNode
+    class TimeSignatureCommandletNode : CommandletNode, IValueEquatable<TimeSignatureCommandletNode>
     {
         public LiteralNode<int> Beats { get; set; }
         public LiteralNode<BaseNoteValue> NoteValue { get; set; }
@@ -23,7 +23,7 @@ namespace TabML.Parser.AST
             return this.NoteValue.Value.GetDuration() * this.Beats.Value;
         }
 
-        public bool TimeEquals(TimeSignatureCommandletNode other)
+        public bool ValueEquals(TimeSignatureCommandletNode other)
         {
             if (other == null)
                 return false;
@@ -39,7 +39,7 @@ namespace TabML.Parser.AST
                 return false;
             }
 
-            if (context.DocumentState.Time != null && context.DocumentState.Time.TimeEquals(this))
+            if (context.DocumentState.Time != null && context.DocumentState.Time.ValueEquals(this))
             {
                 reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_UselessTimeInstruction);
                 return true;

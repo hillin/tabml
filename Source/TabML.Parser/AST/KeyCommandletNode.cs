@@ -17,7 +17,7 @@ namespace TabML.Parser.AST
 
         internal override bool Apply(TablatureContext context, IReporter reporter)
         {
-            if (context.DocumentState.Key.Key.NoteNameEquals(this.Key))
+            if (context.DocumentState.Key?.Key.ValueEquals(this.Key) == true)
             {
                 reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_RedundantKeySignature);
                 return true;

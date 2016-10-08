@@ -98,20 +98,23 @@ namespace TabML.Parser.AST
 
             return true;
         }
-        
+
         public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Bar bar)
         {
             Rhythm rhythm;
             if (this.Rhythm == null)
                 rhythm = null;
-            else if (!this.Rhythm.ToDocumentElement(context, reporter, out rhythm))
+            else
             {
-                bar = null;
-                return false;
-            }
+                if (!this.Rhythm.ToDocumentElement(context, reporter, out rhythm))
+                {
+                    bar = null;
+                    return false;
+                }
 
-            if (context.DocumentState.RhythmTemplate != null)
-                rhythm = BarNode.ApplyRhythmTemplate(context.DocumentState.RhythmTemplate, rhythm, reporter);
+                if (context.DocumentState.RhythmTemplate != null)
+                    rhythm = BarNode.ApplyRhythmTemplate(context.DocumentState.RhythmTemplate, rhythm, reporter);
+            }
 
             Lyrics lyrics;
             if (this.Lyrics == null)

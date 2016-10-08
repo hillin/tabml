@@ -3,7 +3,7 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.AST
 {
-    class NoteNameNode : Node
+    class NoteNameNode : Node, IValueEquatable<NoteNameNode>
     {
         public LiteralNode<BaseNoteName> BaseNoteName { get; set; }
         public LiteralNode<Accidental> Accidental { get; set; }
@@ -18,7 +18,7 @@ namespace TabML.Parser.AST
             }
         }
 
-        public bool NoteNameEquals(NoteNameNode other)
+        public bool ValueEquals(NoteNameNode other)
         {
             if (this.BaseNoteName.Value != other?.BaseNoteName.Value)
                 return false;

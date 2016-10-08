@@ -39,19 +39,21 @@ namespace TabML.Parser.AST
                 Range = this.Range
             };
 
-            var maxDuration = this.Voices.Max(v => v.GetDuration());
-
-            foreach (var voice in this.Voices)
+            if (this.Voices.Count > 0)
             {
-                voice.ExpectedDuration = maxDuration;
+                var maxDuration = this.Voices.Max(v => v.GetDuration());
 
-                Voice documentVoice;
-                if (!voice.ToDocumentElement(context, reporter, out documentVoice))
-                    return false;
+                foreach (var voice in this.Voices)
+                {
+                    voice.ExpectedDuration = maxDuration;
 
-                rhythmSegment.Voices.Add(documentVoice);
+                    Voice documentVoice;
+                    if (!voice.ToDocumentElement(context, reporter, out documentVoice))
+                        return false;
+
+                    rhythmSegment.Voices.Add(documentVoice);
+                }
             }
-
             return true;
         }
     }

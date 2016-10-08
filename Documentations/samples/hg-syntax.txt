@@ -1,16 +1,15 @@
-+strings: 6
 +tuning: standard
 +chord C*<C>: 032013
 +chord G*<G>: 320033
-+rhythm: [8d 8d:a 8d 16d 16u 8d 8d 8d:a 16d 16u]
 +time: 4/4
 +key: D
-+tempo: 4=120
 +capo: 2
++tempo: 4=120
++rhythm: [8d 8d:a 8d 16d 16u 8d 8d 8d:a 16d 16u]
 
 +section "Intro"
-||: [8d:a 8d 8d:a 8d:a 8d 8d 8d 8d:a 16d 16u] A 
-|   [8d:a 8d 8d:a 8d:a 8d 8d 8d 8d:a 16d 16u] Asus4 :||
+||: [8d:a 8d 8d:a 16d:a 16d 8d 8d 8d:a 16d 16u] A 
+|   [8d:a 8d 8d:a 16d:a 16d 8d 8d 8d:a 16d 16u] Asus4 :||
 
 ||: A | Asus4 | E | Esus4 | D | Dsus2 | A | Asus4 |
 

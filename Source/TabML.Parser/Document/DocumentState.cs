@@ -17,7 +17,7 @@ namespace TabML.Parser.Document
             to._definedAlternationIndices.AppendClone(from._definedAlternationIndices);
             to._barAppeared = from._barAppeared;
             to._capoInstructions.AppendClone(from._capoInstructions);
-            to._capoFretOffsets = (int[])from._capoFretOffsets.Clone();
+            to._capoFretOffsets = (int[])from._capoFretOffsets?.Clone();
             to.MinimumCapoFret = from.MinimumCapoFret;
             to._definedChords.AppendClone(from._definedChords);
             to._key = from._key;

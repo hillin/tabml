@@ -44,8 +44,16 @@ namespace TabML.Parser.AST
             if (capoFretOffsets == null)
                 capoFretOffsets = new int[Defaults.Strings];
 
-            foreach (var stringIndex in this.StringsSpecifier.GetStringNumbers())
-                capoFretOffsets[stringIndex - 1] = Math.Max(capoFretOffsets[stringIndex - 1], this.Position.Value);
+            if (this.StringsSpecifier == null)
+            {
+                for (var i = 0; i < Defaults.Strings; ++i)
+                    capoFretOffsets[i] = Math.Max(capoFretOffsets[i], this.Position.Value);
+            }
+            else
+            {
+                foreach (var stringIndex in this.StringsSpecifier.GetStringNumbers())
+                    capoFretOffsets[stringIndex - 1] = Math.Max(capoFretOffsets[stringIndex - 1], this.Position.Value);
+            }
 
             return capoFretOffsets;
         }

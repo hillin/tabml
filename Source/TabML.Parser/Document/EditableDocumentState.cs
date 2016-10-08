@@ -14,7 +14,6 @@ namespace TabML.Parser
             DocumentState.Clone(state, this);
         }
         
-
         public void Dispose()
         {
             this.Seal();

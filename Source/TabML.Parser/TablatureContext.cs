@@ -10,15 +10,13 @@ namespace TabML.Parser
 {
     class TablatureContext
     {
-        public TablatureNode Tablature { get; }
         public DocumentState DocumentState { get; private set; }
 
         private readonly List<Bar> _bars = new List<Bar>();
         public IReadOnlyList<Bar> Bars => _bars;
 
-        public TablatureContext(TablatureNode tablature)
+        public TablatureContext()
         {
-            this.Tablature = tablature;
             this.DocumentState = new DocumentState();
         }
 

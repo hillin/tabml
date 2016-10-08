@@ -216,5 +216,11 @@ namespace TabML.Parser.Parsing
 
         public const string Warning_InsufficientChordsToMatchRhythmTemplate =
             "This bar has less chords than it's defined in the rhythm template. The shortage will be filled with the last chord";
+
+        public const string Warning_TooManyChordsToMatchPatternTemplate =
+            "This bar has more chords than it's allowed in the pattern template. The exceeding chords will be omitted";
+
+        public const string Warning_InsufficientChordsToMatchPatternTemplate =
+            "This bar has less chords than it's defined in the pattern template. The shortage will be filled with the last chord";
     }
 }

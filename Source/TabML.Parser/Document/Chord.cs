@@ -14,7 +14,7 @@ namespace TabML.Parser.Document
             return new Chord
             {
                 Name = this.Name,
-                Fingering = (int[])this.Fingering.Clone()
+                Fingering = (int[])this.Fingering?.Clone()
             };
         }
     }

@@ -4,7 +4,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class TempoCommandletNode : CommandletNode
+    class TempoCommandletNode : CommandletNode, IValueEquatable<TempoCommandletNode>
     {
         public LiteralNode<BaseNoteValue> NoteValue { get; set; }
         public LiteralNode<int> Beats { get; set; }
@@ -22,7 +22,7 @@ namespace TabML.Parser.AST
 
         internal override bool Apply(TablatureContext context, IReporter reporter)
         {
-            if (context.DocumentState.Tempo?.TempoEquals(this) == true)
+            if (context.DocumentState.Tempo?.ValueEquals(this) == true)
             {
                 reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_UselessTempoInstruction);
                 return true;
@@ -36,7 +36,7 @@ namespace TabML.Parser.AST
             return true;
         }
 
-        private bool TempoEquals(TempoCommandletNode other)
+        public bool ValueEquals(TempoCommandletNode other)
         {
             if (this.NoteValue == null)
             {
