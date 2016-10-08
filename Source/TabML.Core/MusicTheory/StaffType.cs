@@ -1,4 +1,4 @@
-﻿namespace TabML.Core.Document
+﻿namespace TabML.Core.MusicTheory
 {
     public enum StaffType
     {

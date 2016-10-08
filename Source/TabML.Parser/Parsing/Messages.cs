@@ -2,7 +2,7 @@
 
 namespace TabML.Parser.Parsing
 {
-    internal static class ParseMessages
+    internal static class Messages
     {
         public const string Error_InstructionExpected = "An instruction is expected";
         public const string Error_UnknownInstruction = "Unrecognizable instruction";
@@ -24,13 +24,8 @@ namespace TabML.Parser.Parsing
             "\"{0}\" is a well-known tuning, so you don't have to explicitly define it";
 
         public const string Hint_RedundantColonInTuningSpecifier = "Redundant ':' in tuning specifier";
-
-        public const string Error_InvalidStringCount =
-            "Unrecognizable string count, 6 strings assumed";
-
-        public const string Error_StringCountOutOfRange =
-            "Unsupported string count, should be between {0} and {1} strings. 6 strings assumed";
-
+        
+        
         public const string Error_MissingChordName = "Please specify a chord name";
 
         public const string Error_ChordDisplayNameNotEnclosed =
@@ -39,6 +34,15 @@ namespace TabML.Parser.Parsing
         public const string Error_ChordCommandletMissingFingering = "Missing chord fingering";
 
         public const string Error_ChordFingeringInvalidFingering = "Unrecognizable chord fingering";
+
+        public const string Error_ChordFingeringNotMatchingStringCount =
+            "{0} fingering specifiers is required for a chord";
+
+        public const string Warning_ChordAlreadyDefined =
+            "A chord with the same name is already defined, this one will be ignored";
+
+        public const string Suggestion_UnknownChord =
+            "'{0}' is not a known chord, please define it using the +chord instruction";
 
         public const string Error_InvalidTimeSignature =
             "Unrecognizable time signature, please use a time signature like 4/4. 4/4 assumed.";
@@ -53,6 +57,9 @@ namespace TabML.Parser.Parsing
             "Time signature with an irrational note value is not supported. 4/4 assumed.";
 
         public const string Error_InvalidKeySignature = "Unrecognizable key signature, key signature ignored";
+
+        public const string Suggestion_RedundantKeySignature =
+            "Redundant key signature, the score is already in this key";
 
         public const string Error_InvalidTempoSignature =
             "Unrecognizable tempo signature, please use a tempo signature like 4=72. Tempo signature ignored";
@@ -71,10 +78,15 @@ namespace TabML.Parser.Parsing
         public const string Warning_CapoStringsSpecifierNotEnclosed =
             "Capo strings specifier is not enclosed with ')', all strings assumed";
 
-        public const string Warning_CapoStringsSpecifierInvalidStringNumber =
+        public const string Error_CapoStringsSpecifierInvalidStringNumber =
             "Invalid string number, all strings assumed";
 
         public const string Warning_RedundantCapoStringSpecifier = "String #{0} is specified for more than once";
+
+        public const string Error_CapoInstructionAfterBarAppeared = "Capo instruction must appear before all bars";
+
+        public const string Suggestion_UselessCapoInstruction =
+            "This capo instruction is useless because it's overridden by other capo instructions";
 
         public const string Warning_RhythmSegmentMissingCloseBracket =
             "Missing close bracket, please use both brackets or don't use brackets at all";
@@ -97,7 +109,7 @@ namespace TabML.Parser.Parsing
 
         public const string Error_RhythmSegmentExpectOpeningBracket = "'[' expceted to declare a rhythm";
 
-        public const string Error_RhythmUnitBodyExpected =
+        public const string Error_BeatBodyExpected =
             "Note value, strings specification or all-string strum technique expected";
         public const string Error_BeatModifierExpected =
             "Strum technique, note effect technique, duration effect, accent or connection expected";
@@ -109,9 +121,10 @@ namespace TabML.Parser.Parsing
             "Duration effect is already specified for this note, this one will be ignored";
         public const string Warning_BeatAccentAlreadySpecified =
             "Accent is already specified for this note, this one will be ignored";
-        public const string Warning_RhythmUnitConnectionAlreadySpecified =
+        public const string Warning_BeatConnectionAlreadySpecified =
             "Connection is already specified for this note, this one will be ignored";
-
+        
+        public const string Warning_BeatsNotMatchingTimeSignature = "Beats in this bar does not match time signature";
 
         public const string Error_ArtificialHarmonicFretSpecifierNotEnclosed =
             "Artificial harmonic fret specifier is not enclosed with '>'";
@@ -119,7 +132,7 @@ namespace TabML.Parser.Parsing
         public const string Warning_SectionNameMissingCloseQuoteMark = "Missing close quote mark";
         public const string Warning_EmptySectionName = "Empty section name, ignored";
 
-        public const string Warning_AlternationTextMissingCloseQuoteMark = "Missing close quote mark";
+        public const string Warning_AlternationTextExpectedAfterColon = "Alternation text expected. If you want to use implicit alternation text, omit the colon";
         public const string Hint_EmptyAlternationText = "Empty alternation text, will use automatic index";
         public const string Error_InvalidAlternationText= "Unrecognizable alternation text, use 1 to 9 (arabic numerals) or I to IX (roman numerals)";
 
@@ -143,6 +156,9 @@ namespace TabML.Parser.Parsing
         public const string Warning_PatternBodyNotEnclosed =
             "pattern body is not enclosed with '}'";
 
+        public const string Warning_PatternInstanceBarsLessThanTemplateBars =
+            "this pattern contains less bars than it's defined in its template";
+
         public const string Error_InvalidBarLineInPattern = "Only standard bar line allowed in patterns";
 
         public const string Warning_RedundantModifiersInRestBeat =
@@ -150,5 +166,18 @@ namespace TabML.Parser.Parsing
 
         public const string Hint_RedundantModifiersInTiedBeat =
             "This is a tied beat a rest, you don't need to write it again";
+
+        public const string Warning_InconsistentAlternationTextExplicity =
+            "Either specify all alternation texts explicitly, or leave them empty at all";
+
+        public const string Warning_InconsistentAlternationTextType =
+            "Inconsistent alternation text type (arabic or roman number representation), the first representation type will be adopted";
+
+        public const string Error_DuplicatedAlternationText = "Alternation {0} is already defined";
+        public const string Error_MissingAlternationTexts = "The following alternation(s) is/are missing: {0}";
+
+        public const string Hint_FirstOpenBarLineMissing = "Missing first open bar line, standard line assumed";
+        public const string Hint_LastCloseBarLineMissing = "Missing close bar line, end line assumed";
+        public const string Warning_BarLineMissing = "Missing bar line, standard line assumed";
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
@@ -19,6 +20,17 @@ namespace TabML.Parser.AST
                 yield return this.TemplateBars;
                 yield return this.InstanceBars;
             }
+        }
+
+        internal override bool Apply(TablatureContext context, IReporter reporter)
+        {
+            if (this.InstanceBars.Bars.Count < this.TemplateBars.Bars.Count)
+            {
+                reporter.Report(ReportLevel.Warning, this.InstanceBars.Range,
+                                Messages.Warning_PatternInstanceBarsLessThanTemplateBars);
+            }
+
+
         }
     }
 }

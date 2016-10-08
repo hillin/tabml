@@ -3,12 +3,12 @@ using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing
 {
-    class BeatNoteParser : ParserBase<RhythmUnitNoteNode>
+    class BeatNoteParser : ParserBase<BeatNoteNode>
     {
-        public override bool TryParse(Scanner scanner, out RhythmUnitNoteNode result)
+        public override bool TryParse(Scanner scanner, out BeatNoteNode result)
         {
             var anchor = scanner.MakeAnchor();
-            result = new RhythmUnitNoteNode();
+            result = new BeatNoteNode();
 
             LiteralNode<PreNoteConnection> preConnection;
             Parser.TryReadPreNoteConnection(scanner, this, out preConnection);
@@ -17,8 +17,8 @@ namespace TabML.Parser.Parsing
             LiteralNode<int> stringNumber;
             if (!Parser.TryReadInteger(scanner, out stringNumber))
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                            ParseMessages.Error_RhythmUnitInvalidStringNumberInStringsSpecifier);
+                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                            Messages.Error_RhythmUnitInvalidStringNumberInStringsSpecifier);
                 result = null;
                 return false;
             }
@@ -30,8 +30,8 @@ namespace TabML.Parser.Parsing
                 LiteralNode<int> fret;
                 if (!Parser.TryReadInteger(scanner, out fret))
                 {
-                    this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                                ParseMessages.Error_RhythmUnitInvalidFretNumberInStringsSpecifier);
+                    this.Report(ReportLevel.Error, scanner.LastReadRange,
+                                Messages.Error_RhythmUnitInvalidFretNumberInStringsSpecifier);
                     result = null;
                     return false;
                 }

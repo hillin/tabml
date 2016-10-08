@@ -1,6 +1,6 @@
 ﻿namespace TabML.Parser.Parsing
 {
-    enum ParserReportLevel
+    enum ReportLevel
     {
         Hint,
         Suggestion,

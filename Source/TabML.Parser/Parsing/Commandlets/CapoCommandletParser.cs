@@ -15,14 +15,14 @@ namespace TabML.Parser.Parsing.Commandlets
             LiteralNode<int> positionNode;
             if (!Parser.TryReadInteger(scanner, out positionNode))
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_InvalidCapoPosition);
+                this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_InvalidCapoPosition);
                 commandlet = null;
                 return false;
             }
 
             if (positionNode.Value > 12)
             {
-                this.Report(ParserReportLevel.Warning, scanner.LastReadRange, ParseMessages.Warning_CapoTooHigh);
+                this.Report(ReportLevel.Warning, scanner.LastReadRange, Messages.Warning_CapoTooHigh);
             }
 
             commandlet.Position = positionNode;

@@ -34,7 +34,7 @@ namespace TabML.Parser.Parsing.Commandlets
             var tuningString = scanner.ReadToLineEnd().Trim();
             if (string.IsNullOrEmpty(tuningString))
             {
-                this.Report(ParserReportLevel.Suggestion, scanner.LastReadRange, ParseMessages.Suggestion_TuningNotSpecified);
+                this.Report(ReportLevel.Suggestion, scanner.LastReadRange, Messages.Suggestion_TuningNotSpecified);
                 return true;
             }
 
@@ -47,8 +47,8 @@ namespace TabML.Parser.Parsing.Commandlets
                 var namePartIsEmpty = namePart == string.Empty;
                 if (namePartIsEmpty)
                 {
-                    this.Report(ParserReportLevel.Hint, scanner.LastReadRange.From.AsRange(scanner),
-                                ParseMessages.Hint_RedundantColonInTuningSpecifier);
+                    this.Report(ReportLevel.Hint, scanner.LastReadRange.From.AsRange(scanner),
+                                Messages.Hint_RedundantColonInTuningSpecifier);
                 }
                 else
                 {
@@ -61,13 +61,13 @@ namespace TabML.Parser.Parsing.Commandlets
                 {
                     if (namePartIsEmpty)
                     {
-                        this.Report(ParserReportLevel.Suggestion, scanner.LastReadRange,
-                                    ParseMessages.Suggestion_TuningNotSpecified);
+                        this.Report(ReportLevel.Suggestion, scanner.LastReadRange,
+                                    Messages.Suggestion_TuningNotSpecified);
                         return true;
                     }
 
-                    this.Report(ParserReportLevel.Hint, scanner.LastReadRange.From.OffsetColumn(colonIndex).AsRange(scanner),
-                                ParseMessages.Hint_RedundantColonInTuningSpecifier);
+                    this.Report(ReportLevel.Hint, scanner.LastReadRange.From.OffsetColumn(colonIndex).AsRange(scanner),
+                                Messages.Hint_RedundantColonInTuningSpecifier);
                 }
                 else
                 {
@@ -80,7 +80,7 @@ namespace TabML.Parser.Parsing.Commandlets
                         //    var namedTuning = Tunings.GetKnownTuning(namePart);
                         //    if (namedTuning != null && namedTuning.InOctaveEquals(explicitTuning))
                         //    {
-                        //        this.Report(ParserReportLevel.Hint, scanner.LastReadRange,
+                        //        this.Report(ReportLevel.Hint, scanner.LastReadRange,
                         //                    ParseMessages.Hint_RedundantKnownTuningSpecifier, namedTuning.Name);
                         //    }
                         //}
@@ -106,7 +106,7 @@ namespace TabML.Parser.Parsing.Commandlets
                 }
             }
 
-            this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_InvalidTuning);
+            this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_InvalidTuning);
             commandlet = null;
             return false;
         }

@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using TabML.Core.Document;
 using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
 
 // ReSharper disable InconsistentNaming
 
-namespace TabML.Parser.Parsing
+namespace TabML.Parser.Parsing.Bar
 {
     class BeatParser : ParserBase<BeatNode>
     {
@@ -23,7 +22,12 @@ namespace TabML.Parser.Parsing
 
             NoteValueNode noteValue;
             var noteValueParser = new NoteValueParser();
-            noteValueParser.TryParse(scanner, out noteValue);
+            if (!noteValueParser.TryParse(scanner, out noteValue))
+            {
+                result = null;
+                return false;
+            }
+
             result.NoteValue = noteValue;
 
             scanner.SkipWhitespaces();
@@ -55,8 +59,8 @@ namespace TabML.Parser.Parsing
 
             if (noteValueIndetemined && result.Notes.Count == 0 && strumTechnique == null)
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                            ParseMessages.Error_RhythmUnitBodyExpected);
+                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                            Messages.Error_BeatBodyExpected);
                 result = null;
                 return false;
             }
@@ -82,14 +86,14 @@ namespace TabML.Parser.Parsing
 
             if (tiedNode != null && result.HasRedunantSpecifierForTied)
             {
-                this.Report(ParserReportLevel.Hint, postNoteValueAnchor.Range,
-                    ParseMessages.Hint_RedundantModifiersInTiedBeat);
+                this.Report(ReportLevel.Hint, postNoteValueAnchor.Range,
+                    Messages.Hint_RedundantModifiersInTiedBeat);
             }
 
             if (restNode != null && result.HasRedunantSpecifierForRest)
             {
-                this.Report(ParserReportLevel.Warning, postRestAnchor.Range,
-                    ParseMessages.Warning_RedundantModifiersInRestBeat);
+                this.Report(ReportLevel.Warning, postRestAnchor.Range,
+                    Messages.Warning_RedundantModifiersInRestBeat);
             }
 
             result.Range = anchor.Range;
@@ -102,8 +106,8 @@ namespace TabML.Parser.Parsing
             if (Parser.TryReadStrumTechnique(scanner, this, out strumTechnique))
             {
                 if (result.StrumTechnique != null || result.AllStringStrumTechnique != null)
-                    this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                ParseMessages.Warning_BeatStrumTechniqueAlreadySpecified);
+                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                                Messages.Warning_BeatStrumTechniqueAlreadySpecified);
                 else
                 {
                     result.StrumTechnique = strumTechnique;
@@ -116,8 +120,8 @@ namespace TabML.Parser.Parsing
             if (Parser.TryReadNoteAccent(scanner, this, out accent))
             {
                 if (result.Accent != null)
-                    this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                ParseMessages.Warning_BeatAccentAlreadySpecified);
+                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                                Messages.Warning_BeatAccentAlreadySpecified);
                 else
                 {
                     result.Accent = accent;
@@ -131,8 +135,8 @@ namespace TabML.Parser.Parsing
             if (Parser.TryReadNoteEffectTechnique(scanner, this, out noteEffectTechnique, out techniqueParameter))
             {
                 if (result.EffectTechnique != null)
-                    this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                ParseMessages.Warning_BeatNoteEffectTechniqueAlreadySpecified);
+                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                                Messages.Warning_BeatNoteEffectTechniqueAlreadySpecified);
                 else
                 {
                     result.EffectTechnique = noteEffectTechnique;
@@ -149,8 +153,8 @@ namespace TabML.Parser.Parsing
             if (Parser.TryReadNoteDurationEffect(scanner, this, out durationEffect))
             {
                 if (result.DurationEffect != null)
-                    this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                ParseMessages.Warning_BeatNoteDurationEffectAlreadySpecified);
+                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                                Messages.Warning_BeatNoteDurationEffectAlreadySpecified);
                 else
                 {
                     result.DurationEffect = durationEffect;
@@ -159,13 +163,13 @@ namespace TabML.Parser.Parsing
                 return true;
             }
 
-            this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                        ParseMessages.Error_BeatModifierExpected);
+            this.Report(ReportLevel.Error, scanner.LastReadRange,
+                        Messages.Error_BeatModifierExpected);
             return false;
         }
 
 
-        private bool TryReadNotes(Scanner scanner, ICollection<RhythmUnitNoteNode> notes)
+        private bool TryReadNotes(Scanner scanner, ICollection<BeatNoteNode> notes)
         {
             if (!scanner.Expect('('))
                 return true;
@@ -175,7 +179,7 @@ namespace TabML.Parser.Parsing
             var parenthesisClosed = false;
             while (!scanner.EndOfLine)
             {
-                RhythmUnitNoteNode note;
+                BeatNoteNode note;
                 if (!new BeatNoteParser().TryParse(scanner, out note))
                 {
                     return false;
@@ -195,8 +199,8 @@ namespace TabML.Parser.Parsing
 
             if (!parenthesisClosed)
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                            ParseMessages.Error_RhythmCommandletMissingCloseParenthesisInStringsSpecifier);
+                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                            Messages.Error_RhythmCommandletMissingCloseParenthesisInStringsSpecifier);
                 return false;
             }
 

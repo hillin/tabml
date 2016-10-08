@@ -18,8 +18,8 @@ namespace TabML.Parser.Parsing.Commandlets
                     case Scanner.ParenthesisReadResult.Success:
                         break;
                     case Scanner.ParenthesisReadResult.MissingClose:
-                        this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                    ParseMessages.Warning_SectionNameMissingCloseQuoteMark);
+                        this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                                    Messages.Warning_SectionNameMissingCloseQuoteMark);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -30,7 +30,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
             sectionName = sectionName.Trim();
             if (string.IsNullOrEmpty(sectionName))
-                this.Report(ParserReportLevel.Warning, scanner.LastReadRange, ParseMessages.Warning_EmptySectionName);
+                this.Report(ReportLevel.Warning, scanner.LastReadRange, Messages.Warning_EmptySectionName);
 
             var sectionNameNode = new LiteralNode<string>(sectionName, scanner.LastReadRange);
 

@@ -20,5 +20,10 @@ namespace TabML.Parser.AST
                 yield return this.Augment;
             }
         }
+
+        public NoteValue ToNoteValue()
+        {
+            return new NoteValue(this.Base.Value, this.Augment?.Value ?? NoteValueAugment.None, this.Tuplet?.Value);
+        }
     }
 }

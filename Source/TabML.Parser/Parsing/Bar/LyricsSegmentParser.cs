@@ -27,8 +27,8 @@ namespace TabML.Parser.Parsing.Bar
                         result = new LyricsSegmentNode(groupedLyrics, scanner.LastReadRange);
                         return true;
                     case Scanner.ParenthesisReadResult.MissingClose:
-                        this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                    ParseMessages.Warning_TiedLyricsNotEnclosed);
+                        this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                                    Messages.Warning_TiedLyricsNotEnclosed);
                         result = new LyricsSegmentNode(groupedLyrics, scanner.LastReadRange);
                         return true;
                     default:

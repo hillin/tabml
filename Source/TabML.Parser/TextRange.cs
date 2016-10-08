@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
+using TabML.Parser.Parsing;
 
-namespace TabML.Parser.Parsing
+namespace TabML.Parser
 {
     [DebuggerDisplay("{From} - {To}")]
     [DebuggerTypeProxy(typeof(TextRange.DebugView))]
@@ -35,7 +36,7 @@ namespace TabML.Parser.Parsing
 
 #if DEBUG
         internal Scanner Source { get; set; }
-        
+
         public string Content => this.Source == null
                                ? "(source unavailable)"
                                : this.Source.Substring(this);
@@ -87,6 +88,12 @@ namespace TabML.Parser.Parsing
         public TextRange Extend(int size)
         {
             return new TextRange(this.From, this.To.OffsetColumn(size), this.Source);
+        }
+
+        public TextRange Union(TextRange range)
+        {
+            return new TextRange(this.From > range.From ? range.From : this.From,
+                                 this.To > range.To ? this.To : range.To);
         }
     }
 }

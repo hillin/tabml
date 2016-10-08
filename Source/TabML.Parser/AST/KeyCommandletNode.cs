@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
@@ -12,6 +13,20 @@ namespace TabML.Parser.AST
             {
                 yield return this.Key;
             }
+        }
+
+        internal override bool Apply(TablatureContext context, IReporter reporter)
+        {
+            if (context.DocumentState.Key.Key.NoteNameEquals(this.Key))
+            {
+                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_RedundantKeySignature);
+                return true;
+            }
+
+            using (var state = context.AlterDocumentState())
+                state.Key = this;
+
+            return true;
         }
     }
 }

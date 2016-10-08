@@ -17,21 +17,20 @@ namespace TabML.Parser.Parsing.Commandlets
             {
                 var from = int.Parse(match.Groups[1].Value);
 
-                if (from == 0 || from > Constants.MaxStringCount)
+                if (from == 0 || from > Defaults.Strings)
                 {
-                    // report a warning here, because we can still go on parsing by ignoring the strings specifier
-                    this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                ParseMessages.Warning_CapoStringsSpecifierInvalidStringNumber);
+                    this.Report(ReportLevel.Error, scanner.LastReadRange,
+                                Messages.Error_CapoStringsSpecifierInvalidStringNumber);
                     result = null;
                     return false;
                 }
 
                 var to = int.Parse(match.Groups[2].Value);
 
-                if (to == 0 || to > Constants.MaxStringCount)
+                if (to == 0 || to > Defaults.Strings)
                 {
-                    this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                ParseMessages.Warning_CapoStringsSpecifierInvalidStringNumber);
+                    this.Report(ReportLevel.Error, scanner.LastReadRange,
+                                Messages.Error_CapoStringsSpecifierInvalidStringNumber);
                     result = null;
                     return false;
                 }
@@ -53,18 +52,18 @@ namespace TabML.Parser.Parsing.Commandlets
                     if (string.IsNullOrEmpty(str)
                         || !int.TryParse(str, out stringNumber)
                         || stringNumber == 0
-                        || stringNumber > Constants.MaxStringCount)
+                        || stringNumber > Defaults.Strings)
                     {
-                        this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                    ParseMessages.Warning_CapoStringsSpecifierInvalidStringNumber);
+                        this.Report(ReportLevel.Error, scanner.LastReadRange,
+                                    Messages.Error_CapoStringsSpecifierInvalidStringNumber);
                         result = null;
                         return false;
                     }
 
                     if (discreteResult.Strings.Any(s => s.Value == stringNumber))
                     {
-                        this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                    ParseMessages.Warning_RedundantCapoStringSpecifier, stringNumber);
+                        this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                                    Messages.Warning_RedundantCapoStringSpecifier, stringNumber);
                     }
                     else
                         discreteResult.Strings.Add(new LiteralNode<int>(stringNumber, scanner.LastReadRange));
@@ -75,8 +74,8 @@ namespace TabML.Parser.Parsing.Commandlets
 
             if (!scanner.Expect(')'))
             {
-                this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                            ParseMessages.Warning_CapoStringsSpecifierNotEnclosed);
+                this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                            Messages.Warning_CapoStringsSpecifierNotEnclosed);
             }
             
             return true;

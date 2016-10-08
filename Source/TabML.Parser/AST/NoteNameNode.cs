@@ -17,5 +17,18 @@ namespace TabML.Parser.AST
                     yield return this.Accidental;
             }
         }
+
+        public bool NoteNameEquals(NoteNameNode other)
+        {
+            if (this.BaseNoteName.Value != other?.BaseNoteName.Value)
+                return false;
+
+            if (this.Accidental == null)
+            {
+                return other.Accidental == null;
+            }
+
+            return this.Accidental.Value == other.Accidental?.Value;
+        }
     }
 }

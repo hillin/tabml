@@ -25,12 +25,12 @@ namespace TabML.Parser.Parsing
             }
         }
 
-        public static bool TryCreate(Scanner scanner, IParseReporter reporter, out CommandletParserBase parser)
+        public static bool TryCreate(Scanner scanner, IReporter reporter, out CommandletParserBase parser)
         {
             var anchor = scanner.MakeAnchor();
             if (!scanner.Expect('+'))
             {
-                reporter.Report(ParserReportLevel.Error, scanner.Pointer.AsRange(scanner), ParseMessages.Error_InstructionExpected);
+                reporter.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner), Messages.Error_InstructionExpected);
                 parser = null;
                 return false;
             }
@@ -39,7 +39,7 @@ namespace TabML.Parser.Parsing
             Type parserType;
             if (!CommandletParsers.TryGetValue(name.ToLowerInvariant(), out parserType))
             {
-                reporter.Report(ParserReportLevel.Error, scanner.Pointer.AsRange(scanner), ParseMessages.Error_UnknownInstruction);
+                reporter.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner), Messages.Error_UnknownInstruction);
                 parser = null;
                 return false;
             }

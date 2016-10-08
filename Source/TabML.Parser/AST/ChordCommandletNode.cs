@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class ChordCommandletNode : CommandletNode, IRequireStringValidation
+    class ChordCommandletNode : CommandletNode
     {
         public LiteralNode<string> Name { get; set; }
         public LiteralNode<string> DisplayName { get; set; }
@@ -18,5 +21,24 @@ namespace TabML.Parser.AST
                 yield return this.Fingering;
             }
         }
+
+        internal override bool Apply(TablatureContext context, IReporter reporter)
+        {
+            if (context.DocumentState.DefinedChords.Any(
+                c => c.DisplayName.Value.Equals(this.DisplayName.Value,
+                                                StringComparison.InvariantCultureIgnoreCase)))
+            {
+                reporter.Report(ReportLevel.Warning, this.Range, Messages.Warning_ChordAlreadyDefined);
+                return true;
+            }
+
+            using (var state = context.AlterDocumentState())
+            {
+                state.DefinedChords.Add(this);
+            }
+
+            return true;
+        }
+        
     }
 }

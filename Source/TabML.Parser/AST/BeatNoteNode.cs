@@ -3,7 +3,7 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.AST
 {
-    class RhythmUnitNoteNode : Node
+    class BeatNoteNode : Node
     {
         public LiteralNode<int> String { get; set; }
         public LiteralNode<int> Fret { get; set; }

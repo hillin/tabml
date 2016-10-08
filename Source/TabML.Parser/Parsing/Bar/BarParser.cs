@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using TabML.Core.Document;
+using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing.Bar
@@ -51,7 +51,7 @@ namespace TabML.Parser.Parsing.Bar
                 {
                     if (isLyricsRead)
                     {
-                        this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_UnexpectedLyrics);
+                        this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_UnexpectedLyrics);
                         result = null;
                         return false;
                     }

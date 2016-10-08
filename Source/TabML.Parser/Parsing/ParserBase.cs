@@ -2,7 +2,7 @@
 
 namespace TabML.Parser.Parsing
 {
-    abstract class ParserBase<TNode> : IParseReporter
+    abstract class ParserBase<TNode> : IReporter
         where TNode : Node
     {
         public bool HasError { get; private set; }
@@ -13,17 +13,17 @@ namespace TabML.Parser.Parsing
             return null;
         }
 
-        protected void Report(ParserReportLevel level, TextRange position, string message, params object[] args)
+        protected void Report(ReportLevel level, TextRange? position, string message, params object[] args)
         {
-            if (level == ParserReportLevel.Error)
+            if (level == ReportLevel.Error)
                 this.HasError = true;
 
-            if (level == ParserReportLevel.Error)
+            if (level == ReportLevel.Error)
                 throw new System.Exception(message);
             //todo
         }
 
-        void IParseReporter.Report(ParserReportLevel level, TextRange position, string message, params object[] args)
+        void IReporter.Report(ReportLevel level, TextRange? position, string message, params object[] args)
         {
             this.Report(level, position, message, args);
         }

@@ -21,8 +21,8 @@ namespace TabML.Parser.Parsing
 
             if (!this.OptionalBrackets && !hasBrackets)
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                            ParseMessages.Error_RhythmSegmentExpectOpeningBracket);
+                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                            Messages.Error_RhythmSegmentExpectOpeningBracket);
                 return false;
             }
 
@@ -42,8 +42,8 @@ namespace TabML.Parser.Parsing
                     if (scanner.Peek() == ';')
                         continue;
 
-                    this.Report(ParserReportLevel.Error, scanner.Pointer.AsRange(scanner),
-                                ParseMessages.Error_UnrecognizableRhythmSegmentElement);
+                    this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner),
+                                Messages.Error_UnrecognizableRhythmSegmentElement);
                     node = null;
                     return false;
                 }
@@ -55,12 +55,12 @@ namespace TabML.Parser.Parsing
                     return true;
 
                 if (this.OptionalBrackets)
-                    this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                ParseMessages.Warning_RhythmSegmentMissingCloseBracket);
+                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                                Messages.Warning_RhythmSegmentMissingCloseBracket);
                 else
                 {
-                    this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                                ParseMessages.Error_RhythmSegmentMissingCloseBracket);
+                    this.Report(ReportLevel.Error, scanner.LastReadRange,
+                                Messages.Error_RhythmSegmentMissingCloseBracket);
                     node = null;
                     return false;
                 }
@@ -68,8 +68,8 @@ namespace TabML.Parser.Parsing
 
             if (node.Voices.Count == 0)
             {
-                this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                            ParseMessages.Warning_EmptyRhythmSegment);
+                this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                            Messages.Warning_EmptyRhythmSegment);
             }
 
             node.Range = anchor.Range;

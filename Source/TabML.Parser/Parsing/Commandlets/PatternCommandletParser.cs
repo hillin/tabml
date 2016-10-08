@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TabML.Core.Document;
+using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
 using TabML.Parser.Parsing.Bar;
 
@@ -46,7 +46,7 @@ namespace TabML.Parser.Parsing.Commandlets
                               .Where(l => l != null)
                               .Where(barLine => barLine.Value != OpenBarLine.Standard))
             {
-                this.Report(ParserReportLevel.Error, barLine.Range, ParseMessages.Error_InvalidBarLineInPattern);
+                this.Report(ReportLevel.Error, barLine.Range, Messages.Error_InvalidBarLineInPattern);
                 commandlet = null;
                 return false;
             }
@@ -57,7 +57,7 @@ namespace TabML.Parser.Parsing.Commandlets
                               .Where(l => l != null)
                               .Where(barLine => barLine.Value != CloseBarLine.Standard))
             {
-                this.Report(ParserReportLevel.Error, barLine.Range, ParseMessages.Error_InvalidBarLineInPattern);
+                this.Report(ReportLevel.Error, barLine.Range, Messages.Error_InvalidBarLineInPattern);
                 commandlet = null;
                 return false;
             }
@@ -91,8 +91,8 @@ namespace TabML.Parser.Parsing.Commandlets
 
             if (!scanner.Expect('}'))
             {
-                this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                            ParseMessages.Warning_PatternBodyNotEnclosed);
+                this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                            Messages.Warning_PatternBodyNotEnclosed);
             }
 
             return true;

@@ -1,4 +1,5 @@
 ﻿using TabML.Parser.AST;
+using TabML.Parser.Parsing.Bar;
 
 namespace TabML.Parser.Parsing
 {
@@ -18,7 +19,7 @@ namespace TabML.Parser.Parsing
             BeatNode unit;
             while (new BeatParser().TryParse(scanner, out unit))
             {
-                result.Units.Add(unit);
+                result.Beats.Add(unit);
                 scanner.SkipWhitespaces();
 
                 if (VoiceParser.IsEndOfVoice(scanner))

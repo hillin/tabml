@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using TabML.Parser.Parsing;
 
-namespace TabML.Parser.Parsing
+namespace TabML.Parser
 {
     [DebuggerDisplay("{Row}:{Column}")]
     public struct TextPointer : IComparable<TextPointer>

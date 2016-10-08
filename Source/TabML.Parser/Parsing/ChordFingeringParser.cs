@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
-using TabML.Core.Document;
+using TabML.Core;
 using TabML.Parser.AST;
+using TabML.Parser.Document;
 
 namespace TabML.Parser.Parsing
 {
@@ -26,8 +27,8 @@ namespace TabML.Parser.Parsing
 
                 if (string.IsNullOrEmpty(str))
                 {
-                    this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                ParseMessages.Error_ChordFingeringInvalidFingering);
+                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                                Messages.Error_ChordFingeringInvalidFingering);
                     result = null;
                     return false;
                 }
@@ -37,14 +38,14 @@ namespace TabML.Parser.Parsing
                     case "x":
                     case "X":
                     case "-":
-                        result.Fingerings.Add(new LiteralNode<int>(ChordDefinition.FingeringSkipString, scanner.LastReadRange));
+                        result.Fingerings.Add(new LiteralNode<int>(ChordFingeringNode.FingeringSkipString, scanner.LastReadRange));
                         break;
                     default:
                         int fretNumber;
                         if (!int.TryParse(str, out fretNumber)) // todo: prevent too large fret number
                         {
-                            this.Report(ParserReportLevel.Warning, scanner.LastReadRange,
-                                        ParseMessages.Error_ChordFingeringInvalidFingering);
+                            this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                                        Messages.Error_ChordFingeringInvalidFingering);
                             result = null;
                             return false;
                         }
@@ -53,6 +54,14 @@ namespace TabML.Parser.Parsing
                 }
 
                 scanner.SkipWhitespaces();
+            }
+
+            if (result.Fingerings.Count != Defaults.Strings)
+            {
+                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                            Messages.Error_ChordFingeringNotMatchingStringCount, Defaults.Strings);
+                result = null;
+                return false;
             }
 
             result.Range = anchor.Range;

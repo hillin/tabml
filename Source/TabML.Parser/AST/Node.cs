@@ -45,5 +45,11 @@ namespace TabML.Parser.AST
         {
             _range.To = to;
         }
+
+        internal virtual bool Apply(TablatureContext context, IReporter reporter)
+        {
+            return true;
+        }
+
     }
 }

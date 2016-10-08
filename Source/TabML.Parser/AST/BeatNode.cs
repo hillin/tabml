@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
-using TabML.Core.Document;
 using TabML.Core.MusicTheory;
+using TabML.Parser.Document;
+using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class BeatNode : Node, IRequireStringValidation
+    class BeatNode : Node
     {
         public NoteValueNode NoteValue { get; set; }
         public RestNode Rest { get; set; }
         public TiedNode Tied { get; set; }
         public LiteralNode<AllStringStrumTechnique> AllStringStrumTechnique { get; set; }
-        public List<RhythmUnitNoteNode> Notes { get; }
+        public List<BeatNoteNode> Notes { get; }
         public LiteralNode<StrumTechnique> StrumTechnique { get; set; }
         public LiteralNode<NoteEffectTechnique> EffectTechnique { get; set; }
         public LiteralNode<double> EffectTechniqueParameter { get; set; }
@@ -38,13 +39,12 @@ namespace TabML.Parser.AST
             get
             {
                 if (this.Tied != null)
-                    yield return this.NoteValue;
+                    yield return this.Tied;
 
-                if (this.NoteValue != null)
-                    yield return this.NoteValue;
+                yield return this.NoteValue;
 
                 if (this.Rest != null)
-                    yield return this.NoteValue;
+                    yield return this.Rest;
 
                 if (this.AllStringStrumTechnique != null)
                     yield return this.AllStringStrumTechnique;
@@ -59,8 +59,24 @@ namespace TabML.Parser.AST
 
         public BeatNode()
         {
-            this.Notes = new List<RhythmUnitNoteNode>();
+            this.Notes = new List<BeatNoteNode>();
             this.Modifiers = new List<Node>();
+        }
+
+        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Beat beat)
+        {
+            beat = new Beat
+            {
+                Range = this.Range,
+                StrumTechnique = this.StrumTechnique?.Value ?? Core.MusicTheory.StrumTechnique.None,
+                Accent = this.Accent?.Value ?? NoteAccent.Normal,
+                DurationEffect = this.DurationEffect?.Value ?? NoteDurationEffect.None,
+                EffectTechnique = this.EffectTechnique?.Value ?? NoteEffectTechnique.None,
+                EffectTechniqueParameter = this.EffectTechniqueParameter?.Value ?? default(double),
+                IsRest = this.Rest != null,
+                IsTied = this.Tied != null,
+                NoteValue = this.NoteValue.ToNoteValue(),
+            };
         }
     }
 }

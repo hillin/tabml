@@ -43,7 +43,7 @@ namespace TabML.Parser.Parsing.Bar
 
             for (var i = result.LyricsSegments.Count - 1; i >= 0; --i)
             {
-                if (result.LyricsSegments[i].LyricsSegment.Value.Length == 0)
+                if (result.LyricsSegments[i].Text.Value.Length == 0)
                     result.LyricsSegments.RemoveAt(i);
                 else
                     break;

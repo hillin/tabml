@@ -16,8 +16,8 @@ namespace TabML.Parser.Parsing.Commandlets
 
             if (!match.Success)
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                            ParseMessages.Error_InvalidTempoSignature);
+                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                            Messages.Error_InvalidTempoSignature);
                 commandlet = null;
                 return false;
             }
@@ -29,8 +29,8 @@ namespace TabML.Parser.Parsing.Commandlets
                 BaseNoteValue noteValue;
                 if (!BaseNoteValues.TryParse(noteValueNumber, out noteValue))
                 {
-                    this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                                ParseMessages.Error_IrrationalNoteValueInTempoSignatureNotSupported);
+                    this.Report(ReportLevel.Error, scanner.LastReadRange,
+                                Messages.Error_IrrationalNoteValueInTempoSignatureNotSupported);
                     commandlet = null;
                     return false;
                 }
@@ -43,16 +43,16 @@ namespace TabML.Parser.Parsing.Commandlets
 
             if (beats == 0)
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                            ParseMessages.Error_TempoSignatureSpeedTooLow);
+                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                            Messages.Error_TempoSignatureSpeedTooLow);
                 commandlet = null;
                 return false;
             }
 
             if (beats > 10000)
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange,
-                            ParseMessages.Error_TempoSignatureSpeedTooFast);
+                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                            Messages.Error_TempoSignatureSpeedTooFast);
                 commandlet = null;
                 return false;
             }

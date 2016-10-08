@@ -13,7 +13,7 @@ namespace TabML.Parser.Parsing.Commandlets
             var match = scanner.Match(@"(\d+)\s*\/\s*(\d+)");
             if (!match.Success)
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_InvalidTimeSignature);
+                this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_InvalidTimeSignature);
                 commandlet = null;
                 return false;
             }
@@ -22,7 +22,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
             if (beats > 32)
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_UnsupportedBeatsInTimeSignature);
+                this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_UnsupportedBeatsInTimeSignature);
                 commandlet = null;
                 return false;
             }
@@ -32,7 +32,7 @@ namespace TabML.Parser.Parsing.Commandlets
             var noteValueNumber = int.Parse(match.Groups[2].Value);
             if (noteValueNumber > 32)
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_UnsupportedNoteValueInTimeSignature);
+                this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_UnsupportedNoteValueInTimeSignature);
                 commandlet = null;
                 return false;
             }
@@ -40,7 +40,7 @@ namespace TabML.Parser.Parsing.Commandlets
             BaseNoteValue noteValue;
             if (!BaseNoteValues.TryParse(noteValueNumber, out noteValue))
             {
-                this.Report(ParserReportLevel.Error, scanner.LastReadRange, ParseMessages.Error_IrrationalNoteValueInTimeSignatureNotSupported);
+                this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_IrrationalNoteValueInTimeSignatureNotSupported);
                 commandlet = null;
                 return false;
             }
