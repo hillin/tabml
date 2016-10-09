@@ -37,6 +37,9 @@ namespace TabML.Parser.AST
 
         public bool ValueEquals(TempoSignature other)
         {
+            if (other == null)
+                return false;
+
             if (this.NoteValue == null)
             {
                 if (other.Tempo.NoteValue != BaseNoteValue.Quater)
