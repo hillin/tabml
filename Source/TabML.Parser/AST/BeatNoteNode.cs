@@ -5,7 +5,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class BeatNoteNode : Node, IValueEquatable<BeatNoteNode>, IDocumentElementFactory<BeatNote>
+    class BeatNoteNode : Node, IDocumentElementFactory<BeatNote>
     {
         public LiteralNode<int> String { get; set; }
         public LiteralNode<int> Fret { get; set; }
@@ -29,15 +29,24 @@ namespace TabML.Parser.AST
             }
         }
 
-        public bool ValueEquals(BeatNoteNode other)
+        public bool ValueEquals(BeatNote other)
         {
             if (other == null)
                 return false;
 
-            return ValueEquatable.ValueEquals(this.String, other.String)
-                   && ValueEquatable.ValueEquals(this.Fret, other.Fret)
-                   && ValueEquatable.ValueEquals(this.PreConnection, other.PreConnection)
-                   && ValueEquatable.ValueEquals(this.PostConnection, other.PostConnection);
+            if (this.String.Value != other.String)
+                return false;
+
+            if ((this.Fret?.Value ?? BeatNote.UnspecifiedFret) != other.Fret)
+                return false;
+
+            if ((this.PreConnection?.Value ?? PreNoteConnection.None) != other.PreConnection)
+                return false;
+
+            if ((this.PostConnection?.Value ?? PostNoteConnection.None) != other.PostConnection)
+                return false;
+
+            return true;
         }
 
         public bool ToDocumentElement(TablatureContext context, IReporter reporter, out BeatNote element)

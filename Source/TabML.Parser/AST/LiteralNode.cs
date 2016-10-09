@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
 
     [DebuggerDisplay("literal: {Value}")]
-    class LiteralNode<T> : Node, IValueEquatable<LiteralNode<T>>
+    class LiteralNode<T> : Node
     {
         public T Value { get; set; }
 
@@ -22,10 +23,6 @@ namespace TabML.Parser.AST
             this.Value = value;
             this.Range = range;
         }
-
-        public bool ValueEquals(LiteralNode<T> other)
-        {
-            return other != null && this.Value.Equals(other.Value);
-        }
+        
     }
 }

@@ -4,6 +4,8 @@ namespace TabML.Core.MusicTheory
 {
     public struct NoteValue : IComparable<NoteValue>
     {
+
+
         public static bool TryResolveFromDuration(double duration, out NoteValue noteValue, bool complex = false)
         {
             const double tolerance = 1e-7;
@@ -96,9 +98,53 @@ namespace TabML.Core.MusicTheory
             return this.GetDuration().CompareTo(other.GetDuration());
         }
 
+        public static bool operator ==(NoteValue n1, NoteValue n2)
+        {
+            return n1.CompareTo(n2) == 0;
+        }
+
+        public static bool operator !=(NoteValue n1, NoteValue n2)
+        {
+            return n1.CompareTo(n2) != 0;
+        }
+
+        public static bool operator >(NoteValue n1, NoteValue n2)
+        {
+            return n1.CompareTo(n2) > 0;
+        }
+
+        public static bool operator <(NoteValue n1, NoteValue n2)
+        {
+            return n1.CompareTo(n2) < 0;
+        }
+
         public double GetBeats(BaseNoteValue beatLength)
         {
             return this.GetDuration() / beatLength.GetDuration();
+        }
+
+        public bool Equals(NoteValue other)
+        {
+            return this.Base == other.Base && this.Augment == other.Augment && this.Tuplet == other.Tuplet;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (null == obj)
+                return false;
+
+            return obj is NoteValue && this.Equals((NoteValue)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (int)this.Base;
+                hashCode = (hashCode * 397) ^ (int)this.Augment;
+                hashCode = (hashCode * 397) ^ this.Tuplet;
+                return hashCode;
+            }
         }
     }
 }

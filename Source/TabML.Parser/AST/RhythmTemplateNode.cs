@@ -5,7 +5,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class RhythmTemplateNode : Node, IValueEquatable<RhythmTemplateNode>, IDocumentElementFactory<Rhythm>
+    class RhythmTemplateNode : Node, IDocumentElementFactory<RhythmTemplate>
     {
         public List<RhythmTemplateSegmentNode> Segments { get; }
 
@@ -16,7 +16,7 @@ namespace TabML.Parser.AST
 
         public override IEnumerable<Node> Children => this.Segments;
 
-        public bool ValueEquals(RhythmTemplateNode other)
+        public bool ValueEquals(RhythmTemplate other)
         {
             if (other == null)
                 return false;
@@ -25,13 +25,16 @@ namespace TabML.Parser.AST
                 && !this.Segments.Where((t, i) => !t.ValueEquals(other.Segments[i])).Any();
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Rhythm rhythm)
+        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out RhythmTemplate rhythm)
         {
-            rhythm = new Rhythm();  // do not specify range
+            rhythm = new RhythmTemplate
+            {
+                Range = this.Range
+            };
 
             foreach (var segment in this.Segments)
             {
-                RhythmSegment rhythmSegment;
+                RhythmTemplateSegment rhythmSegment;
                 if (!segment.ToDocumentElement(context, reporter, out rhythmSegment))
                     return false;
 
@@ -40,5 +43,6 @@ namespace TabML.Parser.AST
 
             return true;
         }
+
     }
 }

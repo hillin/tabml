@@ -11,63 +11,6 @@ namespace TabML.Parser.AST
     [DebuggerDisplay("bar: {Range.Content}")]
     class BarNode : TopLevelNode, IDocumentElementFactory<Bar>
     {
-
-        private static Rhythm ApplyRhythmTemplate(Rhythm template, Rhythm rhythm, IReporter reporter)
-        {
-            if (rhythm == null)
-                return template;
-
-            if (rhythm.Segments.Count == 0) // empty rhythm, should be filled with rest
-                return rhythm;
-
-            if (rhythm.Segments.Any(s => s.Voices.Count != 0))  // rhythm already defined
-                return rhythm;
-
-            if (rhythm.Segments.Count > template.Segments.Count)
-            {
-                reporter.Report(ReportLevel.Warning, rhythm.Range,
-                                Messages.Warning_TooManyChordsToMatchRhythmTemplate);
-
-                for (var i = 0; i < template.Segments.Count; ++i)
-                {
-                    rhythm.Segments[i].Voices.AddRange(template.Segments[i].Voices);
-                }
-
-                for (var i = template.Segments.Count; i < rhythm.Segments.Count; ++i)
-                {
-                    rhythm.Segments[i].IsOmittedByTemplate = true;
-                }
-            }
-            else if (rhythm.Segments.Count < template.Segments.Count && rhythm.Segments.Count != 1)
-            {
-                reporter.Report(ReportLevel.Warning, rhythm.Range,
-                                Messages.Warning_InsufficientChordsToMatchRhythmTemplate);
-
-                var lastChord = rhythm.Segments[rhythm.Segments.Count - 1].Chord;
-
-                for (var i = 0; i < rhythm.Segments.Count; ++i)
-                {
-                    rhythm.Segments[i].Voices.AddRange(template.Segments[i].Voices);
-                }
-
-                for (var i = rhythm.Segments.Count; i < template.Segments.Count; ++i)
-                {
-                    var segment = template.Segments[i].Clone();
-                    segment.Chord = lastChord;
-                    rhythm.Segments.Add(segment);
-                }
-            }
-            else
-            {
-                for (var i = 0; i < template.Segments.Count; ++i)
-                {
-                    rhythm.Segments[i].Voices.AddRange(template.Segments[i].Voices);
-                }
-            }
-
-            return rhythm;
-        }
-
         public LiteralNode<OpenBarLine> OpenLine { get; set; }
         public LiteralNode<CloseBarLine> CloseLine { get; set; }
         public RhythmNode Rhythm { get; set; }
@@ -94,6 +37,16 @@ namespace TabML.Parser.AST
             if (!this.ToDocumentElement(context, reporter, out bar))
                 return false;
 
+
+            if (bar.Rhythm != null && bar.Lyrics != null)
+            {
+                var beats = bar.Rhythm.Segments.SelectMany(s => s.Voices[0].Beats).Count();
+                if (beats < bar.Lyrics.Segments.Count)
+                {
+                    reporter.Report(ReportLevel.Suggestion, bar.Lyrics.Range, Messages.Suggestion_LyricsTooLong);
+                }
+            }
+
             context.AddBar(bar);
 
             return true;
@@ -113,7 +66,7 @@ namespace TabML.Parser.AST
                 }
 
                 if (context.DocumentState.RhythmTemplate != null)
-                    rhythm = BarNode.ApplyRhythmTemplate(context.DocumentState.RhythmTemplate, rhythm, reporter);
+                    rhythm = context.DocumentState.RhythmTemplate.Apply(rhythm, reporter);
             }
 
             Lyrics lyrics;
@@ -123,15 +76,6 @@ namespace TabML.Parser.AST
             {
                 bar = null;
                 return false;
-            }
-
-            if (rhythm != null && lyrics != null)
-            {
-                var beats = rhythm.Segments.SelectMany(s => s.Voices[0].Beats).Count();
-                if (beats < lyrics.Segments.Count)
-                {
-                    reporter.Report(ReportLevel.Suggestion, lyrics.Range, Messages.Suggestion_LyricsTooLong);
-                }
             }
 
             bar = new Bar

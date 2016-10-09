@@ -13,10 +13,9 @@ namespace TabML.Parser.Validation
         {
             foreach (var capo in
                 context.DocumentState
-                       .CapoInstructions
-                       .Where(capo => capo.StringsSpecifier
-                                          .GetStringNumbers()
-                                          .All(n => capo.Position.Value < context.DocumentState.CapoFretOffsets[n - 1]))
+                       .Capos
+                       .Where(capo => capo.CapoInfo.AffectedStrings
+                                          .All(n => capo.CapoInfo.Position < context.DocumentState.CapoFretOffsets[n - 1]))
                 )
             {
                 reporter.Report(ReportLevel.Suggestion, capo.Range, Messages.Suggestion_UselessCapoInstruction);

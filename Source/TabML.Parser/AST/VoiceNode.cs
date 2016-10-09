@@ -6,7 +6,7 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.AST
 {
-    class VoiceNode : Node, IValueEquatable<VoiceNode>, IDocumentElementFactory<Voice>
+    class VoiceNode : Node, IDocumentElementFactory<Voice>
     {
         public List<BeatNode> Beats { get; }
         public double ExpectedDuration { get; set; }
@@ -68,7 +68,8 @@ namespace TabML.Parser.AST
             return true;
         }
 
-        public bool ValueEquals(VoiceNode other)
+
+        public bool ValueEquals(Voice other)
         {
             if (other == null)
                 return false;

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using TabML.Core.MusicTheory;
+using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class TempoCommandletNode : CommandletNode, IValueEquatable<TempoCommandletNode>
+    class TempoCommandletNode : CommandletNode, IDocumentElementFactory<TempoSignature>
     {
         public LiteralNode<BaseNoteValue> NoteValue { get; set; }
         public LiteralNode<int> Beats { get; set; }
@@ -22,36 +23,47 @@ namespace TabML.Parser.AST
 
         internal override bool Apply(TablatureContext context, IReporter reporter)
         {
-            if (context.DocumentState.Tempo?.ValueEquals(this) == true)
-            {
-                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_UselessTempoInstruction);
-                return true;
-            }
+            TempoSignature tempo;
+            if (!this.ToDocumentElement(context, reporter, out tempo))
+                return false;
 
             using (var state = context.AlterDocumentState())
             {
-                state.Tempo = this;
+                state.Tempo = tempo;
             }
 
             return true;
         }
 
-        public bool ValueEquals(TempoCommandletNode other)
+        public bool ValueEquals(TempoSignature other)
         {
             if (this.NoteValue == null)
             {
-                if (other.NoteValue != null && other.NoteValue.Value != BaseNoteValue.Quater)
+                if (other.Tempo.NoteValue != BaseNoteValue.Quater)
                     return false;
             }
-            else if (other.NoteValue == null)
-            {
-                if (this.NoteValue.Value != BaseNoteValue.Quater)
-                    return false;
-            }
-            else if (this.NoteValue.Value != other.NoteValue.Value)
+            else if (this.NoteValue.Value != other.Tempo.NoteValue)
                 return false;
 
-            return this.Beats.Value == other.Beats.Value;
+            return this.Beats.Value == other.Tempo.Beats;
+        }
+
+        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out TempoSignature element)
+        {
+            if (this.ValueEquals(context.DocumentState.Tempo))
+            {
+                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_UselessTempoInstruction);
+                element = null;
+                return false;
+            }
+
+            element = new TempoSignature
+            {
+                Range = this.Range,
+                Tempo = new Tempo(this.Beats.Value, this.NoteValue?.Value ?? BaseNoteValue.Quater)
+            };
+
+            return true;
         }
     }
 }

@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabML.Core.MusicTheory;
+using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class AlternateCommandletNode : CommandletNode
+    internal class AlternateCommandletNode : CommandletNode, IDocumentElementFactory<Alternation>
     {
         public List<LiteralNode<string>> AlternationTexts { get; }
 
@@ -22,51 +23,88 @@ namespace TabML.Parser.AST
 
         internal override bool Apply(TablatureContext context, IReporter reporter)
         {
+            Alternation alternation;
+            if (!this.ToDocumentElement(context, reporter, out alternation))
+                return false;
+
+            if (context.DocumentState.AlternationTextExplicity != Explicity.NotSpecified &&
+                alternation.Explicity != context.DocumentState.AlternationTextExplicity)
+            {
+                reporter.Report(ReportLevel.Warning, this.Range.To.AsRange(),
+                                    Messages.Warning_InconsistentAlternationTextExplicity);
+            }
+
             using (var state = context.AlterDocumentState())
             {
-                if (this.AlternationTexts.Count == 0)   // implicit
-                {
-                    if (state.AlternationTextExplicity == Explicity.Explicit)
-                        reporter.Report(ReportLevel.Warning, this.Range.To.AsRange(),
-                                        Messages.Warning_InconsistentAlternationTextExplicity);
-                    else
-                        state.AlternationTextExplicity = Explicity.Implicit;
-
-                    var implicitIndex = state.DefinedAlternationIndices.Max() + 1;
-                    state.DefinedAlternationIndices.Add(implicitIndex);
-                    state.CurrentAlternation = this;
-
-                    return true;
-                }
-
-                foreach (var alternationText in this.AlternationTexts)
-                {
-                    int index;
-                    AlternationTextType type;
-                    Debug.Assert(AlternationText.TryParse(alternationText.Value,
-                                                          out index, out type));
-
-                    if (state.AlternationTextType != type)
-                    {
-                        reporter.Report(ReportLevel.Warning, alternationText.Range,
-                                        Messages.Warning_InconsistentAlternationTextType);
-                    }
-                    else
-                        state.AlternationTextType = type;
-
-                    if (state.DefinedAlternationIndices.Contains(index))
-                    {
-                        reporter.Report(ReportLevel.Error, alternationText.Range,
-                                        Messages.Error_DuplicatedAlternationText, alternationText.Value);
-                        return false;
-                    }
-
+                foreach (var index in alternation.Indices)
                     state.DefinedAlternationIndices.Add(index);
-                }
+
+                state.CurrentAlternation = alternation;
+                state.AlternationTextType = alternation.TextType;
+                state.AlternationTextExplicity = alternation.Explicity;
+            }
+
+            return true;
+        }
+
+        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Alternation element)
+        {
+
+            if (this.AlternationTexts.Count == 0) // implicit
+            {
+                var implicitIndex = context.DocumentState.DefinedAlternationIndices.Max() + 1;
+                element = new Alternation
+                {
+                    Range = this.Range,
+                    TextType = context.DocumentState.AlternationTextType ?? AlternationTextType.Arabic,
+                    Explicity = Explicity.Implicit,
+                    Indices = new[] { implicitIndex }
+                };
 
                 return true;
             }
-        }
 
+            element = new Alternation
+            {
+                Range = this.Range,
+                Explicity = Explicity.Explicit
+            };
+
+            var referenceTextType = context.DocumentState.AlternationTextType;
+            var indices = new List<int>();
+            foreach (var alternationText in this.AlternationTexts)
+            {
+                int index;
+                AlternationTextType textType;
+                Debug.Assert(AlternationText.TryParse(alternationText.Value,
+                                                      out index, out textType));
+
+                if (referenceTextType != null && referenceTextType.Value != textType)
+                {
+                    reporter.Report(ReportLevel.Warning, alternationText.Range,
+                                    Messages.Warning_InconsistentAlternationTextType);
+                }
+                else
+                    referenceTextType = textType;
+
+                if (context.DocumentState.DefinedAlternationIndices.Contains(index))
+                {
+                    reporter.Report(ReportLevel.Error, alternationText.Range,
+                                    Messages.Error_DuplicatedAlternationText, alternationText.Value);
+
+                    element = null;
+                    return false;
+                }
+
+                indices.Add(index);
+            }
+
+            Debug.Assert(referenceTextType != null, "referenceTextType != null");
+            element.TextType = referenceTextType.Value;
+
+            element.Indices = indices.ToArray();
+
+            return true;
+        }
     }
 }

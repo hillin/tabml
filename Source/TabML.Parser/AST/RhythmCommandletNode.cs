@@ -4,7 +4,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class RhythmCommandletNode : CommandletNode, IValueEquatable<RhythmCommandletNode>
+    class RhythmCommandletNode : CommandletNode
     {
         public RhythmTemplateNode TemplateNode { get; }
 
@@ -20,29 +20,28 @@ namespace TabML.Parser.AST
 
         internal override bool Apply(TablatureContext context, IReporter reporter)
         {
-            if (context.DocumentState.RhythmInstruction != null && context.DocumentState.RhythmInstruction.ValueEquals(this))
+            if (context.DocumentState.RhythmTemplate != null && this.Equals(context.DocumentState.RhythmTemplate))
             {
                 reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_UselessRhythmInstruction);
                 return true;
             }
 
-            Rhythm rhythm;
-            if (!this.TemplateNode.ToDocumentElement(context, reporter, out rhythm))
+            RhythmTemplate rhythmTemplate;
+            if (!this.TemplateNode.ToDocumentElement(context, reporter, out rhythmTemplate))
                 return false;
 
             using (var state = context.AlterDocumentState())
             {
-                state.RhythmTemplate = rhythm;
-                state.RhythmInstruction = this;
+                state.RhythmTemplate = rhythmTemplate;
             }
 
             return true;
         }
 
-        public bool ValueEquals(RhythmCommandletNode other)
+        public bool Equals(RhythmTemplate other)
         {
-            return other != null && this.TemplateNode.ValueEquals(other.TemplateNode);
+            return this.TemplateNode.ValueEquals(other);
         }
-        
+
     }
 }

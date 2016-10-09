@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using TabML.Core.MusicTheory;
+using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class KeyCommandletNode : CommandletNode
+    class KeyCommandletNode : CommandletNode, IDocumentElementFactory<KeySignature>
     {
         public NoteNameNode Key { get; set; }
 
@@ -17,14 +19,31 @@ namespace TabML.Parser.AST
 
         internal override bool Apply(TablatureContext context, IReporter reporter)
         {
-            if (context.DocumentState.Key?.Key.ValueEquals(this.Key) == true)
-            {
-                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_RedundantKeySignature);
-                return true;
-            }
+            KeySignature key;
+            if (!this.ToDocumentElement(context, reporter, out key))
+                return false;
 
             using (var state = context.AlterDocumentState())
-                state.Key = this;
+                state.KeySignature = key;
+
+            return true;
+        }
+
+        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out KeySignature element)
+        {
+            var noteName = this.Key.ToNoteName();
+            if (context.DocumentState.KeySignature != null && context.DocumentState.KeySignature.Key == noteName)
+            {
+                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_RedundantKeySignature);
+                element = null;
+                return false;
+            }
+
+            element = new KeySignature
+            {
+                Range = this.Range,
+                Key = noteName
+            };
 
             return true;
         }

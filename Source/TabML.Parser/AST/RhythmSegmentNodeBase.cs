@@ -6,7 +6,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    abstract class RhythmSegmentNodeBase : Node, IValueEquatable<RhythmSegmentNodeBase>, IDocumentElementFactory<RhythmSegment>
+    abstract class RhythmSegmentNodeBase : Node
     {
         public List<VoiceNode> Voices { get; }
 
@@ -17,28 +17,9 @@ namespace TabML.Parser.AST
         {
             this.Voices = new List<VoiceNode>();
         }
-
-        protected bool ValueEquals(RhythmSegmentNodeBase other)
+        
+        protected bool FillRhythmSegmentVoices(TablatureContext context, IReporter reporter, RhythmSegmentBase rhythmSegment)
         {
-            if (other == null)
-                return false;
-
-            return other.Voices.Count == this.Voices.Count
-                && !this.Voices.Where((v, i) => !v.ValueEquals(other.Voices[i])).Any();
-        }
-
-        bool IValueEquatable<RhythmSegmentNodeBase>.ValueEquals(RhythmSegmentNodeBase other)
-        {
-            return this.ValueEquals(other);
-        }
-
-        public virtual bool ToDocumentElement(TablatureContext context, IReporter reporter, out RhythmSegment rhythmSegment)
-        {
-            rhythmSegment = new RhythmSegment
-            {
-                Range = this.Range
-            };
-
             if (this.Voices.Count > 0)
             {
                 var maxDuration = this.Voices.Max(v => v.GetDuration());

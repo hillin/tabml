@@ -3,18 +3,19 @@ using System.Linq;
 using TabML.Core.MusicTheory;
 using TabML.Parser.Document;
 using TabML.Parser.Parsing;
+using AllStringStrumTechniqueEnum = TabML.Core.MusicTheory.AllStringStrumTechnique;
 using StrumTechniqueEnum = TabML.Core.MusicTheory.StrumTechnique;
 
 namespace TabML.Parser.AST
 {
-    class BeatNode : Node, IValueEquatable<BeatNode>, IDocumentElementFactory<Beat>
+    class BeatNode : Node, IDocumentElementFactory<Beat>
     {
         public NoteValueNode NoteValue { get; set; }
         public RestNode Rest { get; set; }
         public TiedNode Tied { get; set; }
-        public LiteralNode<AllStringStrumTechnique> AllStringStrumTechnique { get; set; }
+        public LiteralNode<AllStringStrumTechniqueEnum> AllStringStrumTechnique { get; set; }
         public List<BeatNoteNode> Notes { get; }
-        public LiteralNode<StrumTechnique> StrumTechnique { get; set; }
+        public LiteralNode<StrumTechniqueEnum> StrumTechnique { get; set; }
         public LiteralNode<NoteEffectTechnique> EffectTechnique { get; set; }
         public LiteralNode<double> EffectTechniqueParameter { get; set; }
         public LiteralNode<NoteDurationEffect> DurationEffect { get; set; }
@@ -97,23 +98,46 @@ namespace TabML.Parser.AST
             return true;
         }
 
-        public bool ValueEquals(BeatNode other)
+
+        public bool ValueEquals(Beat other)
         {
             if (other == null)
                 return false;
 
-            if (!ValueEquatable.ValueEquals(this.AllStringStrumTechnique, other.AllStringStrumTechnique)
-                || !ValueEquatable.ValueEquals(this.StrumTechnique, other.StrumTechnique)
-                || !ValueEquatable.ValueEquals(this.NoteValue, other.NoteValue)
-                || !ValueEquatable.ValueEquals(this.Rest, other.Rest)
-                || !ValueEquatable.ValueEquals(this.Tied, other.Tied)
-                || !ValueEquatable.ValueEquals(this.EffectTechnique, other.EffectTechnique)
-                || !ValueEquatable.ValueEquals(this.EffectTechniqueParameter, other.EffectTechniqueParameter)
-                || !ValueEquatable.ValueEquals(this.DurationEffect, other.DurationEffect)
-                || !ValueEquatable.ValueEquals(this.Accent, other.Accent))
+            if (this.AllStringStrumTechnique == null)
+            {
+                if ((this.StrumTechnique?.Value ?? StrumTechniqueEnum.None) != other.StrumTechnique)
+                    return false;
+            }
+            else
+            {
+                if ((StrumTechniqueEnum)(this.AllStringStrumTechnique?.Value ?? AllStringStrumTechniqueEnum.None) != other.StrumTechnique)
+                    return false;
+            }
+
+            if (this.NoteValue.ToNoteValue() != other.NoteValue)
                 return false;
 
-            if (other.Notes.Count != this.Notes.Count)
+            if ((this.Rest != null) != other.IsRest)
+                return false;
+
+            if ((this.Tied != null) != other.IsTied)
+                return false;
+
+            if ((this.EffectTechnique?.Value ?? NoteEffectTechnique.None) != other.EffectTechnique)
+                return false;
+
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if ((this.EffectTechniqueParameter?.Value ?? default(double)) != other.EffectTechniqueParameter)
+                return false;
+
+            if ((this.DurationEffect?.Value ?? NoteDurationEffect.None) != other.DurationEffect)
+                return false;
+
+            if ((this.Accent?.Value ?? NoteAccent.Normal) != other.Accent)
+                return false;
+
+            if (other.Notes.Length != this.Notes.Count)
                 return false;
 
             return !this.Notes.Where((n, i) => !n.ValueEquals(other.Notes[i])).Any();

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using TabML.Core;
+using TabML.Core.MusicTheory;
+using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class CapoCommandletNode : CommandletNode
+    class CapoCommandletNode : CommandletNode, IDocumentElementFactory<Capo>
     {
         public LiteralNode<int> Position { get; set; }
         public CapoStringsSpecifierNode StringsSpecifier { get; set; }
@@ -23,39 +25,38 @@ namespace TabML.Parser.AST
 
         internal override bool Apply(TablatureContext context, IReporter reporter)
         {
-            if (context.DocumentState.BarAppeared)
-            {
-                reporter.Report(ReportLevel.Error, this.Range, Messages.Error_CapoInstructionAfterBarAppeared);
+            Capo capo;
+            if (!this.ToDocumentElement(context, reporter, out capo))
                 return false;
-            }
 
             using (var state = context.AlterDocumentState())
             {
-                state.CapoInstructions.Add(this);
-                state.CapoFretOffsets = this.OffsetFrets(state.CapoFretOffsets);
+                state.Capos.Add(capo);
+                state.CapoFretOffsets = capo.OffsetFrets(state.CapoFretOffsets);
             }
-
 
             return true;
         }
 
-        private int[] OffsetFrets(int[] capoFretOffsets)
+
+        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Capo element)
         {
-            if (capoFretOffsets == null)
-                capoFretOffsets = new int[Defaults.Strings];
-
-            if (this.StringsSpecifier == null)
+            if (context.DocumentState.BarAppeared)
             {
-                for (var i = 0; i < Defaults.Strings; ++i)
-                    capoFretOffsets[i] = Math.Max(capoFretOffsets[i], this.Position.Value);
-            }
-            else
-            {
-                foreach (var stringIndex in this.StringsSpecifier.GetStringNumbers())
-                    capoFretOffsets[stringIndex - 1] = Math.Max(capoFretOffsets[stringIndex - 1], this.Position.Value);
+                reporter.Report(ReportLevel.Error, this.Range, Messages.Error_CapoInstructionAfterBarAppeared);
+                element = null;
+                return false;
             }
 
-            return capoFretOffsets;
+            element = new Capo
+            {
+                Range = this.Range,
+                CapoInfo =
+                    new CapoInfo(this.Position.Value,
+                                 this.StringsSpecifier?.GetStringNumbers() ?? CapoInfo.AffectAllStrings)
+            };
+
+            return true;
         }
     }
 }

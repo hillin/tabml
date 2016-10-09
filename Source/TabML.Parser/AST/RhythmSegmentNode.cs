@@ -5,7 +5,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class RhythmSegmentNode : RhythmSegmentNodeBase, IValueEquatable<RhythmSegmentNode>
+    class RhythmSegmentNode : RhythmSegmentNodeBase, IDocumentElementFactory<RhythmSegment>
     {
         public LiteralNode<string> ChordName { get; set; }
         public ChordFingeringNode Fingering { get; set; }
@@ -25,9 +25,14 @@ namespace TabML.Parser.AST
             }
         }
 
-        public override bool ToDocumentElement(TablatureContext context, IReporter reporter, out RhythmSegment rhythmSegment)
+        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out RhythmSegment rhythmSegment)
         {
-            if (!base.ToDocumentElement(context, reporter, out rhythmSegment))
+            rhythmSegment = new RhythmSegment
+            {
+                Range = this.Range
+            };
+
+            if (!this.FillRhythmSegmentVoices(context, reporter, rhythmSegment))
                 return false;
 
             if (this.Fingering != null)
@@ -57,14 +62,6 @@ namespace TabML.Parser.AST
 
             return true;
         }
-
-        public bool ValueEquals(RhythmSegmentNode other)
-        {
-            if (!base.ValueEquals(other))
-                return false;
-
-            return ValueEquatable.ValueEquals(this.ChordName, other.ChordName)
-                   && ValueEquatable.ValueEquals(this.Fingering, other.Fingering);
-        }
+        
     }
 }

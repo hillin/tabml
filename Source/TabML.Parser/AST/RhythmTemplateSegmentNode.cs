@@ -1,24 +1,28 @@
-﻿using TabML.Parser.Document;
+﻿using System.Linq;
+using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class RhythmTemplateSegmentNode : RhythmSegmentNodeBase, IValueEquatable<RhythmTemplateSegmentNode>
+    class RhythmTemplateSegmentNode : RhythmSegmentNodeBase
     {
-        public bool ValueEquals(RhythmTemplateSegmentNode other)
+        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out RhythmTemplateSegment rhythmSegment)
         {
-            return base.ValueEquals(other);
+            rhythmSegment = new RhythmTemplateSegment
+            {
+                Range = this.Range
+            };
+
+            return this.FillRhythmSegmentVoices(context, reporter, rhythmSegment);
         }
 
-        public override bool ToDocumentElement(TablatureContext context, IReporter reporter, out RhythmSegment rhythmSegment)
+        public bool ValueEquals(RhythmTemplateSegment other)
         {
-            var result = base.ToDocumentElement(context, reporter, out rhythmSegment);
-            if (result)
-            {
-                rhythmSegment.ClearRange();
-            }
+            if (other == null)
+                return false;
 
-            return result;
+            return other.Voices.Count == this.Voices.Count
+                && !this.Voices.Where((v, i) => !v.ValueEquals(other.Voices[i])).Any();
         }
     }
 }

@@ -16,48 +16,46 @@ namespace TabML.Parser.Document
             to._alternationTextExplicity = from._alternationTextExplicity;
             to._definedAlternationIndices.AppendClone(from._definedAlternationIndices);
             to._barAppeared = from._barAppeared;
-            to._capoInstructions.AppendClone(from._capoInstructions);
+            to._capos.AppendClone(from._capos);
             to._capoFretOffsets = (int[])from._capoFretOffsets?.Clone();
             to.MinimumCapoFret = from.MinimumCapoFret;
             to._definedChords.AppendClone(from._definedChords);
-            to._key = from._key;
+            to._keySignature = from._keySignature;
             to._time = from._time;
             to._tempo = from._tempo;
             to._tuning = from._tuning;
             to._rhythmTemplate = from._rhythmTemplate;
-            to._rhythmInstruction = from._rhythmInstruction;
             to._currentSection = from._currentSection;
             to._definedSections.AppendClone(from._definedSections);
         }
 
-        private AlternateCommandletNode _currentAlternation;
+        private Alternation _currentAlternation;
         private AlternationTextType? _alternationTextType;
-        private SectionCommandletNode _currentSection;
+        private Section _currentSection;
         private Explicity _alternationTextExplicity;
         private readonly SealableCollection<int> _definedAlternationIndices = new SealableCollection<int>();
         private bool _barAppeared;
 
-        private readonly SealableCollection<CapoCommandletNode> _capoInstructions =
-            new SealableCollection<CapoCommandletNode>();
+        private readonly SealableCollection<Capo> _capos =
+            new SealableCollection<Capo>();
 
         private int[] _capoFretOffsets;
 
-        private readonly SealableCollection<ChordCommandletNode> _definedChords =
-            new SealableCollection<ChordCommandletNode>();
+        private readonly SealableCollection<ChordDefinition> _definedChords =
+            new SealableCollection<ChordDefinition>();
 
-        private KeyCommandletNode _key;
-        private TimeSignatureCommandletNode _time;
+        private KeySignature _keySignature;
+        private TimeSignature _time;
 
-        private readonly SealableCollection<SectionCommandletNode> _definedSections =
-            new SealableCollection<SectionCommandletNode>();
+        private readonly SealableCollection<Section> _definedSections =
+            new SealableCollection<Section>();
 
-        private TempoCommandletNode _tempo;
-        private TuningCommandletNode _tuning;
-        private RhythmCommandletNode _rhythmInstruction;
-        private Rhythm _rhythmTemplate;
+        private TempoSignature _tempo;
+        private TuningSignature _tuning;
+        private RhythmTemplate _rhythmTemplate;
 
 
-        public AlternateCommandletNode CurrentAlternation
+        public Alternation CurrentAlternation
         {
             get { return _currentAlternation; }
             set
@@ -100,7 +98,7 @@ namespace TabML.Parser.Document
             }
         }
 
-        public ICollection<CapoCommandletNode> CapoInstructions => _capoInstructions;
+        public ICollection<Capo> Capos => _capos;
 
         public int[] CapoFretOffsets
         {
@@ -115,19 +113,19 @@ namespace TabML.Parser.Document
 
         public int MinimumCapoFret { get; private set; }
 
-        public ICollection<ChordCommandletNode> DefinedChords => _definedChords;
+        public ICollection<ChordDefinition> DefinedChords => _definedChords;
 
-        public KeyCommandletNode Key
+        public KeySignature KeySignature
         {
-            get { return _key; }
+            get { return _keySignature; }
             set
             {
                 this.CheckSealed();
-                _key = value;
+                _keySignature = value;
             }
         }
 
-        public TimeSignatureCommandletNode Time
+        public TimeSignature Time
         {
             get { return _time; }
             set
@@ -137,7 +135,7 @@ namespace TabML.Parser.Document
             }
         }
 
-        public TempoCommandletNode Tempo
+        public TempoSignature Tempo
         {
             get { return _tempo; }
             set
@@ -147,7 +145,7 @@ namespace TabML.Parser.Document
             }
         }
 
-        public TuningCommandletNode Tuning
+        public TuningSignature Tuning
         {
             get { return _tuning; }
             set
@@ -157,7 +155,7 @@ namespace TabML.Parser.Document
             }
         }
 
-        public Rhythm RhythmTemplate
+        public RhythmTemplate RhythmTemplate
         {
             get { return _rhythmTemplate; }
             set
@@ -166,18 +164,8 @@ namespace TabML.Parser.Document
                 _rhythmTemplate = value;
             }
         }
-
-        public RhythmCommandletNode RhythmInstruction
-        {
-            get { return _rhythmInstruction; }
-            set
-            {
-                this.CheckSealed();
-                _rhythmInstruction = value;
-            }
-        }
-
-        public SectionCommandletNode CurrentSection
+        
+        public Section CurrentSection
         {
             get { return _currentSection; }
             set
@@ -187,7 +175,7 @@ namespace TabML.Parser.Document
             }
         }
 
-        public ICollection<SectionCommandletNode> DefinedSections => _definedSections;
+        public ICollection<Section> DefinedSections => _definedSections;
 
         public bool IsSealed { get; private set; }
 
@@ -196,7 +184,7 @@ namespace TabML.Parser.Document
         {
             this.IsSealed = true;
             _definedAlternationIndices.Seal();
-            _capoInstructions.Seal();
+            _capos.Seal();
             _definedChords.Seal();
             _definedSections.Seal();
         }
@@ -211,11 +199,11 @@ namespace TabML.Parser.Document
         {
             var chord =
                 this.DefinedChords.FirstOrDefault(
-                    c => c.Name.Value.Equals(chordName, StringComparison.InvariantCultureIgnoreCase));
+                    c => c.Name.Equals(chordName, StringComparison.InvariantCultureIgnoreCase));
 
             if (chord != null)
             {
-                fingeringIndices = chord.Fingering.GetFingeringIndices();
+                fingeringIndices = chord.Fingering;
                 return true;
             }
 

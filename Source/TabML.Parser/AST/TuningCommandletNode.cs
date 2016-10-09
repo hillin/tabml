@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class TuningCommandletNode : CommandletNode
+    class TuningCommandletNode : CommandletNode, IDocumentElementFactory<TuningSignature>
     {
         public LiteralNode<string> Name { get; set; }
         public List<PitchNode> StringTunings { get; }
@@ -36,13 +38,29 @@ namespace TabML.Parser.AST
             if (context.DocumentState.Tuning != null)
             {
                 reporter.Report(ReportLevel.Warning, this.Range, Messages.Warning_RedefiningTuningInstruction);
-                return true;
+                return false;
             }
+
+            TuningSignature tuning;
+            if (!this.ToDocumentElement(context, reporter, out tuning))
+                return false;
 
             using (var state = context.AlterDocumentState())
             {
-                state.Tuning = this;
+                state.Tuning = tuning;
             }
+
+            return true;
+        }
+
+        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out TuningSignature element)
+        {
+            element = new TuningSignature
+            {
+                Range = this.Range,
+                Tuning =
+                    new Core.MusicTheory.Tuning(this.Name?.Value, this.StringTunings.Select(t => t.ToPitch()).ToArray())
+            };
 
             return true;
         }

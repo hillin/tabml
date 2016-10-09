@@ -56,7 +56,7 @@
     <Compile Include="MusicTheory\PostNoteConnection.cs" />
     <Compile Include="MusicTheory\PreNoteConnection.cs" />
     <Compile Include="MusicTheory\StaffType.cs" />
-    <Compile Include="MusicTheory\TempoSignature.cs" />
+    <Compile Include="MusicTheory\Tempo.cs" />
     <Compile Include="MusicTheory\Accidental.cs" />
     <Compile Include="MusicTheory\AccidentalExtensions.cs" />
     <Compile Include="MusicTheory\BarLine.cs" />
@@ -85,8 +85,8 @@
     <Compile Include="MusicTheory\NoteConnection.cs" />
     <Compile Include="MusicTheory\StrumTechnique.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MusicTheory\TimeSignature.cs" />
-    <Compile Include="MusicTheory\TimeSignatures.cs" />
+    <Compile Include="MusicTheory\Time.cs" />
+    <Compile Include="MusicTheory\Times.cs" />
     <Compile Include="MusicTheory\Tuning.cs" />
     <Compile Include="MusicTheory\Tunings.cs" />
   </ItemGroup>

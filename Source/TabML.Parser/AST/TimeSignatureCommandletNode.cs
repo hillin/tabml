@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using TabML.Core.MusicTheory;
+using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class TimeSignatureCommandletNode : CommandletNode, IValueEquatable<TimeSignatureCommandletNode>
+    class TimeSignatureCommandletNode : CommandletNode, IDocumentElementFactory<TimeSignature>
     {
         public LiteralNode<int> Beats { get; set; }
         public LiteralNode<BaseNoteValue> NoteValue { get; set; }
@@ -18,37 +19,49 @@ namespace TabML.Parser.AST
             }
         }
 
-        public double GetDuration()
-        {
-            return this.NoteValue.Value.GetDuration() * this.Beats.Value;
-        }
-
-        public bool ValueEquals(TimeSignatureCommandletNode other)
+        public bool ValueEquals(TimeSignature other)
         {
             if (other == null)
                 return false;
 
-            return this.Beats.Value == other.Beats.Value && this.NoteValue.Value == other.NoteValue.Value;
+            return this.Beats.Value == other.Time.Beats && this.NoteValue.Value == other.Time.NoteValue;
         }
 
         internal override bool Apply(TablatureContext context, IReporter reporter)
         {
-            if (context.DocumentState.RhythmInstruction != null || context.DocumentState.BarAppeared)
-            {
-                reporter.Report(ReportLevel.Error, this.Range, Messages.Error_TimeInstructionAfterBarAppearedOrRhythmInstruction);
+            TimeSignature time;
+            if (!this.ToDocumentElement(context, reporter, out time))
                 return false;
-            }
-
-            if (context.DocumentState.Time != null && context.DocumentState.Time.ValueEquals(this))
-            {
-                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_UselessTimeInstruction);
-                return true;
-            }
 
             using (var state = context.AlterDocumentState())
             {
-                state.Time = this;
+                state.Time = time;
             }
+
+            return true;
+        }
+
+        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out TimeSignature element)
+        {
+            if (context.DocumentState.RhythmTemplate != null || context.DocumentState.BarAppeared)
+            {
+                reporter.Report(ReportLevel.Error, this.Range, Messages.Error_TimeInstructionAfterBarAppearedOrRhythmInstruction);
+                element = null;
+                return false;
+            }
+
+            if (context.DocumentState.Time != null && this.ValueEquals(context.DocumentState.Time))
+            {
+                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_UselessTimeInstruction);
+                element = null;
+                return false;
+            }
+
+            element = new TimeSignature
+            {
+                Range = this.Range,
+                Time = new Time(this.Beats.Value, this.NoteValue.Value)
+            };
 
             return true;
         }
