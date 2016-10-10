@@ -6,6 +6,7 @@ namespace TabML.Core.MusicTheory
     {
         public NoteName[] Notes { get; }
         public string Name { get; }
+        public NoteName? Bass { get; set; }
 
         internal Chord(string name, NoteName[] notes)
         {

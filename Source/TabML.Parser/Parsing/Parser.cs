@@ -1,4 +1,5 @@
-﻿using TabML.Core.MusicTheory;
+﻿using System.Collections.Generic;
+using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing
@@ -102,7 +103,7 @@ namespace TabML.Parser.Parsing
         public static bool TryReadAccidental(Scanner scanner, IReporter reporter,
                                              out LiteralNode<Accidental> accidentalNode)
         {
-            var accidentalText = scanner.ReadAny(@"\#", @"\#\#", "b", "bb", "♯", "♯♯", "♭", "♭♭", "\u1d12a", "\u1d12b");
+            var accidentalText = scanner.ReadAny(@"\#\#", "bb", "♯♯", "♭♭", @"\#", "♯", "b", "♭", "\u1d12a", "\u1d12b");
             Accidental accidental;
             if (!Accidentals.TryParse(accidentalText, out accidental))
             {
@@ -118,7 +119,7 @@ namespace TabML.Parser.Parsing
         public static bool TryReadAllStringStrumTechnique(Scanner scanner, IReporter reporter,
                                                       out LiteralNode<AllStringStrumTechnique> technique)
         {
-            switch (scanner.ReadAny(@"\|", "x", "d", "↑", "u", "↓", "ad", "au", "rasg"))
+            switch (scanner.ReadAny("rasg", "ad", "au", @"\|", "x", "d", "↑", "u", "↓"))
             {
                 case "|":
                 case "x":
@@ -150,7 +151,7 @@ namespace TabML.Parser.Parsing
 
         public static bool TryReadStrumTechnique(Scanner scanner, IReporter reporter, out LiteralNode<StrumTechnique> technique)
         {
-            switch (scanner.ReadAny("d", "D", "↑", "u", "U", "↓", "ad", "au", "rasg", "r", "pu", "pd"))
+            switch (scanner.ReadAny("rasg", "ad", "au", "pu", "pd", "r", "d", "D", "↑", "u", "U", "↓"))
             {
                 case "d":
                 case "↑":
@@ -233,7 +234,7 @@ namespace TabML.Parser.Parsing
         {
             argument = null;
 
-            switch (scanner.ReadAny("dead", "x", "ah", "◆", "nh", "◇", "b", "bend", "tr", "tremolo", "vib", "vibrato"))
+            switch (scanner.ReadAny("dead", "bend", "tremolo", "vibrato", "vib", "ah", "nh", "tr", "b", "x", "◆", "◇"))
             {
                 case "x":
                 case "dead":
@@ -307,7 +308,7 @@ namespace TabML.Parser.Parsing
 
         public static bool TryReadNoteAccent(Scanner scanner, IReporter reporter, out LiteralNode<NoteAccent> accent)
         {
-            switch (scanner.ReadAny("a", "accented", "h", "heavy", "g", "ghost"))
+            switch (scanner.ReadAny("accented", "heavy", "ghost", "a", "h", "g"))
             {
                 case "a":
                 case "accented":
@@ -414,5 +415,6 @@ namespace TabML.Parser.Parsing
             staffTypeNode = new LiteralNode<StaffType>(staffType, scanner.LastReadRange);
             return true;
         }
+        
     }
 }

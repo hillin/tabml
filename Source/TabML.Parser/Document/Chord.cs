@@ -1,4 +1,5 @@
 ﻿using System;
+using TheoreticalChord = TabML.Core.MusicTheory.Chord;
 
 namespace TabML.Parser.Document
 {
@@ -8,13 +9,16 @@ namespace TabML.Parser.Document
 
         public string Name { get; set; }
         public int[] Fingering { get; set; }
+        public TheoreticalChord TheoreticalChord { get; set; }
+
 
         public Chord Clone()
         {
             return new Chord
             {
                 Name = this.Name,
-                Fingering = (int[])this.Fingering?.Clone()
+                Fingering = (int[])this.Fingering?.Clone(),
+                TheoreticalChord = this.TheoreticalChord
             };
         }
     }

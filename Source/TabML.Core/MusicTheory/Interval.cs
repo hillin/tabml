@@ -2,8 +2,9 @@
 
 namespace TabML.Core.MusicTheory
 {
-    public struct Interval
+    public struct Interval : IEquatable<Interval>
     {
+
 
         public static bool IsValid(int number, IntervalQuality quality)
         {
@@ -83,6 +84,35 @@ namespace TabML.Core.MusicTheory
             var semitones = noteName.GetSemitones() + interval.GetSemitoneOffset();
             var degrees = noteName.BaseName.GetAbsoluteDegrees() + interval.NormalizedNumber;
             return NoteName.FromSemitones(semitones, degrees);
+        }
+
+        public bool Equals(Interval other)
+        {
+            return this.Number == other.Number && this.Quality == other.Quality;
+        }
+
+        public static bool operator ==(Interval i1, Interval i2)
+        {
+            return i1.Equals(i2);
+        }
+
+        public static bool operator !=(Interval i1, Interval i2)
+        {
+            return !i1.Equals(i2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (null == obj) return false;
+            return obj is Interval && this.Equals((Interval)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (this.Number * 397) ^ (int)this.Quality;
+            }
         }
     }
 }

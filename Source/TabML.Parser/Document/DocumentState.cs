@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
+using TheoreticalChord = TabML.Core.MusicTheory.Chord;
 
 namespace TabML.Parser.Document
 {
@@ -164,7 +165,7 @@ namespace TabML.Parser.Document
                 _rhythmTemplate = value;
             }
         }
-        
+
         public Section CurrentSection
         {
             get { return _currentSection; }
@@ -195,7 +196,7 @@ namespace TabML.Parser.Document
                 throw new InvalidOperationException("this DocumentState is sealed and uneditable");
         }
 
-        public bool LookupChord(string chordName, out int[] fingeringIndices)
+        public bool LookupChord(string chordName, out int[] fingeringIndices, out TheoreticalChord theoreticalChord)
         {
             var chord =
                 this.DefinedChords.FirstOrDefault(
@@ -204,13 +205,13 @@ namespace TabML.Parser.Document
             if (chord != null)
             {
                 fingeringIndices = chord.Fingering;
+                theoreticalChord = null;
                 return true;
             }
 
-            // todo: look up in chord library
-
             fingeringIndices = null;
-            return false;
+
+            return new ChordParser().TryParse(chordName, out theoreticalChord);
         }
     }
 }
