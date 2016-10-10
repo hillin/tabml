@@ -5,8 +5,21 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TabML.Editor.Tablature"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-            
-    </Grid>
+             d:DesignHeight="80" d:DesignWidth="80">
+    <StackPanel>
+        
+        <TextBlock x:Name="ChordNameText"
+                   Style="{StaticResource ChordName}" 
+                   Text="C"
+                   HorizontalAlignment="Center" />
+        
+        <UniformGrid x:Name="SpecialStringsGrid" 
+                     Columns="6" />
+
+        <StackPanel x:Name="DiagramGridPanel" />
+
+        <UniformGrid x:Name="FingeringGrid" 
+                     Columns="6" />
+
+    </StackPanel>
 </UserControl>

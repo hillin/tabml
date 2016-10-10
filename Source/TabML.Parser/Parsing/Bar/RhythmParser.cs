@@ -1,7 +1,6 @@
 ﻿using TabML.Parser.AST;
-using TabML.Parser.Parsing.Bar;
 
-namespace TabML.Parser.Parsing
+namespace TabML.Parser.Parsing.Bar
 {
     class RhythmParser : ParserBase<RhythmNode>
     {

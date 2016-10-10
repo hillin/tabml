@@ -1,4 +1,5 @@
 ﻿using TabML.Parser.AST;
+using TabML.Parser.Parsing.Bar;
 
 namespace TabML.Parser.Parsing.Commandlets
 {

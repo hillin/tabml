@@ -1,6 +1,6 @@
 ﻿using TabML.Parser.AST;
 
-namespace TabML.Parser.Parsing
+namespace TabML.Parser.Parsing.Bar
 {
     abstract class RhythmSegmentParserBase<TNode> : ParserBase<TNode>
          where TNode : RhythmSegmentNodeBase, new()
