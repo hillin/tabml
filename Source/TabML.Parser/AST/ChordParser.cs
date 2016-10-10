@@ -251,7 +251,7 @@ namespace TabML.Parser.AST
                         return false;
                     }
 
-                    if (_intervals[3] == M9)
+                    if (_intervals[3] == A9)
                     {
                         // already has it
                     }
@@ -283,10 +283,23 @@ namespace TabML.Parser.AST
             switch (_scanner.ReadAny("sus2", "sus4", "sus"))
             {
                 case "sus2":
+
+                    if (_intervals[0] != M3)
+                    {
+                        _hasError = true;
+                        return false;
+                    }
+
                     _intervals[0] = M2;
                     return true;
                 case "sus4":
                 case "sus":
+                    if (_intervals[0] != M3)
+                    {
+                        _hasError = true;
+                        return false;
+                    }
+
                     _intervals[0] = P4;
                     return true;
             }
@@ -355,9 +368,9 @@ namespace TabML.Parser.AST
                 case "add#13":
                 case "add♯13":
 
-                    if (_intervals.Count > 3)
+                    if (_intervals.Count > 4)
                     {
-                        _hasError = true;   // only available to triads or seventh
+                        _hasError = true;   // only available to triads, sevenths, or ninths
                         return false;
                     }
 
@@ -366,9 +379,9 @@ namespace TabML.Parser.AST
                 case "addb13":
                 case "add♭13":
 
-                    if (_intervals.Count > 3)
+                    if (_intervals.Count > 4)
                     {
-                        _hasError = true;   // only available to triads or seventh
+                        _hasError = true;   // only available to triads, sevenths, or ninths
                         return false;
                     }
 
@@ -376,9 +389,9 @@ namespace TabML.Parser.AST
                     return true;
                 case "add13":
 
-                    if (_intervals.Count > 3)
+                    if (_intervals.Count > 4)
                     {
-                        _hasError = true;   // only available to triads or seventh
+                        _hasError = true;   // only available to triads, sevenths, or ninths
                         return false;
                     }
 

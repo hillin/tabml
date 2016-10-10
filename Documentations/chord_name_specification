@@ -1,0 +1,52 @@
+A chord could be:
+
+X[base-postfixes][suspended-postfix][added-tone][altered-tone][/Y]
+
+where base-postfixes is:
+    triad-postfix [seventh-postfix | extended-postfix]
+
+    triad-postfix: 
+        - M, maj or Δ for major, e.g. CM (is effectively the same as C)
+        - m or min for minor, e.g. Fm
+        - aug or + for augmented, e.g. Gaug
+        - dim, - or ° for diminished, e.g. Edim
+
+    seventh-postfix:
+        - 7 for a regular seventh interval, depending on the quality of the triad, e.g. Cmaj7
+        - maj7, M7 or Δ7 for a major seventh interval, e.g. BmM7
+        
+    extended-postfix is any of 9, 11 and 13, which extends a triad to a ninth, eleventh or thirteenth extended chord, e.g. Cm11
+
+    
+suspended-postfix could be
+    - sus2 alters a major third to a major second
+    - sus4 or sus alters a major third to a perfect fourth
+
+added-tone:
+    - add9 adds a major ninth to a triad, e.g. Eadd9
+    - add#9 or add♯9 adds an augmented ninth to a triad, e.g. Cmadd#9
+    - addb9 or add♭9 adds a minor ninth to a triad, e.g. Daddb9
+    - add11 adds a perfect eleventh to a triad or seventh, e.g. G7add11
+    - add#11 or add♯11 adds an augmented eleventh to a triad or seventh
+    - add13 adds a major thirteenth to a triad, seventh or ninth
+    - add#13 or add♯13 adds an augmented thirteenth to a triad, seventh or ninth
+    - addb13 or add♭13 adds an minor thirteenth to a triad, seventh or ninth
+
+altered-tone:
+    - +5, #5 or ♯5 alters the fifth interval of a non-triad to augmented
+    - -9, b9 or ♭9 alters the ninth interval of an eleventh or thirteenth chord to minor
+    - +9, #9 or ♯9 alters the ninth interval of an eleventh or thirteenth chord to augmented
+    - +11, #11 or ♯11 alters the eleventh interval of a thirteenth chord to augmented
+
+/Y changes the bass note of the chord to Y.
+
+there are also some other forms of chord names supported:
+
+X5  - a fifth chord
+Xø7 - a half diminished seventh chord
+X[7|9|11|13]    - dominant seventh and extended dominant chords
+X[2|4|6|69|6/9] - simplified added tone chords
+    where 
+        - X2 is effectively the same as Xadd9
+        - X4 is effectively the same as Xadd11
+        - X6 is effectively the same as Xadd13
