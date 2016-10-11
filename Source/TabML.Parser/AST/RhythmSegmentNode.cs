@@ -40,18 +40,22 @@ namespace TabML.Parser.AST
 
             if (this.Fingering != null)
             {
+                ChordFingering chordFingering;
+                if (!this.Fingering.ToDocumentElement(context, reporter, out chordFingering))
+                    return false;
+
                 rhythmSegment.Chord = new DocumentChord
                 {
                     Name = this.ChordName?.Value,
-                    Fingering = this.Fingering.GetFingeringIndices(),
+                    Fingering = chordFingering,
                     Range = this.ChordName?.Range.Union(this.Fingering.Range) ?? this.Fingering.Range
                 };
             }
             else if (this.ChordName != null)
             {
-                int[] fingeringIndices;
+                ChordFingering fingering;
                 TheoreticalChord theoreticalChord;
-                if (!context.DocumentState.LookupChord(this.ChordName.Value, out fingeringIndices, out theoreticalChord))
+                if (!context.DocumentState.LookupChord(this.ChordName.Value, out fingering, out theoreticalChord))
                 {
                     reporter.Report(ReportLevel.Suggestion, this.ChordName.Range, Messages.Suggestion_UnknownChord, this.ChordName.Value);
                 }
@@ -59,13 +63,13 @@ namespace TabML.Parser.AST
                 rhythmSegment.Chord = new DocumentChord
                 {
                     Name = this.ChordName.Value,
-                    Fingering = fingeringIndices,
+                    Fingering = fingering,
                     Range = this.ChordName.Range
                 };
             }
 
             return true;
         }
-        
+
     }
 }

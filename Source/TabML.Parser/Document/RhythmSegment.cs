@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace TabML.Parser.Document
 {
-    class RhythmSegment : RhythmSegmentBase
+    public class RhythmSegment : RhythmSegmentBase
     {
         public Chord Chord { get; set; }
         public bool IsOmittedByTemplate { get; set; }

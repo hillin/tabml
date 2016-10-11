@@ -4,16 +4,59 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TabML.Editor.Tablature"
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/ChordDiagram.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- ReSharper disable once Xaml.RedundantResource -->
+            <Style x:Key="FingeringTokenStyle" 
+                   TargetType="{x:Type Path}" 
+                   BasedOn="{StaticResource {x:Type Path}}">
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+
+            <!-- ReSharper disable once Xaml.RedundantResource -->
+            <Style x:Key="BraceBarreStyle" 
+                   TargetType="{x:Type Path}" 
+                   BasedOn="{StaticResource {x:Type Path}}">
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+            </Style>
+
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-        
+    <Grid Width="262" Height="48">
+        <Path HorizontalAlignment="Center"
+              Data="{StaticResource ChordDiagramGridRow}" />
+        <Grid x:Name="FingeringGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+        </Grid>
+
+        <Grid x:Name="BraceBarreGrid" 
+              HorizontalAlignment="Center" 
+              VerticalAlignment="Top"
+              Margin="19,-36,19,0" 
+              Height="32" 
+              Width="224">
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+        </Grid>
     </Grid>
 </UserControl>

@@ -7,7 +7,7 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.Document
 {
-    class TuningSignature : Element
+    public class TuningSignature : Element
     {
         public Tuning Tuning { get; set; }
     }

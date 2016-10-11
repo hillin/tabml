@@ -7,7 +7,7 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.Document
 {
-    class TimeSignature : Element
+    public class TimeSignature : Element
     {
         public Time Time { get; set; }
     }

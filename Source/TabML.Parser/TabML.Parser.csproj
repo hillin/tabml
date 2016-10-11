@@ -52,6 +52,7 @@
     <Compile Include="AST\CapoStringsSpecifierNode.cs" />
     <Compile Include="AST\ChordCommandletNode.cs" />
     <Compile Include="AST\ChordFingeringNode.cs" />
+    <Compile Include="AST\ChordFingeringNoteNode.cs" />
     <Compile Include="AST\ChordParser.cs" />
     <Compile Include="AST\CommandletNode.cs" />
     <Compile Include="Document\Alternation.cs" />
@@ -61,6 +62,8 @@
     <Compile Include="Document\Capo.cs" />
     <Compile Include="Document\Chord.cs" />
     <Compile Include="Document\ChordDefinition.cs" />
+    <Compile Include="Document\ChordFingering.cs" />
+    <Compile Include="Document\ChordFingeringNote.cs" />
     <Compile Include="Document\Element.cs" />
     <Compile Include="AST\IDocumentElementFactory.cs" />
     <Compile Include="Document\KeySignature.cs" />

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TabML.Parser.Document
 {
-    class RhythmTemplateSegment : RhythmSegmentBase
+    public class RhythmTemplateSegment : RhythmSegmentBase
     {
         private static Voice InstantializeVoice(Voice voice)
         {

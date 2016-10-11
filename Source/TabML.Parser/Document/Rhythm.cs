@@ -4,7 +4,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.Document
 {
-    class Rhythm : Element
+    public class Rhythm : Element
     {
         public List<RhythmSegment> Segments { get; }
 

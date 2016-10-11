@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TabML.Parser
 {
-    enum Explicity
+    public enum Explicity
     {
         NotSpecified,
         Explicit,

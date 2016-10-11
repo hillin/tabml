@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TabML.Parser.Document
 {
-    abstract class RhythmSegmentBase : Element
+    public abstract class RhythmSegmentBase : Element
     {
         public List<Voice> Voices { get; }
         protected RhythmSegmentBase()

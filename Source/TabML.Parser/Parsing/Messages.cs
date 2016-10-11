@@ -48,8 +48,19 @@ namespace TabML.Parser.Parsing
         public const string Error_ChordFingeringNotMatchingStringCount =
             "{0} fingering specifiers is required for a chord";
 
+        public const string Warning_ChordFingeringFretTooHigh = "This chord involves fret that is too high to play";
+
+        public const string Error_ChordFingerIndexExpected = "Finger index specifier expected";
+
+        public const string Error_ChordFingerIndexNotEnclosed = "Finger index specifier is not enclosed with '>'";
+
+        public const string Error_UnrecognizableFingerIndex = "Unrecognizable finger index, use 1, 2, 3, 4 or T";
+
         public const string Warning_ChordAlreadyDefined =
             "A chord with the same name is already defined, this one will be ignored";
+
+        public const string Warning_ChordNotAllFingerIndexSpecified =
+            "Some but not all finger indices are specified for this chord, finger indices will be ignored";
 
         public const string Suggestion_UnknownChord =
             "'{0}' is not a known chord, please define it using the +chord instruction";

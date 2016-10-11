@@ -3,7 +3,7 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.Document
 {
-    class Beat : Element
+    public class Beat : Element
     {
         public NoteValue NoteValue { get; set; }
         public BeatNote[] Notes { get; set; }

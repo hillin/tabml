@@ -3,7 +3,7 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.Document
 {
-    class Bar : Element
+    public class Bar : Element
     {
         public static BarLine MergeBarLine(CloseBarLine? close, OpenBarLine? open)
         {

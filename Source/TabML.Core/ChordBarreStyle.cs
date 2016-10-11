@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TabML.Parser.Document
+namespace TabML.Core
 {
-    public class Section : Element
+    public enum ChordBarreStyle
     {
-        public string Name { get; set; }
+        Brace,
+        Lined
     }
 }

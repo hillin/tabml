@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace TabML.Parser.Document
 {
-    class ChordDefinition : Element
+    public class ChordDefinition : Element
     {
         public string Name { get; set; }
         public string DisplayName { get; set; }
-        public int[] Fingering { get; set; }
+        public ChordFingering Fingering { get; set; }
     }
 }

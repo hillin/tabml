@@ -7,7 +7,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.Document
 {
-    class RhythmTemplate : Element
+    public class RhythmTemplate : Element
     {
         public List<RhythmTemplateSegment> Segments { get; }
 
@@ -23,7 +23,7 @@ namespace TabML.Parser.Document
             return rhythm;
         }
 
-        public Rhythm Apply(Rhythm rhythm, IReporter reporter)
+        internal Rhythm Apply(Rhythm rhythm, IReporter reporter)
         {
             var templateInstance = this.Instantialize();
 

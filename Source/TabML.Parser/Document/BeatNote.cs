@@ -2,7 +2,7 @@
 
 namespace TabML.Parser.Document
 {
-    class BeatNote : Element
+    public class BeatNote : Element
     {
         public const int UnspecifiedFret = -1;
 

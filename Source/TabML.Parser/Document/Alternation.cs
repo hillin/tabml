@@ -7,7 +7,7 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.Document
 {
-    class Alternation : Element
+    public class Alternation : Element
     {
         public int[] Indices { get; set; }
         public AlternationTextType TextType { get; set; }

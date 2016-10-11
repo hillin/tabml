@@ -7,7 +7,7 @@ using TheoreticalChord = TabML.Core.MusicTheory.Chord;
 
 namespace TabML.Parser.Document
 {
-    class DocumentState
+    public class DocumentState
     {
 
         protected static void Clone(DocumentState from, DocumentState to)
@@ -196,7 +196,7 @@ namespace TabML.Parser.Document
                 throw new InvalidOperationException("this DocumentState is sealed and uneditable");
         }
 
-        public bool LookupChord(string chordName, out int[] fingeringIndices, out TheoreticalChord theoreticalChord)
+        public bool LookupChord(string chordName, out ChordFingering fingering, out TheoreticalChord theoreticalChord)
         {
             var chord =
                 this.DefinedChords.FirstOrDefault(
@@ -204,12 +204,12 @@ namespace TabML.Parser.Document
 
             if (chord != null)
             {
-                fingeringIndices = chord.Fingering;
+                fingering = chord.Fingering;
                 theoreticalChord = null;
                 return true;
             }
 
-            fingeringIndices = null;
+            fingering = null;
 
             return new ChordParser().TryParse(chordName, out theoreticalChord);
         }

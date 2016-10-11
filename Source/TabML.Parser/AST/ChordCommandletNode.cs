@@ -48,12 +48,19 @@ namespace TabML.Parser.AST
                 return false;
             }
 
+            ChordFingering chordFingering;
+            if (!this.Fingering.ToDocumentElement(context, reporter, out chordFingering))
+            {
+                element = null;
+                return false;
+            }
+
             element = new ChordDefinition
             {
                 Range = this.Range,
                 DisplayName = this.DisplayName.Value,
                 Name = this.Name?.Value,
-                Fingering = this.Fingering.Fingerings.Select(f => f.Value).ToArray()
+                Fingering = chordFingering
             };
 
             return true;

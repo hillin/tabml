@@ -8,7 +8,7 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.Document
 {
-    class Capo : Element
+    public class Capo : Element
     {
         public CapoInfo CapoInfo { get; set; }
 

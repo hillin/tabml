@@ -44,7 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChordBarreStyle.cs" />
     <Compile Include="Defaults.cs" />
+    <Compile Include="LeftHandFingerIndex.cs" />
     <Compile Include="MusicTheory\AlternationText.cs" />
     <Compile Include="MusicTheory\AlternationTextType.cs" />
     <Compile Include="MusicTheory\Accidentals.cs" />
@@ -89,6 +91,7 @@
     <Compile Include="MusicTheory\Times.cs" />
     <Compile Include="MusicTheory\Tuning.cs" />
     <Compile Include="MusicTheory\Tunings.cs" />
+    <Compile Include="RightHandFingerIndex.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

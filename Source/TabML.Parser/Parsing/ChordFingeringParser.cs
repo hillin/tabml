@@ -19,11 +19,16 @@ namespace TabML.Parser.Parsing
         {
             result = new ChordFingeringNode();
             var anchor = scanner.MakeAnchor();
-            var containsDelimiter = scanner.RemainingLine.Trim().Any(char.IsWhiteSpace);
+            var remainingLine = scanner.RemainingLine.Trim();
+            var containsDelimiter = remainingLine.Any(char.IsWhiteSpace);
+            var containsFingerIndexSpecifier = remainingLine.Any(c => c == '<' || c == '>');
+            var isShortForm = !containsDelimiter && !containsFingerIndexSpecifier;
 
             while (!_terminatorPredicate(scanner))
             {
-                var str = containsDelimiter ? scanner.ReadAny(@"\d+", @"[xX\-]") : scanner.Read(@"[\dxX\-]");
+                var noteAnchor = scanner.MakeAnchor();
+
+                var str = isShortForm ? scanner.Read(@"[\dxX\-]") : scanner.ReadAny(@"\d+", @"[xX\-]");
 
                 if (string.IsNullOrEmpty(str))
                 {
@@ -38,8 +43,11 @@ namespace TabML.Parser.Parsing
                     case "x":
                     case "X":
                     case "-":
-                        result.Fingerings.Add(new LiteralNode<int>(ChordFingeringNode.FingeringSkipString, scanner.LastReadRange));
-                        break;
+                        {
+                            var fret = new LiteralNode<int>(ChordFingeringNode.FingeringSkipString, scanner.LastReadRange);
+                            result.Fingerings.Add(new ChordFingeringNoteNode { Fret = fret, Range = scanner.LastReadRange });
+                            break;
+                        }
                     default:
                         int fretNumber;
                         if (!int.TryParse(str, out fretNumber)) // todo: prevent too large fret number
@@ -49,7 +57,69 @@ namespace TabML.Parser.Parsing
                             result = null;
                             return false;
                         }
-                        result.Fingerings.Add(new LiteralNode<int>(fretNumber, scanner.LastReadRange));
+
+                        if (fretNumber > 24)
+                        {
+                            this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                                        Messages.Warning_ChordFingeringFretTooHigh);
+                        }
+
+                        var note = new ChordFingeringNoteNode
+                        {
+                            Fret = new LiteralNode<int>(fretNumber, scanner.LastReadRange)
+                        };
+
+                        if (fretNumber != 0)
+                        {
+                            scanner.SkipWhitespaces();
+                            if (scanner.Expect('<'))
+                            {
+                                var fingerIndexString = scanner.Read(@"[\dtT]");
+                                if (string.IsNullOrEmpty(fingerIndexString))
+                                {
+                                    this.Report(ReportLevel.Error, scanner.Pointer.AsRange(),
+                                                Messages.Error_ChordFingerIndexExpected);
+                                    return false;
+                                }
+
+
+                                LeftHandFingerIndex fingerIndex;
+                                switch (fingerIndexString)
+                                {
+                                    case "t":
+                                    case "T":
+                                        fingerIndex = LeftHandFingerIndex.Thumb; break;
+                                    case "1":
+                                        fingerIndex = LeftHandFingerIndex.Index; break;
+                                    case "2":
+                                        fingerIndex = LeftHandFingerIndex.Middle; break;
+                                    case "3":
+                                        fingerIndex = LeftHandFingerIndex.Ring; break;
+                                    case "4":
+                                        fingerIndex = LeftHandFingerIndex.Pinky; break;
+                                    default:
+                                        this.Report(ReportLevel.Error, scanner.LastReadRange,
+                                                    Messages.Error_UnrecognizableFingerIndex);
+                                        return false;
+                                }
+
+
+                                note.FingerIndex = new LiteralNode<LeftHandFingerIndex>(fingerIndex,
+                                                                                        scanner.LastReadRange);
+
+                                if (!scanner.Expect('>'))
+                                {
+                                    this.Report(ReportLevel.Error, scanner.Pointer.AsRange(),
+                                                Messages.Error_ChordFingerIndexNotEnclosed);
+                                    return false;
+                                }
+
+                            }
+                        }
+
+                        note.Range = noteAnchor.Range;
+                        result.Fingerings.Add(note);
+
                         break;
                 }
 

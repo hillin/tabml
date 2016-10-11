@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TabML.Parser.Document
 {
-    class LyricsSegment : Element
+    public class LyricsSegment : Element
     {
         public string Text { get; set; }
     }

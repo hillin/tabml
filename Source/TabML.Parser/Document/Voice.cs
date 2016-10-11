@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace TabML.Parser.Document
 {
-    class Voice : Element
+    public class Voice : Element
     {
         public List<Beat> Beats { get; }
 
