@@ -91,7 +91,7 @@
             <TextBlock x:Name="FretOffsetText"
                        Style="{StaticResource ChordFretOffsetText}" />
             <TextBlock Style="{StaticResource ChordFretOffsetText}">
-                <Run Text="fr"
+                <Run Text="fr."
                      BaselineAlignment="Superscript"
                      FontSize="8" />
             </TextBlock>

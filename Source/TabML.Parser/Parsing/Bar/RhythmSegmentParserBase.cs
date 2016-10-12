@@ -47,6 +47,15 @@ namespace TabML.Parser.Parsing.Bar
                     node = null;
                     return false;
                 }
+
+                if (node.Voices.Count > 2)
+                {
+                    this.Report(ReportLevel.Error,
+                                new TextRange(node.Voices[2].Range.From, node.Voices[node.Voices.Count - 1].Range.To),
+                                Messages.Error_TooManyVoices);
+                    node = null;
+                    return false;
+                }
             }
 
             if (hasBrackets)

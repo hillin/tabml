@@ -127,6 +127,9 @@ namespace TabML.Parser.Parsing
         public const string Error_UnrecognizableRhythmSegmentElement =
             "Unrecognizable note";
 
+        public const string Error_TooManyVoices =
+            "Too many voices, only 2 voices (regular and bass) supported";
+
         public const string Error_RhythmInstructionMissingCloseParenthesisInStringsSpecifier =
             "Missing close parenthesis in strings specifier";
 

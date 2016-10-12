@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Tablature\Bar.ArrangedBeat.cs" />
     <Compile Include="Tablature\Bar.xaml.cs">
       <DependentUpon>Bar.xaml</DependentUpon>
     </Compile>
