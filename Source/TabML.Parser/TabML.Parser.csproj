@@ -55,6 +55,7 @@
     <Compile Include="AST\ChordFingeringNoteNode.cs" />
     <Compile Include="AST\ChordParser.cs" />
     <Compile Include="AST\CommandletNode.cs" />
+    <Compile Include="AST\ExistencyNode.cs" />
     <Compile Include="Document\Alternation.cs" />
     <Compile Include="Document\Bar.cs" />
     <Compile Include="Document\Beat.cs" />
@@ -95,7 +96,6 @@
     <Compile Include="AST\PatternCommandletNode.cs" />
     <Compile Include="AST\PatternCommandletNode.PatternInstanceBarsNode.cs" />
     <Compile Include="AST\PitchNode.cs" />
-    <Compile Include="AST\RestNode.cs" />
     <Compile Include="AST\RhythmCommandletNode.cs" />
     <Compile Include="AST\RhythmNode.cs" />
     <Compile Include="AST\RhythmSegmentNode.cs" />
@@ -104,7 +104,6 @@
     <Compile Include="AST\RhythmTemplateSegmentNode.cs" />
     <Compile Include="AST\BeatNode.cs" />
     <Compile Include="AST\BeatNoteNode.cs" />
-    <Compile Include="AST\TiedNode.cs" />
     <Compile Include="AST\VoiceNode.cs" />
     <Compile Include="AST\SectionCommandletNode.cs" />
     <Compile Include="AST\TablatureNode.cs" />
@@ -141,7 +140,7 @@
     <Compile Include="Parsing\ParserBase.cs" />
     <Compile Include="Parsing\ReportLevel.cs" />
     <Compile Include="Parsing\PitchParser.cs" />
-    <Compile Include="Parsing\Bar\RestParser.cs" />
+    <Compile Include="Parsing\CharExistencyParser.cs" />
     <Compile Include="Parsing\Bar\RhythmParser.cs" />
     <Compile Include="Parsing\Bar\RhythmSegmentParser.cs" />
     <Compile Include="Parsing\Bar\RhythmSegmentParserBase.cs" />
@@ -149,7 +148,6 @@
     <Compile Include="Parsing\Bar\RhythmTemplateSegmentParser.cs" />
     <Compile Include="Parsing\Bar\BeatNoteParser.cs" />
     <Compile Include="Parsing\Bar\BeatParser.cs" />
-    <Compile Include="Parsing\Bar\TiedParser.cs" />
     <Compile Include="Parsing\VoiceParser.cs" />
     <Compile Include="Parsing\Scanner.cs" />
     <Compile Include="Parsing\TablatureParser.cs" />

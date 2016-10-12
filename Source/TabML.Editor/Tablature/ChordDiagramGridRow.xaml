@@ -29,34 +29,36 @@
 
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Width="262" Height="48">
-        <Path HorizontalAlignment="Center"
-              Data="{StaticResource ChordDiagramGridRow}" />
-        <Grid x:Name="FingeringGrid">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
+        <Grid Width="56">
+            <Path x:Name="GridPath" 
+                  VerticalAlignment="Bottom"
+                  Data="{StaticResource ChordDiagramGridRow}" />
+            <Grid x:Name="FingeringGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+            </Grid>
+
+            <Grid x:Name="BraceBarreGrid" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Top"
+                    Margin="0,-6,0,0" 
+                    Height="4" 
+                    Width="46">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+            </Grid>
         </Grid>
 
-        <Grid x:Name="BraceBarreGrid" 
-              HorizontalAlignment="Center" 
-              VerticalAlignment="Top"
-              Margin="19,-36,19,0" 
-              Height="32" 
-              Width="224">
-            
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-        </Grid>
-    </Grid>
 </UserControl>

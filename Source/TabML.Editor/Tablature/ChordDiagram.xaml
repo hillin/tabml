@@ -5,21 +5,97 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TabML.Editor.Tablature"
              mc:Ignorable="d" 
-             d:DesignHeight="80" d:DesignWidth="80">
-    <StackPanel>
-        
-        <TextBlock x:Name="ChordNameText"
-                   Style="{StaticResource ChordName}" 
-                   Text="C"
-                   HorizontalAlignment="Center" />
-        
-        <UniformGrid x:Name="SpecialStringsGrid" 
-                     Columns="6" />
+             d:DesignHeight="50">
 
-        <StackPanel x:Name="DiagramGridPanel" />
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/ChordDiagram.xaml" />
+            </ResourceDictionary.MergedDictionaries>
 
-        <UniformGrid x:Name="FingeringGrid" 
-                     Columns="6" />
+            <!-- ReSharper disable once Xaml.RedundantResource -->
+            <Style x:Key="SpecialStringTokenStyle" 
+                   TargetType="{x:Type Path}" 
+                   BasedOn="{StaticResource {x:Type Path}}">
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="2" />
+            </Style>
 
-    </StackPanel>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <!-- diagram -->
+            <ColumnDefinition Width="56" />
+            <!-- fret offset -->
+            <ColumnDefinition Width="auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <!-- chord name and special string tokens-->
+            <RowDefinition Height="auto" />
+            <!-- all remaining -->
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+
+            <TextBlock x:Name="ChordNameText"
+                       Style="{StaticResource ChordName}"
+                       Text="C"
+                       HorizontalAlignment="Center" />
+
+            <Grid x:Name="SpecialStringsGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+            </Grid>
+
+            <Grid x:Name="BraceBarrePlaceholder"
+                  Visibility="Collapsed"
+                  Height="9" />
+        </StackPanel>
+
+
+        <StackPanel Grid.Row="1"
+                    Grid.Column="0">
+            <StackPanel x:Name="DiagramGridPanel" />
+
+            <Path Data="{StaticResource ChordDiagramGridEnd}" />
+
+            <Grid x:Name="FingeringGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel x:Name="FretOffsetContainer"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Top"
+                    Visibility="Collapsed"
+                    Margin="0,-2,0,0">
+            <TextBlock x:Name="FretOffsetText"
+                       Style="{StaticResource ChordFretOffsetText}" />
+            <TextBlock Style="{StaticResource ChordFretOffsetText}">
+                <Run Text="fr"
+                     BaselineAlignment="Superscript"
+                     FontSize="8" />
+            </TextBlock>
+        </StackPanel>
+
+    </Grid>
 </UserControl>

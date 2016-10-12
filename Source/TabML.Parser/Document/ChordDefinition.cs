@@ -11,5 +11,10 @@ namespace TabML.Parser.Document
         public string Name { get; set; }
         public string DisplayName { get; set; }
         public ChordFingering Fingering { get; set; }
+
+        public string GetDisplayName()
+        {
+            return !string.IsNullOrEmpty(this.DisplayName) ? this.DisplayName : this.Name;
+        }
     }
 }

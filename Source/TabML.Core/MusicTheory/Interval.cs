@@ -4,14 +4,14 @@ namespace TabML.Core.MusicTheory
 {
     public struct Interval : IEquatable<Interval>
     {
-
-
+        
+        /// <remarks>interval number is zero based, thus a second interval has a number of 1</remarks>
         public static bool IsValid(int number, IntervalQuality quality)
         {
-            if (number < 1)
+            if (number < 0)
                 throw new ArgumentOutOfRangeException(nameof(number));
 
-            var normalizedNumber = (number - 1) % 7;
+            var normalizedNumber = number  % 7;
             if (normalizedNumber == 0 || normalizedNumber == 3 || normalizedNumber == 4)
                 return quality != IntervalQuality.Major && quality != IntervalQuality.Minor;
             else
@@ -21,8 +21,8 @@ namespace TabML.Core.MusicTheory
         public int Number { get; }
         public IntervalQuality Quality { get; }
 
-        public int Octaves => (this.Number - 1) / 7;
-        public int NormalizedNumber => (this.Number - 1) % 7;
+        public int Octaves => this.Number / 7;
+        public int NormalizedNumber => this.Number % 7;
 
         public bool CouldBePerfect
         {
@@ -33,6 +33,7 @@ namespace TabML.Core.MusicTheory
             }
         }
 
+        /// <remarks>interval number is zero based, thus a second interval has a number of 1</remarks>
         public Interval(int number, IntervalQuality quality)
         {
             if (!Interval.IsValid(number, quality))

@@ -3,6 +3,7 @@ using System.Linq;
 using TabML.Core;
 using TabML.Parser.AST;
 using TabML.Parser.Document;
+using TabML.Parser.Parsing.Bar;
 
 namespace TabML.Parser.Parsing
 {
@@ -74,6 +75,8 @@ namespace TabML.Parser.Parsing
                             scanner.SkipWhitespaces();
                             if (scanner.Expect('<'))
                             {
+                                scanner.SkipWhitespaces();
+
                                 var fingerIndexString = scanner.Read(@"[\dtT]");
                                 if (string.IsNullOrEmpty(fingerIndexString))
                                 {
@@ -106,6 +109,15 @@ namespace TabML.Parser.Parsing
 
                                 note.FingerIndex = new LiteralNode<LeftHandFingerIndex>(fingerIndex,
                                                                                         scanner.LastReadRange);
+
+                                scanner.SkipWhitespaces();
+
+                                ExistencyNode importancy;
+                                if (new CharExistencyParser('!').TryParse(scanner, out importancy))
+                                {
+                                    note.Importancy = importancy;
+                                    scanner.SkipWhitespaces();
+                                }
 
                                 if (!scanner.Expect('>'))
                                 {

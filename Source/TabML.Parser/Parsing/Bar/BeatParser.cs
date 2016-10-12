@@ -14,8 +14,8 @@ namespace TabML.Parser.Parsing.Bar
             var anchor = scanner.MakeAnchor();
             result = new BeatNode();
 
-            TiedNode tiedNode;
-            if (new TiedParser().TryParse(scanner, out tiedNode))
+            ExistencyNode tiedNode;
+            if (new CharExistencyParser('~').TryParse(scanner, out tiedNode))
             {
                 result.Tied = tiedNode;
             }
@@ -34,8 +34,8 @@ namespace TabML.Parser.Parsing.Bar
 
             var postNoteValueAnchor = scanner.MakeAnchor();
 
-            RestNode restNode;
-            if (new RestParser().TryParse(scanner, out restNode))
+            ExistencyNode restNode;
+            if (new CharExistencyParser('r').TryParse(scanner, out restNode))
             {
                 result.Rest = restNode;
             }

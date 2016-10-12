@@ -22,20 +22,27 @@ namespace TabML.Editor.Tablature
     {
         private readonly ChordDefinition _chordDefinition;
         private readonly int _fret;
+        private readonly bool _isCompact;
 
-        public ChordBarreStyle BarreStyle { get; set; }
+        private readonly ChordBarreStyle _barreStyle;
 
-        public ChordDiagramGridRow(ChordDefinition chordDefinition, int fret)
+        public bool HasBraceBarre { get; private set; }
+
+        public ChordDiagramGridRow(ChordDefinition chordDefinition, int fret, bool isCompact = false, ChordBarreStyle barreStyle = ChordBarreStyle.Brace)
         {
+            _barreStyle = barreStyle;
             this.InitializeComponent();
             _chordDefinition = chordDefinition;
             _fret = fret;
+            _isCompact = isCompact;
 
             this.Draw();
         }
 
         private void Draw()
         {
+            this.DrawGrid();
+
             var notes = _chordDefinition.Fingering.Notes;
             LeftHandFingerIndex? fingerIndex = null;
             int? barreFrom = null;
@@ -52,7 +59,7 @@ namespace TabML.Editor.Tablature
                     continue;
                 }
 
-                if (this.BarreStyle == ChordBarreStyle.Brace)
+                if (_barreStyle == ChordBarreStyle.Brace)
                     this.DrawSingleFingering(stringIndex);
 
                 if (note.FingerIndex != null)
@@ -93,9 +100,25 @@ namespace TabML.Editor.Tablature
                 this.DrawBarre(barreFrom.Value, barreTo.Value);
         }
 
+        private void DrawGrid()
+        {
+            if (_isCompact)
+            {
+                this.GridPath.Data = (Geometry)this.FindResource(_fret == 1
+                    ? "ChordDiagramGridCompactOpenRow"
+                    : "ChordDiagramGridCompactRow");
+            }
+            else
+            {
+                this.GridPath.Data = (Geometry)this.FindResource(_fret == 1
+                    ? "ChordDiagramGridOpenRow"
+                    : "ChordDiagramGridRow");
+            }
+        }
+
         private void DrawBarre(int barreFrom, int barreTo)
         {
-            if (this.BarreStyle == ChordBarreStyle.Lined)
+            if (_barreStyle == ChordBarreStyle.Lined)
                 this.DrawBarreFingering(barreFrom, barreTo);
             else
                 this.DrawBraceBarre(barreFrom, barreTo);
@@ -110,13 +133,14 @@ namespace TabML.Editor.Tablature
 
             var path = new Path
             {
-                Style = (Style) this.FindResource("BraceBarreStyle"),
+                Style = (Style)this.FindResource("BraceBarreStyle"),
                 Data = this.GetBraceBarre(length)
             };
 
             Grid.SetColumn(path, from);
             Grid.SetColumnSpan(path, length);
             this.BraceBarreGrid.Children.Add(path);
+            this.HasBraceBarre = true;
         }
 
         private Geometry GetBraceBarre(int length)

@@ -1,6 +1,9 @@
 ﻿using System.IO;
 using System.Windows;
+using TabML.Core;
+using TabML.Editor.Tablature;
 using TabML.Parser;
+using TabML.Parser.Document;
 
 namespace TabML.Editor
 {
@@ -11,9 +14,10 @@ namespace TabML.Editor
     {
         public MainWindow()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\Documentations\samples\hg-syntax.txt"));
+
         }
     }
 }

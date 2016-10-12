@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TabML.Core;
 using TabML.Parser.Document;
+using TabML.Parser.Parsing.Bar;
 
 namespace TabML.Parser.AST
 {
@@ -12,6 +13,7 @@ namespace TabML.Parser.AST
     {
         public LiteralNode<int> Fret { get; set; }
         public LiteralNode<LeftHandFingerIndex> FingerIndex { get; set; }
+        public ExistencyNode Importancy { get; set; }
 
         public override IEnumerable<Node> Children
         {
@@ -20,6 +22,8 @@ namespace TabML.Parser.AST
                 yield return this.Fret;
                 if (this.FingerIndex != null)
                     yield return this.FingerIndex;
+                if (this.Importancy != null)
+                    yield return this.Importancy;
             }
         }
 
@@ -29,7 +33,8 @@ namespace TabML.Parser.AST
             {
                 Range = this.Range,
                 Fret = this.Fret.Value,
-                FingerIndex = ignoreFingerIndex ? null : this.FingerIndex?.Value
+                FingerIndex = ignoreFingerIndex ? null : this.FingerIndex?.Value,
+                IsImportant = this.Importancy != null
             };
         }
     }

@@ -312,16 +312,12 @@ namespace TabML.Parser.Parsing
             }
         }
 
-        /// <remarks>
-        /// if an OR ('|') syntax is used, you must enclose the pattern
-        /// with parenthesises
-        /// </remarks>
-        public string Read(string pattern)
+        private string ReadPattern(string pattern)
         {
             using (this.RecordReadRange())
             {
                 var remainingLine = this.RemainingLine;
-                var match = Regex.Match(remainingLine, $"^{pattern}");
+                var match = Regex.Match(remainingLine, pattern);
 
                 if (!match.Success)
                     return string.Empty;
@@ -331,6 +327,15 @@ namespace TabML.Parser.Parsing
                 this.MoveNext();
                 return result;
             }
+        }
+
+        /// <remarks>
+        /// if an OR ('|') syntax is used, you must enclose the pattern
+        /// with parenthesises
+        /// </remarks>
+        public string Read(string pattern)
+        {
+            return this.ReadPattern($"^{pattern}");
         }
 
         public string ReadAny(params string[] patterns)
@@ -347,7 +352,7 @@ namespace TabML.Parser.Parsing
             builder.Append(string.Join("|", patterns));
             builder.Append(')');
 
-            return this.Read(builder.ToString());
+            return this.ReadPattern(builder.ToString());
         }
 
         public string ReadToLineEnd()

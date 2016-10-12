@@ -11,8 +11,8 @@ namespace TabML.Parser.AST
     class BeatNode : Node, IDocumentElementFactory<Beat>
     {
         public NoteValueNode NoteValue { get; set; }
-        public RestNode Rest { get; set; }
-        public TiedNode Tied { get; set; }
+        public ExistencyNode Rest { get; set; }
+        public ExistencyNode Tied { get; set; }
         public LiteralNode<AllStringStrumTechniqueEnum> AllStringStrumTechnique { get; set; }
         public List<BeatNoteNode> Notes { get; }
         public LiteralNode<StrumTechniqueEnum> StrumTechnique { get; set; }
