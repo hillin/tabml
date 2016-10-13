@@ -10,9 +10,7 @@ namespace TabML.Parser.Parsing
             result = new TablatureNode();
 
             while (!scanner.EndOfInput)
-            {
                 this.ParseNode(scanner, result);
-            }
 
             result.Range = new TextRange(TextPointer.Zero, scanner.Pointer, scanner);
 
@@ -30,15 +28,11 @@ namespace TabML.Parser.Parsing
             {
                 CommandletParserBase commandletParser; ;
                 if (!CommandletParser.TryCreate(scanner, this, out commandletParser))
-                {
                     return;
-                }
 
                 CommandletNode commandlet;
                 if (!commandletParser.TryParse(scanner, out commandlet))
-                {
                     return;
-                }
 
                 tablature.Nodes.Add(commandlet);
                 return;
