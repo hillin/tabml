@@ -9,7 +9,7 @@ namespace TabML.Parser.AST
     class VoiceNode : Node, IDocumentElementFactory<Voice>
     {
         public List<BeatNode> Beats { get; }
-        public double ExpectedDuration { get; set; }
+        public PreciseDuration ExpectedDuration { get; set; }
 
         public override IEnumerable<Node> Children => this.Beats;
 
@@ -18,7 +18,7 @@ namespace TabML.Parser.AST
             this.Beats = new List<BeatNode>();
         }
 
-        public double GetDuration() => this.Beats.Sum(b => b.NoteValue.ToNoteValue().GetDuration());
+        public PreciseDuration GetDuration() => this.Beats.Sum(b => b.NoteValue.ToNoteValue().GetDuration());
 
         public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Voice voice)
         {

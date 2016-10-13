@@ -16,7 +16,7 @@ namespace TabML.Editor
         {
             this.InitializeComponent();
 
-            TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\Documentations\samples\hg-syntax.txt"));
+            TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\Documentations\samples\my home town.txt"));
 
         }
     }

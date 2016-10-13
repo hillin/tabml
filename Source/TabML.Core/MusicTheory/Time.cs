@@ -11,7 +11,7 @@
             this.NoteValue = noteValue;
         }
 
-        public double GetDuration()
+        public PreciseDuration GetDuration()
         {
             return this.NoteValue.GetDuration() * this.Beats;
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TabML.Core.MusicTheory;
 using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 
@@ -8,33 +9,62 @@ namespace TabML.Parser.AST
 {
     abstract class RhythmSegmentNodeBase : Node
     {
-        public List<VoiceNode> Voices { get; }
+        public VoiceNode TrebleVoice { get; set; }
+        public VoiceNode BassVoice { get; set; }
 
-        public override IEnumerable<Node> Children => this.Voices;
+        public VoiceNode FirstVoice => this.TrebleVoice ?? this.BassVoice;
 
-
-        protected RhythmSegmentNodeBase()
+        public override IEnumerable<Node> Children
         {
-            this.Voices = new List<VoiceNode>();
+            get
+            {
+                if (this.TrebleVoice != null)
+                    yield return this.TrebleVoice;
+
+                if (this.BassVoice != null)
+                    yield return this.BassVoice;
+            }
         }
-        
+
+
+        public PreciseDuration GetDuration()
+        {
+            return
+                new PreciseDuration(Math.Max(this.BassVoice?.GetDuration().FixedPointValue ?? 0,
+                                             this.TrebleVoice?.GetDuration().FixedPointValue ?? 0));
+        }
+
         protected bool FillRhythmSegmentVoices(TablatureContext context, IReporter reporter, RhythmSegmentBase rhythmSegment)
         {
-            if (this.Voices.Count > 0)
+
+            var duration = this.GetDuration();
+
+            if (this.TrebleVoice != null)
             {
-                var maxDuration = this.Voices.Max(v => v.GetDuration());
+                this.TrebleVoice.ExpectedDuration = duration;
 
-                foreach (var voice in this.Voices)
-                {
-                    voice.ExpectedDuration = maxDuration;
+                Voice trebleVoice;
+                if (!this.TrebleVoice.ToDocumentElement(context, reporter, out trebleVoice))
+                    return false;
 
-                    Voice documentVoice;
-                    if (!voice.ToDocumentElement(context, reporter, out documentVoice))
-                        return false;
+                trebleVoice.Part = VoicePart.Treble;
 
-                    rhythmSegment.Voices.Add(documentVoice);
-                }
+                rhythmSegment.TrebleVoice = trebleVoice;
             }
+
+            if (this.BassVoice != null)
+            {
+                this.BassVoice.ExpectedDuration = duration;
+
+                Voice bassVoice;
+                if (!this.BassVoice.ToDocumentElement(context, reporter, out bassVoice))
+                    return false;
+
+                bassVoice.Part = VoicePart.Bass;
+
+                rhythmSegment.BassVoice = bassVoice;
+            }
+
             return true;
         }
     }

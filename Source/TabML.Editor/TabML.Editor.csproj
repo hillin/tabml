@@ -55,7 +55,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Tablature\Bar.ArrangedBeat.cs" />
     <Compile Include="Tablature\Bar.xaml.cs">
       <DependentUpon>Bar.xaml</DependentUpon>
     </Compile>
@@ -65,6 +64,12 @@
     <Compile Include="Tablature\ChordDiagramGridRow.xaml.cs">
       <DependentUpon>ChordDiagramGridRow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Tablature\Layout\ArrangedBar.cs" />
+    <Compile Include="Tablature\Layout\ArrangedBarVoice.cs" />
+    <Compile Include="Tablature\Layout\ArrangedBeam.cs" />
+    <Compile Include="Tablature\Layout\ArrangedBarColumn.cs" />
+    <Compile Include="Tablature\Layout\ArrangedBeatConnection.cs" />
+    <Compile Include="Tablature\Layout\BarArranger.cs" />
     <Compile Include="Tablature\Test\ChordTest.xaml.cs">
       <DependentUpon>ChordTest.xaml</DependentUpon>
     </Compile>

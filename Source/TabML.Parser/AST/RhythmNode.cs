@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TabML.Core.MusicTheory;
 using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 
@@ -23,7 +24,7 @@ namespace TabML.Parser.AST
                 Range = this.Range
             };
 
-            var duration = 0.0;
+            var duration = PreciseDuration.Zero;
 
             foreach (var segment in this.Segments)
             {
@@ -32,12 +33,11 @@ namespace TabML.Parser.AST
                     return false;
 
                 rhythm.Segments.Add(rhythmSegment);
-                if (segment.Voices.Count > 0)
-                    duration += segment.Voices[0].GetDuration();
+                duration += segment.GetDuration();
             }
 
             // duration could be 0 if rhythm is not defined (only chord defined), rhythm will be determined by the rhythm instruction
-            if (duration > 0 && Math.Abs(duration - context.DocumentState.Time.Time.GetDuration()) > 1e-7)
+            if (duration > 0 && duration == context.DocumentState.Time.Time.GetDuration())
             {
                 reporter.Report(ReportLevel.Warning, this.Range, Messages.Warning_BeatsNotMatchingTimeSignature);
                 rhythm.NotMatchingTime = true;

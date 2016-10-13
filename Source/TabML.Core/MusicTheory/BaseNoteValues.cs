@@ -26,7 +26,7 @@ namespace TabML.Core.MusicTheory
             return true;
         }
 
-        public static bool TryFactorize(double duration, out BaseNoteValue[] values)
+        public static bool TryFactorize(PreciseDuration duration, out BaseNoteValue[] values)
         {
             var valueList = new List<BaseNoteValue>();
             var currentNoteValue = BaseNoteValue.Large;
@@ -46,7 +46,7 @@ namespace TabML.Core.MusicTheory
 
             values = valueList.ToArray();
 
-            return Math.Abs(duration) < 1e-7;
+            return duration == 0;
         }
     }
 }

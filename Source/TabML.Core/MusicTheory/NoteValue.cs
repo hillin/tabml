@@ -6,13 +6,11 @@ namespace TabML.Core.MusicTheory
     {
 
 
-        public static bool TryResolveFromDuration(double duration, out NoteValue noteValue, bool complex = false)
+        public static bool TryResolveFromDuration(PreciseDuration duration, out NoteValue noteValue, bool complex = false)
         {
-            const double tolerance = 1e-7;
-
             for (var baseNoteValue = BaseNoteValue.Large; baseNoteValue >= BaseNoteValue.TwoHundredFiftySixth; --baseNoteValue)
             {
-                if (Math.Abs(duration - baseNoteValue.GetDuration()) > tolerance)
+                if (duration == baseNoteValue.GetDuration())
                     continue;
 
                 noteValue = new NoteValue(baseNoteValue);
@@ -32,7 +30,7 @@ namespace TabML.Core.MusicTheory
                     foreach (var augment in searchAugments)
                     {
                         var augmentedDuration = baseDuration * augment.GetDurationMultiplier();
-                        if (Math.Abs(duration - augmentedDuration) < tolerance)
+                        if (duration == augmentedDuration)
                         {
                             noteValue = new NoteValue(baseNoteValue, augment);
                             return true;
@@ -40,7 +38,7 @@ namespace TabML.Core.MusicTheory
 
                         foreach (var tuplet in searchTuplets)
                         {
-                            if (Math.Abs(duration - augmentedDuration * (baseInvertedDuration / tuplet)) < tolerance)
+                            if (duration == augmentedDuration * (baseInvertedDuration / tuplet))
                             {
                                 noteValue = new NoteValue(baseNoteValue, augment, tuplet);
                                 return true;
@@ -87,10 +85,10 @@ namespace TabML.Core.MusicTheory
             this.Tuplet = tuplet ?? baseValue.GetInvertedDuration();
         }
 
-        public double GetDuration()
+        public PreciseDuration GetDuration()
         {
             var baseDuration = this.Base.GetDuration();
-            return baseDuration * this.Augment.GetDurationMultiplier() * ((double)this.Base.GetInvertedDuration() / this.Tuplet);
+            return baseDuration * (this.Augment.GetDurationMultiplier() * ((double)this.Base.GetInvertedDuration() / this.Tuplet));
         }
 
         public int CompareTo(NoteValue other)

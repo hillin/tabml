@@ -14,10 +14,10 @@ namespace TabML.Parser.Document
             {
                 Range = this.Range,
                 Chord = this.Chord.Clone(),
-                IsOmittedByTemplate = this.IsOmittedByTemplate
+                IsOmittedByTemplate = this.IsOmittedByTemplate,
+                BassVoice = this.BassVoice?.Clone(),
+                TrebleVoice = this.TrebleVoice?.Clone()
             };
-
-            clone.Voices.AddRange(this.Voices.Select(v => v.Clone()));
 
             return clone;
         }

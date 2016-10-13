@@ -4,9 +4,9 @@ namespace TabML.Core.MusicTheory
 {
     public static class BaseNoteValueExtensions
     {
-        public static double GetDuration(this BaseNoteValue value)
+        public static PreciseDuration GetDuration(this BaseNoteValue value)
         {
-            return Math.Pow(2, (int)value);
+            return new PreciseDuration(Math.Pow(2, (int)value));
         }
 
         public static int GetInvertedDuration(this BaseNoteValue value)

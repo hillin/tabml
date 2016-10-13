@@ -40,11 +40,9 @@ namespace TabML.Parser.AST
 
             if (bar.Rhythm != null && bar.Lyrics != null)
             {
-                var beats = bar.Rhythm.Segments.SelectMany(s => s.Voices[0].Beats).Count();
+                var beats = bar.Rhythm.Segments.Sum(s => s.FirstVoice.Beats?.Count ?? 0);
                 if (beats < bar.Lyrics.Segments.Count)
-                {
                     reporter.Report(ReportLevel.Suggestion, bar.Lyrics.Range, Messages.Suggestion_LyricsTooLong);
-                }
             }
 
             context.AddBar(bar);

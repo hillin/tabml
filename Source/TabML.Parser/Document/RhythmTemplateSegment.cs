@@ -18,7 +18,12 @@ namespace TabML.Parser.Document
         public RhythmSegment Instantialize()
         {
             var segment = new RhythmSegment();  // do not set Range
-            segment.Voices.AddRange(this.Voices.Select(RhythmTemplateSegment.InstantializeVoice));
+
+            if (this.TrebleVoice != null)
+                segment.TrebleVoice = RhythmTemplateSegment.InstantializeVoice(this.TrebleVoice);
+
+            if (this.BassVoice != null)
+                segment.BassVoice = RhythmTemplateSegment.InstantializeVoice(this.BassVoice);
 
             return segment;
         }

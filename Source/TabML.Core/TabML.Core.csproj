@@ -57,6 +57,8 @@
     <Compile Include="MusicTheory\AllStringStrumTechnique.cs" />
     <Compile Include="MusicTheory\KnownTuningAttribute.cs" />
     <Compile Include="MusicTheory\PostNoteConnection.cs" />
+    <Compile Include="MusicTheory\PreciseDuration.cs" />
+    <Compile Include="MusicTheory\PreciseDurationExtensions.cs" />
     <Compile Include="MusicTheory\PreNoteConnection.cs" />
     <Compile Include="MusicTheory\StaffType.cs" />
     <Compile Include="MusicTheory\Tempo.cs" />

@@ -21,8 +21,21 @@ namespace TabML.Parser.AST
             if (other == null)
                 return false;
 
-            return other.Voices.Count == this.Voices.Count
-                && !this.Voices.Where((v, i) => !v.ValueEquals(other.Voices[i])).Any();
+            if (this.BassVoice != null && other.BassVoice != null)
+                if (!this.BassVoice.ValueEquals(other.BassVoice))
+                    return false;
+
+            if (this.BassVoice != null || other.BassVoice != null)
+                return false;
+
+            if (this.TrebleVoice != null && other.TrebleVoice != null)
+                if (!this.TrebleVoice.ValueEquals(other.TrebleVoice))
+                    return false;
+
+            if (this.TrebleVoice != null || other.TrebleVoice != null)
+                return false;
+
+            return true;
         }
     }
 }

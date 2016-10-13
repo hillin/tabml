@@ -53,7 +53,7 @@ namespace TabML.Parser.AST
         {
             var documentState = context.DocumentState;
             if (this.Fret != null
-                && this.Fret.Value + documentState.MinimumCapoFret < documentState.CapoFretOffsets[this.String.Value])
+                && this.Fret.Value + documentState.MinimumCapoFret < (documentState.CapoFretOffsets?[this.String.Value] ?? 0))
             {
                 reporter.Report(ReportLevel.Warning, this.Fret.Range,
                                 Messages.Warning_FretUnderCapo, this.String.Value,

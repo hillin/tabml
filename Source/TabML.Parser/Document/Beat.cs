@@ -16,7 +16,7 @@ namespace TabML.Parser.Document
         public NoteAccent Accent { get; set; } = NoteAccent.Normal;
 
 
-        public double GetDuration()
+        public PreciseDuration GetDuration()
         {
             return this.NoteValue.GetDuration();
         }

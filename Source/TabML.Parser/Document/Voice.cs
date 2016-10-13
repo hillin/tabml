@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.Document
 {
     public class Voice : Element
     {
         public List<Beat> Beats { get; }
+        public VoicePart Part { get; set; }
 
         public Voice()
         {
             this.Beats = new List<Beat>();
         }
-        public double GetDuration()
+        public PreciseDuration GetDuration()
         {
             return this.Beats.Sum(n => n.GetDuration());
         }
@@ -28,7 +30,8 @@ namespace TabML.Parser.Document
         {
             var clone = new Voice
             {
-                Range = this.Range
+                Range = this.Range,
+                Part = this.Part
             };
             clone.Beats.AddRange(this.Beats.Select(b => b.Clone()));
             return clone;

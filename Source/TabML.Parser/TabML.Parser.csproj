@@ -81,6 +81,7 @@
     <Compile Include="Document\TuningSignature.cs" />
     <Compile Include="Document\Voice.cs" />
     <Compile Include="Document\EditableDocumentState.cs" />
+    <Compile Include="Document\VoicePart.cs" />
     <Compile Include="Validation\AlternateIntegrityChecker.cs" />
     <Compile Include="Validation\BarIntegrityChecker.cs" />
     <Compile Include="Validation\CapoIntegrityChecker.cs" />

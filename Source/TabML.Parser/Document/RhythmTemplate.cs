@@ -33,7 +33,7 @@ namespace TabML.Parser.Document
             if (rhythm.Segments.Count == 0) // empty rhythm, should be filled with rest
                 return rhythm;
 
-            if (rhythm.Segments.Any(s => s.Voices.Count != 0))  // rhythm already defined
+            if (rhythm.Segments.Any(s => s.FirstVoice != null))  // rhythm already defined
                 return rhythm;
 
             if (rhythm.Segments.Count > templateInstance.Segments.Count)
@@ -41,10 +41,7 @@ namespace TabML.Parser.Document
                 reporter.Report(ReportLevel.Warning, rhythm.Range,
                                 Messages.Warning_TooManyChordsToMatchRhythmTemplate);
 
-                for (var i = 0; i < templateInstance.Segments.Count; ++i)
-                {
-                    rhythm.Segments[i].Voices.AddRange(templateInstance.Segments[i].Voices);
-                }
+                RhythmTemplate.CopyVoices(rhythm, templateInstance);
 
                 for (var i = templateInstance.Segments.Count; i < rhythm.Segments.Count; ++i)
                 {
@@ -58,10 +55,7 @@ namespace TabML.Parser.Document
 
                 var lastChord = rhythm.Segments[rhythm.Segments.Count - 1].Chord;
 
-                for (var i = 0; i < rhythm.Segments.Count; ++i)
-                {
-                    rhythm.Segments[i].Voices.AddRange(templateInstance.Segments[i].Voices);
-                }
+                RhythmTemplate.CopyVoices(rhythm, templateInstance);
 
                 for (var i = rhythm.Segments.Count; i < templateInstance.Segments.Count; ++i)
                 {
@@ -72,13 +66,19 @@ namespace TabML.Parser.Document
             }
             else
             {
-                for (var i = 0; i < templateInstance.Segments.Count; ++i)
-                {
-                    rhythm.Segments[i].Voices.AddRange(templateInstance.Segments[i].Voices);
-                }
+                RhythmTemplate.CopyVoices(rhythm, templateInstance);
             }
 
             return rhythm;
+        }
+
+        private static void CopyVoices(Rhythm rhythm, Rhythm templateInstance)
+        {
+            for (var i = 0; i < templateInstance.Segments.Count; ++i)
+            {
+                rhythm.Segments[i].TrebleVoice = templateInstance.Segments[i].TrebleVoice;
+                rhythm.Segments[i].BassVoice = templateInstance.Segments[i].BassVoice;
+            }
         }
     }
 }

@@ -23,7 +23,7 @@ namespace TabML.Parser.Parsing
         public static bool TryReadChordName(Scanner scanner, IReporter reporter, out LiteralNode<string> chordName)
         {
             var name = scanner.Read(@"[a-zA-Z0-9\*\$\#♯♭\-\+\?'\`\~\&\^\!]+");
-            chordName = new LiteralNode<string>(name, scanner.LastReadRange);
+            chordName = string.IsNullOrEmpty(name) ? null : new LiteralNode<string>(name, scanner.LastReadRange);
             return true;
         }
 
@@ -151,7 +151,7 @@ namespace TabML.Parser.Parsing
 
         public static bool TryReadStrumTechnique(Scanner scanner, IReporter reporter, out LiteralNode<StrumTechnique> technique)
         {
-            switch (scanner.ReadAny("rasg", "ad", "au", "pu", "pd", "r", "d", "D", "↑", "u", "U", "↓"))
+            switch (scanner.ReadAny("rasg", "ad", "au", "pu", "pd", "d", "D", "↑", "u", "U", "↓"))
             {
                 case "d":
                 case "↑":
@@ -168,7 +168,6 @@ namespace TabML.Parser.Parsing
                     technique = new LiteralNode<StrumTechnique>(StrumTechnique.ArpeggioUp, scanner.LastReadRange);
                     return true;
                 case "rasg":
-                case "r":
                     technique = new LiteralNode<StrumTechnique>(StrumTechnique.Rasgueado, scanner.LastReadRange);
                     return true;
                 case "pu":
@@ -234,9 +233,8 @@ namespace TabML.Parser.Parsing
         {
             argument = null;
 
-            switch (scanner.ReadAny("dead", "bend", "tremolo", "vibrato", "vib", "ah", "nh", "tr", "b", "x", "◆", "◇"))
+            switch (scanner.ReadAny("dead", "bend", "tremolo", "vibrato", "vib", "ah", "nh", "tr", "◆", "◇"))
             {
-                case "x":
                 case "dead":
                     technique = new LiteralNode<NoteEffectTechnique>(NoteEffectTechnique.DeadNote, scanner.LastReadRange);
                     return true;
@@ -270,7 +268,6 @@ namespace TabML.Parser.Parsing
                 case "◇":
                     technique = new LiteralNode<NoteEffectTechnique>(NoteEffectTechnique.NaturalHarmonic, scanner.LastReadRange);
                     return true;
-                case "b":
                 case "bend":
                     // todo: bend args
                     technique = new LiteralNode<NoteEffectTechnique>(NoteEffectTechnique.Bend, scanner.LastReadRange);
@@ -308,17 +305,14 @@ namespace TabML.Parser.Parsing
 
         public static bool TryReadNoteAccent(Scanner scanner, IReporter reporter, out LiteralNode<NoteAccent> accent)
         {
-            switch (scanner.ReadAny("accented", "heavy", "ghost", "a", "h", "g"))
+            switch (scanner.ReadAny("accented", "heavy", "ghost"))
             {
-                case "a":
                 case "accented":
                     accent = new LiteralNode<NoteAccent>(NoteAccent.Accented, scanner.LastReadRange);
                     return true;
-                case "ha":
                 case "heavy":
                     accent = new LiteralNode<NoteAccent>(NoteAccent.HeavilyAccented, scanner.LastReadRange);
                     return true;
-                case "g":
                 case "ghost":
                     accent = new LiteralNode<NoteAccent>(NoteAccent.Ghost, scanner.LastReadRange);
                     return true;
@@ -415,6 +409,6 @@ namespace TabML.Parser.Parsing
             staffTypeNode = new LiteralNode<StaffType>(staffType, scanner.LastReadRange);
             return true;
         }
-        
+
     }
 }

@@ -31,30 +31,25 @@ namespace TabML.Parser.Parsing.Bar
             if (!RhythmSegmentParser.IsEndOfSegment(scanner))
             {
                 VoiceNode voice;
-                while (new VoiceParser().TryParse(scanner, out voice))
+
+                if (scanner.Expect(';'))
                 {
-                    node.Voices.Add(voice);
+                    if (!this.ReadBassVoice(scanner, node))
+                        return false;
+                }
+                else if (new VoiceParser().TryParse(scanner, out voice))
+                {
+                    node.TrebleVoice = voice;
                     scanner.SkipWhitespaces();
 
-                    if (RhythmSegmentParser.IsEndOfSegment(scanner))
-                        break;
-
-                    if (scanner.Peek() == ';')
-                        continue;
-
+                    if (scanner.Expect(';'))
+                        if (!this.ReadBassVoice(scanner, node))
+                            return false;
+                }
+                else
+                {
                     this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner),
                                 Messages.Error_UnrecognizableRhythmSegmentElement);
-                    node = null;
-                    return false;
-                }
-
-                if (node.Voices.Count > 2)
-                {
-                    this.Report(ReportLevel.Error,
-                                new TextRange(node.Voices[2].Range.From, node.Voices[node.Voices.Count - 1].Range.To),
-                                Messages.Error_TooManyVoices);
-                    node = null;
-                    return false;
                 }
             }
 
@@ -75,13 +70,38 @@ namespace TabML.Parser.Parsing.Bar
                 }
             }
 
-            if (node.Voices.Count == 0)
+            if (node.BassVoice == null && node.TrebleVoice == null)
             {
                 this.Report(ReportLevel.Warning, scanner.LastReadRange,
                             Messages.Warning_EmptyRhythmSegment);
             }
 
             node.Range = anchor.Range;
+            return true;
+        }
+
+        private bool ReadBassVoice(Scanner scanner, TNode node)
+        {
+            VoiceNode voice;
+            if (new VoiceParser().TryParse(scanner, out voice))
+            {
+                node.BassVoice = voice;
+                scanner.SkipWhitespaces();
+
+                if (scanner.Peek() == ';')
+                {
+                    this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner),
+                                Messages.Error_UnrecognizableRhythmSegmentElement);
+                    return false;
+                }
+            }
+            else
+            {
+                this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner),
+                            Messages.Error_UnrecognizableRhythmSegmentElement);
+                return false;
+            }
+
             return true;
         }
     }

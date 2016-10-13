@@ -21,8 +21,7 @@ namespace TabML.Parser.Parsing.Bar
             }
 
             NoteValueNode noteValue;
-            var noteValueParser = new NoteValueParser();
-            if (!noteValueParser.TryParse(scanner, out noteValue))
+            if (!new NoteValueParser().TryParse(scanner, out noteValue))
             {
                 result = null;
                 return false;
@@ -50,7 +49,7 @@ namespace TabML.Parser.Parsing.Bar
                 return false;
             }
 
-            var noteValueIndetemined = noteValue == null && !noteValueParser.HasError;
+            var noteValueIndetemined = noteValue == null && !new NoteValueParser().HasError;
 
             // certain strum techniques (head strum techniques) can be placed before
             // the colon token
@@ -102,20 +101,6 @@ namespace TabML.Parser.Parsing.Bar
 
         private bool TryReadModifier(Scanner scanner, BeatNode result)
         {
-            LiteralNode<StrumTechnique> strumTechnique;
-            if (Parser.TryReadStrumTechnique(scanner, this, out strumTechnique))
-            {
-                if (result.StrumTechnique != null || result.AllStringStrumTechnique != null)
-                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
-                                Messages.Warning_BeatStrumTechniqueAlreadySpecified);
-                else
-                {
-                    result.StrumTechnique = strumTechnique;
-                    result.Modifiers.Add(strumTechnique);
-                }
-                return true;
-            }
-
             LiteralNode<NoteAccent> accent;
             if (Parser.TryReadNoteAccent(scanner, this, out accent))
             {
@@ -159,6 +144,20 @@ namespace TabML.Parser.Parsing.Bar
                 {
                     result.DurationEffect = durationEffect;
                     result.Modifiers.Add(durationEffect);
+                }
+                return true;
+            }
+
+            LiteralNode<StrumTechnique> strumTechnique;
+            if (Parser.TryReadStrumTechnique(scanner, this, out strumTechnique))
+            {
+                if (result.StrumTechnique != null || result.AllStringStrumTechnique != null)
+                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                                Messages.Warning_BeatStrumTechniqueAlreadySpecified);
+                else
+                {
+                    result.StrumTechnique = strumTechnique;
+                    result.Modifiers.Add(strumTechnique);
                 }
                 return true;
             }
