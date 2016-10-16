@@ -56,6 +56,7 @@
     <Compile Include="MusicTheory\CapoInfo.cs" />
     <Compile Include="MusicTheory\AllStringStrumTechnique.cs" />
     <Compile Include="MusicTheory\KnownTuningAttribute.cs" />
+    <Compile Include="MusicTheory\NoteEffectTechnique.cs" />
     <Compile Include="MusicTheory\PostNoteConnection.cs" />
     <Compile Include="MusicTheory\PreciseDuration.cs" />
     <Compile Include="MusicTheory\PreciseDurationExtensions.cs" />
@@ -71,9 +72,9 @@
     <Compile Include="MusicTheory\Interval.cs" />
     <Compile Include="MusicTheory\IntervalQuality.cs" />
     <Compile Include="MusicTheory\Intervals.cs" />
-    <Compile Include="MusicTheory\NoteAccent.cs" />
-    <Compile Include="MusicTheory\NoteDurationEffect.cs" />
-    <Compile Include="MusicTheory\NoteEffectTechnique.cs" />
+    <Compile Include="MusicTheory\BeatAccent.cs" />
+    <Compile Include="MusicTheory\BeatDurationEffect.cs" />
+    <Compile Include="MusicTheory\BeatEffectTechnique.cs" />
     <Compile Include="MusicTheory\NoteName.cs" />
     <Compile Include="MusicTheory\NoteNames.cs" />
     <Compile Include="MusicTheory\Pitches.cs" />

@@ -153,7 +153,7 @@ namespace TabML.Parser.Parsing
             "Strum technique, note effect technique, duration effect, accent or connection expected";
         public const string Warning_BeatStrumTechniqueAlreadySpecified =
             "Strum technique is already specified for this note, this one will be ignored";
-        public const string Warning_BeatNoteEffectTechniqueAlreadySpecified =
+        public const string Warning_BeatEffectTechniqueAlreadySpecified =
             "Note effect technique is already specified for this note, this one will be ignored";
         public const string Warning_BeatNoteDurationEffectAlreadySpecified =
             "Duration effect is already specified for this note, this one will be ignored";

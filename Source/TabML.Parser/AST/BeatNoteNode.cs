@@ -11,6 +11,8 @@ namespace TabML.Parser.AST
         public LiteralNode<int> Fret { get; set; }
         public LiteralNode<PreNoteConnection> PreConnection { get; set; }
         public LiteralNode<PostNoteConnection> PostConnection { get; set; }
+        public LiteralNode<NoteEffectTechnique> EffectTechnique { get; set; }
+        public LiteralNode<double> EffectTechniqueParameter { get; set; }
 
         public override IEnumerable<Node> Children
         {
@@ -23,6 +25,13 @@ namespace TabML.Parser.AST
 
                 if (this.Fret != null)
                     yield return this.Fret;
+
+                if (this.EffectTechnique != null)
+                {
+                    yield return this.EffectTechnique;
+                    if (this.EffectTechniqueParameter != null)
+                        yield return this.EffectTechniqueParameter;
+                }
 
                 if (this.PostConnection != null)
                     yield return this.PostConnection;
@@ -38,6 +47,13 @@ namespace TabML.Parser.AST
                 return false;
 
             if ((this.Fret?.Value ?? BeatNote.UnspecifiedFret) != other.Fret)
+                return false;
+
+            if ((this.EffectTechnique?.Value ?? NoteEffectTechnique.None) != other.EffectTechnique)
+                return false;
+
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if ((this.EffectTechniqueParameter?.Value ?? default(double)) != other.EffectTechniqueParameter)
                 return false;
 
             if ((this.PreConnection?.Value ?? PreNoteConnection.None) != other.PreConnection)
@@ -65,7 +81,9 @@ namespace TabML.Parser.AST
                 PreConnection = this.PreConnection?.Value ?? PreNoteConnection.None,
                 PostConnection = this.PostConnection?.Value ?? PostNoteConnection.None,
                 String = this.String.Value,
-                Fret = this.Fret?.Value ?? BeatNote.UnspecifiedFret
+                Fret = this.Fret?.Value ?? BeatNote.UnspecifiedFret,
+                EffectTechnique = this.EffectTechnique?.Value ?? NoteEffectTechnique.None,
+                EffectTechniqueParameter = this.EffectTechniqueParameter?.Value ?? default(double)
             };
 
             return true;

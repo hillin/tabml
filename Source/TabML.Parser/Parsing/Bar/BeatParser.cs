@@ -101,7 +101,7 @@ namespace TabML.Parser.Parsing.Bar
 
         private bool TryReadModifier(Scanner scanner, BeatNode result)
         {
-            LiteralNode<NoteAccent> accent;
+            LiteralNode<BeatAccent> accent;
             if (Parser.TryReadNoteAccent(scanner, this, out accent))
             {
                 if (result.Accent != null)
@@ -115,18 +115,18 @@ namespace TabML.Parser.Parsing.Bar
                 return true;
             }
 
-            LiteralNode<NoteEffectTechnique> noteEffectTechnique;
+            LiteralNode<BeatEffectTechnique> beatEffectTechnique;
             LiteralNode<double> techniqueParameter;
-            if (Parser.TryReadNoteEffectTechnique(scanner, this, out noteEffectTechnique, out techniqueParameter))
+            if (Parser.TryReadBeatEffectTechnique(scanner, this, out beatEffectTechnique, out techniqueParameter))
             {
                 if (result.EffectTechnique != null)
                     this.Report(ReportLevel.Warning, scanner.LastReadRange,
-                                Messages.Warning_BeatNoteEffectTechniqueAlreadySpecified);
+                                Messages.Warning_BeatEffectTechniqueAlreadySpecified);
                 else
                 {
-                    result.EffectTechnique = noteEffectTechnique;
+                    result.EffectTechnique = beatEffectTechnique;
                     result.EffectTechniqueParameter = techniqueParameter;
-                    result.Modifiers.Add(noteEffectTechnique);
+                    result.Modifiers.Add(beatEffectTechnique);
                     if (techniqueParameter != null)
                         result.Modifiers.Add(techniqueParameter);
                 }
@@ -134,7 +134,7 @@ namespace TabML.Parser.Parsing.Bar
                 return true;
             }
 
-            LiteralNode<NoteDurationEffect> durationEffect;
+            LiteralNode<BeatDurationEffect> durationEffect;
             if (Parser.TryReadNoteDurationEffect(scanner, this, out durationEffect))
             {
                 if (result.DurationEffect != null)

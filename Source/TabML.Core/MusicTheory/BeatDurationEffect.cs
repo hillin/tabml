@@ -1,6 +1,6 @@
 ﻿namespace TabML.Core.MusicTheory
 {
-    public enum NoteDurationEffect
+    public enum BeatDurationEffect
     {
         None,
         Fermata,

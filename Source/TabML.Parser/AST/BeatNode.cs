@@ -16,10 +16,10 @@ namespace TabML.Parser.AST
         public LiteralNode<AllStringStrumTechniqueEnum> AllStringStrumTechnique { get; set; }
         public List<BeatNoteNode> Notes { get; }
         public LiteralNode<StrumTechniqueEnum> StrumTechnique { get; set; }
-        public LiteralNode<NoteEffectTechnique> EffectTechnique { get; set; }
+        public LiteralNode<BeatEffectTechnique> EffectTechnique { get; set; }
         public LiteralNode<double> EffectTechniqueParameter { get; set; }
-        public LiteralNode<NoteDurationEffect> DurationEffect { get; set; }
-        public LiteralNode<NoteAccent> Accent { get; set; }
+        public LiteralNode<BeatDurationEffect> DurationEffect { get; set; }
+        public LiteralNode<BeatAccent> Accent { get; set; }
         public List<Node> Modifiers { get; }
 
         public bool HasRedunantSpecifierForRest => this.Notes.Count > 0
@@ -74,9 +74,9 @@ namespace TabML.Parser.AST
             {
                 Range = this.Range,
                 StrumTechnique = this.StrumTechnique?.Value ?? ((StrumTechniqueEnum?)this.AllStringStrumTechnique?.Value) ?? StrumTechniqueEnum.None,
-                Accent = this.Accent?.Value ?? NoteAccent.Normal,
-                DurationEffect = this.DurationEffect?.Value ?? NoteDurationEffect.None,
-                EffectTechnique = this.EffectTechnique?.Value ?? NoteEffectTechnique.None,
+                Accent = this.Accent?.Value ?? BeatAccent.Normal,
+                DurationEffect = this.DurationEffect?.Value ?? BeatDurationEffect.None,
+                EffectTechnique = this.EffectTechnique?.Value ?? BeatEffectTechnique.None,
                 EffectTechniqueParameter = this.EffectTechniqueParameter?.Value ?? default(double),
                 IsRest = this.Rest != null,
                 IsTied = this.Tied != null,
@@ -124,17 +124,17 @@ namespace TabML.Parser.AST
             if ((this.Tied != null) != other.IsTied)
                 return false;
 
-            if ((this.EffectTechnique?.Value ?? NoteEffectTechnique.None) != other.EffectTechnique)
+            if ((this.EffectTechnique?.Value ?? BeatEffectTechnique.None) != other.EffectTechnique)
                 return false;
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if ((this.EffectTechniqueParameter?.Value ?? default(double)) != other.EffectTechniqueParameter)
                 return false;
 
-            if ((this.DurationEffect?.Value ?? NoteDurationEffect.None) != other.DurationEffect)
+            if ((this.DurationEffect?.Value ?? BeatDurationEffect.None) != other.DurationEffect)
                 return false;
 
-            if ((this.Accent?.Value ?? NoteAccent.Normal) != other.Accent)
+            if ((this.Accent?.Value ?? BeatAccent.Normal) != other.Accent)
                 return false;
 
             if (other.Notes.Length != this.Notes.Count)

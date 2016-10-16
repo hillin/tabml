@@ -10,10 +10,10 @@ namespace TabML.Parser.Document
         public bool IsRest { get; set; }
         public bool IsTied { get; set; }
         public StrumTechnique StrumTechnique { get; set; } = StrumTechnique.None;
-        public NoteEffectTechnique EffectTechnique { get; set; } = NoteEffectTechnique.None;
+        public BeatEffectTechnique EffectTechnique { get; set; } = BeatEffectTechnique.None;
         public double EffectTechniqueParameter { get; set; }
-        public NoteDurationEffect DurationEffect { get; set; } = NoteDurationEffect.None;
-        public NoteAccent Accent { get; set; } = NoteAccent.Normal;
+        public BeatDurationEffect DurationEffect { get; set; } = BeatDurationEffect.None;
+        public BeatAccent Accent { get; set; } = BeatAccent.Normal;
 
 
         public PreciseDuration GetDuration()

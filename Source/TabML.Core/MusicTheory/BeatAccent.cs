@@ -1,6 +1,6 @@
 ﻿namespace TabML.Core.MusicTheory
 {
-    public enum NoteAccent
+    public enum BeatAccent
     {
         Normal,
         Ghost,

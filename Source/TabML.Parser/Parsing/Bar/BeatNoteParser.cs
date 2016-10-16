@@ -39,6 +39,19 @@ namespace TabML.Parser.Parsing.Bar
                 result.Fret = fret;
             }
 
+            scanner.SkipWhitespaces();
+            if (scanner.Expect(':'))
+            {
+                LiteralNode<NoteEffectTechnique> noteEffectTechnique;
+                LiteralNode<double> techniqueParameter;
+                if (Parser.TryReadNoteEffectTechnique(scanner, this, out noteEffectTechnique, out techniqueParameter))
+                {
+                    result.EffectTechnique = noteEffectTechnique;
+                    result.EffectTechniqueParameter = techniqueParameter;
+                }
+            }
+
+            scanner.SkipWhitespaces();
             LiteralNode<PostNoteConnection> postConnection;
             Parser.TryReadPostNoteConnection(scanner, this, out postConnection);
             result.PostConnection = postConnection;

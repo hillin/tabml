@@ -8,6 +8,8 @@ namespace TabML.Parser.Document
 
         public int String { get; set; }
         public int Fret { get; set; }
+        public NoteEffectTechnique EffectTechnique { get; set; }
+        public double EffectTechniqueParameter { get; set; }
         public PreNoteConnection PreConnection { get; set; }
         public PostNoteConnection PostConnection { get; set; }
 
