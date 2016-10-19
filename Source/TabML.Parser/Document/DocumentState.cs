@@ -22,9 +22,9 @@ namespace TabML.Parser.Document
             to.MinimumCapoFret = from.MinimumCapoFret;
             to._definedChords.AppendClone(from._definedChords);
             to._keySignature = from._keySignature;
-            to._time = from._time;
-            to._tempo = from._tempo;
-            to._tuning = from._tuning;
+            to._timeSignature = from._timeSignature;
+            to._tempoSignature = from._tempoSignature;
+            to._tuningSignature = from._tuningSignature;
             to._rhythmTemplate = from._rhythmTemplate;
             to._currentSection = from._currentSection;
             to._definedSections.AppendClone(from._definedSections);
@@ -46,13 +46,13 @@ namespace TabML.Parser.Document
             new SealableCollection<ChordDefinition>();
 
         private KeySignature _keySignature;
-        private TimeSignature _time;
+        private TimeSignature _timeSignature;
 
         private readonly SealableCollection<Section> _definedSections =
             new SealableCollection<Section>();
 
-        private TempoSignature _tempo;
-        private TuningSignature _tuning;
+        private TempoSignature _tempoSignature;
+        private TuningSignature _tuningSignature;
         private RhythmTemplate _rhythmTemplate;
 
 
@@ -126,33 +126,35 @@ namespace TabML.Parser.Document
             }
         }
 
-        public TimeSignature Time
+        public TimeSignature TimeSignature
         {
-            get { return _time; }
+            get { return _timeSignature; }
             set
             {
                 this.CheckSealed();
-                _time = value;
+                _timeSignature = value;
             }
         }
 
-        public TempoSignature Tempo
+        public TempoSignature TempoSignature
         {
-            get { return _tempo; }
+            get { return _tempoSignature; }
             set
             {
                 this.CheckSealed();
-                _tempo = value;
+                _tempoSignature = value;
             }
         }
 
-        public TuningSignature Tuning
+
+
+        public TuningSignature TuningSignature
         {
-            get { return _tuning; }
+            get { return _tuningSignature; }
             set
             {
                 this.CheckSealed();
-                _tuning = value;
+                _tuningSignature = value;
             }
         }
 

@@ -29,7 +29,7 @@ namespace TabML.Parser.AST
 
             using (var state = context.AlterDocumentState())
             {
-                state.Tempo = tempo;
+                state.TempoSignature = tempo;
             }
 
             return true;
@@ -53,7 +53,7 @@ namespace TabML.Parser.AST
 
         public bool ToDocumentElement(TablatureContext context, IReporter reporter, out TempoSignature element)
         {
-            if (this.ValueEquals(context.DocumentState.Tempo))
+            if (this.ValueEquals(context.DocumentState.TempoSignature))
             {
                 reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_UselessTempoInstruction);
                 element = null;

@@ -35,7 +35,7 @@ namespace TabML.Parser.AST
                 return false;
             }
 
-            if (context.DocumentState.Tuning != null)
+            if (context.DocumentState.TuningSignature != null)
             {
                 reporter.Report(ReportLevel.Warning, this.Range, Messages.Warning_RedefiningTuningInstruction);
                 return false;
@@ -47,7 +47,7 @@ namespace TabML.Parser.AST
 
             using (var state = context.AlterDocumentState())
             {
-                state.Tuning = tuning;
+                state.TuningSignature = tuning;
             }
 
             return true;

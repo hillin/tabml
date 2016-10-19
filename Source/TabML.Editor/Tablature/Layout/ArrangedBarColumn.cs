@@ -1,16 +1,18 @@
 ﻿using System.Collections.Generic;
-using TabML.Parser.Document;
+using TabML.Core.MusicTheory;
+using Chord = TabML.Parser.Document.Chord;
 
 namespace TabML.Editor.Tablature.Layout
 {
     class ArrangedBarColumn
     {
-        public List<Beat> VoiceBeats { get; }
+        public List<ArrangedBarBeat> VoiceBeats { get; }
         public Chord Chord { get; set; }
+        public PreciseDuration Position { get; set; }
 
         public ArrangedBarColumn()
         {
-            this.VoiceBeats = new List<Beat>();
+            this.VoiceBeats = new List<ArrangedBarBeat>();
         }
     }
 }

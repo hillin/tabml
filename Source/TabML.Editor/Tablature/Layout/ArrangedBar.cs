@@ -8,12 +8,13 @@ namespace TabML.Editor.Tablature.Layout
 {
     class ArrangedBar
     {
-        public List<ArrangedBarVoice> Voices { get; }
+        public ArrangedBarVoice TrebleVoice { get; set; }
+        public ArrangedBarVoice BassVoice { get; set; }
         public List<ArrangedBarColumn> Columns { get; }
 
         public ArrangedBar()
         {
-            this.Voices = new List<ArrangedBarVoice>();
+            
             this.Columns = new List<ArrangedBarColumn>();
         }
     }

@@ -35,7 +35,7 @@ namespace TabML.Parser.AST
 
             using (var state = context.AlterDocumentState())
             {
-                state.Time = time;
+                state.TimeSignature = time;
             }
 
             return true;
@@ -50,7 +50,7 @@ namespace TabML.Parser.AST
                 return false;
             }
 
-            if (context.DocumentState.Time != null && this.ValueEquals(context.DocumentState.Time))
+            if (context.DocumentState.TimeSignature != null && this.ValueEquals(context.DocumentState.TimeSignature))
             {
                 reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_UselessTimeInstruction);
                 element = null;
