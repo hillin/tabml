@@ -52,21 +52,26 @@ namespace TabML.Core.MusicTheory
             return false;
         }
 
+        public static double GetTupletMultiplier(int? tuplet)
+        {
+            if (tuplet == null)
+                return 1.0;
+
+            // even tuplet numbers are treated according to https://en.wikipedia.org/wiki/Tuplet
+            if (tuplet.Value % 2 == 0)
+                return 3.0 / tuplet.Value;
+
+            return 2.0 / tuplet.Value;
+        }
+
         public static bool IsValidTuplet(int tuplet)
         {
-            if (tuplet < 3)
-                return false;
-
-            if (tuplet > 64)
-                return false;
-
-            var log = Math.Log(tuplet, 2);
-            return !(log - (int)log < 0.001);
+            return tuplet >= 2 && tuplet <= 64;
         }
 
         public BaseNoteValue Base { get; }
         public NoteValueAugment Augment { get; }
-        public int Tuplet { get; }
+        public int? Tuplet { get; }
 
         public NoteValue(BaseNoteValue baseValue, NoteValueAugment augment = NoteValueAugment.None, int? tuplet = null)
         {
@@ -82,14 +87,14 @@ namespace TabML.Core.MusicTheory
 
             this.Base = baseValue;
             this.Augment = augment;
-            this.Tuplet = tuplet ?? baseValue.GetInvertedDuration();
+            this.Tuplet = tuplet;
         }
 
         public PreciseDuration GetDuration()
         {
-            var baseDuration = this.Base.GetDuration();
-            return baseDuration * (this.Augment.GetDurationMultiplier() * ((double)this.Base.GetInvertedDuration() / this.Tuplet));
+            return this.Base.GetDuration() * (this.Augment.GetDurationMultiplier() * NoteValue.GetTupletMultiplier(this.Tuplet));
         }
+
 
         public int CompareTo(NoteValue other)
         {
@@ -140,7 +145,7 @@ namespace TabML.Core.MusicTheory
             {
                 var hashCode = (int)this.Base;
                 hashCode = (hashCode * 397) ^ (int)this.Augment;
-                hashCode = (hashCode * 397) ^ this.Tuplet;
+                hashCode = (hashCode * 397) ^ this.Tuplet ?? 0;
                 return hashCode;
             }
         }

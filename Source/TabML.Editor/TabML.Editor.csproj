@@ -71,6 +71,7 @@
     <Compile Include="Tablature\Layout\ArrangedBarColumn.cs" />
     <Compile Include="Tablature\Layout\ArrangedBeatConnection.cs" />
     <Compile Include="Tablature\Layout\BarArranger.cs" />
+    <Compile Include="Tablature\Layout\BeamArranger.cs" />
     <Compile Include="Tablature\Layout\IBeamElement.cs" />
     <Compile Include="Tablature\Test\ChordTest.xaml.cs">
       <DependentUpon>ChordTest.xaml</DependentUpon>

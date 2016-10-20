@@ -10,17 +10,24 @@ namespace TabML.Editor.Tablature.Layout
 {
     class ArrangedBeam : IBeamElement
     {
+        public BaseNoteValue BeatNoteValue { get; internal set; }
         public List<IBeamElement> Elements { get; }
         public int? Tuplet { get; set; }
 
-        public ArrangedBeam()
+        public ArrangedBeam(BaseNoteValue beatNoteValue)
         {
+            this.BeatNoteValue = beatNoteValue;
             this.Elements = new List<IBeamElement>();
         }
 
         public PreciseDuration GetDuration()
         {
             return this.Elements.Sum(b => b.GetDuration());
+        }
+        
+        public bool MatchesTuplet(ArrangedBarBeat beat)
+        {
+            return this.Tuplet == beat.Beat.NoteValue.Tuplet;
         }
     }
 }

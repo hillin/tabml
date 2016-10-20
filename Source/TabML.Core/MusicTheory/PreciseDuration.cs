@@ -68,6 +68,16 @@ namespace TabML.Core.MusicTheory
             return d1.FixedPointValue > d2.FixedPointValue;
         }
 
+        public static bool operator <=(PreciseDuration d1, PreciseDuration d2)
+        {
+            return d1.FixedPointValue <= d2.FixedPointValue;
+        }
+
+        public static bool operator >=(PreciseDuration d1, PreciseDuration d2)
+        {
+            return d1.FixedPointValue >= d2.FixedPointValue;
+        }
+
         public bool Equals(PreciseDuration other)
         {
             return other.FixedPointValue == this.FixedPointValue;

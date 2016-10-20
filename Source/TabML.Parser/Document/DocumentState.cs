@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TabML.Core;
 using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
 using TheoreticalChord = TabML.Core.MusicTheory.Chord;
@@ -135,6 +136,8 @@ namespace TabML.Parser.Document
                 _timeSignature = value;
             }
         }
+
+        public Time Time => _timeSignature?.Time ?? Defaults.Time;
 
         public TempoSignature TempoSignature
         {

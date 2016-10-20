@@ -17,5 +17,31 @@ namespace TabML.Core.MusicTheory
 
             return (int)Math.Pow(2, -intValue);
         }
+
+        public static BaseNoteValue Half(this BaseNoteValue value)
+        {
+            if (value.GetIsShortestSupported())
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            return value + 1;
+        }
+
+        public static BaseNoteValue Double(this BaseNoteValue value)
+        {
+            if (value.GetIsLongestSupported())
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            return value - 1;
+        }
+
+        public static bool GetIsShortestSupported(this BaseNoteValue value)
+        {
+            return value == BaseNoteValue.TwoHundredFiftySixth;
+        }
+
+        public static bool GetIsLongestSupported(this BaseNoteValue value)
+        {
+            return value == BaseNoteValue.Large;
+        }
     }
 }

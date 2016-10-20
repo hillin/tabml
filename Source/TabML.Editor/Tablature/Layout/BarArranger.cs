@@ -51,33 +51,32 @@ namespace TabML.Editor.Tablature.Layout
 
         private void ArrangeVoices(DocumentBar bar, ArrangedBar arrangedBar)
         {
-            var bassVoice = new ArrangedBarVoice();
-            var trebleVoice = new ArrangedBarVoice();
+            var bassBeamArranger = new BeamArranger(bar.DocumentState.Time.NoteValue);
+            var trebleBeamArranger = new BeamArranger(bar.DocumentState.Time.NoteValue);
 
             foreach (var segment in bar.Rhythm.Segments)
             {
                 if (segment.IsOmittedByTemplate)
                     continue;
 
-                this.AppendAndArrangeVoice(bar, segment.BassVoice, bassVoice);
-                this.AppendAndArrangeVoice(bar, segment.TrebleVoice, trebleVoice);
+                this.AppendAndArrangeVoice(segment.BassVoice, bassBeamArranger);
+                this.AppendAndArrangeVoice(segment.TrebleVoice, trebleBeamArranger);
             }
+
+            arrangedBar.BassVoice = new ArrangedBarVoice();
+            arrangedBar.BassVoice.Beams.AddRange(bassBeamArranger.GetRootBeams());
+
+            arrangedBar.TrebleVoice = new ArrangedBarVoice();
+            arrangedBar.TrebleVoice.Beams.AddRange(trebleBeamArranger.GetRootBeams());
         }
 
-        private void AppendAndArrangeVoice(DocumentBar bar, Voice voice, ArrangedBarVoice arrangedVoice)
+        private void AppendAndArrangeVoice(Voice voice, BeamArranger beamArranger)
         {
             if (voice == null)
                 return;
 
-            ArrangedBeam beam;
-
-            if (arrangedVoice.Beams.Count == 0)
-                arrangedVoice.Beams.Add(beam = new ArrangedBeam());
-            else
-            {
-                var lastBeam = arrangedVoice.Beams[arrangedVoice.Beams.Count - 1];
-                if(lastBeam.GetDuration() < bar.DocumentState.TimeSignature)
-            }
+            foreach (var beat in voice.Beats)
+                beamArranger.AddBeat(_beatLookup[beat]);
         }
 
         private void ArrangeColumns(DocumentBar bar, ArrangedBar arrangedBar)
