@@ -4,6 +4,7 @@ using TabML.Core;
 using TabML.Editor.Tablature;
 using TabML.Parser;
 using TabML.Parser.Document;
+using Bar = TabML.Editor.Tablature.Bar;
 
 namespace TabML.Editor
 {
@@ -16,8 +17,10 @@ namespace TabML.Editor
         {
             this.InitializeComponent();
 
-            TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\Documentations\samples\my home town.txt"));
+            var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\Documentations\samples\my home town.txt"));
 
+            foreach (var bar in tablature.Bars)
+                this.BarStack.Children.Add(new Bar(bar));
         }
     }
 }

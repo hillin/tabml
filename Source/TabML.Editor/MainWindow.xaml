@@ -8,5 +8,5 @@
         xmlns:test="clr-namespace:TabML.Editor.Tablature.Test"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <test:ChordTest />
+    <StackPanel  x:Name="BarStack"/>
 </Window>

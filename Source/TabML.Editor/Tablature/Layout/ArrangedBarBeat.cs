@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using TabML.Parser.Document;
 
 namespace TabML.Editor.Tablature.Layout
 {
+    [DebuggerDisplay("{DebuggerDisplay, nq}")]
     class ArrangedBarBeat : IBeamElement
     {
         public PreciseDuration Position { get; set; }
@@ -24,5 +26,9 @@ namespace TabML.Editor.Tablature.Layout
         {
             return this.Beat.GetDuration();
         }
+
+#if DEBUG
+        private string DebuggerDisplay => $"Beat: {this.Beat.NoteValue.DebuggerDisplay}";
+#endif
     }
 }

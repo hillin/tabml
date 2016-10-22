@@ -112,6 +112,9 @@ namespace TabML.Editor.Tablature.Layout
 
         private void CreateArrangedBarBeats(List<ArrangedBarBeat> arrangedBeats, Voice voice)
         {
+            if (voice == null)
+                return; // todo: insert rest?
+
             if (voice.Beats.Count == 0)
             {
                 // todo: insert rest?

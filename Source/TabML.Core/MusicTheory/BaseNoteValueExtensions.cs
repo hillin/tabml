@@ -23,7 +23,7 @@ namespace TabML.Core.MusicTheory
             if (value.GetIsShortestSupported())
                 throw new ArgumentOutOfRangeException(nameof(value));
 
-            return value + 1;
+            return value - 1;
         }
 
         public static BaseNoteValue Double(this BaseNoteValue value)
@@ -31,7 +31,7 @@ namespace TabML.Core.MusicTheory
             if (value.GetIsLongestSupported())
                 throw new ArgumentOutOfRangeException(nameof(value));
 
-            return value - 1;
+            return value + 1;
         }
 
         public static bool GetIsShortestSupported(this BaseNoteValue value)

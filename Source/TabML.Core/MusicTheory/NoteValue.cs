@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Text;
 
 namespace TabML.Core.MusicTheory
 {
+    [DebuggerDisplay("{DebuggerDisplay, nq}")]
     public struct NoteValue : IComparable<NoteValue>
     {
-
-
         public static bool TryResolveFromDuration(PreciseDuration duration, out NoteValue noteValue, bool complex = false)
         {
             for (var baseNoteValue = BaseNoteValue.Large; baseNoteValue >= BaseNoteValue.TwoHundredFiftySixth; --baseNoteValue)
@@ -149,5 +150,34 @@ namespace TabML.Core.MusicTheory
                 return hashCode;
             }
         }
+
+#if DEBUG
+        public string DebuggerDisplay
+        {
+            get
+            {
+                var builder = new StringBuilder();
+                builder.Append(this.Base);
+
+                switch (this.Augment)
+                {
+                    case NoteValueAugment.Dot:
+                        builder.Append("+1/2");
+                        break;
+                    case NoteValueAugment.TwoDots:
+                        builder.Append("+3/4");
+                        break;
+                    case NoteValueAugment.ThreeDots:
+                        builder.Append("+7/8");
+                        break;
+                }
+
+                if (this.Tuplet != null)
+                    builder.Append("/").Append(this.Tuplet);
+
+                return builder.ToString();
+            }
+        }
+#endif
     }
 }

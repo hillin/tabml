@@ -4,16 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabML.Parser.AST;
+using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser
 {
     public class TabMLParser
     {
-        public static void TryParse(string tabml)
+        private class DummyReporter : IReporter
         {
-            TablatureNode tablature;
-            new TablatureParser().TryParse(new Scanner(tabml), out tablature);
+            public void Report(ReportLevel level, TextRange? position, string message, params object[] args)
+            {
+
+            }
         }
+
+        public static Tablature TryParse(string tabml)
+        {
+            TablatureNode tablatureNode;
+            if (!new TablatureParser().TryParse(new Scanner(tabml), out tablatureNode))
+                return null;
+
+            var context = new TablatureContext();
+            var reporter = new DummyReporter();
+            foreach (var node in tablatureNode.Nodes)
+                node.Apply(context, reporter);
+
+            return context.ToTablature();
+        }
+
     }
 }

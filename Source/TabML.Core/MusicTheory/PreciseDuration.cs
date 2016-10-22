@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -151,6 +152,11 @@ namespace TabML.Core.MusicTheory
         public override int GetHashCode()
         {
             return this.FixedPointValue.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return this.Duration.ToString(CultureInfo.CurrentCulture);
         }
     }
 }

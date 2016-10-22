@@ -38,5 +38,10 @@ namespace TabML.Parser
             this.DocumentState = state;
             return state;
         }
+
+        public Tablature ToTablature()
+        {
+            return new Tablature(this);
+        }
     }
 }

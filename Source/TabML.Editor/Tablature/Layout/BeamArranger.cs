@@ -13,14 +13,19 @@ namespace TabML.Editor.Tablature.Layout
         private readonly BaseNoteValue _beamNoteValue;
         private readonly Stack<ArrangedBeam> _beamStack;
         private ArrangedBeam _currentBeam;
-
+        private ArrangedBeam _currentRootBeam;
         private readonly List<ArrangedBeam> _rootBeams;
+
+        private PreciseDuration _currentCapacity;
+        private PreciseDuration _duration;
 
         public BeamArranger(BaseNoteValue beamNoteValue)
         {
             _beamNoteValue = beamNoteValue;
             _beamStack = new Stack<ArrangedBeam>();
             _rootBeams = new List<ArrangedBeam>();
+            _currentCapacity = PreciseDuration.Zero;
+            _duration = PreciseDuration.Zero;
         }
 
         public IEnumerable<ArrangedBeam> GetRootBeams()
@@ -32,7 +37,7 @@ namespace TabML.Editor.Tablature.Layout
         {
             if (_currentBeam == null)
                 this.StartRootBeam();
-            else if (_currentBeam.GetDuration() >= _beamNoteValue.GetDuration())
+            else if (_duration >= _currentCapacity)
                 this.StartRootBeam();
             else if (!_currentBeam.MatchesTuplet(beat))
             {
@@ -54,6 +59,7 @@ namespace TabML.Editor.Tablature.Layout
 
                 // this is the root beam
                 _currentBeam.Elements.Add(beat);
+                _duration += beat.GetDuration();
                 return;
             }
 
@@ -65,17 +71,22 @@ namespace TabML.Editor.Tablature.Layout
                 _currentBeam = newBeam;
             }
 
-            // beatNoteValue == _currentBeam.BeatNoteValue
+            Debug.Assert(beatNoteValue == _currentBeam.BeatNoteValue);
             _currentBeam.Elements.Add(beat);
+            _duration += beat.GetDuration();
         }
 
         private void StartRootBeam()
         {
             _currentBeam = new ArrangedBeam(_beamNoteValue.Half());
+            _currentRootBeam = _currentBeam;
             _rootBeams.Add(_currentBeam);
 
             _beamStack.Clear();
             _beamStack.Push(_currentBeam);
+
+            while (_currentCapacity <= _duration)
+                _currentCapacity += _beamNoteValue.GetDuration();
         }
     }
 }

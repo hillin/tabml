@@ -14,10 +14,6 @@ namespace TabML.Parser.Parsing
 
             result.Range = new TextRange(TextPointer.Zero, scanner.Pointer, scanner);
 
-            var context = new TablatureContext();
-            foreach (var node in result.Nodes)
-                node.Apply(context, this);
-
             return true;
         }
 

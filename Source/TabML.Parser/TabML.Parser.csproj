@@ -65,6 +65,7 @@
     <Compile Include="Document\ChordDefinition.cs" />
     <Compile Include="Document\ChordFingering.cs" />
     <Compile Include="Document\ChordFingeringNote.cs" />
+    <Compile Include="Document\Tablature.cs" />
     <Compile Include="Document\Element.cs" />
     <Compile Include="AST\IDocumentElementFactory.cs" />
     <Compile Include="Document\KeySignature.cs" />
