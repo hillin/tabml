@@ -10,20 +10,32 @@ namespace TabML.Core.MusicTheory
     {
         public static PreciseDuration Sum(this IEnumerable<PreciseDuration> durations)
         {
-            long sum = 0;
-            foreach (var duration in durations)
-                sum += duration.FixedPointValue;
-
-            return new PreciseDuration(sum);
+            return new PreciseDuration(durations.Sum(duration => duration.FixedPointValue));
         }
 
         public static PreciseDuration Sum<T>(this IEnumerable<T> items, Func<T, PreciseDuration> selector)
         {
-            long sum = 0;
-            foreach (var item in items)
-                sum += selector(item).FixedPointValue;
+            return new PreciseDuration(items.Sum(item => selector(item).FixedPointValue));
+        }
 
-            return new PreciseDuration(sum);
+        public static PreciseDuration Min(this IEnumerable<PreciseDuration> durations)
+        {
+            return new PreciseDuration(durations.Min(duration => duration.FixedPointValue));
+        }
+
+        public static PreciseDuration Min<T>(this IEnumerable<T> items, Func<T, PreciseDuration> selector)
+        {
+            return new PreciseDuration(items.Min(item => selector(item).FixedPointValue));
+        }
+
+        public static PreciseDuration Max(this IEnumerable<PreciseDuration> durations)
+        {
+            return new PreciseDuration(durations.Max(duration => duration.FixedPointValue));
+        }
+
+        public static PreciseDuration Max<T>(this IEnumerable<T> items, Func<T, PreciseDuration> selector)
+        {
+            return new PreciseDuration(items.Max(item => selector(item).FixedPointValue));
         }
     }
 }

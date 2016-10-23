@@ -4,9 +4,29 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TabML.Editor.Tablature"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Height="{StaticResource BarHeight}">
+    <UserControl.Resources>
+        <system:Double x:Key="BarLineHeight">12</system:Double>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
 
+        <StackPanel x:Name="BarLineStack"
+                    Grid.Row="1">
+            <StackPanel.Resources>
+                <Style x:Key="BarLine" 
+                       TargetType="StackPanel">
+                    <Setter Property="Orientation" Value="Horizontal" />
+                    <Setter Property="Height" Value="{DynamicResource BarLineHeight}" />
+                </Style>
+            </StackPanel.Resources>
+            
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -84,5 +84,7 @@ namespace TabML.Parser.Document
         public Rhythm Rhythm { get; set; }
         public Lyrics Lyrics { get; set; }
         public DocumentState DocumentState { get; set; }
+
+        public PreciseDuration GetDuration() => this.Rhythm.GetDuration();
     }
 }

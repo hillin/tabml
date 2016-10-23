@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +22,12 @@ namespace TabML.Editor.Tablature.Layout
 
         public ArrangedBar Arrange(DocumentBar bar)
         {
-            var arrangedBar = new ArrangedBar();
+            var arrangedBar = new ArrangedBar
+            {
+                Duration = bar.Rhythm.GetDuration()
+            };
+
+
             this.CreateArrangedBeats(bar);
             this.ArrangeColumns(bar, arrangedBar);
             this.ArrangeVoices(bar, arrangedBar);
@@ -81,6 +87,8 @@ namespace TabML.Editor.Tablature.Layout
 
         private void ArrangeColumns(DocumentBar bar, ArrangedBar arrangedBar)
         {
+            var lyricsSegmentIndex = 0;
+
             foreach (var segment in bar.Rhythm.Segments)
             {
                 if (segment.IsOmittedByTemplate)
@@ -91,14 +99,20 @@ namespace TabML.Editor.Tablature.Layout
                 this.CreateArrangedBarBeats(arrangedBeats, segment.TrebleVoice);
                 this.CreateArrangedBarBeats(arrangedBeats, segment.BassVoice);
 
+                // group all beats by sorted positions
                 var groups = arrangedBeats.GroupBy(b => b.Position).OrderBy(g => g.Key);
 
                 var isFirstBeat = true;
                 foreach (var group in groups)
                 {
-                    var column = new ArrangedBarColumn { Position = @group.Key };
+                    var columnIndex = arrangedBar.Columns.Count;
+                    var column = new ArrangedBarColumn(columnIndex);
 
-                    column.VoiceBeats.AddRange(group);
+                    foreach (var beat in group)
+                    {
+                        beat.ColumnIndex = columnIndex;
+                        column.VoiceBeats.Add(beat);
+                    }
 
                     if (isFirstBeat)
                         column.Chord = segment.Chord;
@@ -107,7 +121,22 @@ namespace TabML.Editor.Tablature.Layout
 
                     arrangedBar.Columns.Add(column);
                 }
+
+                // fill in lyrics
+                if (segment.TrebleVoice != null && lyricsSegmentIndex < bar.Lyrics.Segments.Count)
+                {
+                    foreach (var beat in segment.TrebleVoice.Beats)
+                    {
+                        if (lyricsSegmentIndex >= bar.Lyrics.Segments.Count)
+                            break;
+
+                        var arrangedBeat = _beatLookup[beat];
+                        arrangedBar.Columns[arrangedBeat.ColumnIndex].Lyrics = bar.Lyrics.Segments[lyricsSegmentIndex];
+                        ++lyricsSegmentIndex;
+                    }
+                }
             }
+
         }
 
         private void CreateArrangedBarBeats(List<ArrangedBarBeat> arrangedBeats, Voice voice)

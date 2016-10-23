@@ -97,6 +97,7 @@
     <Compile Include="MusicTheory\Tunings.cs" />
     <Compile Include="RightHandFingerIndex.cs" />
     <Compile Include="RightHandFingerIndexExtensions.cs" />
+    <Compile Include="Tablature\BeatLayout.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

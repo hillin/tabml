@@ -143,6 +143,11 @@ namespace TabML.Core.MusicTheory
             return d1.FixedPointValue > i * Precision;
         }
 
+        public static implicit operator double(PreciseDuration d)
+        {
+            return d.Duration;
+        }
+        
         public override bool Equals(object obj)
         {
             if (null == obj) return false;

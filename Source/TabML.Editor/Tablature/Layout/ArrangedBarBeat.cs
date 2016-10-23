@@ -13,6 +13,7 @@ namespace TabML.Editor.Tablature.Layout
     class ArrangedBarBeat : IBeamElement
     {
         public PreciseDuration Position { get; set; }
+        public int ColumnIndex { get; set; }
         public VoicePart VoicePart { get; }
         public Beat Beat { get; }
 

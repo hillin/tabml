@@ -14,12 +14,7 @@ namespace TabML.Parser.Document
 
         public Voice FirstVoice => this.TrebleVoice ?? this.BassVoice;
         
-        public PreciseDuration GetDuration()
-        {
-            return
-                new PreciseDuration(Math.Max(this.BassVoice?.GetDuration().FixedPointValue ?? 0,
-                                             this.TrebleVoice?.GetDuration().FixedPointValue ?? 0));
-        }
-
+        public PreciseDuration GetDuration() => new PreciseDuration(Math.Max(this.BassVoice?.GetDuration().FixedPointValue ?? 0,
+                                                                             this.TrebleVoice?.GetDuration().FixedPointValue ?? 0));
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TabML.Core.MusicTheory;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.Document
@@ -14,6 +15,8 @@ namespace TabML.Parser.Document
         {
             this.Segments = new List<RhythmSegment>();
         }
+
+        public PreciseDuration GetDuration() => this.Segments.Sum(s => s.GetDuration());
 
         public Rhythm Clone()
         {

@@ -13,10 +13,7 @@ namespace TabML.Parser.Document
         {
             this.Beats = new List<Beat>();
         }
-        public PreciseDuration GetDuration()
-        {
-            return this.Beats.Sum(n => n.GetDuration());
-        }
+        public PreciseDuration GetDuration() => this.Beats.Sum(n => n.GetDuration());
 
         public void ClearRange()
         {
