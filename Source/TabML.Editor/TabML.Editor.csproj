@@ -59,6 +59,9 @@
     <Compile Include="Tablature\Bar.xaml.cs">
       <DependentUpon>Bar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Tablature\BarLine.xaml.cs">
+      <DependentUpon>BarLine.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Tablature\ChordDiagram.xaml.cs">
       <DependentUpon>ChordDiagram.xaml</DependentUpon>
     </Compile>
@@ -99,6 +102,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Tablature\Bar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Tablature\BarLine.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

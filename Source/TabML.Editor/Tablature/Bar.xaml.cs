@@ -18,13 +18,13 @@ using DocumentBar = TabML.Parser.Document.Bar;
 
 namespace TabML.Editor.Tablature
 {
-    public partial class Bar : IBarDrawingContext
+    partial class Bar : IBarDrawingContext
     {
         private readonly ArrangedBar _arrangedBar;
 
         private readonly TablatureStyle _style;
 
-        private readonly StackPanel[] _barLines;
+        private readonly BarLine[] _barLines;
 
         TablatureStyle IBarDrawingContext.Style => _style;
 
@@ -44,15 +44,12 @@ namespace TabML.Editor.Tablature
 
         }
 
-        private StackPanel[] CreateBarLines()
+        private BarLine[] CreateBarLines()
         {
-            var barLines = new StackPanel[Defaults.Strings];
+            var barLines = new BarLine[Defaults.Strings];
             for (var i = 0; i < Defaults.Strings; ++i)
             {
-                barLines[i] = new StackPanel
-                {
-                    Style = (Style)BarLineStack.FindResource("BarLine") 
-                };
+                barLines[i] = new BarLine(_style);
                 this.BarLineStack.Children.Add(barLines[i]);
             }
 
