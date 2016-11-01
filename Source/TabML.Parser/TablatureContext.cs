@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabML.Parser.AST;
-using TabML.Parser.Document;
+using TabML.Core.Document;
 
 namespace TabML.Parser
 {
@@ -41,7 +41,10 @@ namespace TabML.Parser
 
         public Tablature ToTablature()
         {
-            return new Tablature(this);
+            return new Tablature
+            {
+                Bars = this.Bars.ToArray()
+            };
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using TabML.Core.Document;
 using TabML.Core.MusicTheory;
 using TabML.Parser.Document;
-using Chord = TabML.Parser.Document.Chord;
+using Chord = TabML.Core.Document.Chord;
 
 namespace TabML.Editor.Tablature.Layout
 {

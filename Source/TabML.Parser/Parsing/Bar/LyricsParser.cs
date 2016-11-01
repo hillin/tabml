@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using TabML.Core;
 using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing.Bar
@@ -50,8 +51,8 @@ namespace TabML.Parser.Parsing.Bar
             }
 
             result.Range = result.LyricsSegments.Count > 0
-                ? new TextRange(rangeFrom, result.LyricsSegments.Last().Range.To, scanner)
-                : rangeFrom.AsRange(scanner);
+                ? new TextRange(rangeFrom, result.LyricsSegments.Last().Range.To, scanner.Source)
+                : rangeFrom.AsRange(scanner.Source);
             return true;
         }
     }

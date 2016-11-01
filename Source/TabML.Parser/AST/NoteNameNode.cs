@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using TabML.Core.MusicTheory;
-using TabML.Parser.Document;
+using TabML.Core.Document;
 
 namespace TabML.Parser.AST
 {

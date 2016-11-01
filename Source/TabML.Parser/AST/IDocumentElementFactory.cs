@@ -1,4 +1,4 @@
-﻿using TabML.Parser.Document;
+﻿using TabML.Core.Document;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST

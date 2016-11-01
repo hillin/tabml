@@ -46,8 +46,39 @@
   <ItemGroup>
     <Compile Include="ChordBarreStyle.cs" />
     <Compile Include="Defaults.cs" />
+    <Compile Include="Document\Alternation.cs" />
+    <Compile Include="Document\Bar.cs" />
+    <Compile Include="Document\Beat.cs" />
+    <Compile Include="Document\BeatNote.cs" />
+    <Compile Include="Document\Capo.cs" />
+    <Compile Include="Document\Chord.cs" />
+    <Compile Include="Document\ChordDefinition.cs" />
+    <Compile Include="Document\ChordFingering.cs" />
+    <Compile Include="Document\ChordFingeringNote.cs" />
+    <Compile Include="Document\DocumentState.cs" />
+    <Compile Include="Document\EditableDocumentState.cs" />
+    <Compile Include="Document\Element.cs" />
+    <Compile Include="Document\Explicity.cs" />
+    <Compile Include="Document\KeySignature.cs" />
+    <Compile Include="Document\Lyrics.cs" />
+    <Compile Include="Document\LyricsSegment.cs" />
+    <Compile Include="Document\Rhythm.cs" />
+    <Compile Include="Document\RhythmSegment.cs" />
+    <Compile Include="Document\RhythmSegmentBase.cs" />
+    <Compile Include="Document\RhythmTemplate.cs" />
+    <Compile Include="Document\RhythmTemplateSegment.cs" />
+    <Compile Include="Document\SealableCollection.cs" />
+    <Compile Include="Document\Section.cs" />
+    <Compile Include="Document\Tablature.cs" />
+    <Compile Include="Document\TempoSignature.cs" />
+    <Compile Include="Document\TimeSignature.cs" />
+    <Compile Include="Document\TuningSignature.cs" />
+    <Compile Include="Document\Voice.cs" />
+    <Compile Include="Document\VoicePart.cs" />
     <Compile Include="LeftHandFingerIndex.cs" />
     <Compile Include="LeftHandFingerIndexExtensions.cs" />
+    <Compile Include="Logging\IReporter.cs" />
+    <Compile Include="Logging\ReportLevel.cs" />
     <Compile Include="MusicTheory\AlternationText.cs" />
     <Compile Include="MusicTheory\AlternationTextType.cs" />
     <Compile Include="MusicTheory\Accidentals.cs" />
@@ -97,10 +128,16 @@
     <Compile Include="MusicTheory\Tunings.cs" />
     <Compile Include="RightHandFingerIndex.cs" />
     <Compile Include="RightHandFingerIndexExtensions.cs" />
-    <Compile Include="Tablature\BeatLayout.cs" />
+    <Compile Include="Document\BeatLayout.cs" />
+    <Compile Include="TextPointer.cs" />
+    <Compile Include="TextRange.cs" />
+    <Compile Include="TextSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tablature\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

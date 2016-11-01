@@ -1,4 +1,6 @@
-﻿using TabML.Core.MusicTheory;
+﻿using TabML.Core;
+using TabML.Core.Logging;
+using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing.Commandlets
@@ -36,7 +38,7 @@ namespace TabML.Parser.Parsing.Commandlets
                 }
 
                 commandlet.NoteValue
-                    = new LiteralNode<BaseNoteValue>(noteValue, new TextRange(scanner.LastReadRange, match.Groups[2], scanner));
+                    = new LiteralNode<BaseNoteValue>(noteValue, new TextRange(scanner.LastReadRange, match.Groups[2], scanner.Source));
             }
 
             var beats = int.Parse(match.Groups[3].Value);
@@ -57,7 +59,7 @@ namespace TabML.Parser.Parsing.Commandlets
                 return false;
             }
 
-            commandlet.Beats = new LiteralNode<int>(beats, new TextRange(scanner.LastReadRange, match.Groups[3], scanner));
+            commandlet.Beats = new LiteralNode<int>(beats, new TextRange(scanner.LastReadRange, match.Groups[3], scanner.Source));
 
             return true;
         }

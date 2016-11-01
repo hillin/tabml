@@ -1,4 +1,5 @@
-﻿using TabML.Parser.AST;
+﻿using TabML.Core.Logging;
+using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing.Commandlets
 {

@@ -1,4 +1,5 @@
-﻿using TabML.Parser.AST;
+﻿using TabML.Core;
+using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing
 {
@@ -15,7 +16,7 @@ namespace TabML.Parser.Parsing
                 commandlet.CommandletNameNode = this.CommandletNameNode;
                 commandlet.Range = new TextRange(this.CommandletNameNode.Range.From,
                                                  scanner.LastReadRange.To,
-                                                 scanner);
+                                                 scanner.Source);
             }
             return success;
         }

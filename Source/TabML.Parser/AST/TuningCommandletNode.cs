@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TabML.Parser.Document;
+using TabML.Core.Logging;
+using TabML.Core.Document;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST

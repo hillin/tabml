@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabML.Core.Document;
 using TabML.Core.MusicTheory;
-using TabML.Core.Tablature;
 
 namespace TabML.Editor.Tablature.Layout
 {

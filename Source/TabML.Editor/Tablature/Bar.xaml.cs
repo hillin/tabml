@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TabML.Core;
 using TabML.Editor.Tablature.Layout;
-using DocumentBar = TabML.Parser.Document.Bar;
+using DocumentBar = TabML.Core.Document.Bar;
 
 namespace TabML.Editor.Tablature
 {

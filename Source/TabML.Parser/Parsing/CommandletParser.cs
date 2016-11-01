@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TabML.Core.Logging;
 using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing
@@ -30,7 +31,7 @@ namespace TabML.Parser.Parsing
             var anchor = scanner.MakeAnchor();
             if (!scanner.Expect('+'))
             {
-                reporter.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner), Messages.Error_InstructionExpected);
+                reporter.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner.Source), Messages.Error_InstructionExpected);
                 parser = null;
                 return false;
             }
@@ -39,7 +40,7 @@ namespace TabML.Parser.Parsing
             Type parserType;
             if (!CommandletParsers.TryGetValue(name.ToLowerInvariant(), out parserType))
             {
-                reporter.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner), Messages.Error_UnknownInstruction);
+                reporter.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner.Source), Messages.Error_UnknownInstruction);
                 parser = null;
                 return false;
             }

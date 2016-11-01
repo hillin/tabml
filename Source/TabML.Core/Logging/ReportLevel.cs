@@ -1,6 +1,6 @@
-﻿namespace TabML.Parser.Parsing
+﻿namespace TabML.Core.Logging
 {
-    enum ReportLevel
+    public enum ReportLevel
     {
         Hint,
         Suggestion,

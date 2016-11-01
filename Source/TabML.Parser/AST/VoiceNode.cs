@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using TabML.Parser.Document;
+using TabML.Core.Document;
 using TabML.Parser.Parsing;
 using System.Linq;
+using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
 
 namespace TabML.Parser.AST

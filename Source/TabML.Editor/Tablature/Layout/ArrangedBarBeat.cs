@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabML.Core.Document;
 using TabML.Core.MusicTheory;
 using TabML.Parser.Document;
 

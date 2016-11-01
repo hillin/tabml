@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TabML.Core;
-
-namespace TabML.Parser.Document
+﻿namespace TabML.Core.Document
 {
     public class ChordFingeringNote : Element
     {

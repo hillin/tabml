@@ -1,4 +1,5 @@
-﻿using TabML.Parser.AST;
+﻿using TabML.Core.Logging;
+using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing.Bar
 {
@@ -48,7 +49,7 @@ namespace TabML.Parser.Parsing.Bar
                 }
                 else
                 {
-                    this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner),
+                    this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner.Source),
                                 Messages.Error_UnrecognizableRhythmSegmentElement);
                 }
             }
@@ -90,14 +91,14 @@ namespace TabML.Parser.Parsing.Bar
 
                 if (scanner.Peek() == ';')
                 {
-                    this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner),
+                    this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner.Source),
                                 Messages.Error_UnrecognizableRhythmSegmentElement);
                     return false;
                 }
             }
             else
             {
-                this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner),
+                this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner.Source),
                             Messages.Error_UnrecognizableRhythmSegmentElement);
                 return false;
             }

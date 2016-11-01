@@ -1,18 +1,14 @@
 ﻿namespace TabML.Core.Document
 {
-    public class ChordDefinition
+    public class ChordDefinition : Element
     {
-        public const int FingeringSkipString = -1;
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+        public ChordFingering Fingering { get; set; }
 
-        public string Name { get; }
-        public string DisplayName { get; }
-        public int[] Fingering { get; }
-
-        public ChordDefinition(string name, string displayName = null, int[] fingering = null)
+        public string GetDisplayName()
         {
-            this.Name = name;
-            this.DisplayName = displayName;
-            this.Fingering = fingering;
+            return !string.IsNullOrEmpty(this.DisplayName) ? this.DisplayName : this.Name;
         }
     }
 }

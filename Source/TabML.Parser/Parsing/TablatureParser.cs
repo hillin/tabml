@@ -1,4 +1,5 @@
-﻿using TabML.Parser.AST;
+﻿using TabML.Core;
+using TabML.Parser.AST;
 using TabML.Parser.Parsing.Bar;
 
 namespace TabML.Parser.Parsing
@@ -12,7 +13,7 @@ namespace TabML.Parser.Parsing
             while (!scanner.EndOfInput)
                 this.ParseNode(scanner, result);
 
-            result.Range = new TextRange(TextPointer.Zero, scanner.Pointer, scanner);
+            result.Range = new TextRange(TextPointer.Zero, scanner.Pointer, scanner.Source);
 
             return true;
         }

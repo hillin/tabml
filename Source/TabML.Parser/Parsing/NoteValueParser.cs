@@ -1,4 +1,5 @@
-﻿using TabML.Core.MusicTheory;
+﻿using TabML.Core.Logging;
+using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing

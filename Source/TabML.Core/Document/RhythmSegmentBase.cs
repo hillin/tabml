@@ -1,19 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
 {
-    public abstract class RhythmSegmentBase
+    public abstract class RhythmSegmentBase : Element
     {
-        public List<Voice> Voices { get; }
+        public Voice TrebleVoice { get; set; }
+        public Voice BassVoice { get; set; }
 
-        protected RhythmSegmentBase()
-        {
-            this.Voices = new List<Voice>();
-        }
-        public double GetDuration()
-        {
-            return this.Voices.Max(v => v.GetDuration());
-        }
+        public Voice FirstVoice => this.TrebleVoice ?? this.BassVoice;
+        
+        public PreciseDuration GetDuration() => new PreciseDuration(Math.Max(this.BassVoice?.GetDuration().FixedPointValue ?? 0,
+                                                                             this.TrebleVoice?.GetDuration().FixedPointValue ?? 0));
     }
 }

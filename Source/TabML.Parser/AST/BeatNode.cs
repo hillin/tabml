@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using TabML.Core.MusicTheory;
-using TabML.Parser.Document;
+using TabML.Core.Document;
 using TabML.Parser.Parsing;
 using AllStringStrumTechniqueEnum = TabML.Core.MusicTheory.AllStringStrumTechnique;
 using StrumTechniqueEnum = TabML.Core.MusicTheory.StrumTechnique;

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using TabML.Core;
+using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
 
@@ -47,13 +49,15 @@ namespace TabML.Parser.Parsing.Commandlets
                 var namePartIsEmpty = namePart == string.Empty;
                 if (namePartIsEmpty)
                 {
-                    this.Report(ReportLevel.Hint, scanner.LastReadRange.From.AsRange(scanner),
+                    this.Report(ReportLevel.Hint, scanner.LastReadRange.From.AsRange(scanner.Source),
                                 Messages.Hint_RedundantColonInTuningSpecifier);
                 }
                 else
                 {
                     commandlet.Name = new LiteralNode<string>(namePart,
-                                                              new TextRange(scanner.LastReadRange.From, namePart.Length, scanner));
+                                                              new TextRange(scanner.LastReadRange.From,
+                                                                            namePart.Length,
+                                                                            scanner.Source));
                 }
 
                 var tuningPart = tuningString.Substring(colonIndex + 1).Trim();
@@ -66,7 +70,8 @@ namespace TabML.Parser.Parsing.Commandlets
                         return true;
                     }
 
-                    this.Report(ReportLevel.Hint, scanner.LastReadRange.From.OffsetColumn(colonIndex).AsRange(scanner),
+                    this.Report(ReportLevel.Hint,
+                                scanner.LastReadRange.From.OffsetColumn(colonIndex).AsRange(scanner.Source),
                                 Messages.Hint_RedundantColonInTuningSpecifier);
                 }
                 else

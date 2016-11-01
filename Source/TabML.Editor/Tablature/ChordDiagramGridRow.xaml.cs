@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TabML.Core;
+using TabML.Core.Document;
 using TabML.Parser.Document;
 
 namespace TabML.Editor.Tablature

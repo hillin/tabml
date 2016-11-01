@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using TabML.Core.Tablature;
+using TabML.Core.Document;
 
 namespace TabML.Editor
 {

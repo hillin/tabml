@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
 

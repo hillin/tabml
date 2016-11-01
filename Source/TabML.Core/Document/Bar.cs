@@ -1,18 +1,26 @@
 ﻿using System;
+using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
 {
-    public class Bar
+    public class Bar : Element
     {
-        public static BarLine MergeBarLine(CloseBarLine close, OpenBarLine open)
+        public static BarLine MergeBarLine(CloseBarLine? close, OpenBarLine? open)
         {
             switch (open)
             {
+                case null:
                 case OpenBarLine.Standard:
-                    return (BarLine)close;
+                    if (close == null)
+                        return BarLine.Standard;
+
+                    return (BarLine)close.Value;
+
                 case OpenBarLine.Double:
                     switch (close)
                     {
+                        case null:
+                            return BarLine.Double;
                         case CloseBarLine.Standard:
                             return BarLine.Double;
                         case CloseBarLine.Double:
@@ -24,9 +32,12 @@ namespace TabML.Core.Document
                         default:
                             throw new ArgumentOutOfRangeException(nameof(close), close, null);
                     }
+
                 case OpenBarLine.BeginRepeat:
                     switch (close)
                     {
+                        case null:
+                            return BarLine.BeginRepeat;
                         case CloseBarLine.Standard:
                             return BarLine.BeginRepeat;
                         case CloseBarLine.Double:
@@ -38,6 +49,7 @@ namespace TabML.Core.Document
                         default:
                             throw new ArgumentOutOfRangeException(nameof(close), close, null);
                     }
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(open), open, null);
             }
@@ -49,18 +61,30 @@ namespace TabML.Core.Document
                 throw new ArgumentException("two bars cannot be both null", nameof(bar1));
 
             if (bar1 == null)
-                return (BarLine)bar2.OpenLine;
+            {
+                if (bar2.OpenLine == null)
+                    return BarLine.Standard;
+
+                return (BarLine)bar2.OpenLine.Value;
+            }
 
             if (bar2 == null)
-                return (BarLine)bar1.CloseLine;
+            {
+                if (bar1.CloseLine == null)
+                    return BarLine.Standard;
+
+                return (BarLine)bar1.CloseLine.Value;
+            }
 
             return Bar.MergeBarLine(bar1.CloseLine, bar2.OpenLine);
         }
 
-        public OpenBarLine OpenLine { get; set; }
-        public CloseBarLine CloseLine { get; set; }
+        public OpenBarLine? OpenLine { get; set; }
+        public CloseBarLine? CloseLine { get; set; }
         public Rhythm Rhythm { get; set; }
-        public string[] Lyrics { get; set; }
+        public Lyrics Lyrics { get; set; }
+        public DocumentState DocumentState { get; set; }
 
+        public PreciseDuration GetDuration() => this.Rhythm.GetDuration();
     }
 }

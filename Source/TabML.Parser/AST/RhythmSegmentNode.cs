@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TabML.Core.Logging;
+using TabML.Core.Document;
 using TabML.Parser.Document;
 using TabML.Parser.Parsing;
-using DocumentChord = TabML.Parser.Document.Chord;
+using DocumentChord = TabML.Core.Document.Chord;
 using TheoreticalChord = TabML.Core.MusicTheory.Chord;
 
 namespace TabML.Parser.AST

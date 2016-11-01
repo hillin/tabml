@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
+using TabML.Core;
 
 namespace TabML.Parser.Parsing
 {
@@ -22,17 +23,17 @@ namespace TabML.Parser.Parsing
                     var to = _owner._textPointer;
 
                     if (!this.TrimTailingWhitespaces)
-                        return new TextRange(_from, to, _owner);
+                        return new TextRange(_from, to, _owner.Source);
 
-                    var row = _owner._lines[to.Row];
+                    var row = _owner.Source[to.Row];
 
                     while (to > _from)
                     {
                         if (to.Column == 0)
                         {
                             --to.Row;
-                            to.Column = _owner._lines[to.Row].Length - 1; // should be '\n'
-                            row = _owner._lines[to.Row];
+                            to.Column = _owner.Source[to.Row].Length - 1; // should be '\n'
+                            row = _owner.Source[to.Row];
                             continue;
                         }
 
@@ -42,7 +43,7 @@ namespace TabML.Parser.Parsing
                         --to.Column;
                     }
 
-                    return new TextRange(_from, to, _owner);
+                    return new TextRange(_from, to, _owner.Source);
                 }
             }
 
@@ -67,23 +68,22 @@ namespace TabML.Parser.Parsing
 
             public void Dispose()
             {
-                _owner.LastReadRange = new TextRange(_from, _owner._textPointer, _owner);
+                _owner.LastReadRange = new TextRange(_from, _owner._textPointer, _owner.Source);
             }
         }
 
-        private readonly string[] _lines;
-
+        public TextSource Source { get; }
         private TextPointer _textPointer;
         public TextPointer Pointer => _textPointer;
         public bool EndOfInput { get; private set; }
-        public bool EndOfLine => _textPointer.Column >= _lines[_textPointer.Row].Length || this.Peek() == '\n';
+        public bool EndOfLine => _textPointer.Column >= this.Source[_textPointer.Row].Length || this.Peek() == '\n';
         public TextRange LastReadRange { get; private set; }
 
         public string RemainingLine
         {
             get
             {
-                var row = _lines[_textPointer.Row];
+                var row = this.Source[_textPointer.Row];
                 if (_textPointer.Column >= row.Length - 1)
                     return string.Empty;
 
@@ -92,17 +92,16 @@ namespace TabML.Parser.Parsing
             }
         }
 
-        public Scanner(string input)
+        public Scanner(TextSource source)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
-            _lines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
-            for (var i = 0; i < _lines.Length - 1; ++i)
-                _lines[i] = string.Concat(_lines[i], "\n");
-
+            this.Source = source;
             this.Reset();
+        }
+
+        public Scanner(string source)
+            : this(new TextSource(source))
+        {
+
         }
 
         public Anchor MakeAnchor(bool trimTailingWhitespaces = true)
@@ -131,13 +130,7 @@ namespace TabML.Parser.Parsing
 
         private void CheckEndOfFile()
         {
-            if (_textPointer.Row >= _lines.Length)
-                this.EndOfInput = true;
-            else if (_textPointer.Row == _lines.Length - 1
-                     && _textPointer.Column >= _lines[_textPointer.Row].Length)
-                this.EndOfInput = true;
-            else
-                this.EndOfInput = false;
+            this.EndOfInput = this.Source.IsEndOfSource(_textPointer);
         }
 
         private void MoveNext(int offset = 1)
@@ -165,7 +158,7 @@ namespace TabML.Parser.Parsing
 
         public char Peek()
         {
-            return _lines[_textPointer.Row][_textPointer.Column];
+            return this.Source[_textPointer.Row][_textPointer.Column];
         }
 
         public string Peek(int length, bool inline = true)
@@ -280,7 +273,7 @@ namespace TabML.Parser.Parsing
         {
             using (this.RecordReadRange())
             {
-                var result = _lines[_textPointer.Row][_textPointer.Column];
+                var result = this.Source[_textPointer.Row][_textPointer.Column];
                 this.MoveNext();
 
                 return result;
@@ -484,23 +477,5 @@ namespace TabML.Parser.Parsing
             return !(inline && c == '\n');
         }
 
-        public string Substring(TextRange textRange)
-        {
-            var builder = new StringBuilder();
-
-            for (var p = textRange.From; p < textRange.To;)
-            {
-                var row = _lines[p.Row];
-                builder.Append(row[p.Column]);
-                ++p.Column;
-                if (p.Column >= row.Length)
-                {
-                    ++p.Row;
-                    p.Column = 0;
-                }
-            }
-
-            return builder.ToString();
-        }
     }
 }

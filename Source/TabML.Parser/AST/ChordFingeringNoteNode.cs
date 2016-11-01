@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabML.Core;
-using TabML.Parser.Document;
+using TabML.Core.Document;
 using TabML.Parser.Parsing.Bar;
 
 namespace TabML.Parser.AST

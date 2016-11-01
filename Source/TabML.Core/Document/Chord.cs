@@ -1,7 +1,6 @@
-﻿using System;
-using TheoreticalChord = TabML.Core.MusicTheory.Chord;
+﻿using TheoreticalChord = TabML.Core.MusicTheory.Chord;
 
-namespace TabML.Parser.Document
+namespace TabML.Core.Document
 {
     public class Chord : Element
     {

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using TabML.Core;
+using TabML.Core.Logging;
 using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing.Commandlets
@@ -37,8 +38,8 @@ namespace TabML.Parser.Parsing.Commandlets
 
                 result = new CapoRangeStringsSpecifierNode
                 {
-                    From = new LiteralNode<int>(from, new TextRange(scanner.LastReadRange, match.Groups[1], scanner)),
-                    To = new LiteralNode<int>(to, new TextRange(scanner.LastReadRange, match.Groups[2], scanner))
+                    From = new LiteralNode<int>(from, new TextRange(scanner.LastReadRange, match.Groups[1], scanner.Source)),
+                    To = new LiteralNode<int>(to, new TextRange(scanner.LastReadRange, match.Groups[2], scanner.Source))
                 };
             }
             else
