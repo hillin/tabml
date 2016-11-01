@@ -22,16 +22,16 @@ namespace TabML.Parser.AST
             this.AlternationTexts = new List<LiteralNode<string>>();
         }
 
-        internal override bool Apply(TablatureContext context, IReporter reporter)
+        internal override bool Apply(TablatureContext context, ILogger logger)
         {
             Alternation alternation;
-            if (!this.ToDocumentElement(context, reporter, out alternation))
+            if (!this.ToDocumentElement(context, logger, out alternation))
                 return false;
 
             if (context.DocumentState.AlternationTextExplicity != Explicity.NotSpecified &&
                 alternation.Explicity != context.DocumentState.AlternationTextExplicity)
             {
-                reporter.Report(ReportLevel.Warning, this.Range.To.AsRange(),
+                logger.Report(LogLevel.Warning, this.Range.To.AsRange(),
                                     Messages.Warning_InconsistentAlternationTextExplicity);
             }
 
@@ -48,7 +48,7 @@ namespace TabML.Parser.AST
             return true;
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Alternation element)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out Alternation element)
         {
 
             if (this.AlternationTexts.Count == 0) // implicit
@@ -82,7 +82,7 @@ namespace TabML.Parser.AST
 
                 if (referenceTextType != null && referenceTextType.Value != textType)
                 {
-                    reporter.Report(ReportLevel.Warning, alternationText.Range,
+                    logger.Report(LogLevel.Warning, alternationText.Range,
                                     Messages.Warning_InconsistentAlternationTextType);
                 }
                 else
@@ -90,7 +90,7 @@ namespace TabML.Parser.AST
 
                 if (context.DocumentState.DefinedAlternationIndices.Contains(index))
                 {
-                    reporter.Report(ReportLevel.Error, alternationText.Range,
+                    logger.Report(LogLevel.Error, alternationText.Range,
                                     Messages.Error_DuplicatedAlternationText, alternationText.Value);
 
                     element = null;

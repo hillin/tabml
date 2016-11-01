@@ -24,7 +24,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
                 if (!AlternationText.IsValid(text))
                 {
-                    this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_InvalidAlternationText);
+                    this.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_InvalidAlternationText);
                     commandlet = null;
                     return false;
                 }
@@ -36,7 +36,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
             if (hasColon && commandlet.AlternationTexts.Count == 0)
             {
-                this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                this.Report(LogLevel.Warning, scanner.LastReadRange,
                             Messages.Warning_AlternationTextExpectedAfterColon);
             }
             

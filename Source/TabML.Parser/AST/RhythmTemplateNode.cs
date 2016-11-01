@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using TabML.Core.Document;
+using TabML.Core.Logging;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
@@ -25,7 +26,7 @@ namespace TabML.Parser.AST
                 && !this.Segments.Where((t, i) => !t.ValueEquals(other.Segments[i])).Any();
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out RhythmTemplate rhythm)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out RhythmTemplate rhythm)
         {
             rhythm = new RhythmTemplate
             {
@@ -35,7 +36,7 @@ namespace TabML.Parser.AST
             foreach (var segment in this.Segments)
             {
                 RhythmTemplateSegment rhythmSegment;
-                if (!segment.ToDocumentElement(context, reporter, out rhythmSegment))
+                if (!segment.ToDocumentElement(context, logger, out rhythmSegment))
                     return false;
 
                 rhythm.Segments.Add(rhythmSegment);

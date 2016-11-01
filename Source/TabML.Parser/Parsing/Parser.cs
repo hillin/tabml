@@ -21,20 +21,20 @@ namespace TabML.Parser.Parsing
             return true;
         }
 
-        public static bool TryReadChordName(Scanner scanner, IReporter reporter, out LiteralNode<string> chordName)
+        public static bool TryReadChordName(Scanner scanner, ILogger logger, out LiteralNode<string> chordName)
         {
             var name = scanner.Read(@"[a-zA-Z0-9\*\$\#♯♭\-\+\?'\`\~\&\^\!]+");
             chordName = string.IsNullOrEmpty(name) ? null : new LiteralNode<string>(name, scanner.LastReadRange);
             return true;
         }
 
-        public static bool TryReadBaseNoteValue(Scanner scanner, IReporter reporter,
+        public static bool TryReadBaseNoteValue(Scanner scanner, ILogger logger,
                                                 out LiteralNode<BaseNoteValue> baseNoteValueNode)
         {
             int reciprocal;
             if (!scanner.TryReadInteger(out reciprocal))
             {
-                reporter.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_NoteValueExpected);
+                logger.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_NoteValueExpected);
                 baseNoteValueNode = null;
                 return false;
             }
@@ -42,7 +42,7 @@ namespace TabML.Parser.Parsing
             BaseNoteValue baseNoteValue;
             if (!BaseNoteValues.TryParse(reciprocal, out baseNoteValue))
             {
-                reporter.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_InvalidReciprocalNoteValue);
+                logger.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_InvalidReciprocalNoteValue);
                 baseNoteValueNode = null;
                 return false;
             }
@@ -51,7 +51,7 @@ namespace TabML.Parser.Parsing
             return true;
         }
 
-        public static bool TryReadNoteValueAugment(Scanner scanner, IReporter reporter,
+        public static bool TryReadNoteValueAugment(Scanner scanner, ILogger logger,
                                                    out LiteralNode<NoteValueAugment> augmentNode)
         {
             var anchor = scanner.MakeAnchor();
@@ -79,14 +79,14 @@ namespace TabML.Parser.Parsing
                     augmentNode = new LiteralNode<NoteValueAugment>(NoteValueAugment.ThreeDots, anchor.Range);
                     return true;
                 default:
-                    reporter.Report(ReportLevel.Error, anchor.Range,
+                    logger.Report(LogLevel.Error, anchor.Range,
                                     Messages.Error_TooManyDotsInNoteValueAugment);
                     augmentNode = null;
                     return false;
             }
         }
 
-        public static bool TryReadBaseNoteName(Scanner scanner, IReporter reporter,
+        public static bool TryReadBaseNoteName(Scanner scanner, ILogger logger,
                                                out LiteralNode<BaseNoteName> baseNoteNameNode)
         {
             var noteNameChar = scanner.Read();
@@ -101,14 +101,14 @@ namespace TabML.Parser.Parsing
             return true;
         }
 
-        public static bool TryReadAccidental(Scanner scanner, IReporter reporter,
+        public static bool TryReadAccidental(Scanner scanner, ILogger logger,
                                              out LiteralNode<Accidental> accidentalNode)
         {
             var accidentalText = scanner.ReadAny(@"\#\#", "bb", "♯♯", "♭♭", @"\#", "♯", "b", "♭", "\u1d12a", "\u1d12b");
             Accidental accidental;
             if (!Accidentals.TryParse(accidentalText, out accidental))
             {
-                reporter.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_InvalidAccidental);
+                logger.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_InvalidAccidental);
                 accidentalNode = null;
                 return false;
             }
@@ -117,7 +117,7 @@ namespace TabML.Parser.Parsing
             return true;
         }
 
-        public static bool TryReadAllStringStrumTechnique(Scanner scanner, IReporter reporter,
+        public static bool TryReadAllStringStrumTechnique(Scanner scanner, ILogger logger,
                                                       out LiteralNode<AllStringStrumTechnique> technique)
         {
             switch (scanner.ReadAny("rasg", "ad", "au", @"\|", "x", "d", "↑", "u", "↓"))
@@ -150,7 +150,7 @@ namespace TabML.Parser.Parsing
         }
 
 
-        public static bool TryReadStrumTechnique(Scanner scanner, IReporter reporter, out LiteralNode<StrumTechnique> technique)
+        public static bool TryReadStrumTechnique(Scanner scanner, ILogger logger, out LiteralNode<StrumTechnique> technique)
         {
             switch (scanner.ReadAny("rasg", "ad", "au", "pu", "pd", "d", "D", "↑", "u", "U", "↓"))
             {
@@ -184,7 +184,7 @@ namespace TabML.Parser.Parsing
         }
 
 
-        public static bool TryReadPreNoteConnection(Scanner scanner, IReporter reporter,
+        public static bool TryReadPreNoteConnection(Scanner scanner, ILogger logger,
                                                      out LiteralNode<PreNoteConnection> connection)
         {
             switch (scanner.ReadAny("~", @"\/", @"\\", @"\.\/", @"\`\\", "h", "p"))
@@ -214,7 +214,7 @@ namespace TabML.Parser.Parsing
         }
 
 
-        public static bool TryReadPostNoteConnection(Scanner scanner, IReporter reporter,
+        public static bool TryReadPostNoteConnection(Scanner scanner, ILogger logger,
                                                       out LiteralNode<PostNoteConnection> connection)
         {
             switch (scanner.ReadAny(@"\/\`", @"\\\.").ToLowerInvariant())
@@ -229,7 +229,7 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
-        public static bool TryReadBeatEffectTechnique(Scanner scanner, IReporter reporter,
+        public static bool TryReadBeatEffectTechnique(Scanner scanner, ILogger logger,
                                                        out LiteralNode<BeatEffectTechnique> technique, out LiteralNode<double> argument)
         {
             argument = null;
@@ -251,7 +251,7 @@ namespace TabML.Parser.Parsing
         }
 
 
-        public static bool TryReadNoteEffectTechnique(Scanner scanner, IReporter reporter,
+        public static bool TryReadNoteEffectTechnique(Scanner scanner, ILogger logger,
                                                        out LiteralNode<NoteEffectTechnique> technique, out LiteralNode<double> argument)
         {
             argument = null;
@@ -281,7 +281,7 @@ namespace TabML.Parser.Parsing
                         case Scanner.ParenthesisReadResult.MissingOpen:
                             return true;
                         case Scanner.ParenthesisReadResult.MissingClose:
-                            reporter.Report(ReportLevel.Error, scanner.LastReadRange,
+                            logger.Report(LogLevel.Error, scanner.LastReadRange,
                                             Messages.Error_ArtificialHarmonicFretSpecifierNotEnclosed);
                             technique = null;
                             return false;
@@ -303,7 +303,7 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
-        public static bool TryReadNoteDurationEffect(Scanner scanner, IReporter reporter,
+        public static bool TryReadNoteDurationEffect(Scanner scanner, ILogger logger,
                                                       out LiteralNode<BeatDurationEffect> technique)
         {
             switch (scanner.ReadAny("fermata", "staccato"))
@@ -320,7 +320,7 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
-        public static bool TryReadNoteAccent(Scanner scanner, IReporter reporter, out LiteralNode<BeatAccent> accent)
+        public static bool TryReadNoteAccent(Scanner scanner, ILogger logger, out LiteralNode<BeatAccent> accent)
         {
             switch (scanner.ReadAny("accented", "heavy", "ghost"))
             {
@@ -339,7 +339,7 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
-        public static bool TryReadOpenBarLine(Scanner scanner, IReporter reporter, out LiteralNode<OpenBarLine> barLine)
+        public static bool TryReadOpenBarLine(Scanner scanner, ILogger logger, out LiteralNode<OpenBarLine> barLine)
         {
             if (scanner.Expect("||:"))
             {
@@ -363,7 +363,7 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
-        public static bool TryReadCloseBarLine(Scanner scanner, IReporter reporter, out LiteralNode<CloseBarLine> barLine)
+        public static bool TryReadCloseBarLine(Scanner scanner, ILogger logger, out LiteralNode<CloseBarLine> barLine)
         {
             if (scanner.Expect(":||"))
             {
@@ -387,7 +387,7 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
-        public static bool TryReadStaffType(Scanner scanner, IReporter reporter, out LiteralNode<StaffType> staffTypeNode)
+        public static bool TryReadStaffType(Scanner scanner, ILogger logger, out LiteralNode<StaffType> staffTypeNode)
         {
             StaffType staffType;
             switch (scanner.ReadToLineEnd().Trim().ToLowerInvariant())

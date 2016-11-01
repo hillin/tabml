@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TabML.Core.MusicTheory;
 using TabML.Core.Document;
+using TabML.Core.Logging;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
@@ -34,7 +35,7 @@ namespace TabML.Parser.AST
                                              this.TrebleVoice?.GetDuration().FixedPointValue ?? 0));
         }
 
-        protected bool FillRhythmSegmentVoices(TablatureContext context, IReporter reporter, RhythmSegmentBase rhythmSegment)
+        protected bool FillRhythmSegmentVoices(TablatureContext context, ILogger logger, RhythmSegmentBase rhythmSegment)
         {
 
             var duration = this.GetDuration();
@@ -44,7 +45,7 @@ namespace TabML.Parser.AST
                 this.TrebleVoice.ExpectedDuration = duration;
 
                 Voice trebleVoice;
-                if (!this.TrebleVoice.ToDocumentElement(context, reporter, out trebleVoice))
+                if (!this.TrebleVoice.ToDocumentElement(context, logger, out trebleVoice))
                     return false;
 
                 trebleVoice.Part = VoicePart.Treble;
@@ -57,7 +58,7 @@ namespace TabML.Parser.AST
                 this.BassVoice.ExpectedDuration = duration;
 
                 Voice bassVoice;
-                if (!this.BassVoice.ToDocumentElement(context, reporter, out bassVoice))
+                if (!this.BassVoice.ToDocumentElement(context, logger, out bassVoice))
                     return false;
 
                 bassVoice.Part = VoicePart.Bass;

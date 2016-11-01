@@ -25,14 +25,14 @@ namespace TabML.Parser.Parsing
                 LiteralNode<int> tuplet;
                 if (!Parser.TryReadInteger(scanner, out tuplet))
                 {
-                    this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_NoteValueExpected);
+                    this.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_NoteValueExpected);
                     result = null;
                     return false;
                 }
 
                 if (!NoteValue.IsValidTuplet(tuplet.Value))
                 {
-                    this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_InvalidTuplet);
+                    this.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_InvalidTuplet);
                     result = null;
                     return false;
                 }

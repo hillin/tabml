@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using TabML.Core;
+using TabML.Core.Logging;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
@@ -47,7 +48,7 @@ namespace TabML.Parser.AST
             _range.To = to;
         }
 
-        internal virtual bool Apply(TablatureContext context, IReporter reporter)
+        internal virtual bool Apply(TablatureContext context, ILogger logger)
         {
             return true;
         }

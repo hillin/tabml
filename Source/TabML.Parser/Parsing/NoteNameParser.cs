@@ -15,7 +15,7 @@ namespace TabML.Parser.Parsing
             LiteralNode<BaseNoteName> baseNoteNameNode;
             if (!Parser.TryReadBaseNoteName(scanner, this, out baseNoteNameNode))
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_InvalidNoteName);
+                this.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_InvalidNoteName);
                 result = null;
                 return false;
             }

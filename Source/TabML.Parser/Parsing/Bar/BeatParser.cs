@@ -59,7 +59,7 @@ namespace TabML.Parser.Parsing.Bar
 
             if (noteValueIndetemined && result.Notes.Count == 0 && strumTechnique == null)
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_BeatBodyExpected);
                 result = null;
                 return false;
@@ -86,13 +86,13 @@ namespace TabML.Parser.Parsing.Bar
 
             if (tiedNode != null && result.HasRedunantSpecifierForTied)
             {
-                this.Report(ReportLevel.Hint, postNoteValueAnchor.Range,
+                this.Report(LogLevel.Hint, postNoteValueAnchor.Range,
                     Messages.Hint_RedundantModifiersInTiedBeat);
             }
 
             if (restNode != null && result.HasRedunantSpecifierForRest)
             {
-                this.Report(ReportLevel.Warning, postRestAnchor.Range,
+                this.Report(LogLevel.Warning, postRestAnchor.Range,
                     Messages.Warning_RedundantModifiersInRestBeat);
             }
 
@@ -106,7 +106,7 @@ namespace TabML.Parser.Parsing.Bar
             if (Parser.TryReadNoteAccent(scanner, this, out accent))
             {
                 if (result.Accent != null)
-                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                    this.Report(LogLevel.Warning, scanner.LastReadRange,
                                 Messages.Warning_BeatAccentAlreadySpecified);
                 else
                 {
@@ -121,7 +121,7 @@ namespace TabML.Parser.Parsing.Bar
             if (Parser.TryReadBeatEffectTechnique(scanner, this, out beatEffectTechnique, out techniqueParameter))
             {
                 if (result.EffectTechnique != null)
-                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                    this.Report(LogLevel.Warning, scanner.LastReadRange,
                                 Messages.Warning_BeatEffectTechniqueAlreadySpecified);
                 else
                 {
@@ -139,7 +139,7 @@ namespace TabML.Parser.Parsing.Bar
             if (Parser.TryReadNoteDurationEffect(scanner, this, out durationEffect))
             {
                 if (result.DurationEffect != null)
-                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                    this.Report(LogLevel.Warning, scanner.LastReadRange,
                                 Messages.Warning_BeatNoteDurationEffectAlreadySpecified);
                 else
                 {
@@ -153,7 +153,7 @@ namespace TabML.Parser.Parsing.Bar
             if (Parser.TryReadStrumTechnique(scanner, this, out strumTechnique))
             {
                 if (result.StrumTechnique != null || result.AllStringStrumTechnique != null)
-                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                    this.Report(LogLevel.Warning, scanner.LastReadRange,
                                 Messages.Warning_BeatStrumTechniqueAlreadySpecified);
                 else
                 {
@@ -163,7 +163,7 @@ namespace TabML.Parser.Parsing.Bar
                 return true;
             }
 
-            this.Report(ReportLevel.Error, scanner.LastReadRange,
+            this.Report(LogLevel.Error, scanner.LastReadRange,
                         Messages.Error_BeatModifierExpected);
             return false;
         }
@@ -199,7 +199,7 @@ namespace TabML.Parser.Parsing.Bar
 
             if (!parenthesisClosed)
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_RhythmInstructionMissingCloseParenthesisInStringsSpecifier);
                 return false;
             }

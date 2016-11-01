@@ -18,10 +18,10 @@ namespace TabML.Parser.AST
             }
         }
 
-        internal override bool Apply(TablatureContext context, IReporter reporter)
+        internal override bool Apply(TablatureContext context, ILogger logger)
         {
             KeySignature key;
-            if (!this.ToDocumentElement(context, reporter, out key))
+            if (!this.ToDocumentElement(context, logger, out key))
                 return false;
 
             using (var state = context.AlterDocumentState())
@@ -30,12 +30,12 @@ namespace TabML.Parser.AST
             return true;
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out KeySignature element)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out KeySignature element)
         {
             var noteName = this.Key.ToNoteName();
             if (context.DocumentState.KeySignature != null && context.DocumentState.KeySignature.Key == noteName)
             {
-                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_RedundantKeySignature);
+                logger.Report(LogLevel.Suggestion, this.Range, Messages.Suggestion_RedundantKeySignature);
                 element = null;
                 return false;
             }

@@ -77,8 +77,8 @@
     <Compile Include="Document\VoicePart.cs" />
     <Compile Include="LeftHandFingerIndex.cs" />
     <Compile Include="LeftHandFingerIndexExtensions.cs" />
-    <Compile Include="Logging\IReporter.cs" />
-    <Compile Include="Logging\ReportLevel.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="MusicTheory\AlternationText.cs" />
     <Compile Include="MusicTheory\AlternationTextType.cs" />
     <Compile Include="MusicTheory\Accidentals.cs" />

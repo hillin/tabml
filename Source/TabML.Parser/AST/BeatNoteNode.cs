@@ -66,13 +66,13 @@ namespace TabML.Parser.AST
             return true;
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out BeatNote element)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out BeatNote element)
         {
             var documentState = context.DocumentState;
             if (this.Fret != null
                 && this.Fret.Value + documentState.MinimumCapoFret < (documentState.CapoFretOffsets?[this.String.Value] ?? 0))
             {
-                reporter.Report(ReportLevel.Warning, this.Fret.Range,
+                logger.Report(LogLevel.Warning, this.Fret.Range,
                                 Messages.Warning_FretUnderCapo, this.String.Value,
                                 this.Fret.Value);
             }

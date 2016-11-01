@@ -22,7 +22,7 @@ namespace TabML.Parser.Parsing.Bar
 
             if (!this.OptionalBrackets && !hasBrackets)
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_RhythmSegmentExpectOpeningBracket);
                 return false;
             }
@@ -49,7 +49,7 @@ namespace TabML.Parser.Parsing.Bar
                 }
                 else
                 {
-                    this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner.Source),
+                    this.Report(LogLevel.Error, scanner.Pointer.AsRange(scanner.Source),
                                 Messages.Error_UnrecognizableRhythmSegmentElement);
                 }
             }
@@ -60,11 +60,11 @@ namespace TabML.Parser.Parsing.Bar
                     return true;
 
                 if (this.OptionalBrackets)
-                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                    this.Report(LogLevel.Warning, scanner.LastReadRange,
                                 Messages.Warning_RhythmSegmentMissingCloseBracket);
                 else
                 {
-                    this.Report(ReportLevel.Error, scanner.LastReadRange,
+                    this.Report(LogLevel.Error, scanner.LastReadRange,
                                 Messages.Error_RhythmSegmentMissingCloseBracket);
                     node = null;
                     return false;
@@ -73,7 +73,7 @@ namespace TabML.Parser.Parsing.Bar
 
             if (node.BassVoice == null && node.TrebleVoice == null)
             {
-                this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                this.Report(LogLevel.Warning, scanner.LastReadRange,
                             Messages.Warning_EmptyRhythmSegment);
             }
 
@@ -91,14 +91,14 @@ namespace TabML.Parser.Parsing.Bar
 
                 if (scanner.Peek() == ';')
                 {
-                    this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner.Source),
+                    this.Report(LogLevel.Error, scanner.Pointer.AsRange(scanner.Source),
                                 Messages.Error_UnrecognizableRhythmSegmentElement);
                     return false;
                 }
             }
             else
             {
-                this.Report(ReportLevel.Error, scanner.Pointer.AsRange(scanner.Source),
+                this.Report(LogLevel.Error, scanner.Pointer.AsRange(scanner.Source),
                             Messages.Error_UnrecognizableRhythmSegmentElement);
                 return false;
             }

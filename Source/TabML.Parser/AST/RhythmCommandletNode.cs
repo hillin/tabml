@@ -19,16 +19,16 @@ namespace TabML.Parser.AST
             get { yield return this.TemplateNode; }
         }
 
-        internal override bool Apply(TablatureContext context, IReporter reporter)
+        internal override bool Apply(TablatureContext context, ILogger logger)
         {
             if (context.DocumentState.RhythmTemplate != null && this.Equals(context.DocumentState.RhythmTemplate))
             {
-                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_UselessRhythmInstruction);
+                logger.Report(LogLevel.Suggestion, this.Range, Messages.Suggestion_UselessRhythmInstruction);
                 return true;
             }
 
             RhythmTemplate rhythmTemplate;
-            if (!this.TemplateNode.ToDocumentElement(context, reporter, out rhythmTemplate))
+            if (!this.TemplateNode.ToDocumentElement(context, logger, out rhythmTemplate))
                 return false;
 
             using (var state = context.AlterDocumentState())

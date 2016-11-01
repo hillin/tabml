@@ -36,7 +36,7 @@ namespace TabML.Parser.Parsing.Commandlets
             var tuningString = scanner.ReadToLineEnd().Trim();
             if (string.IsNullOrEmpty(tuningString))
             {
-                this.Report(ReportLevel.Suggestion, scanner.LastReadRange, Messages.Suggestion_TuningNotSpecified);
+                this.Report(LogLevel.Suggestion, scanner.LastReadRange, Messages.Suggestion_TuningNotSpecified);
                 return true;
             }
 
@@ -49,7 +49,7 @@ namespace TabML.Parser.Parsing.Commandlets
                 var namePartIsEmpty = namePart == string.Empty;
                 if (namePartIsEmpty)
                 {
-                    this.Report(ReportLevel.Hint, scanner.LastReadRange.From.AsRange(scanner.Source),
+                    this.Report(LogLevel.Hint, scanner.LastReadRange.From.AsRange(scanner.Source),
                                 Messages.Hint_RedundantColonInTuningSpecifier);
                 }
                 else
@@ -65,12 +65,12 @@ namespace TabML.Parser.Parsing.Commandlets
                 {
                     if (namePartIsEmpty)
                     {
-                        this.Report(ReportLevel.Suggestion, scanner.LastReadRange,
+                        this.Report(LogLevel.Suggestion, scanner.LastReadRange,
                                     Messages.Suggestion_TuningNotSpecified);
                         return true;
                     }
 
-                    this.Report(ReportLevel.Hint,
+                    this.Report(LogLevel.Hint,
                                 scanner.LastReadRange.From.OffsetColumn(colonIndex).AsRange(scanner.Source),
                                 Messages.Hint_RedundantColonInTuningSpecifier);
                 }
@@ -111,7 +111,7 @@ namespace TabML.Parser.Parsing.Commandlets
                 }
             }
 
-            this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_InvalidTuning);
+            this.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_InvalidTuning);
             commandlet = null;
             return false;
         }

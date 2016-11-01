@@ -30,20 +30,20 @@ namespace TabML.Parser.AST
             }
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out RhythmSegment rhythmSegment)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out RhythmSegment rhythmSegment)
         {
             rhythmSegment = new RhythmSegment
             {
                 Range = this.Range
             };
 
-            if (!this.FillRhythmSegmentVoices(context, reporter, rhythmSegment))
+            if (!this.FillRhythmSegmentVoices(context, logger, rhythmSegment))
                 return false;
 
             if (this.Fingering != null)
             {
                 ChordFingering chordFingering;
-                if (!this.Fingering.ToDocumentElement(context, reporter, out chordFingering))
+                if (!this.Fingering.ToDocumentElement(context, logger, out chordFingering))
                     return false;
 
                 rhythmSegment.Chord = new DocumentChord
@@ -59,7 +59,7 @@ namespace TabML.Parser.AST
                 TheoreticalChord theoreticalChord;
                 if (!context.DocumentState.LookupChord(this.ChordName.Value, out fingering, out theoreticalChord))
                 {
-                    reporter.Report(ReportLevel.Suggestion, this.ChordName.Range, Messages.Suggestion_UnknownChord, this.ChordName.Value);
+                    logger.Report(LogLevel.Suggestion, this.ChordName.Range, Messages.Suggestion_UnknownChord, this.ChordName.Value);
                 }
 
                 rhythmSegment.Chord = new DocumentChord

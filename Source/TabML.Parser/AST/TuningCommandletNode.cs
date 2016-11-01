@@ -28,22 +28,22 @@ namespace TabML.Parser.AST
             }
         }
 
-        internal override bool Apply(TablatureContext context, IReporter reporter)
+        internal override bool Apply(TablatureContext context, ILogger logger)
         {
             if (context.DocumentState.BarAppeared)
             {
-                reporter.Report(ReportLevel.Error, this.Range, Messages.Error_TuningInstructionAfterBarAppeared);
+                logger.Report(LogLevel.Error, this.Range, Messages.Error_TuningInstructionAfterBarAppeared);
                 return false;
             }
 
             if (context.DocumentState.TuningSignature != null)
             {
-                reporter.Report(ReportLevel.Warning, this.Range, Messages.Warning_RedefiningTuningInstruction);
+                logger.Report(LogLevel.Warning, this.Range, Messages.Warning_RedefiningTuningInstruction);
                 return false;
             }
 
             TuningSignature tuning;
-            if (!this.ToDocumentElement(context, reporter, out tuning))
+            if (!this.ToDocumentElement(context, logger, out tuning))
                 return false;
 
             using (var state = context.AlterDocumentState())
@@ -54,7 +54,7 @@ namespace TabML.Parser.AST
             return true;
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out TuningSignature element)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out TuningSignature element)
         {
             element = new TuningSignature
             {

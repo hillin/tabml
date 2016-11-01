@@ -53,7 +53,7 @@ namespace TabML.Parser.Parsing.Bar
 
                     if (fingeringNode.Fingerings.Count == 0)
                     {
-                        this.Report(ReportLevel.Error, scanner.LastReadRange,
+                        this.Report(LogLevel.Error, scanner.LastReadRange,
                                     Messages.Error_RhythmSegmentMissingFingering);
                         result = null;
                         return false;
@@ -63,7 +63,7 @@ namespace TabML.Parser.Parsing.Bar
 
                     if (!scanner.Expect(')'))
                     {
-                        this.Report(ReportLevel.Error, scanner.LastReadRange,
+                        this.Report(LogLevel.Error, scanner.LastReadRange,
                                     Messages.Error_RhythmSegmentChordFingeringNotEnclosed);
                         result = null;
                         return false;
@@ -73,7 +73,7 @@ namespace TabML.Parser.Parsing.Bar
 
             if (!rhythmDefined && string.IsNullOrEmpty(chordNameNode.Value) && result.Fingering == null)
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_RhythmDefinitionExpected);
                 result = null;
                 return false;

@@ -52,7 +52,7 @@ namespace TabML.Parser.Parsing.Bar
                 {
                     if (isLyricsRead)
                     {
-                        this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_UnexpectedLyrics);
+                        this.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_UnexpectedLyrics);
                         result = null;
                         return false;
                     }

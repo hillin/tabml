@@ -20,7 +20,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
                 if (from == 0 || from > Defaults.Strings)
                 {
-                    this.Report(ReportLevel.Error, scanner.LastReadRange,
+                    this.Report(LogLevel.Error, scanner.LastReadRange,
                                 Messages.Error_CapoStringsSpecifierInvalidStringNumber);
                     result = null;
                     return false;
@@ -30,7 +30,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
                 if (to == 0 || to > Defaults.Strings)
                 {
-                    this.Report(ReportLevel.Error, scanner.LastReadRange,
+                    this.Report(LogLevel.Error, scanner.LastReadRange,
                                 Messages.Error_CapoStringsSpecifierInvalidStringNumber);
                     result = null;
                     return false;
@@ -55,7 +55,7 @@ namespace TabML.Parser.Parsing.Commandlets
                         || stringNumber == 0
                         || stringNumber > Defaults.Strings)
                     {
-                        this.Report(ReportLevel.Error, scanner.LastReadRange,
+                        this.Report(LogLevel.Error, scanner.LastReadRange,
                                     Messages.Error_CapoStringsSpecifierInvalidStringNumber);
                         result = null;
                         return false;
@@ -63,7 +63,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
                     if (discreteResult.Strings.Any(s => s.Value == stringNumber))
                     {
-                        this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                        this.Report(LogLevel.Warning, scanner.LastReadRange,
                                     Messages.Warning_RedundantCapoStringSpecifier, stringNumber);
                     }
                     else
@@ -75,7 +75,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
             if (!scanner.Expect(')'))
             {
-                this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                this.Report(LogLevel.Warning, scanner.LastReadRange,
                             Messages.Warning_CapoStringsSpecifierNotEnclosed);
             }
             

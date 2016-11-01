@@ -24,10 +24,10 @@ namespace TabML.Parser.AST
             }
         }
 
-        internal override bool Apply(TablatureContext context, IReporter reporter)
+        internal override bool Apply(TablatureContext context, ILogger logger)
         {
             ChordDefinition definition;
-            if (!this.ToDocumentElement(context, reporter, out definition))
+            if (!this.ToDocumentElement(context, logger, out definition))
                 return false;
 
             using (var state = context.AlterDocumentState())
@@ -38,19 +38,19 @@ namespace TabML.Parser.AST
             return true;
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out ChordDefinition element)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out ChordDefinition element)
         {
             if (context.DocumentState.DefinedChords.Any(
                 c => c.DisplayName.Equals(this.DisplayName.Value,
                                           StringComparison.InvariantCultureIgnoreCase)))
             {
-                reporter.Report(ReportLevel.Warning, this.Range, Messages.Warning_ChordAlreadyDefined);
+                logger.Report(LogLevel.Warning, this.Range, Messages.Warning_ChordAlreadyDefined);
                 element = null;
                 return false;
             }
 
             ChordFingering chordFingering;
-            if (!this.Fingering.ToDocumentElement(context, reporter, out chordFingering))
+            if (!this.Fingering.ToDocumentElement(context, logger, out chordFingering))
             {
                 element = null;
                 return false;

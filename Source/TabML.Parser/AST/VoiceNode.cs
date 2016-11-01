@@ -21,7 +21,7 @@ namespace TabML.Parser.AST
 
         public PreciseDuration GetDuration() => this.Beats.Sum(b => b.NoteValue.ToNoteValue().GetDuration());
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Voice voice)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out Voice voice)
         {
             voice = new Voice()
             {
@@ -31,7 +31,7 @@ namespace TabML.Parser.AST
             foreach (var beat in this.Beats)
             {
                 Beat documentBeat;
-                if (!beat.ToDocumentElement(context, reporter, out documentBeat))
+                if (!beat.ToDocumentElement(context, logger, out documentBeat))
                     return false;
 
                 voice.Beats.Add(documentBeat);
@@ -43,12 +43,12 @@ namespace TabML.Parser.AST
                 BaseNoteValue[] factors;
                 if (!BaseNoteValues.TryFactorize(this.ExpectedDuration - duration, out factors))
                 {
-                    reporter.Report(ReportLevel.Error, this.Range,
+                    logger.Report(LogLevel.Error, this.Range,
                                     Messages.Error_InconsistentVoiceDurationCannotBeFilledWithRest);
                     return false;
                 }
 
-                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_InconsistentVoiceDuration);
+                logger.Report(LogLevel.Suggestion, this.Range, Messages.Suggestion_InconsistentVoiceDuration);
 
                 var isFirstFactor = true;
                 foreach (var factor in factors)

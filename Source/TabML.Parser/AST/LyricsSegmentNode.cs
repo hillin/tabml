@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TabML.Core;
 using TabML.Core.Document;
+using TabML.Core.Logging;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
@@ -26,7 +27,7 @@ namespace TabML.Parser.AST
         }
 
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out LyricsSegment lyricsSegment)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out LyricsSegment lyricsSegment)
         {
             lyricsSegment = new LyricsSegment
             {

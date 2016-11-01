@@ -12,7 +12,7 @@ namespace TabML.Parser.Validation
 {
     class AlternateIntegrityChecker : IntegrityChecker
     {
-        public override bool CheckIntegrity(TablatureContext context, IReporter reporter)
+        public override bool CheckIntegrity(TablatureContext context, ILogger logger)
         {
             var lastIndex = 0;
             var missingIndices = new List<int>();
@@ -31,7 +31,7 @@ namespace TabML.Parser.Validation
 
 
             var alternationTextType = context.DocumentState.AlternationTextType ?? AlternationTextType.Arabic;
-            reporter.Report(ReportLevel.Error, null, Messages.Error_MissingAlternationTexts,
+            logger.Report(LogLevel.Error, null, Messages.Error_MissingAlternationTexts,
                             string.Join(", ",
                                         missingIndices.Select(i => AlternationText.GetAlternationText(alternationTextType, i))));
             return false;

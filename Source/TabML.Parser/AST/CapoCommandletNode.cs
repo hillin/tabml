@@ -24,10 +24,10 @@ namespace TabML.Parser.AST
             }
         }
 
-        internal override bool Apply(TablatureContext context, IReporter reporter)
+        internal override bool Apply(TablatureContext context, ILogger logger)
         {
             Capo capo;
-            if (!this.ToDocumentElement(context, reporter, out capo))
+            if (!this.ToDocumentElement(context, logger, out capo))
                 return false;
 
             using (var state = context.AlterDocumentState())
@@ -40,11 +40,11 @@ namespace TabML.Parser.AST
         }
 
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Capo element)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out Capo element)
         {
             if (context.DocumentState.BarAppeared)
             {
-                reporter.Report(ReportLevel.Error, this.Range, Messages.Error_CapoInstructionAfterBarAppeared);
+                logger.Report(LogLevel.Error, this.Range, Messages.Error_CapoInstructionAfterBarAppeared);
                 element = null;
                 return false;
             }

@@ -47,7 +47,7 @@ namespace TabML.Parser.Parsing.Commandlets
                               .Where(l => l != null)
                               .Where(barLine => barLine.Value != OpenBarLine.Standard))
             {
-                this.Report(ReportLevel.Error, barLine.Range, Messages.Error_InvalidBarLineInPattern);
+                this.Report(LogLevel.Error, barLine.Range, Messages.Error_InvalidBarLineInPattern);
                 commandlet = null;
                 return false;
             }
@@ -58,7 +58,7 @@ namespace TabML.Parser.Parsing.Commandlets
                               .Where(l => l != null)
                               .Where(barLine => barLine.Value != CloseBarLine.Standard))
             {
-                this.Report(ReportLevel.Error, barLine.Range, Messages.Error_InvalidBarLineInPattern);
+                this.Report(LogLevel.Error, barLine.Range, Messages.Error_InvalidBarLineInPattern);
                 commandlet = null;
                 return false;
             }
@@ -92,7 +92,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
             if (!scanner.Expect('}'))
             {
-                this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                this.Report(LogLevel.Warning, scanner.LastReadRange,
                             Messages.Warning_PatternBodyNotEnclosed);
             }
 

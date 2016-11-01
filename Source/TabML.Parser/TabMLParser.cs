@@ -13,9 +13,9 @@ namespace TabML.Parser
 {
     public class TabMLParser
     {
-        private class DummyReporter : IReporter
+        private class DummyReporter : ILogger
         {
-            public void Report(ReportLevel level, TextRange? position, string message, params object[] args)
+            public void Report(LogLevel level, TextRange? position, string message, params object[] args)
             {
 
             }
@@ -28,9 +28,9 @@ namespace TabML.Parser
                 return null;
 
             var context = new TablatureContext();
-            var reporter = new DummyReporter();
+            var logger = new DummyReporter();
             foreach (var node in tablatureNode.Nodes)
-                node.Apply(context, reporter);
+                node.Apply(context, logger);
 
             return context.ToTablature();
         }

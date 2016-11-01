@@ -22,10 +22,10 @@ namespace TabML.Parser.AST
             }
         }
 
-        internal override bool Apply(TablatureContext context, IReporter reporter)
+        internal override bool Apply(TablatureContext context, ILogger logger)
         {
             TempoSignature tempo;
-            if (!this.ToDocumentElement(context, reporter, out tempo))
+            if (!this.ToDocumentElement(context, logger, out tempo))
                 return false;
 
             using (var state = context.AlterDocumentState())
@@ -52,11 +52,11 @@ namespace TabML.Parser.AST
             return this.Beats.Value == other.Tempo.Beats;
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out TempoSignature element)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out TempoSignature element)
         {
             if (this.ValueEquals(context.DocumentState.TempoSignature))
             {
-                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_UselessTempoInstruction);
+                logger.Report(LogLevel.Suggestion, this.Range, Messages.Suggestion_UselessTempoInstruction);
                 element = null;
                 return false;
             }

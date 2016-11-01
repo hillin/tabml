@@ -24,13 +24,13 @@ namespace TabML.Parser.AST
             }
         }
 
-        internal override bool Apply(TablatureContext context, IReporter reporter)
+        internal override bool Apply(TablatureContext context, ILogger logger)
         {
             var templateBarNodes = this.TemplateBars.Bars;
             var instanceBarNodes = this.InstanceBars.Bars;
             if (instanceBarNodes.Count < templateBarNodes.Count)
             {
-                reporter.Report(ReportLevel.Warning, this.InstanceBars.Range,
+                logger.Report(LogLevel.Warning, this.InstanceBars.Range,
                                 Messages.Warning_PatternInstanceBarsLessThanTemplateBars);
             }
 
@@ -39,12 +39,12 @@ namespace TabML.Parser.AST
             {
                 if (barNode.Lyrics != null)
                 {
-                    reporter.Report(ReportLevel.Warning, barNode.Lyrics.Range,
+                    logger.Report(LogLevel.Warning, barNode.Lyrics.Range,
                                     Messages.Warning_TemplateBarCannotContainLyrics);
                 }
 
                 Bar bar;
-                if (!barNode.ToDocumentElement(context, reporter, out bar))
+                if (!barNode.ToDocumentElement(context, logger, out bar))
                     return false;
 
                 templateBars.Add(bar);
@@ -56,7 +56,7 @@ namespace TabML.Parser.AST
                 var templateBar = templateBars[templateIndex];
 
                 Bar instanceBar;
-                if (this.ApplyTemplateBar(templateBar, barNode, out instanceBar, context, reporter))
+                if (this.ApplyTemplateBar(templateBar, barNode, out instanceBar, context, logger))
                 {
                     context.AddBar(instanceBar);
                 }
@@ -70,7 +70,7 @@ namespace TabML.Parser.AST
         }
 
 
-        public bool ApplyTemplateBar(Bar template, BarNode instanceNode, out Bar instanceBar, TablatureContext context, IReporter reporter)
+        public bool ApplyTemplateBar(Bar template, BarNode instanceNode, out Bar instanceBar, TablatureContext context, ILogger logger)
         {
             if (instanceNode == null)
             {
@@ -78,7 +78,7 @@ namespace TabML.Parser.AST
                 return true;
             }
 
-            if (!instanceNode.ToDocumentElement(context, reporter, out instanceBar))
+            if (!instanceNode.ToDocumentElement(context, logger, out instanceBar))
                 return false;
 
             if (instanceBar.Rhythm != null && instanceBar.Rhythm.Segments.Count > 0) // rhythm already defined

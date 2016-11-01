@@ -18,7 +18,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
             if (!match.Success)
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_InvalidTempoSignature);
                 commandlet = null;
                 return false;
@@ -31,7 +31,7 @@ namespace TabML.Parser.Parsing.Commandlets
                 BaseNoteValue noteValue;
                 if (!BaseNoteValues.TryParse(noteValueNumber, out noteValue))
                 {
-                    this.Report(ReportLevel.Error, scanner.LastReadRange,
+                    this.Report(LogLevel.Error, scanner.LastReadRange,
                                 Messages.Error_IrrationalNoteValueInTempoSignatureNotSupported);
                     commandlet = null;
                     return false;
@@ -45,7 +45,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
             if (beats == 0)
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_TempoSignatureSpeedTooLow);
                 commandlet = null;
                 return false;
@@ -53,7 +53,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
             if (beats > 10000)
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_TempoSignatureSpeedTooFast);
                 commandlet = null;
                 return false;

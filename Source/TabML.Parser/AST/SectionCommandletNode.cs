@@ -19,10 +19,10 @@ namespace TabML.Parser.AST
             }
         }
 
-        internal override bool Apply(TablatureContext context, IReporter reporter)
+        internal override bool Apply(TablatureContext context, ILogger logger)
         {
             Section section;
-            if (!this.ToDocumentElement(context, reporter, out section))
+            if (!this.ToDocumentElement(context, logger, out section))
                 return false;
 
             using (var state = context.AlterDocumentState())
@@ -34,11 +34,11 @@ namespace TabML.Parser.AST
             return true;
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Section element)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out Section element)
         {
             if (context.DocumentState.DefinedSections.Any(this.ValueEquals))
             {
-                reporter.Report(ReportLevel.Warning, this.Range, Messages.Warning_DuplicatedSectionName,
+                logger.Report(LogLevel.Warning, this.Range, Messages.Warning_DuplicatedSectionName,
                                 this.SectionName.Value);
                 element = null;
                 return true;

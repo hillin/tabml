@@ -34,7 +34,7 @@ namespace TabML.Parser.Parsing
 
                 if (string.IsNullOrEmpty(str))
                 {
-                    this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                    this.Report(LogLevel.Warning, scanner.LastReadRange,
                                 Messages.Error_ChordFingeringInvalidFingering);
                     result = null;
                     return false;
@@ -54,7 +54,7 @@ namespace TabML.Parser.Parsing
                         int fretNumber;
                         if (!int.TryParse(str, out fretNumber)) // todo: prevent too large fret number
                         {
-                            this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                            this.Report(LogLevel.Warning, scanner.LastReadRange,
                                         Messages.Error_ChordFingeringInvalidFingering);
                             result = null;
                             return false;
@@ -62,7 +62,7 @@ namespace TabML.Parser.Parsing
 
                         if (fretNumber > 24)
                         {
-                            this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                            this.Report(LogLevel.Warning, scanner.LastReadRange,
                                         Messages.Warning_ChordFingeringFretTooHigh);
                         }
 
@@ -81,7 +81,7 @@ namespace TabML.Parser.Parsing
                                 var fingerIndexString = scanner.Read(@"[\dtT]");
                                 if (string.IsNullOrEmpty(fingerIndexString))
                                 {
-                                    this.Report(ReportLevel.Error, scanner.Pointer.AsRange(),
+                                    this.Report(LogLevel.Error, scanner.Pointer.AsRange(),
                                                 Messages.Error_ChordFingerIndexExpected);
                                     return false;
                                 }
@@ -102,7 +102,7 @@ namespace TabML.Parser.Parsing
                                     case "4":
                                         fingerIndex = LeftHandFingerIndex.Pinky; break;
                                     default:
-                                        this.Report(ReportLevel.Error, scanner.LastReadRange,
+                                        this.Report(LogLevel.Error, scanner.LastReadRange,
                                                     Messages.Error_UnrecognizableFingerIndex);
                                         return false;
                                 }
@@ -122,7 +122,7 @@ namespace TabML.Parser.Parsing
 
                                 if (!scanner.Expect('>'))
                                 {
-                                    this.Report(ReportLevel.Error, scanner.Pointer.AsRange(),
+                                    this.Report(LogLevel.Error, scanner.Pointer.AsRange(),
                                                 Messages.Error_ChordFingerIndexNotEnclosed);
                                     return false;
                                 }
@@ -141,7 +141,7 @@ namespace TabML.Parser.Parsing
 
             if (result.Fingerings.Count != Defaults.Strings)
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_ChordFingeringNotMatchingStringCount, Defaults.Strings);
                 result = null;
                 return false;

@@ -15,7 +15,7 @@ namespace TabML.Parser.Parsing.Commandlets
             LiteralNode<string> chordName;
             if (!Parser.TryReadChordName(scanner, this, out chordName) || string.IsNullOrEmpty(chordName.Value))
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange, Messages.Error_MissingChordName);
+                this.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_MissingChordName);
                 commandlet = null;
                 return false;
             }
@@ -27,7 +27,7 @@ namespace TabML.Parser.Parsing.Commandlets
             string displayName;
             if (scanner.TryReadParenthesis(out displayName, '<', '>', allowNesting: false) == Scanner.ParenthesisReadResult.MissingClose)
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_ChordDisplayNameNotEnclosed);
                 commandlet = null;
                 return false;
@@ -46,7 +46,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
             if (fingeringNode.Fingerings.Count == 0)
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_ChordCommandletMissingFingering);
                 commandlet = null;
                 return false;

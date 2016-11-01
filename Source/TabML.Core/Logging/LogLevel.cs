@@ -1,6 +1,6 @@
 ﻿namespace TabML.Core.Logging
 {
-    public enum ReportLevel
+    public enum LogLevel
     {
         Hint,
         Suggestion,

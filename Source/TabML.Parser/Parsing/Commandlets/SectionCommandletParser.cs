@@ -19,7 +19,7 @@ namespace TabML.Parser.Parsing.Commandlets
                     case Scanner.ParenthesisReadResult.Success:
                         break;
                     case Scanner.ParenthesisReadResult.MissingClose:
-                        this.Report(ReportLevel.Warning, scanner.LastReadRange,
+                        this.Report(LogLevel.Warning, scanner.LastReadRange,
                                     Messages.Warning_SectionNameMissingCloseQuoteMark);
                         break;
                     default:
@@ -31,7 +31,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
             sectionName = sectionName.Trim();
             if (string.IsNullOrEmpty(sectionName))
-                this.Report(ReportLevel.Warning, scanner.LastReadRange, Messages.Warning_EmptySectionName);
+                this.Report(LogLevel.Warning, scanner.LastReadRange, Messages.Warning_EmptySectionName);
 
             var sectionNameNode = new LiteralNode<string>(sectionName, scanner.LastReadRange);
 

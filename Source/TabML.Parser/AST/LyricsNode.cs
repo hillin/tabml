@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TabML.Core.Document;
+using TabML.Core.Logging;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
@@ -15,7 +16,7 @@ namespace TabML.Parser.AST
 
         public override IEnumerable<Node> Children => this.LyricsSegments;
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Lyrics lyrics)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out Lyrics lyrics)
         {
             lyrics = new Lyrics
             {
@@ -25,7 +26,7 @@ namespace TabML.Parser.AST
             foreach (var segment in this.LyricsSegments)
             {
                 LyricsSegment lyricsSegment;
-                if (!segment.ToDocumentElement(context, reporter, out lyricsSegment))
+                if (!segment.ToDocumentElement(context, logger, out lyricsSegment))
                     return false;
 
                 lyrics.Segments.Add(lyricsSegment);

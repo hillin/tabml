@@ -20,7 +20,7 @@ namespace TabML.Parser.AST
         public override IEnumerable<Node> Children => this.Fingerings;
 
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out ChordFingering element)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out ChordFingering element)
         {
             bool? fingerIndexSpecified = null;
             var ignoreFingerIndices = false;
@@ -38,7 +38,7 @@ namespace TabML.Parser.AST
                 if ((fingering.FingerIndex != null && fingerIndexSpecified == false)
                     || (fingering.FingerIndex == null && fingerIndexSpecified == true))
                 {
-                    reporter.Report(ReportLevel.Warning, this.Range, Messages.Warning_ChordNotAllFingerIndexSpecified);
+                    logger.Report(LogLevel.Warning, this.Range, Messages.Warning_ChordNotAllFingerIndexSpecified);
                     ignoreFingerIndices = true;
                     break;
                 }

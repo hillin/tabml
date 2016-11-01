@@ -28,10 +28,10 @@ namespace TabML.Parser.AST
             return this.Beats.Value == other.Time.Beats && this.NoteValue.Value == other.Time.NoteValue;
         }
 
-        internal override bool Apply(TablatureContext context, IReporter reporter)
+        internal override bool Apply(TablatureContext context, ILogger logger)
         {
             TimeSignature time;
-            if (!this.ToDocumentElement(context, reporter, out time))
+            if (!this.ToDocumentElement(context, logger, out time))
                 return false;
 
             using (var state = context.AlterDocumentState())
@@ -42,18 +42,18 @@ namespace TabML.Parser.AST
             return true;
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out TimeSignature element)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out TimeSignature element)
         {
             if (context.DocumentState.RhythmTemplate != null || context.DocumentState.BarAppeared)
             {
-                reporter.Report(ReportLevel.Error, this.Range, Messages.Error_TimeInstructionAfterBarAppearedOrRhythmInstruction);
+                logger.Report(LogLevel.Error, this.Range, Messages.Error_TimeInstructionAfterBarAppearedOrRhythmInstruction);
                 element = null;
                 return false;
             }
 
             if (context.DocumentState.TimeSignature != null && this.ValueEquals(context.DocumentState.TimeSignature))
             {
-                reporter.Report(ReportLevel.Suggestion, this.Range, Messages.Suggestion_UselessTimeInstruction);
+                logger.Report(LogLevel.Suggestion, this.Range, Messages.Suggestion_UselessTimeInstruction);
                 element = null;
                 return false;
             }

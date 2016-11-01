@@ -32,10 +32,10 @@ namespace TabML.Parser.AST
             }
         }
 
-        internal override bool Apply(TablatureContext context, IReporter reporter)
+        internal override bool Apply(TablatureContext context, ILogger logger)
         {
             Bar bar;
-            if (!this.ToDocumentElement(context, reporter, out bar))
+            if (!this.ToDocumentElement(context, logger, out bar))
                 return false;
 
 
@@ -43,7 +43,7 @@ namespace TabML.Parser.AST
             {
                 var beats = bar.Rhythm.Segments.Sum(s => s.FirstVoice.Beats?.Count ?? 0);
                 if (beats < bar.Lyrics.Segments.Count)
-                    reporter.Report(ReportLevel.Suggestion, bar.Lyrics.Range, Messages.Suggestion_LyricsTooLong);
+                    logger.Report(LogLevel.Suggestion, bar.Lyrics.Range, Messages.Suggestion_LyricsTooLong);
             }
 
             context.AddBar(bar);
@@ -51,27 +51,27 @@ namespace TabML.Parser.AST
             return true;
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Bar bar)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out Bar bar)
         {
             Rhythm rhythm;
             if (this.Rhythm == null)
                 rhythm = null;
             else
             {
-                if (!this.Rhythm.ToDocumentElement(context, reporter, out rhythm))
+                if (!this.Rhythm.ToDocumentElement(context, logger, out rhythm))
                 {
                     bar = null;
                     return false;
                 }
 
                 if (context.DocumentState.RhythmTemplate != null)
-                    rhythm = context.DocumentState.RhythmTemplate.Apply(rhythm, reporter);
+                    rhythm = context.DocumentState.RhythmTemplate.Apply(rhythm, logger);
             }
 
             Lyrics lyrics;
             if (this.Lyrics == null)
                 lyrics = null;
-            else if (!this.Lyrics.ToDocumentElement(context, reporter, out lyrics))
+            else if (!this.Lyrics.ToDocumentElement(context, logger, out lyrics))
             {
                 bar = null;
                 return false;

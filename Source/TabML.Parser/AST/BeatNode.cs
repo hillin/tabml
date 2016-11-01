@@ -2,6 +2,7 @@
 using System.Linq;
 using TabML.Core.MusicTheory;
 using TabML.Core.Document;
+using TabML.Core.Logging;
 using TabML.Parser.Parsing;
 using AllStringStrumTechniqueEnum = TabML.Core.MusicTheory.AllStringStrumTechnique;
 using StrumTechniqueEnum = TabML.Core.MusicTheory.StrumTechnique;
@@ -68,7 +69,7 @@ namespace TabML.Parser.AST
             this.Modifiers = new List<Node>();
         }
 
-        public bool ToDocumentElement(TablatureContext context, IReporter reporter, out Beat beat)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, out Beat beat)
         {
             beat = new Beat
             {
@@ -87,7 +88,7 @@ namespace TabML.Parser.AST
             foreach (var note in this.Notes)
             {
                 BeatNote documentNote;
-                if (!note.ToDocumentElement(context, reporter, out documentNote))
+                if (!note.ToDocumentElement(context, logger, out documentNote))
                     return false;
 
                 notes.Add(documentNote);

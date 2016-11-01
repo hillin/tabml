@@ -18,7 +18,7 @@ namespace TabML.Parser.Parsing.Bar
             LiteralNode<int> stringNumber;
             if (!Parser.TryReadInteger(scanner, out stringNumber))
             {
-                this.Report(ReportLevel.Error, scanner.LastReadRange,
+                this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_BeatInvalidStringNumberInStringsSpecifier);
                 result = null;
                 return false;
@@ -31,7 +31,7 @@ namespace TabML.Parser.Parsing.Bar
                 LiteralNode<int> fret;
                 if (!Parser.TryReadInteger(scanner, out fret))
                 {
-                    this.Report(ReportLevel.Error, scanner.LastReadRange,
+                    this.Report(LogLevel.Error, scanner.LastReadRange,
                                 Messages.Error_BeatInvalidFretNumberInStringsSpecifier);
                     result = null;
                     return false;

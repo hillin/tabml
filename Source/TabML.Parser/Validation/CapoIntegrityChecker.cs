@@ -10,7 +10,7 @@ namespace TabML.Parser.Validation
 {
     class CapoIntegrityChecker : IntegrityChecker
     {
-        public override bool CheckIntegrity(TablatureContext context, IReporter reporter)
+        public override bool CheckIntegrity(TablatureContext context, ILogger logger)
         {
             foreach (var capo in
                 context.DocumentState
@@ -19,7 +19,7 @@ namespace TabML.Parser.Validation
                                           .All(n => capo.CapoInfo.Position < context.DocumentState.CapoFretOffsets[n - 1]))
                 )
             {
-                reporter.Report(ReportLevel.Suggestion, capo.Range, Messages.Suggestion_UselessCapoInstruction);
+                logger.Report(LogLevel.Suggestion, capo.Range, Messages.Suggestion_UselessCapoInstruction);
             }
 
             return true;
