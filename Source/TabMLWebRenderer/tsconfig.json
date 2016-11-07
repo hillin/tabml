@@ -1,0 +1,23 @@
+﻿{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "typeRoots": [
+      "./Scripts/typings/**/*",
+      "./node_modules/@types"
+    ],
+    "outFile": "main.js",
+    "noImplicitAny": true,
+    "module": "system",
+    "sourceMap": true,
+    "allowJs": true
+  },
+  "include": [
+    "./Scripts/**/*"
+  ],
+  "exclude": [
+    "./Scripts/bower_components/**/*"
+  ],
+  "files": [
+    "./Scripts/bower_components/fabric.js/dist/fabric.min.js"
+  ]
+}

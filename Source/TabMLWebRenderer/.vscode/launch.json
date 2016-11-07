@@ -1,0 +1,17 @@
+{
+    "version": "0.1.0",
+    "configurations": [
+        {
+            "name": "Launch with sourcemaps",
+            "type": "chrome",
+            "request": "launch",
+            "file": "${workspaceRoot}/index.html",
+            "sourceMaps": true,
+            "runtimeExecutable": "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
+            "runtimeArgs": [
+                "--remote-debugging-port=9222",
+                "--user-data-dir=${workspaceRoot}/debug/chrome"
+            ]
+        }
+    ]
+}
