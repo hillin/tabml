@@ -1,0 +1,49 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CefSharp.Wpf;
+
+namespace TabML.Editor
+{
+    class PrimitiveRenderer
+    {
+        private readonly ChromiumWebBrowser _browser;
+
+        public PrimitiveRenderer(ChromiumWebBrowser browser)
+        {
+            _browser = browser;
+        }
+
+        private void InvokeScriptAsync(string script)
+        {
+            _browser.GetBrowser().MainFrame.ExecuteJavaScriptAsync(script);
+        }
+
+        private void InvokeRenderMethod(string method, params object[] args)
+        {
+            var builder = new StringBuilder();
+            builder.Append("renderer.")
+                   .Append(method)
+                   .Append("(")
+                   .Append(string.Join(", ", args.Select(PrimitiveRenderer.Stringify)))
+                   .Append(");");
+
+            this.InvokeScriptAsync(builder.ToString());
+        }
+
+        private static string Stringify(object arg)
+        {
+            if (arg is string)
+                return $"\"{arg}\"";
+
+            return arg.ToString();
+        }
+
+        public void DrawTitle(string title, double x, double y) => this.InvokeRenderMethod("drawTitle", title, x, y);
+        public void DrawLyrics(string lyrics, double x, double y) => this.InvokeRenderMethod("drawLyrics", lyrics, x, y);
+        public void DrawFretNumber(string fretNumber, double x, double y) => this.InvokeRenderMethod("drawFretNumber", fretNumber, x, y);
+        public void DrawBarLine(double x, double y, double length) => this.InvokeRenderMethod("drawBarLine", x, y, length);
+    }
+}

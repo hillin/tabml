@@ -17,10 +17,22 @@ namespace TabML.Editor
         {
             this.InitializeComponent();
 
-            var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\Documentations\samples\my home town.txt"));
+            this.Browser.Address = Path.GetFullPath("../../../../TabMLWebRenderer/index.html");
+        }
 
-            foreach (var bar in tablature.Bars)
-                this.BarStack.Children.Add(new Bar(bar));
+        private void Browser_LoadingStateChanged(object sender, CefSharp.LoadingStateChangedEventArgs e)
+        {
+            if (!e.IsLoading)
+            {
+                this.RenderTablature();
+            }
+        }
+
+        private void RenderTablature()
+        {
+            var renderer = new PrimitiveRenderer(this.Browser);
+            var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\my home town.txt"));
+            renderer.DrawTitle("My Home Town", 400, 20);
         }
     }
 }

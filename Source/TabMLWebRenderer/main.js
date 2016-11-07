@@ -1462,21 +1462,99 @@ else {
     var origSetBackstoreDimension = fabric.StaticCanvas.prototype._setBackstoreDimension;
     fabric.StaticCanvas.prototype._setBackstoreDimension = function (t, e) { return origSetBackstoreDimension.call(this, t, e), this.nodeCanvas[t] = e, this; }, fabric.Canvas && (fabric.Canvas.prototype._setBackstoreDimension = fabric.StaticCanvas.prototype._setBackstoreDimension);
 } }();
+var tablatureStyle = {
+    fallback: {
+        fontFamily: "Segoe UI"
+    },
+    page: {
+        width: 800,
+        height: 1200
+    },
+    title: {
+        fontSize: 32,
+        fontFamily: "Felix Titling"
+    },
+    fretNumber: {
+        fontSize: 12,
+        fontFamily: "Segoe UI"
+    },
+    lyrics: {
+        fontSize: 13,
+        fontFamily: "Times New Roman"
+    }
+};
+var renderer;
 window.onload = function () {
     var canvas = document.getElementById("staff");
-    var renderer = new TabRenderer(canvas);
-    renderer.drawTitle("My Staff");
+    var fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
+    fabricCanvas.backgroundColor = "white";
+    renderer = new PrimitiveRenderer(fabricCanvas, tablatureStyle);
 };
-var TabRenderer = (function () {
-    function TabRenderer(canvas) {
-        this.canvas = new fabric.Canvas(canvas);
+// object.Assign implementation
+if (typeof Object.assign != 'function') {
+    (function () {
+        Object.assign = function (target) {
+            'use strict';
+            if (target === undefined || target === null) {
+                throw new TypeError('Cannot convert undefined or null to object');
+            }
+            var output = Object(target);
+            for (var index = 1; index < arguments.length; index++) {
+                var source = arguments[index];
+                if (source !== undefined && source !== null) {
+                    for (var nextKey in source) {
+                        if (source.hasOwnProperty(nextKey)) {
+                            output[nextKey] = source[nextKey];
+                        }
+                    }
+                }
+            }
+            return output;
+        };
+    })();
+}
+var PrimitiveRenderer = (function () {
+    function PrimitiveRenderer(canvas, style) {
+        this.canvas = canvas;
+        this.ITablatureStyle = style;
     }
-    TabRenderer.prototype.drawTitle = function (title) {
-        var comicSansText = new fabric.Text(title, {
-            fontFamily: 'Comic Sans'
-        });
-        this.canvas.add(comicSansText);
+    PrimitiveRenderer.prototype.drawTitle = function (title, x, y) {
+        var text = new fabric.Text(title, this.ITablatureStyle.title);
+        text.left = x;
+        text.top = y;
+        text.originX = "center";
+        text.originY = "top";
+        this.canvas.add(text);
     };
+    PrimitiveRenderer.prototype.drawFretNumber = function (fretNumber, x, y) {
+        var text = new fabric.Text(fretNumber, this.ITablatureStyle.title);
+        text.left = x;
+        text.top = y;
+        text.originX = "center";
+        text.originY = "center";
+        this.canvas.add(text);
+    };
+    PrimitiveRenderer.prototype.drawLyrics = function (lyrics, x, y) {
+        var text = new fabric.Text(lyrics, this.ITablatureStyle.lyrics);
+        text.left = x;
+        text.top = y;
+        text.originX = "left";
+        text.originY = "top";
+        this.canvas.add(text);
+    };
+    PrimitiveRenderer.prototype.drawBarLine = function (x, y, length) {
+        var line = new fabric.Line([x, y, x + length, y]);
+        line.stroke = "black";
+        this.canvas.add(line);
+    };
+    return PrimitiveRenderer;
+}());
+var TabRenderer = (function () {
+    function TabRenderer(canvas, ITablatureStyle) {
+        this.ITablatureStyle = ITablatureStyle;
+        this.canvas = new fabric.StaticCanvas(canvas);
+        this.canvas.setDimensions(this.ITablatureStyle.page);
+    }
     return TabRenderer;
 }());
 //# sourceMappingURL=main.js.map

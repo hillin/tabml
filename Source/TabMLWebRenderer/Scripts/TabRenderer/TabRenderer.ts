@@ -1,17 +1,14 @@
-﻿import StaticCanvas = fabric.IStaticCanvas;
-
+﻿
 class TabRenderer {
-    private canvas: StaticCanvas;
+    private canvas: fabric.IStaticCanvas;
+    private ITablatureStyle: ITablatureStyle;
 
-    constructor(canvas: HTMLCanvasElement) {
-        this.canvas = new fabric.Canvas(canvas);
+    constructor(canvas: HTMLCanvasElement, ITablatureStyle: ITablatureStyle) {
+        this.ITablatureStyle = ITablatureStyle;
+        this.canvas = new fabric.StaticCanvas(canvas);
+        this.canvas.setDimensions(this.ITablatureStyle.page);
     }
 
-    drawTitle(title: string) {
-        var comicSansText = new fabric.Text(title,
-            {
-                fontFamily: 'Comic Sans'
-            });
-        this.canvas.add(comicSansText);
-    }
+
+
 }

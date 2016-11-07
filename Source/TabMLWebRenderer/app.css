@@ -1,7 +1,13 @@
 ﻿body {
     font-family: 'Segoe UI', sans-serif;
+    background: lightblue;
 }
 
 span {
     font-style: italic;
+}
+
+#staff {
+    width: 800px;
+    height: 1200px;
 }
