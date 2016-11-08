@@ -104,6 +104,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Rendering\BarRenderContext.cs" />
     <Compile Include="Rendering\BarRenderer.cs" />
     <Compile Include="Rendering\RendererBase.cs" />
     <Compile Include="Rendering\TablatureRenderer.cs" />

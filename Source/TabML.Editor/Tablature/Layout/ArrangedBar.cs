@@ -14,6 +14,8 @@ namespace TabML.Editor.Tablature.Layout
         public ArrangedBarVoice BassVoice { get; set; }
         public PreciseDuration Duration { get; set; }
         public List<ArrangedBarColumn> Columns { get; }
+        public OpenBarLine? OpenLine { get; set; }
+        public CloseBarLine? CloseLine { get; set; }
 
         public ArrangedBar()
         {
@@ -49,6 +51,9 @@ namespace TabML.Editor.Tablature.Layout
 
         public void Draw(IBarDrawingContext drawingContext, double width)
         {
+            if (this.OpenLine != null)
+                drawingContext.DrawBarLine(this.OpenLine.Value, 0.0);
+
             switch (drawingContext.Style.BeatLayout)
             {
                 case BeatLayout.SizeByNoteValue:
@@ -66,6 +71,8 @@ namespace TabML.Editor.Tablature.Layout
                             column.Draw(drawingContext, position, columnWidth);
                             position += columnWidth;
                         }
+
+                        drawingContext.FinishHorizontalBarLines(width);
                     }
 
                     break;
@@ -74,6 +81,9 @@ namespace TabML.Editor.Tablature.Layout
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            if (this.CloseLine != null)
+                drawingContext.DrawBarLine(this.CloseLine.Value, width);
         }
     }
 }

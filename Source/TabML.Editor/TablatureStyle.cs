@@ -16,6 +16,8 @@ namespace TabML.Editor
         public double MinimumBeatSize { get; set; } = 24;
         public double BarLineHeight { get; set; } = 12;
 
+        public Thickness Padding { get; set; } = new Thickness(24);
+
         public bool FlexibleBeatSize { get; set; } = false;
         public Typeface LyricsTypeface { get; set; } = new Typeface("Segoe UI");
         public double LyricsFontSize { get; set; } = 12;

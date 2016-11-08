@@ -17,7 +17,7 @@ class PrimitiveRenderer {
     }
 
     drawFretNumber(fretNumber: string, x: number, y: number) {
-        var text = new fabric.Text(fretNumber, this.ITablatureStyle.title);
+        var text = new fabric.Text(fretNumber, this.ITablatureStyle.fretNumber);
         text.left = x;
         text.top = y;
         text.originX = "center";

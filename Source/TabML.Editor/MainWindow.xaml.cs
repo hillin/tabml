@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Windows;
 using TabML.Core;
+using TabML.Editor.Rendering;
 using TabML.Editor.Tablature;
 using TabML.Parser;
 using TabML.Parser.Document;
@@ -32,7 +33,11 @@ namespace TabML.Editor
         {
             var renderer = new PrimitiveRenderer(this.Browser);
             var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\my home town.txt"));
-            renderer.DrawTitle("My Home Town", 400, 20);
+            var style = new TablatureStyle();
+            new TablatureRenderer(renderer, style, tablature).Render(new Point(style.Padding.Left, style.Padding.Top),
+                                                                     new Size(
+                                                                         800 - style.Padding.Left - style.Padding.Right,
+                                                                         1200 - style.Padding.Top - style.Padding.Bottom));
         }
     }
 }

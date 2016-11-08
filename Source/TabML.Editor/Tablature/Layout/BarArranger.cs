@@ -25,9 +25,10 @@ namespace TabML.Editor.Tablature.Layout
         {
             var arrangedBar = new ArrangedBar
             {
-                Duration = bar.Rhythm.GetDuration()
+                Duration = bar.Rhythm.GetDuration(),
+                OpenLine = bar.OpenLine,
+                CloseLine = bar.CloseLine
             };
-
 
             this.CreateArrangedBeats(bar);
             this.ArrangeColumns(bar, arrangedBar);
@@ -124,7 +125,7 @@ namespace TabML.Editor.Tablature.Layout
                 }
 
                 // fill in lyrics
-                if (segment.TrebleVoice != null && lyricsSegmentIndex < bar.Lyrics.Segments.Count)
+                if (segment.TrebleVoice != null && bar.Lyrics != null && lyricsSegmentIndex < bar.Lyrics.Segments.Count)
                 {
                     foreach (var beat in segment.TrebleVoice.Beats)
                     {

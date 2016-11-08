@@ -32,5 +32,13 @@ namespace TabML.Editor.Tablature.Layout
 #if DEBUG
         private string DebuggerDisplay => $"Beat: {this.Beat.NoteValue.DebuggerDisplay}";
 #endif
+
+        public void Draw(IBarDrawingContext drawingContext, double position, double width)
+        {
+            foreach (var note in this.Beat.Notes)
+            {
+                drawingContext.DrawFretNumber(note.String - 1, note.Fret.ToString(), position + width / 2);
+            }
+        }
     }
 }

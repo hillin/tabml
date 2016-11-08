@@ -30,7 +30,10 @@ namespace TabML.Editor.Tablature.Layout
 
         public void Draw(IBarDrawingContext drawingContext, double position, double width)
         {
-            // todo
+            foreach (var beat in this.VoiceBeats)
+                beat.Draw(drawingContext, position, width);
+
+            //todo: draw chord and lyrics
         }
     }
 }

@@ -18,15 +18,14 @@ using DocumentBar = TabML.Core.Document.Bar;
 
 namespace TabML.Editor.Tablature
 {
-    partial class Bar : IBarDrawingContext
+    partial class Bar 
     {
         private readonly ArrangedBar _arrangedBar;
 
         private readonly TablatureStyle _style;
 
         private readonly BarLine[] _barLines;
-
-        TablatureStyle IBarDrawingContext.Style => _style;
+        
 
         public Bar(DocumentBar bar)
         {
@@ -40,7 +39,7 @@ namespace TabML.Editor.Tablature
 
             _arrangedBar = new BarArranger().Arrange(bar);
 
-            _arrangedBar.Draw(this, 200);
+            //_arrangedBar.Draw(this, 200);
 
         }
 

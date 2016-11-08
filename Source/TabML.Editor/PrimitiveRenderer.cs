@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CefSharp.Wpf;
+using TabML.Core.MusicTheory;
 
 namespace TabML.Editor
 {
@@ -44,6 +45,11 @@ namespace TabML.Editor
         public void DrawTitle(string title, double x, double y) => this.InvokeRenderMethod("drawTitle", title, x, y);
         public void DrawLyrics(string lyrics, double x, double y) => this.InvokeRenderMethod("drawLyrics", lyrics, x, y);
         public void DrawFretNumber(string fretNumber, double x, double y) => this.InvokeRenderMethod("drawFretNumber", fretNumber, x, y);
-        public void DrawBarLine(double x, double y, double length) => this.InvokeRenderMethod("drawBarLine", x, y, length);
+        public void DrawHorizontalBarLine(double x, double y, double length) => this.InvokeRenderMethod("drawBarLine", x, y, length);
+
+        public void DrawBarLine(BarLine line, double position)
+        {
+            
+        }
     }
 }
