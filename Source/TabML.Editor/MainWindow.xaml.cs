@@ -17,7 +17,7 @@ namespace TabML.Editor
         public MainWindow()
         {
             this.InitializeComponent();
-
+            this.Browser.BrowserSettings.FileAccessFromFileUrls = CefSharp.CefState.Enabled;
             this.Browser.Address = Path.GetFullPath("../../../../TabMLWebRenderer/index.html");
         }
 
@@ -38,6 +38,11 @@ namespace TabML.Editor
                                                                      new Size(
                                                                          800 - style.Padding.Left - style.Padding.Right,
                                                                          1200 - style.Padding.Top - style.Padding.Bottom));
+        }
+
+        private void Browser_LoadError(object sender, CefSharp.LoadErrorEventArgs e)
+        {
+
         }
     }
 }

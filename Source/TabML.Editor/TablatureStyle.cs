@@ -12,9 +12,12 @@ namespace TabML.Editor
 {
     class TablatureStyle
     {
+        public int StringCount { get; set; } = 6;
         public BeatLayout BeatLayout { get; set; } = BeatLayout.SizeByNoteValue;
         public double MinimumBeatSize { get; set; } = 24;
         public double BarLineHeight { get; set; } = 12;
+        public double BarTopMargin { get; set; } = 120;
+        public double BarBottomMargin { get; set; } = 60;
 
         public Thickness Padding { get; set; } = new Thickness(24);
 
@@ -22,6 +25,9 @@ namespace TabML.Editor
         public Typeface LyricsTypeface { get; set; } = new Typeface("Segoe UI");
         public double LyricsFontSize { get; set; } = 12;
         public Brush LyricsForeground { get; set; } = Brushes.Black;
+
+        public double NoteStemOffset { get; set; } = 12;
+        public double NoteTailOffset { get; set; } = 36;
 
         public FormattedText MakeFormattedLyrics(string lyricsText)
         {

@@ -7,8 +7,11 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Editor.Tablature.Layout
 {
-    interface IBeamElement
+    interface IBeatElement
     {
         PreciseDuration GetDuration();
+        int GetBeginColumnIndex();
+        int GetEndColumnIndex();
+        void Draw(IBarDrawingContext drawingContext, double[] columnPositions);
     }
 }

@@ -4,33 +4,64 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabML.Core.Document;
 using TabML.Core.MusicTheory;
 
 namespace TabML.Editor.Tablature.Layout
 {
-    class BeamArranger
+    class BeatArranger
     {
+        public VoicePart VoicePart { get; }
         private readonly BaseNoteValue _beamNoteValue;
         private readonly Stack<ArrangedBeam> _beamStack;
         private ArrangedBeam _currentBeam;
         private ArrangedBeam _currentRootBeam;
-        private readonly List<ArrangedBeam> _rootBeams;
+        private readonly List<IBeatElement> _rootBeats;
 
         private PreciseDuration _currentCapacity;
         private PreciseDuration _duration;
 
-        public BeamArranger(BaseNoteValue beamNoteValue)
+        public BeatArranger(BaseNoteValue beamNoteValue, VoicePart voicePart)
         {
+            this.VoicePart = voicePart;
             _beamNoteValue = beamNoteValue;
             _beamStack = new Stack<ArrangedBeam>();
-            _rootBeams = new List<ArrangedBeam>();
+            _rootBeats = new List<IBeatElement>();
             _currentCapacity = PreciseDuration.Zero;
             _duration = PreciseDuration.Zero;
         }
 
-        public IEnumerable<ArrangedBeam> GetRootBeams()
+        public IEnumerable<IBeatElement> GetRootBeats()
         {
-            return _rootBeams;
+            return _rootBeats;
+        }
+
+        public void Finish()
+        {
+            this.FinishBeam();
+        }
+
+        private void FinishBeam()
+        {
+            var popedBeam = _beamStack.Pop();
+            _currentBeam = _beamStack.Count > 0 ? _beamStack.Peek() : null;
+
+            Debug.Assert(popedBeam.Elements.Count > 0);
+
+            // check for reduceable beam
+            if (popedBeam.Elements.Count > 1)
+                return;
+
+            var beat = popedBeam.Elements[0] as ArrangedBarBeat;
+            if (beat == null)
+                return;
+
+            // this beam contains only one beat, reduce it to a beat
+            beat.OwnerBeam = null;
+            if (_currentBeam == null) // root
+                _rootBeats[_rootBeats.Count - 1] = beat;
+            else
+                _currentBeam.Elements[_currentBeam.Elements.Count - 1] = beat;
         }
 
         public void AddBeat(ArrangedBarBeat beat)
@@ -52,35 +83,45 @@ namespace TabML.Editor.Tablature.Layout
             {
                 if (_beamStack.Count > 1)
                 {
-                    _beamStack.Pop();
-                    _currentBeam = _beamStack.Peek();
+                    this.FinishBeam();
                     continue;
                 }
 
                 // this is the root beam
-                _currentBeam.Elements.Add(beat);
-                _duration += beat.GetDuration();
+                this.AddToCurrentBeam(beat);
                 return;
             }
 
             while (beatNoteValue < _currentBeam.BeatNoteValue)
             {
-                var newBeam = new ArrangedBeam(_currentBeam.BeatNoteValue.Half());
+                var newBeam = new ArrangedBeam(_currentBeam.BeatNoteValue.Half(), _currentBeam.VoicePart, false);
                 _beamStack.Push(newBeam);
                 _currentBeam.Elements.Add(newBeam);
                 _currentBeam = newBeam;
             }
 
             Debug.Assert(beatNoteValue == _currentBeam.BeatNoteValue);
+            this.AddToCurrentBeam(beat);
+        }
+
+        private void AddToCurrentBeam(ArrangedBarBeat beat)
+        {
             _currentBeam.Elements.Add(beat);
+            beat.OwnerBeam = _currentBeam;
             _duration += beat.GetDuration();
         }
 
         private void StartRootBeam()
         {
-            _currentBeam = new ArrangedBeam(_beamNoteValue.Half());
+            while (_beamStack.Count > 0)
+            {
+                this.FinishBeam();
+            }
+
+            _currentBeam = new ArrangedBeam(_beamNoteValue.Half(), this.VoicePart, true);
+
             _currentRootBeam = _currentBeam;
-            _rootBeams.Add(_currentBeam);
+            _rootBeats.Add(_currentBeam);
 
             _beamStack.Clear();
             _beamStack.Push(_currentBeam);

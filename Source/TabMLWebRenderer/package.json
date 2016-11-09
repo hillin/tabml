@@ -1,0 +1,17 @@
+{
+  "name": "tab_ml_web_renderer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "systemjs": "^0.19.40",
+    "typescript": "^2.0.7",
+    "typings": "^1.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

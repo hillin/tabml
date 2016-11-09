@@ -1,5 +1,5 @@
 ﻿
-let tablatureStyle: ITablatureStyle =
+let tablatureStyle: TR.ITablatureStyle =
     {
 
         fallback: {
@@ -9,6 +9,10 @@ let tablatureStyle: ITablatureStyle =
         page: {
             width: 800,
             height: 1200
+        },
+
+        bar: {
+            lineHeight: 12
         },
 
         title: {
@@ -28,7 +32,7 @@ let tablatureStyle: ITablatureStyle =
 
     };
 
-let renderer: PrimitiveRenderer;
+let renderer: TR.PrimitiveRenderer;
 
 window.onload = () => {
     let canvas = document.getElementById("staff") as HTMLCanvasElement;
@@ -36,6 +40,7 @@ window.onload = () => {
     let fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
     fabricCanvas.backgroundColor = "white";
 
-    renderer = new PrimitiveRenderer(fabricCanvas, tablatureStyle);
-
+    renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
+    //renderer.drawTitle("test!!!", 400, 100);
+    //renderer.drawBarLine(Core.MusicTheory.BarLine.BeginAndEndRepeat, 100, 100);
 };

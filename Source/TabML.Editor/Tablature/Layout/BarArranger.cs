@@ -59,32 +59,34 @@ namespace TabML.Editor.Tablature.Layout
 
         private void ArrangeVoices(DocumentBar bar, ArrangedBar arrangedBar)
         {
-            var bassBeamArranger = new BeamArranger(bar.DocumentState.Time.NoteValue);
-            var trebleBeamArranger = new BeamArranger(bar.DocumentState.Time.NoteValue);
+            var bassBeatArranger = new BeatArranger(bar.DocumentState.Time.NoteValue, VoicePart.Bass);
+            var trebleBeatArranger = new BeatArranger(bar.DocumentState.Time.NoteValue, VoicePart.Treble);
 
             foreach (var segment in bar.Rhythm.Segments)
             {
                 if (segment.IsOmittedByTemplate)
                     continue;
 
-                this.AppendAndArrangeVoice(segment.BassVoice, bassBeamArranger);
-                this.AppendAndArrangeVoice(segment.TrebleVoice, trebleBeamArranger);
+                this.AppendAndArrangeVoice(segment.BassVoice, bassBeatArranger);
+                this.AppendAndArrangeVoice(segment.TrebleVoice, trebleBeatArranger);
             }
 
-            arrangedBar.BassVoice = new ArrangedBarVoice();
-            arrangedBar.BassVoice.Beams.AddRange(bassBeamArranger.GetRootBeams());
+            bassBeatArranger.Finish();
+            arrangedBar.BassVoice = new ArrangedBarVoice(VoicePart.Bass);
+            arrangedBar.BassVoice.BeatElements.AddRange(bassBeatArranger.GetRootBeats());
 
-            arrangedBar.TrebleVoice = new ArrangedBarVoice();
-            arrangedBar.TrebleVoice.Beams.AddRange(trebleBeamArranger.GetRootBeams());
+            trebleBeatArranger.Finish();
+            arrangedBar.TrebleVoice = new ArrangedBarVoice(VoicePart.Treble);
+            arrangedBar.TrebleVoice.BeatElements.AddRange(trebleBeatArranger.GetRootBeats());
         }
 
-        private void AppendAndArrangeVoice(Voice voice, BeamArranger beamArranger)
+        private void AppendAndArrangeVoice(Voice voice, BeatArranger beatArranger)
         {
             if (voice == null)
                 return;
 
             foreach (var beat in voice.Beats)
-                beamArranger.AddBeat(_beatLookup[beat]);
+                beatArranger.AddBeat(_beatLookup[beat]);
         }
 
         private void ArrangeColumns(DocumentBar bar, ArrangedBar arrangedBar)

@@ -39,7 +39,7 @@ namespace TabML.Editor.Tablature
 
             _arrangedBar = new BarArranger().Arrange(bar);
 
-            //_arrangedBar.Draw(this, 200);
+            //_arrangedBar.DrawHead(this, 200);
 
         }
 

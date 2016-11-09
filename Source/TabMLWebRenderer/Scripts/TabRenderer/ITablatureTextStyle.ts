@@ -1,4 +1,6 @@
-interface ITablatureTextStyle {
-    fontSize: number,
-    fontFamily?: string
+namespace TR {
+    export interface ITablatureTextStyle {
+        fontSize: number,
+        fontFamily?: string
+    }
 }

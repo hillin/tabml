@@ -65,12 +65,19 @@ namespace TabML.Editor.Tablature.Layout
                         var durationWidth = width / this.Duration.Duration;
                         var position = 0.0;
 
-                        foreach (var column in this.Columns)
+                        var columnPositions = new double[this.Columns.Count];
+
+                        for (int i = 0; i < this.Columns.Count; i++)
                         {
+                            var column = this.Columns[i];
                             var columnWidth = durationWidth * column.GetDuration();
+                            columnPositions[i] = position + columnWidth / 2;
                             column.Draw(drawingContext, position, columnWidth);
                             position += columnWidth;
                         }
+
+                        this.BassVoice?.Draw(drawingContext, columnPositions);
+                        this.TrebleVoice?.Draw(drawingContext, columnPositions);
 
                         drawingContext.FinishHorizontalBarLines(width);
                     }

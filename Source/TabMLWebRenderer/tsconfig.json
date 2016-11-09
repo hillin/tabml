@@ -2,7 +2,7 @@
   "compileOnSave": true,
   "compilerOptions": {
     "typeRoots": [
-      "./Scripts/typings/**/*",
+      "./scripts/typings/**/*",
       "./node_modules/@types"
     ],
     "outFile": "main.js",
@@ -12,12 +12,13 @@
     "allowJs": true
   },
   "include": [
-    "./Scripts/**/*"
+    "./scripts/**/*"
   ],
   "exclude": [
-    "./Scripts/bower_components/**/*"
+    "./scripts/bower_components/**/*"
   ],
   "files": [
-    "./Scripts/bower_components/fabric.js/dist/fabric.min.js"
+    "./node_modules/systemjs/dist/system.js",
+    "./scripts/bower_components/fabric.js/dist/fabric.min.js"
   ]
 }
