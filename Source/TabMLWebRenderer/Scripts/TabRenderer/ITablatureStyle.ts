@@ -11,6 +11,8 @@ namespace TR {
 
         bar: {
             lineHeight: number;
+            beamThickness: number,
+            beamSpacing: number
         }
 
         title: ITablatureTextStyle;

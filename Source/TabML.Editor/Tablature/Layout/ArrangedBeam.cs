@@ -89,15 +89,7 @@ namespace TabML.Editor.Tablature.Layout
             }
 
             drawingContext.DrawBeam(this.BeatNoteValue, columnPositions[this.GetBeginColumnIndex()],
-                                    columnPositions[this.GetEndColumnIndex()]);
-            //if (this.Elements.Count == 1 && this.)
-            //{
-            //    var beat = this.Elements[0] as ArrangedBarBeat;
-            //    if (beat != null)
-            //        beat.DrawFlag(drawingContext, columnPositions);
-            //    else
-
-            //}
+                                    columnPositions[this.GetEndColumnIndex()], this.VoicePart);
         }
     }
 }

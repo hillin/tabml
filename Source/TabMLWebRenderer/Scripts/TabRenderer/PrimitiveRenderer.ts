@@ -1,3 +1,7 @@
+import BarLine = Core.MusicTheory.BarLine;
+import BaseNoteValue = Core.MusicTheory.BaseNoteValue;
+import OffBarDirection = Core.MusicTheory.OffBarDirection;
+
 namespace TR {
     export class PrimitiveRenderer {
 
@@ -47,22 +51,22 @@ namespace TR {
             this.drawLine(x, y, x + length, y);
         }
 
-        drawBarLine(barLine: Core.MusicTheory.BarLine, x: number, y: number) {
+        drawBarLine(barLine: BarLine, x: number, y: number) {
             let imageFile: string;
             switch (barLine) {
-                case Core.MusicTheory.BarLine.Standard:
+                case BarLine.Standard:
                     imageFile = ResourceManager.getTablatureResource("barline_standard.svg"); break;
-                case Core.MusicTheory.BarLine.BeginAndEndRepeat:
+                case BarLine.BeginAndEndRepeat:
                     imageFile = ResourceManager.getTablatureResource("barline_begin_and_end_repeat.svg"); break;
-                case Core.MusicTheory.BarLine.BeginRepeat:
+                case BarLine.BeginRepeat:
                     imageFile = ResourceManager.getTablatureResource("barline_begin_repeat.svg"); break;
-                case Core.MusicTheory.BarLine.BeginRepeatAndEnd:
+                case BarLine.BeginRepeatAndEnd:
                     imageFile = ResourceManager.getTablatureResource("barline_begin_repeat_and_end.svg"); break;
-                case Core.MusicTheory.BarLine.Double:
+                case BarLine.Double:
                     imageFile = ResourceManager.getTablatureResource("barline_double.svg"); break;
-                case Core.MusicTheory.BarLine.End:
+                case BarLine.End:
                     imageFile = ResourceManager.getTablatureResource("barline_end.svg"); break;
-                case Core.MusicTheory.BarLine.EndRepeat:
+                case BarLine.EndRepeat:
                     imageFile = ResourceManager.getTablatureResource("barline_end_repeat.svg"); break;
             }
 
@@ -84,6 +88,23 @@ namespace TR {
                     callback(group);
                 this.canvas.add(group);
             });
+        }
+
+        drawFlag(noteValue:BaseNoteValue, x: number, y:number, direction:OffBarDirection) {
+            // todo
+        }
+
+        drawBeam(x1: number, y1: number, x2: number, y2: number) {
+            let halfThickness = this.style.bar.beamThickness / 2;
+            let points = [
+                { x: x1, y: y1 - halfThickness},
+                { x: x2, y: y2 - halfThickness},
+                { x: x2, y: y2 + halfThickness},
+                { x: x1, y: y1 + halfThickness}
+            ];
+            let polygon = new fabric.Polygon(points);
+            polygon.fill = "black";
+            this.canvas.add(polygon);
         }
     }
 }

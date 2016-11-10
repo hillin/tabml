@@ -16,9 +16,9 @@ namespace TabML.Editor.Tablature
         void DrawBarLine(OpenBarLine line, double position);
         void DrawBarLine(CloseBarLine line, double position);
         void DrawStem(double position, VoicePart voicePart);
-        void DrawFlag(NoteValue noteValue, double position, VoicePart voicePart);
+        void DrawFlag(BaseNoteValue noteValue, double position, VoicePart voicePart);
         void DrawHalfBeam(BaseNoteValue noteValue, double position, VoicePart voicePart, bool isLastOfBeam);
         void DrawNoteValueAugment(NoteValueAugment noteValueAugment, double position, VoicePart voicePart);
-        void DrawBeam(BaseNoteValue beatNoteValue, double from, double to);
+        void DrawBeam(BaseNoteValue beatNoteValue, double from, double to, VoicePart voicePart);
     }
 }

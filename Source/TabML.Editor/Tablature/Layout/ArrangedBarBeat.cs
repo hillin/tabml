@@ -51,7 +51,7 @@ namespace TabML.Editor.Tablature.Layout
             var position = columnPositions[this.ColumnIndex];
             drawingContext.DrawStem(position, this.VoicePart);
             if (this.OwnerBeam == null)
-                drawingContext.DrawFlag(this.Beat.NoteValue, position, this.VoicePart);
+                drawingContext.DrawFlag(this.Beat.NoteValue.Base, position, this.VoicePart);
             else
             {
                 var baseNoteValue = this.Beat.NoteValue.Base;

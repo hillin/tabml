@@ -12,7 +12,9 @@ let tablatureStyle: TR.ITablatureStyle =
         },
 
         bar: {
-            lineHeight: 12
+            lineHeight: 12,
+            beamThickness: 4,
+            beamSpacing: 4
         },
 
         title: {

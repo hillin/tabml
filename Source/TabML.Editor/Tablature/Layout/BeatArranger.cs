@@ -43,6 +43,9 @@ namespace TabML.Editor.Tablature.Layout
 
         private void FinishBeam()
         {
+            if (_beamStack.Count == 0)
+                return;
+
             var popedBeam = _beamStack.Pop();
             _currentBeam = _beamStack.Count > 0 ? _beamStack.Peek() : null;
 

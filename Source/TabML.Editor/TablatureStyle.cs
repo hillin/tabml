@@ -29,6 +29,10 @@ namespace TabML.Editor
         public double NoteStemOffset { get; set; } = 12;
         public double NoteTailOffset { get; set; } = 36;
 
+        public double BeamThickness { get; set; } = 4;
+        public double BeamSpacing { get; set; } = 4;
+        public double HalfBeamWidth { get; set; } = 12;
+
         public FormattedText MakeFormattedLyrics(string lyricsText)
         {
             return new FormattedText(lyricsText, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,

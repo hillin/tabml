@@ -64,11 +64,12 @@ namespace TabML.Editor.Rendering
 
         private double OffsetByVoicePart(double baseValue, double offset, VoicePart voicePart) => voicePart == VoicePart.Treble ? baseValue - offset : baseValue + offset;
 
+        private double GetOffbarPosition(double offset, VoicePart voicePart) => voicePart == VoicePart.Treble ? this.GetBodyCeiling() - offset : this.GetBodyFloor() + offset;
+
         public void DrawStem(double position, VoicePart voicePart)
         {
-            var yBase = voicePart == VoicePart.Treble ? this.GetBodyCeiling() : this.GetBodyFloor();
-            var yFrom = this.OffsetByVoicePart(yBase, this.Style.NoteStemOffset, voicePart);
-            var yTo = this.OffsetByVoicePart(yBase, this.Style.NoteTailOffset, voicePart);
+            var yFrom = this.GetOffbarPosition(this.Style.NoteStemOffset, voicePart);
+            var yTo = this.GetOffbarPosition(this.Style.NoteTailOffset, voicePart);
 
             this.PrimitiveRenderer.DrawStem(this.Location.X + position, Math.Min(yFrom, yTo), Math.Max(yFrom, yTo));
         }
@@ -85,24 +86,46 @@ namespace TabML.Editor.Rendering
                                                          position - this.StringCarets[stringIndex]);
         }
 
-        public void DrawFlag(NoteValue noteValue, double position, VoicePart voicePart)
+        public void DrawFlag(BaseNoteValue noteValue, double position, VoicePart voicePart)
         {
-            throw new NotImplementedException();
+            if (noteValue > BaseNoteValue.Eighth)
+                return;
+
+            this.PrimitiveRenderer.DrawFlag(noteValue, this.Location.X + position,
+                                            this.GetOffbarPosition(this.Style.NoteTailOffset, voicePart), voicePart.ToOffBarDirection());
+        }
+
+        private double GetBeamYPosition(BaseNoteValue noteValue, VoicePart voicePart)
+        {
+            if (noteValue > BaseNoteValue.Eighth)
+                throw new ArgumentException("notes with a base note value longer than eighth can't be beamed",
+                                            nameof(noteValue));
+
+            var offset = this.Style.NoteTailOffset -
+                         (BaseNoteValue.Eighth - noteValue) * (this.Style.BeamThickness + this.Style.BeamSpacing)
+                         - 0.5 * this.Style.BeamThickness;
+
+            return this.GetOffbarPosition(offset, voicePart);
         }
 
         public void DrawHalfBeam(BaseNoteValue noteValue, double position, VoicePart voicePart, bool isLastOfBeam)
         {
-            throw new NotImplementedException();
+            var xFrom = this.Location.X + position;
+            var xTo = isLastOfBeam ? xFrom - this.Style.HalfBeamWidth : xFrom + this.Style.HalfBeamWidth;
+
+            var y = this.GetBeamYPosition(noteValue, voicePart);
+            this.PrimitiveRenderer.DrawBeam(Math.Min(xFrom, xTo), y, Math.Max(xFrom, xTo), y);
         }
 
         public void DrawNoteValueAugment(NoteValueAugment noteValueAugment, double position, VoicePart voicePart)
         {
-            throw new NotImplementedException();
+            //todo
         }
 
-        public void DrawBeam(BaseNoteValue beatNoteValue, double @from, double to)
+        public void DrawBeam(BaseNoteValue noteValue, double @from, double to, VoicePart voicePart)
         {
-            throw new NotImplementedException();
+            var y = this.GetBeamYPosition(noteValue, voicePart);
+            this.PrimitiveRenderer.DrawBeam(@from + this.Location.X, y, to + this.Location.X, y);
         }
     }
 }

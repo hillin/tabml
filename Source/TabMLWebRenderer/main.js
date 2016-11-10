@@ -2329,7 +2329,9 @@ var tablatureStyle = {
         height: 1200
     },
     bar: {
-        lineHeight: 12
+        lineHeight: 12,
+        beamThickness: 4,
+        beamSpacing: 4
     },
     title: {
         fontSize: 32,
@@ -2369,6 +2371,38 @@ var Core;
         var BarLine = MusicTheory.BarLine;
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
+var Core;
+(function (Core) {
+    var MusicTheory;
+    (function (MusicTheory) {
+        (function (BaseNoteValue) {
+            BaseNoteValue[BaseNoteValue["Large"] = 3] = "Large";
+            BaseNoteValue[BaseNoteValue["Long"] = 2] = "Long";
+            BaseNoteValue[BaseNoteValue["Double"] = 1] = "Double";
+            BaseNoteValue[BaseNoteValue["Whole"] = 0] = "Whole";
+            BaseNoteValue[BaseNoteValue["Half"] = -1] = "Half";
+            BaseNoteValue[BaseNoteValue["Quater"] = -2] = "Quater";
+            BaseNoteValue[BaseNoteValue["Eighth"] = -3] = "Eighth";
+            BaseNoteValue[BaseNoteValue["Sixteenth"] = -4] = "Sixteenth";
+            BaseNoteValue[BaseNoteValue["ThirtySecond"] = -5] = "ThirtySecond";
+            BaseNoteValue[BaseNoteValue["SixtyFourth"] = -6] = "SixtyFourth";
+            BaseNoteValue[BaseNoteValue["HundredTwentyEighth"] = -7] = "HundredTwentyEighth";
+            BaseNoteValue[BaseNoteValue["TwoHundredFiftySixth"] = -8] = "TwoHundredFiftySixth";
+        })(MusicTheory.BaseNoteValue || (MusicTheory.BaseNoteValue = {}));
+        var BaseNoteValue = MusicTheory.BaseNoteValue;
+    })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
+})(Core || (Core = {}));
+var Core;
+(function (Core) {
+    var MusicTheory;
+    (function (MusicTheory) {
+        (function (OffBarDirection) {
+            OffBarDirection[OffBarDirection["Top"] = 0] = "Top";
+            OffBarDirection[OffBarDirection["Bottom"] = 1] = "Bottom";
+        })(MusicTheory.OffBarDirection || (MusicTheory.OffBarDirection = {}));
+        var OffBarDirection = MusicTheory.OffBarDirection;
+    })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
+})(Core || (Core = {}));
 // object.Assign implementation
 if (typeof Object.assign != 'function') {
     (function () {
@@ -2400,6 +2434,9 @@ var ResourceManager = (function () {
     };
     return ResourceManager;
 }());
+var BarLine = Core.MusicTheory.BarLine;
+var BaseNoteValue = Core.MusicTheory.BaseNoteValue;
+var OffBarDirection = Core.MusicTheory.OffBarDirection;
 var TR;
 (function (TR) {
     var PrimitiveRenderer = (function () {
@@ -2444,25 +2481,25 @@ var TR;
             var _this = this;
             var imageFile;
             switch (barLine) {
-                case Core.MusicTheory.BarLine.Standard:
+                case BarLine.Standard:
                     imageFile = ResourceManager.getTablatureResource("barline_standard.svg");
                     break;
-                case Core.MusicTheory.BarLine.BeginAndEndRepeat:
+                case BarLine.BeginAndEndRepeat:
                     imageFile = ResourceManager.getTablatureResource("barline_begin_and_end_repeat.svg");
                     break;
-                case Core.MusicTheory.BarLine.BeginRepeat:
+                case BarLine.BeginRepeat:
                     imageFile = ResourceManager.getTablatureResource("barline_begin_repeat.svg");
                     break;
-                case Core.MusicTheory.BarLine.BeginRepeatAndEnd:
+                case BarLine.BeginRepeatAndEnd:
                     imageFile = ResourceManager.getTablatureResource("barline_begin_repeat_and_end.svg");
                     break;
-                case Core.MusicTheory.BarLine.Double:
+                case BarLine.Double:
                     imageFile = ResourceManager.getTablatureResource("barline_double.svg");
                     break;
-                case Core.MusicTheory.BarLine.End:
+                case BarLine.End:
                     imageFile = ResourceManager.getTablatureResource("barline_end.svg");
                     break;
-                case Core.MusicTheory.BarLine.EndRepeat:
+                case BarLine.EndRepeat:
                     imageFile = ResourceManager.getTablatureResource("barline_end_repeat.svg");
                     break;
             }
@@ -2483,6 +2520,21 @@ var TR;
                     callback(group);
                 _this.canvas.add(group);
             });
+        };
+        PrimitiveRenderer.prototype.drawFlag = function (noteValue, x, y, direction) {
+            // todo
+        };
+        PrimitiveRenderer.prototype.drawBeam = function (x1, y1, x2, y2) {
+            var halfThickness = this.style.bar.beamThickness / 2;
+            var points = [
+                { x: x1, y: y1 - halfThickness },
+                { x: x2, y: y2 - halfThickness },
+                { x: x2, y: y2 + halfThickness },
+                { x: x1, y: y1 + halfThickness }
+            ];
+            var polygon = new fabric.Polygon(points);
+            polygon.fill = "black";
+            this.canvas.add(polygon);
         };
         return PrimitiveRenderer;
     }());

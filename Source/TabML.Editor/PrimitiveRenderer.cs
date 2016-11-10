@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CefSharp.Wpf;
+using TabML.Core.Document;
 using TabML.Core.MusicTheory;
+using TabML.Editor.Rendering;
 
 namespace TabML.Editor
 {
@@ -48,5 +50,8 @@ namespace TabML.Editor
         public void DrawHorizontalBarLine(double x, double y, double length) => this.InvokeRenderMethod("drawHorizontalBarLine", x, y, length);
         public void DrawBarLine(BarLine line, double x, double y) => this.InvokeRenderMethod("drawBarLine", (int)line, x, y);
         public void DrawStem(double x, double yFrom, double yTo) => this.InvokeRenderMethod("drawStem", x, yFrom, yTo);
+        public void DrawFlag(BaseNoteValue noteValue, double x, double y, OffBarDirection offBarDirection) => this.InvokeRenderMethod("drawFlag", (int)noteValue, x, y, (int)offBarDirection);
+        public void DrawBeam(double x1, double y1, double x2, double y2)
+            => this.InvokeRenderMethod("drawBeam", x1, y1, x2, y2);
     }
 }

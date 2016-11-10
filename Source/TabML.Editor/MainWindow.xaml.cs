@@ -32,7 +32,7 @@ namespace TabML.Editor
         private void RenderTablature()
         {
             var renderer = new PrimitiveRenderer(this.Browser);
-            var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\my home town.txt"));
+            var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\bartest.txt"));
             var style = new TablatureStyle();
             new TablatureRenderer(renderer, style, tablature).Render(new Point(style.Padding.Left, style.Padding.Top),
                                                                      new Size(

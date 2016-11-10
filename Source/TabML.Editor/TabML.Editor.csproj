@@ -106,8 +106,10 @@
     </ApplicationDefinition>
     <Compile Include="Rendering\BarRenderContext.cs" />
     <Compile Include="Rendering\BarRenderer.cs" />
+    <Compile Include="Rendering\OffBarDirection.cs" />
     <Compile Include="Rendering\RendererBase.cs" />
     <Compile Include="Rendering\TablatureRenderer.cs" />
+    <Compile Include="Rendering\VoicePartExtensions.cs" />
     <Compile Include="TablatureStyle.cs" />
     <Compile Include="Tablature\Bar.xaml.cs">
       <DependentUpon>Bar.xaml</DependentUpon>
