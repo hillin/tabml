@@ -131,6 +131,7 @@
     <Compile Include="Tablature\Layout\ArrangedBarColumn.cs" />
     <Compile Include="Tablature\Layout\ArrangedBeatConnection.cs" />
     <Compile Include="Tablature\Layout\BarArranger.cs" />
+    <Compile Include="Tablature\Layout\BeamSlope.cs" />
     <Compile Include="Tablature\Layout\BeatArranger.cs" />
     <Compile Include="Tablature\Layout\IBeatElement.cs" />
     <Compile Include="Tablature\Test\ChordTest.xaml.cs">

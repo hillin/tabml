@@ -38,19 +38,20 @@ namespace TabML.Editor.Tablature.Layout
 
         public void Finish()
         {
-            this.FinishBeamStack();
+            if (_beamStack.Count > 0)
+                this.FinishBeamStack();
         }
 
         private void FinishBeam()
         {
-            if (_beamStack.Count == 0)
-                return;
-
             var popedBeam = _beamStack.Pop();
             _currentBeam = _beamStack.Count > 0 ? _beamStack.Peek() : null;
 
             if (popedBeam.Elements.Count == 0)
+            {
+                _rootBeats.Remove(popedBeam);
                 return;
+            }
 
             // check for reduceable beam
             if (popedBeam.Elements.Count > 1)
@@ -75,13 +76,25 @@ namespace TabML.Editor.Tablature.Layout
 
         public void AddBeat(ArrangedBarBeat beat)
         {
-            if (_currentBeam == null)
-                this.StartRootBeam();
-            else if (_duration >= _currentCapacity)
-                this.StartRootBeam();
-            else if (!_currentBeam.MatchesTuplet(beat))
+            if (beat.Beat.IsRest)   // don't beam rests
             {
-                this.StartRootBeam();
+                this.InsertUnbeamedBeat(beat);
+                return;
+            }
+
+            if (beat.Beat.NoteValue.Base >= _beamNoteValue) // beat too long to be beamed
+            {
+                this.InsertUnbeamedBeat(beat);
+                return;
+            }
+
+            if (_currentBeam == null)   // initialize root beam
+                this.FinishAndStartRootBeam();
+            else if (_duration >= _currentCapacity) // beam full
+                this.FinishAndStartRootBeam();
+            else if (!_currentBeam.MatchesTuplet(beat)) // tuplet mismatch
+            {
+                this.FinishAndStartRootBeam();
                 _currentBeam.Tuplet = beat.Beat.NoteValue.Tuplet;
             }
 
@@ -90,21 +103,11 @@ namespace TabML.Editor.Tablature.Layout
             Debug.Assert(_currentBeam != null, "_currentBeam != null");
             while (beatNoteValue > _currentBeam.BeatNoteValue)
             {
-                if (_beamStack.Count > 0)
-                {
-                    this.FinishBeam();
-
-                    if (_beamStack.Count > 0)
-                        continue;
-                }
-
-                _rootBeats.Add(beat);
-                _duration += beat.GetDuration();
-
-                this.StartRootBeam();
-                return;
+                Debug.Assert(_beamStack.Count > 0);
+                this.FinishBeam();
             }
 
+            // create sub-beams if beat is too short
             while (beatNoteValue < _currentBeam.BeatNoteValue)
             {
                 var newBeam = new ArrangedBeam(_currentBeam.BeatNoteValue.Half(), _currentBeam.VoicePart, false);
@@ -117,6 +120,14 @@ namespace TabML.Editor.Tablature.Layout
             this.AddToCurrentBeam(beat);
         }
 
+        private void InsertUnbeamedBeat(ArrangedBarBeat beat)
+        {
+            this.FinishBeamStack();
+            _rootBeats.Add(beat);
+            _duration += beat.GetDuration();
+            this.StartRootBeam();
+        }
+
         private void AddToCurrentBeam(ArrangedBarBeat beat)
         {
             _currentBeam.Elements.Add(beat);
@@ -124,10 +135,15 @@ namespace TabML.Editor.Tablature.Layout
             _duration += beat.GetDuration();
         }
 
-        private void StartRootBeam()
+        private void FinishAndStartRootBeam()
         {
             this.FinishBeamStack();
 
+            this.StartRootBeam();
+        }
+
+        private void StartRootBeam()
+        {
             _currentBeam = new ArrangedBeam(_beamNoteValue.Half(), this.VoicePart, true);
 
             _currentRootBeam = _currentBeam;

@@ -22,7 +22,7 @@ namespace TabML.Editor.Tablature.Layout
         {
             foreach (var beatElement in this.BeatElements)
             {
-                beatElement.Draw(drawingContext, columnPositions);
+                beatElement.Draw(drawingContext, columnPositions, null);
             }
         }
     }

@@ -47,14 +47,26 @@ namespace TabML.Editor.Tablature.Layout
             return this.Elements.Sum(b => b.GetDuration());
         }
 
-        public int GetBeginColumnIndex()
+        public ArrangedBarBeat FirstBeat
         {
-            return this.Elements.Count == 0 ? 0 : this.Elements[0].GetBeginColumnIndex();
+            get
+            {
+                if (this.Elements.Count == 0)
+                    return null;
+                var beat = this.Elements[0] as ArrangedBarBeat;
+                return beat ?? ((ArrangedBeam)this.Elements[0]).FirstBeat;
+            }
         }
 
-        public int GetEndColumnIndex()
+        public ArrangedBarBeat LastBeat
         {
-            return this.Elements.Count == 0 ? 0 : this.Elements[this.Elements.Count - 1].GetEndColumnIndex();
+            get
+            {
+                if (this.Elements.Count == 0)
+                    return null;
+                var beat = this.Elements[this.Elements.Count - 1] as ArrangedBarBeat;
+                return beat ?? ((ArrangedBeam)this.Elements[this.Elements.Count - 1]).LastBeat;
+            }
         }
 
         public bool MatchesTuplet(ArrangedBarBeat beat)
@@ -81,15 +93,25 @@ namespace TabML.Editor.Tablature.Layout
         }
 #endif
 
-        public void Draw(IBarDrawingContext drawingContext, double[] columnPositions)
+        public void Draw(IBarDrawingContext drawingContext, double[] columnPositions, BeamSlope beamSlope)
         {
-            foreach (var element in this.Elements)
+            var lastBeat = this.LastBeat;
+            var firstBeat = this.FirstBeat;
+
+            var x0 = columnPositions[firstBeat.ColumnIndex];
+            var x1 = columnPositions[lastBeat.ColumnIndex];
+
+            if (beamSlope == null)
             {
-                element.Draw(drawingContext, columnPositions);
+                var y0 = firstBeat.GetStemTailPosition(drawingContext);
+                var y1 = lastBeat.GetStemTailPosition(drawingContext);
+                beamSlope = new BeamSlope(x0, y0, (y1 - y0) / (x1 - x0));
             }
 
-            drawingContext.DrawBeam(this.BeatNoteValue, columnPositions[this.GetBeginColumnIndex()],
-                                    columnPositions[this.GetEndColumnIndex()], this.VoicePart);
+            foreach (var element in this.Elements)
+                element.Draw(drawingContext, columnPositions, beamSlope);
+
+            drawingContext.DrawBeam(this.BeatNoteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), this.VoicePart);
         }
     }
 }

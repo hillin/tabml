@@ -28,12 +28,14 @@ namespace TabML.Editor
         public Brush LyricsForeground { get; set; } = Brushes.Black;
 
         public double NoteStemOffset { get; set; } = 2;
-        public double NoteTailOffset { get; set; } = 36;
+        public double MinimumNoteTailOffset { get; set; } = 16;
+        public double NoteStemHeight { get; set; } = 24;
+
 
         public double BeamThickness { get; set; } = 4;
         public double BeamSpacing { get; set; } = 4;
-        public double HalfBeamWidth { get; set; } = 12;
-        public double NoteValueAugmentOffset { get; set; } = 4;
+        public double SemiBeamWidth { get; set; } = 12;
+        public double NoteValueAugmentOffset { get; set; } = 8;
 
         public FormattedText MakeFormattedLyrics(string lyricsText)
         {

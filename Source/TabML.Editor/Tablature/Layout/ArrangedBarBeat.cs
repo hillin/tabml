@@ -30,10 +30,6 @@ namespace TabML.Editor.Tablature.Layout
             return this.Beat.GetDuration();
         }
 
-        public int GetBeginColumnIndex() => this.ColumnIndex;
-
-        public int GetEndColumnIndex() => this.ColumnIndex;
-
 #if DEBUG
         private string DebuggerDisplay => $"Beat: {this.Beat.NoteValue.DebuggerDisplay}";
 #endif
@@ -54,36 +50,101 @@ namespace TabML.Editor.Tablature.Layout
             }
         }
 
-        void IBeatElement.Draw(IBarDrawingContext drawingContext, double[] columnPositions)
+        void IBeatElement.Draw(IBarDrawingContext drawingContext, double[] columnPositions, BeamSlope beamSlope)
         {
-            if (this.Beat.IsRest)
+            var position = columnPositions[this.ColumnIndex];
+
+            var strings = this.GetNoteStrings();
+
+            if (!this.Beat.IsRest)
+                this.DrawStemAndFlag(drawingContext, strings, position, beamSlope);
+
+            if (this.Beat.NoteValue.Augment != NoteValueAugment.None)
             {
-                return; // rest should have been drawn in DrawHead
+                drawingContext.DrawNoteValueAugment(this.Beat.NoteValue.Augment,
+                                                    this.Beat.NoteValue.Base,
+                                                    position,
+                                                    this.GetNoteStrings(),
+                                                    this.VoicePart);
             }
 
-            var position = columnPositions[this.ColumnIndex];
-            drawingContext.DrawStem(this.Beat.NoteValue.Base, position, this.VoicePart);
+        }
+
+        public int[] GetNoteStrings()
+        {
+            if (this.Beat.Notes == null || this.Beat.Notes.Length == 0)
+                return new[] { this.VoicePart == VoicePart.Bass ? 5 : 0 };
+            else
+                return this.Beat.Notes.Select(n => n.String).ToArray();
+        }
+
+        public int GetNearestStringIndex()
+        {
+            if (this.Beat.Notes == null || this.Beat.Notes.Length == 0)
+                return this.VoicePart == VoicePart.Bass ? 5 : 0;
+
+            return this.VoicePart == VoicePart.Bass
+                ? this.Beat.Notes.Max(n => n.String) - 1
+                : this.Beat.Notes.Min(n => n.String) - 1;
+        }
+
+        private void DrawStemAndFlag(IBarDrawingContext drawingContext, int[] strings, double position, BeamSlope beamSlope)
+        {
+            this.DrawStem(drawingContext, position, beamSlope);
+
             if (this.OwnerBeam == null)
             {
-                drawingContext.DrawFlag(this.Beat.NoteValue.Base, position, this.VoicePart);
+                drawingContext.DrawFlag(this.Beat.NoteValue.Base, position, this.GetNearestStringIndex(), this.VoicePart);
             }
             else
             {
                 var baseNoteValue = this.Beat.NoteValue.Base;
+                var isLastOfBeam = this == this.OwnerBeam.Elements[this.OwnerBeam.Elements.Count - 1];
                 while (baseNoteValue != this.OwnerBeam.BeatNoteValue)
                 {
-                    drawingContext.DrawSemiBeam(baseNoteValue, position, this.VoicePart,
-                                                this == this.OwnerBeam.Elements[this.OwnerBeam.Elements.Count - 1]);
+                    this.DrawSemiBeam(drawingContext, baseNoteValue, position, beamSlope, isLastOfBeam);
                     baseNoteValue = baseNoteValue.Double();
                 }
+            }
+        }
 
-                if (this.Beat.NoteValue.Augment != NoteValueAugment.None)
-                    drawingContext.DrawNoteValueAugmentOnBeam(this.Beat.NoteValue.Augment, this.Beat.NoteValue.Base, position, this.VoicePart);
+        private void DrawSemiBeam(IBarDrawingContext drawingContext, BaseNoteValue noteValue, double position, BeamSlope beamSlope, bool isLastOfBeam)
+        {
+            double x0, x1;
+            if (isLastOfBeam)
+            {
+                x0 = position - drawingContext.Style.SemiBeamWidth;
+                x1 = position;
+            }
+            else
+            {
+                x0 = position;
+                x1 = position + drawingContext.Style.SemiBeamWidth;
             }
 
-            if (this.Beat.NoteValue.Augment != NoteValueAugment.None)
-                drawingContext.DrawNoteValueAugment(this.Beat.NoteValue.Augment, this.Beat.NoteValue.Base, this.Beat.Notes.Select(n => n.String).ToArray(), position, this.VoicePart);
+            drawingContext.DrawBeam(noteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), this.VoicePart);
+        }
 
+        private void DrawStem(IBarDrawingContext drawingContext, double position, BeamSlope beamSlope)
+        {
+            if (this.Beat.NoteValue.Base > BaseNoteValue.Half)
+                return;
+
+            double from, to;
+            drawingContext.GetStemOffsetRange(this.GetNearestStringIndex(), this.VoicePart, out from, out to);
+
+            if (beamSlope != null)
+                to = beamSlope.GetY(position);
+
+            drawingContext.DrawStem(position, from, to);
+        }
+
+
+        public double GetStemTailPosition(IBarDrawingContext drawingContext)
+        {
+            double from, to;
+            drawingContext.GetStemOffsetRange(this.GetNearestStringIndex(), this.VoicePart, out from, out to);
+            return this.VoicePart == VoicePart.Treble ? Math.Min(from, to) : Math.Max(from, to);
         }
     }
 }

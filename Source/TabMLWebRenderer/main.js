@@ -2603,6 +2603,7 @@ var TR;
             ];
             var polygon = new fabric.Polygon(points);
             polygon.fill = "black";
+            polygon.stroke = "black";
             this.canvas.add(polygon);
         };
         PrimitiveRenderer.prototype.drawNoteValueAugment = function (augment, x, y) {

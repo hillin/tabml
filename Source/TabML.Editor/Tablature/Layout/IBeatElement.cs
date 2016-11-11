@@ -10,8 +10,6 @@ namespace TabML.Editor.Tablature.Layout
     interface IBeatElement
     {
         PreciseDuration GetDuration();
-        int GetBeginColumnIndex();
-        int GetEndColumnIndex();
-        void Draw(IBarDrawingContext drawingContext, double[] columnPositions);
+        void Draw(IBarDrawingContext drawingContext, double[] columnPositions, BeamSlope beamSlope);
     }
 }
