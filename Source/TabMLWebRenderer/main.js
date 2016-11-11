@@ -2333,6 +2333,16 @@ var tablatureStyle = {
         beamThickness: 4,
         beamSpacing: 4
     },
+    note: {
+        circleOnLongNotes: true,
+        longNoteCirclePadding: 1,
+        dot: {
+            radius: 1.5,
+            offset: 3,
+            spacing: 2
+        },
+        flagSpacing: 4
+    },
     title: {
         fontSize: 32,
         fontFamily: "Felix Titling"
@@ -2347,13 +2357,18 @@ var tablatureStyle = {
     }
 };
 var renderer;
+window.onerror = function (errorMessage, url, lineNumber) {
+    alert(errorMessage + "\n" + url + "#" + lineNumber);
+};
 window.onload = function () {
     var canvas = document.getElementById("staff");
     var fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
     fabricCanvas.backgroundColor = "white";
     renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
+    //renderer.drawFretNumber("2", 100, 100, true);
     //renderer.drawTitle("test!!!", 400, 100);
     //renderer.drawBarLine(Core.MusicTheory.BarLine.BeginAndEndRepeat, 100, 100);
+    //renderer.drawFlag(BaseNoteValue.SixtyFourth, 100, 100, OffBarDirection.Top);
 };
 var Core;
 (function (Core) {
@@ -2396,6 +2411,19 @@ var Core;
 (function (Core) {
     var MusicTheory;
     (function (MusicTheory) {
+        (function (NoteValueAugment) {
+            NoteValueAugment[NoteValueAugment["None"] = 0] = "None";
+            NoteValueAugment[NoteValueAugment["Dot"] = 1] = "Dot";
+            NoteValueAugment[NoteValueAugment["TwoDots"] = 2] = "TwoDots";
+            NoteValueAugment[NoteValueAugment["ThreeDots"] = 3] = "ThreeDots";
+        })(MusicTheory.NoteValueAugment || (MusicTheory.NoteValueAugment = {}));
+        var NoteValueAugment = MusicTheory.NoteValueAugment;
+    })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
+})(Core || (Core = {}));
+var Core;
+(function (Core) {
+    var MusicTheory;
+    (function (MusicTheory) {
         (function (OffBarDirection) {
             OffBarDirection[OffBarDirection["Top"] = 0] = "Top";
             OffBarDirection[OffBarDirection["Bottom"] = 1] = "Bottom";
@@ -2432,11 +2460,13 @@ var ResourceManager = (function () {
     ResourceManager.getTablatureResource = function (name) {
         return "resources/tablature/" + name;
     };
+    ResourceManager.referenceBarSpacing = 12;
     return ResourceManager;
 }());
 var BarLine = Core.MusicTheory.BarLine;
 var BaseNoteValue = Core.MusicTheory.BaseNoteValue;
 var OffBarDirection = Core.MusicTheory.OffBarDirection;
+var NoteValueAugment = Core.MusicTheory.NoteValueAugment;
 var TR;
 (function (TR) {
     var PrimitiveRenderer = (function () {
@@ -2452,13 +2482,27 @@ var TR;
             text.originY = "top";
             this.canvas.add(text);
         };
-        PrimitiveRenderer.prototype.drawFretNumber = function (fretNumber, x, y) {
+        PrimitiveRenderer.prototype.drawFretNumber = function (fretNumber, x, y, isHalfOrLonger) {
             var text = new fabric.Text(fretNumber, this.style.fretNumber);
             text.left = x;
             text.top = y;
             text.originX = "center";
             text.originY = "center";
             this.canvas.add(text);
+            var bounds = text.getBoundingRect();
+            var radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
+            if (isHalfOrLonger && this.style.note.circleOnLongNotes) {
+                var circle = new fabric.Circle({
+                    radius: radius,
+                    left: x,
+                    top: y,
+                    originX: "center",
+                    originY: "center",
+                    stroke: "black",
+                    fill: ""
+                });
+                this.canvas.add(circle);
+            }
         };
         PrimitiveRenderer.prototype.drawLyrics = function (lyrics, x, y) {
             var text = new fabric.Text(lyrics, this.style.lyrics);
@@ -2522,7 +2566,32 @@ var TR;
             });
         };
         PrimitiveRenderer.prototype.drawFlag = function (noteValue, x, y, direction) {
-            // todo
+            var _this = this;
+            if (noteValue > BaseNoteValue.Eighth)
+                return;
+            var flagFile = ResourceManager.getTablatureResource("note_flag.svg");
+            fabric.loadSVGFromURL(flagFile, function (results, options) {
+                var group = fabric.util.groupSVGElements(results, options);
+                group.left = x;
+                group.originX = "left";
+                group.originY = "center";
+                group.scale(_this.style.bar.lineHeight / ResourceManager.referenceBarSpacing);
+                if (direction == OffBarDirection.Bottom)
+                    group.flipY = true;
+                for (var i = noteValue; i < BaseNoteValue.Quater; ++i) {
+                    if (i === noteValue) {
+                        group.top = y;
+                        _this.canvas.add(group);
+                    }
+                    else {
+                        group.clone(function (result) {
+                            result.top = y;
+                            _this.canvas.add(result);
+                        });
+                    }
+                    y += 6;
+                }
+            });
         };
         PrimitiveRenderer.prototype.drawBeam = function (x1, y1, x2, y2) {
             var halfThickness = this.style.bar.beamThickness / 2;
@@ -2535,6 +2604,60 @@ var TR;
             var polygon = new fabric.Polygon(points);
             polygon.fill = "black";
             this.canvas.add(polygon);
+        };
+        PrimitiveRenderer.prototype.drawNoteValueAugment = function (augment, x, y) {
+            for (var i = 0; i < augment; ++i) {
+                var dot = new fabric.Circle({
+                    radius: this.style.note.dot.radius,
+                    left: x,
+                    top: y,
+                    originX: "left",
+                    originY: "center",
+                    stroke: "",
+                    fill: "black"
+                });
+                this.canvas.add(dot);
+                x += this.style.note.dot.radius * 2 + this.style.note.dot.spacing;
+            }
+        };
+        PrimitiveRenderer.prototype.drawRest = function (noteValue, x, y) {
+            var _this = this;
+            var imageFile;
+            switch (noteValue) {
+                case BaseNoteValue.Large:
+                case BaseNoteValue.Long:
+                case BaseNoteValue.Double:
+                case BaseNoteValue.Whole:
+                case BaseNoteValue.Half:
+                    imageFile = ResourceManager.getTablatureResource("rest_2.svg");
+                    break;
+                case BaseNoteValue.Quater:
+                    imageFile = ResourceManager.getTablatureResource("rest_4.svg");
+                    break;
+                case BaseNoteValue.Eighth:
+                    imageFile = ResourceManager.getTablatureResource("rest_8.svg");
+                    break;
+                case BaseNoteValue.Sixteenth:
+                    imageFile = ResourceManager.getTablatureResource("rest_16.svg");
+                    break;
+                case BaseNoteValue.ThirtySecond:
+                    imageFile = ResourceManager.getTablatureResource("rest_32.svg");
+                    break;
+                case BaseNoteValue.SixtyFourth:
+                    imageFile = ResourceManager.getTablatureResource("rest_64.svg");
+                    break;
+                case BaseNoteValue.HundredTwentyEighth:
+                    imageFile = ResourceManager.getTablatureResource("rest_128.svg");
+                    break;
+                case BaseNoteValue.TwoHundredFiftySixth:
+                    imageFile = ResourceManager.getTablatureResource("rest_256.svg");
+                    break;
+            }
+            this.drawSVGFromURL(imageFile, x, y, function (group) {
+                group.originX = "center";
+                group.originY = "center";
+                group.scale(_this.style.bar.lineHeight / ResourceManager.referenceBarSpacing);
+            });
         };
         return PrimitiveRenderer;
     }());

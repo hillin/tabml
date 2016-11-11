@@ -11,14 +11,17 @@ namespace TabML.Editor.Tablature
     interface IBarDrawingContext
     {
         TablatureStyle Style { get; }
-        void DrawFretNumber(int stringIndex, string fretNumber, double position);
+        void DrawFretNumber(int stringIndex, string fretNumber, double position, bool isHalfOrLonger);
         void FinishHorizontalBarLines(double width);
         void DrawBarLine(OpenBarLine line, double position);
         void DrawBarLine(CloseBarLine line, double position);
-        void DrawStem(double position, VoicePart voicePart);
+        void DrawStem(BaseNoteValue noteValue, double position, VoicePart voicePart);
         void DrawFlag(BaseNoteValue noteValue, double position, VoicePart voicePart);
-        void DrawHalfBeam(BaseNoteValue noteValue, double position, VoicePart voicePart, bool isLastOfBeam);
-        void DrawNoteValueAugment(NoteValueAugment noteValueAugment, double position, VoicePart voicePart);
-        void DrawBeam(BaseNoteValue beatNoteValue, double from, double to, VoicePart voicePart);
+        void DrawSemiBeam(BaseNoteValue noteValue, double position, VoicePart voicePart, bool isLastOfBeam);
+        void DrawNoteValueAugment(NoteValueAugment noteValueAugment, BaseNoteValue noteValue, int[] strings, double position, VoicePart voicePart);
+        void DrawNoteValueAugmentOnBeam(NoteValueAugment noteValueAugment, BaseNoteValue noteValue, double position, VoicePart voicePart);
+        void DrawBeam(BaseNoteValue noteValue, double from, double to, VoicePart voicePart);
+        void DrawRest(BaseNoteValue noteValue, double position, VoicePart voicePart);
+        
     }
 }

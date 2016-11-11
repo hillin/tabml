@@ -18,6 +18,7 @@ namespace TabML.Editor
         public double BarLineHeight { get; set; } = 12;
         public double BarTopMargin { get; set; } = 120;
         public double BarBottomMargin { get; set; } = 60;
+        public double BarHorizontalPadding { get; set; } = 32;
 
         public Thickness Padding { get; set; } = new Thickness(24);
 
@@ -26,12 +27,13 @@ namespace TabML.Editor
         public double LyricsFontSize { get; set; } = 12;
         public Brush LyricsForeground { get; set; } = Brushes.Black;
 
-        public double NoteStemOffset { get; set; } = 12;
+        public double NoteStemOffset { get; set; } = 2;
         public double NoteTailOffset { get; set; } = 36;
 
         public double BeamThickness { get; set; } = 4;
         public double BeamSpacing { get; set; } = 4;
         public double HalfBeamWidth { get; set; } = 12;
+        public double NoteValueAugmentOffset { get; set; } = 4;
 
         public FormattedText MakeFormattedLyrics(string lyricsText)
         {

@@ -15,6 +15,17 @@ namespace TR {
             beamSpacing: number
         }
 
+        note: {
+            circleOnLongNotes: boolean,
+            longNoteCirclePadding: number,
+            dot: {
+                radius: number,
+                offset: number,
+                spacing: number
+            },
+            flagSpacing : number,
+        }
+
         title: ITablatureTextStyle;
         fretNumber: ITablatureTextStyle;
         lyrics: ITablatureTextStyle;

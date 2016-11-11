@@ -17,6 +17,17 @@ let tablatureStyle: TR.ITablatureStyle =
             beamSpacing: 4
         },
 
+        note: {
+            circleOnLongNotes: true,
+            longNoteCirclePadding: 1,
+            dot: {
+                radius: 1.5,
+                offset: 3,
+                spacing: 2
+            },
+            flagSpacing : 4
+        },
+
         title: {
             fontSize: 32,
             fontFamily: "Felix Titling"
@@ -36,6 +47,11 @@ let tablatureStyle: TR.ITablatureStyle =
 
 let renderer: TR.PrimitiveRenderer;
 
+window.onerror = function (errorMessage, url, lineNumber)
+{
+    alert(errorMessage + "\n" + url + "#" + lineNumber);
+};
+
 window.onload = () => {
     let canvas = document.getElementById("staff") as HTMLCanvasElement;
 
@@ -43,6 +59,8 @@ window.onload = () => {
     fabricCanvas.backgroundColor = "white";
 
     renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
+    //renderer.drawFretNumber("2", 100, 100, true);
     //renderer.drawTitle("test!!!", 400, 100);
     //renderer.drawBarLine(Core.MusicTheory.BarLine.BeginAndEndRepeat, 100, 100);
+    //renderer.drawFlag(BaseNoteValue.SixtyFourth, 100, 100, OffBarDirection.Top);
 };

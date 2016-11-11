@@ -11,5 +11,6 @@
         Title="MainWindow" Height="1300" Width="900">
     <wpf:ChromiumWebBrowser x:Name="Browser"
                             LoadError="Browser_LoadError"
+                            
                             LoadingStateChanged="Browser_LoadingStateChanged"/>
 </Window>

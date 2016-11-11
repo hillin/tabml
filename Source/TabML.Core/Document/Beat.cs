@@ -5,7 +5,8 @@ namespace TabML.Core.Document
 {
     public class Beat : Element
     {
-        public NoteValue NoteValue { get; set; }
+        public NoteValue NoteValue { get;
+            set; }
         public BeatNote[] Notes { get; set; }
         public bool IsRest { get; set; }
         public bool IsTied { get; set; }

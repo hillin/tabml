@@ -40,31 +40,49 @@ namespace TabML.Editor.Tablature.Layout
 
         public void DrawHead(IBarDrawingContext drawingContext, double position, double width)
         {
-            foreach (var note in this.Beat.Notes)
+            if (this.Beat.IsRest)
             {
-                drawingContext.DrawFretNumber(note.String - 1, note.Fret.ToString(), position + width / 2);
+                drawingContext.DrawRest(this.Beat.NoteValue.Base, position, this.VoicePart);
+            }
+            else
+            {
+                foreach (var note in this.Beat.Notes)
+                {
+                    drawingContext.DrawFretNumber(note.String - 1, note.Fret.ToString(), position,
+                                                  this.Beat.NoteValue.Base >= BaseNoteValue.Half);
+                }
             }
         }
 
         void IBeatElement.Draw(IBarDrawingContext drawingContext, double[] columnPositions)
         {
+            if (this.Beat.IsRest)
+            {
+                return; // rest should have been drawn in DrawHead
+            }
+
             var position = columnPositions[this.ColumnIndex];
-            drawingContext.DrawStem(position, this.VoicePart);
+            drawingContext.DrawStem(this.Beat.NoteValue.Base, position, this.VoicePart);
             if (this.OwnerBeam == null)
+            {
                 drawingContext.DrawFlag(this.Beat.NoteValue.Base, position, this.VoicePart);
+            }
             else
             {
                 var baseNoteValue = this.Beat.NoteValue.Base;
                 while (baseNoteValue != this.OwnerBeam.BeatNoteValue)
                 {
-                    drawingContext.DrawHalfBeam(baseNoteValue, position, this.VoicePart,
-                                                this != this.OwnerBeam.Elements[this.OwnerBeam.Elements.Count - 1]);
+                    drawingContext.DrawSemiBeam(baseNoteValue, position, this.VoicePart,
+                                                this == this.OwnerBeam.Elements[this.OwnerBeam.Elements.Count - 1]);
                     baseNoteValue = baseNoteValue.Double();
                 }
 
                 if (this.Beat.NoteValue.Augment != NoteValueAugment.None)
-                    drawingContext.DrawNoteValueAugment(this.Beat.NoteValue.Augment, position, this.VoicePart);
+                    drawingContext.DrawNoteValueAugmentOnBeam(this.Beat.NoteValue.Augment, this.Beat.NoteValue.Base, position, this.VoicePart);
             }
+
+            if (this.Beat.NoteValue.Augment != NoteValueAugment.None)
+                drawingContext.DrawNoteValueAugment(this.Beat.NoteValue.Augment, this.Beat.NoteValue.Base, this.Beat.Notes.Select(n => n.String).ToArray(), position, this.VoicePart);
 
         }
     }

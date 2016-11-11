@@ -38,7 +38,7 @@ namespace TabML.Editor.Tablature.Layout
 
         public void Finish()
         {
-            this.FinishBeam();
+            this.FinishBeamStack();
         }
 
         private void FinishBeam()
@@ -49,7 +49,8 @@ namespace TabML.Editor.Tablature.Layout
             var popedBeam = _beamStack.Pop();
             _currentBeam = _beamStack.Count > 0 ? _beamStack.Peek() : null;
 
-            Debug.Assert(popedBeam.Elements.Count > 0);
+            if (popedBeam.Elements.Count == 0)
+                return;
 
             // check for reduceable beam
             if (popedBeam.Elements.Count > 1)
@@ -60,11 +61,16 @@ namespace TabML.Editor.Tablature.Layout
                 return;
 
             // this beam contains only one beat, reduce it to a beat
-            beat.OwnerBeam = null;
             if (_currentBeam == null) // root
+            {
                 _rootBeats[_rootBeats.Count - 1] = beat;
+                beat.OwnerBeam = null;
+            }
             else
+            {
                 _currentBeam.Elements[_currentBeam.Elements.Count - 1] = beat;
+                beat.OwnerBeam = _currentBeam;
+            }
         }
 
         public void AddBeat(ArrangedBarBeat beat)
@@ -84,14 +90,18 @@ namespace TabML.Editor.Tablature.Layout
             Debug.Assert(_currentBeam != null, "_currentBeam != null");
             while (beatNoteValue > _currentBeam.BeatNoteValue)
             {
-                if (_beamStack.Count > 1)
+                if (_beamStack.Count > 0)
                 {
                     this.FinishBeam();
-                    continue;
+
+                    if (_beamStack.Count > 0)
+                        continue;
                 }
 
-                // this is the root beam
-                this.AddToCurrentBeam(beat);
+                _rootBeats.Add(beat);
+                _duration += beat.GetDuration();
+
+                this.StartRootBeam();
                 return;
             }
 
@@ -116,21 +126,25 @@ namespace TabML.Editor.Tablature.Layout
 
         private void StartRootBeam()
         {
-            while (_beamStack.Count > 0)
-            {
-                this.FinishBeam();
-            }
+            this.FinishBeamStack();
 
             _currentBeam = new ArrangedBeam(_beamNoteValue.Half(), this.VoicePart, true);
 
             _currentRootBeam = _currentBeam;
             _rootBeats.Add(_currentBeam);
 
-            _beamStack.Clear();
             _beamStack.Push(_currentBeam);
 
             while (_currentCapacity <= _duration)
                 _currentCapacity += _beamNoteValue.GetDuration();
+        }
+
+        private void FinishBeamStack()
+        {
+            while (_beamStack.Count > 0)
+            {
+                this.FinishBeam();
+            }
         }
     }
 }

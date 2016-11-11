@@ -71,7 +71,9 @@ namespace TabML.Parser.Parsing.Bar
                 }
             }
 
-            if (!rhythmDefined && string.IsNullOrEmpty(chordNameNode.Value) && result.Fingering == null)
+            if (!rhythmDefined 
+                && string.IsNullOrEmpty(chordNameNode?.Value)
+                && result.Fingering == null)
             {
                 this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_RhythmDefinitionExpected);

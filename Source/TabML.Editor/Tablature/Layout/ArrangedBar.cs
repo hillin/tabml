@@ -62,8 +62,8 @@ namespace TabML.Editor.Tablature.Layout
                     else
                     {
                         // size is equally and explicitly divided by NoteValue
-                        var durationWidth = width / this.Duration.Duration;
-                        var position = 0.0;
+                        var durationWidth = (width - drawingContext.Style.BarHorizontalPadding * 2) / this.Duration.Duration;
+                        var position = drawingContext.Style.BarHorizontalPadding;
 
                         var columnPositions = new double[this.Columns.Count];
 
@@ -71,7 +71,7 @@ namespace TabML.Editor.Tablature.Layout
                         {
                             var column = this.Columns[i];
                             var columnWidth = durationWidth * column.GetDuration();
-                            columnPositions[i] = position + columnWidth / 2;
+                            columnPositions[i] = position;
                             column.Draw(drawingContext, position, columnWidth);
                             position += columnWidth;
                         }
