@@ -14,7 +14,7 @@ namespace TabML.Editor.Tablature.Layout
     class ArrangedBarBeat : IBeatElement
     {
         public PreciseDuration Position { get; set; }
-        public int ColumnIndex { get; set; }
+        public ArrangedBarColumn Column { get; set; }
         public VoicePart VoicePart { get; }
         public Beat Beat { get; }
         public ArrangedBeam OwnerBeam { get; internal set; }
@@ -45,6 +45,7 @@ namespace TabML.Editor.Tablature.Layout
                 foreach (var note in this.Beat.Notes)
                 {
                     drawingContext.DrawFretNumber(note.String - 1, note.Fret.ToString(), position,
+                                                  this.Column.GetNoteHeadOffset(note.String - 1),
                                                   this.Beat.NoteValue.Base >= BaseNoteValue.Half);
                 }
             }
@@ -52,7 +53,7 @@ namespace TabML.Editor.Tablature.Layout
 
         void IBeatElement.Draw(IBarDrawingContext drawingContext, double[] columnPositions, BeamSlope beamSlope)
         {
-            var position = columnPositions[this.ColumnIndex];
+            var position = columnPositions[this.Column.ColumnIndex];
 
             var strings = this.GetNoteStrings();
 

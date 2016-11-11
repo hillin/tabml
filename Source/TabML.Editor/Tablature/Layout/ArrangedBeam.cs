@@ -98,8 +98,8 @@ namespace TabML.Editor.Tablature.Layout
             var lastBeat = this.LastBeat;
             var firstBeat = this.FirstBeat;
 
-            var x0 = columnPositions[firstBeat.ColumnIndex];
-            var x1 = columnPositions[lastBeat.ColumnIndex];
+            var x0 = columnPositions[firstBeat.Column.ColumnIndex];
+            var x1 = columnPositions[lastBeat.Column.ColumnIndex];
 
             if (beamSlope == null)
             {

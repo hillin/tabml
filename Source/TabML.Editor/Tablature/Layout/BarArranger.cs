@@ -114,7 +114,7 @@ namespace TabML.Editor.Tablature.Layout
 
                     foreach (var beat in group)
                     {
-                        beat.ColumnIndex = columnIndex;
+                        beat.Column = column;
                         column.VoiceBeats.Add(beat);
                     }
 
@@ -135,7 +135,7 @@ namespace TabML.Editor.Tablature.Layout
                             break;
 
                         var arrangedBeat = _beatLookup[beat];
-                        arrangedBar.Columns[arrangedBeat.ColumnIndex].Lyrics = bar.Lyrics.Segments[lyricsSegmentIndex];
+                        arrangedBeat.Column.Lyrics = bar.Lyrics.Segments[lyricsSegmentIndex];
                         ++lyricsSegmentIndex;
                     }
                 }

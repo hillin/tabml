@@ -32,13 +32,13 @@ namespace TabML.Editor.Rendering
             this.StringCarets = new double[style.StringCount];
         }
 
-        public void DrawFretNumber(int stringIndex, string fretNumber, double position, bool isHalfOrLonger)
+        public void DrawFretNumber(int stringIndex, string fretNumber, double position, double horizontalOffset, bool isHalfOrLonger)
         {
             this.DrawHorizontalBarLineTo(stringIndex, position - 10); // todo: use measure string to handle spaces
 
             this.StringCarets[stringIndex] = position + 10;
 
-            this.PrimitiveRenderer.DrawFretNumber(fretNumber, this.Location.X + position,
+            this.PrimitiveRenderer.DrawFretNumber(fretNumber, this.Location.X + position + horizontalOffset * 10,
                                                   this.GetStringPosition(stringIndex), isHalfOrLonger);
         }
 
@@ -68,7 +68,7 @@ namespace TabML.Editor.Rendering
         {
             this.PrimitiveRenderer.DrawStem(this.Location.X + x, this.Location.Y + Math.Min(y0, y1), this.Location.Y + Math.Max(y0, y1));
         }
-        
+
         public void GetStemOffsetRange(int stringIndex, VoicePart voicePart, out double from, out double to)
         {
             if (voicePart == VoicePart.Treble)

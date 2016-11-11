@@ -11,7 +11,7 @@ namespace TabML.Editor.Tablature
     interface IBarDrawingContext
     {
         TablatureStyle Style { get; }
-        void DrawFretNumber(int stringIndex, string fretNumber, double position, bool isHalfOrLonger);
+        void DrawFretNumber(int stringIndex, string fretNumber, double position, double horizontalOffset, bool isHalfOrLonger);
         void FinishHorizontalBarLines(double width);
         void DrawBarLine(OpenBarLine line, double position);
         void DrawBarLine(CloseBarLine line, double position);
