@@ -17,7 +17,10 @@ namespace TabML.Parser
         {
             public void Report(LogLevel level, TextRange? position, string message, params object[] args)
             {
-
+                if (level == LogLevel.Error)
+                {
+                    
+                }
             }
         }
 

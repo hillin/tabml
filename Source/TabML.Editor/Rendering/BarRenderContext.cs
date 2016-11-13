@@ -87,6 +87,25 @@ namespace TabML.Editor.Rendering
             to -= this.Location.Y;
         }
 
+        public void DrawTuplet(int tuplet, double x, double y, VoicePart voicePart)
+        {
+            y = this.Location.Y + y +
+                    (voicePart == VoicePart.Treble ? -this.Style.TupletTextOffset : this.Style.TupletTextOffset);
+
+            this.PrimitiveRenderer.DrawTuplet(tuplet.ToString(), x + this.Location.X, y);
+        }
+
+        public void DrawTupletForRest(int value, double position, VoicePart voicePart)
+        {
+            double y;
+            if (voicePart == VoicePart.Treble)
+                y = this.GetBodyCeiling() - this.Style.TupletTextOffset;
+            else
+                y = this.GetBodyFloor() + this.Style.TupletTextOffset;
+
+            this.DrawTuplet(value, position, y - this.Location.Y, voicePart);
+        }
+
         private double GetBodyCeiling() => this.Location.Y + this.Style.BarTopMargin;
         private double GetBodyFloor() => this.GetBodyCeiling() + this.Style.BarLineHeight * this.Style.StringCount;
 
@@ -100,15 +119,12 @@ namespace TabML.Editor.Rendering
                                                          position - this.StringCarets[stringIndex]);
         }
 
-        public void DrawFlag(BaseNoteValue noteValue, double position, int stringIndex, VoicePart voicePart)
+        public void DrawFlag(BaseNoteValue noteValue, double x, double y, VoicePart voicePart)
         {
             if (noteValue > BaseNoteValue.Eighth)
                 return;
 
-            double _, y;
-            this.GetStemOffsetRange(stringIndex, voicePart, out _, out y);
-
-            this.PrimitiveRenderer.DrawFlag(noteValue, this.Location.X + position, this.Location.Y + y, voicePart.ToOffBarDirection());
+            this.PrimitiveRenderer.DrawFlag(noteValue, this.Location.X + x, this.Location.Y + y, voicePart.ToOffBarDirection());
         }
 
 

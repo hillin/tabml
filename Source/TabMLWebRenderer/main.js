@@ -2341,7 +2341,12 @@ var tablatureStyle = {
             offset: 3,
             spacing: 2
         },
-        flagSpacing: 4
+        flagSpacing: 4,
+        tuplet: {
+            fontSize: 12,
+            fontFamily: "Times New Roman",
+            fontStyle: "italic"
+        }
     },
     title: {
         fontSize: 32,
@@ -2369,6 +2374,7 @@ window.onload = function () {
     //renderer.drawTitle("test!!!", 400, 100);
     //renderer.drawBarLine(Core.MusicTheory.BarLine.BeginAndEndRepeat, 100, 100);
     //renderer.drawFlag(BaseNoteValue.SixtyFourth, 100, 100, OffBarDirection.Top);
+    //renderer.drawTuplet("3", 100, 100);
 };
 var Core;
 (function (Core) {
@@ -2510,6 +2516,14 @@ var TR;
             text.top = y;
             text.originX = "left";
             text.originY = "top";
+            this.canvas.add(text);
+        };
+        PrimitiveRenderer.prototype.drawTuplet = function (tuplet, x, y) {
+            var text = new fabric.Text(tuplet, this.style.note.tuplet);
+            text.left = x;
+            text.top = y;
+            text.originX = "center";
+            text.originY = "center";
             this.canvas.add(text);
         };
         PrimitiveRenderer.prototype.drawLine = function (x1, y1, x2, y2) {

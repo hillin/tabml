@@ -24,6 +24,7 @@ namespace TR {
                 spacing: number
             },
             flagSpacing : number,
+            tuplet : ITablatureTextStyle
         }
 
         title: ITablatureTextStyle;

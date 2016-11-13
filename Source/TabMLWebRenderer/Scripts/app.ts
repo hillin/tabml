@@ -25,7 +25,12 @@ let tablatureStyle: TR.ITablatureStyle =
                 offset: 3,
                 spacing: 2
             },
-            flagSpacing : 4
+            flagSpacing : 4,
+            tuplet: {
+                fontSize: 12,
+                fontFamily: "Times New Roman",
+                fontStyle: "italic"
+            }
         },
 
         title: {
@@ -63,4 +68,5 @@ window.onload = () => {
     //renderer.drawTitle("test!!!", 400, 100);
     //renderer.drawBarLine(Core.MusicTheory.BarLine.BeginAndEndRepeat, 100, 100);
     //renderer.drawFlag(BaseNoteValue.SixtyFourth, 100, 100, OffBarDirection.Top);
+    //renderer.drawTuplet("3", 100, 100);
 };

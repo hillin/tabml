@@ -47,6 +47,14 @@ namespace TabML.Editor.Tablature.Layout
             return this.Elements.Sum(b => b.GetDuration());
         }
 
+        public bool GetIsTupletFull()
+        {
+            if (this.Tuplet == null)
+                return false;
+
+            return this.BeatNoteValue.GetDuration() * this.Tuplet.Value / 2 <= this.GetDuration();
+        }
+
         public ArrangedBarBeat FirstBeat
         {
             get
@@ -71,7 +79,8 @@ namespace TabML.Editor.Tablature.Layout
 
         public bool MatchesTuplet(ArrangedBarBeat beat)
         {
-            return this.Tuplet == beat.Beat.NoteValue.Tuplet;
+            return this.BeatNoteValue > beat.Beat.NoteValue.Base    // if we are large enough to create a child beam for this beat
+                || this.Tuplet == beat.Beat.NoteValue.Tuplet;       // or our tuplet exactly matches
         }
 
 #if DEBUG
@@ -95,8 +104,8 @@ namespace TabML.Editor.Tablature.Layout
 
         public void Draw(IBarDrawingContext drawingContext, double[] columnPositions, BeamSlope beamSlope)
         {
-            var lastBeat = this.LastBeat;
             var firstBeat = this.FirstBeat;
+            var lastBeat = this.LastBeat;
 
             var x0 = columnPositions[firstBeat.Column.ColumnIndex];
             var x1 = columnPositions[lastBeat.Column.ColumnIndex];
@@ -112,6 +121,12 @@ namespace TabML.Editor.Tablature.Layout
                 element.Draw(drawingContext, columnPositions, beamSlope);
 
             drawingContext.DrawBeam(this.BeatNoteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), this.VoicePart);
+            if (this.Tuplet != null
+                && this.Elements.Any(e => (e as ArrangedBeam)?.Tuplet != this.Tuplet))
+            {
+                var tupletX = (x1 + x0) / 2;
+                drawingContext.DrawTuplet(this.Tuplet.Value, tupletX, beamSlope.GetY(tupletX), this.VoicePart);
+            }
         }
     }
 }

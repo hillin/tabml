@@ -58,6 +58,15 @@ namespace TR {
             this.canvas.add(text);
         }
 
+        drawTuplet(tuplet: string, x:number, y:number) {
+            let text = new fabric.Text(tuplet, this.style.note.tuplet);
+            text.left = x;
+            text.top = y;
+            text.originX = "center";
+            text.originY = "center";
+            this.canvas.add(text);
+        }
+
         private drawLine(x1: number, y1: number, x2: number, y2: number): fabric.ILine {
             let line = new fabric.Line([x1, y1, x2, y2]);
             line.stroke = "black";

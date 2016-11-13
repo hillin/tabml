@@ -39,6 +39,10 @@ namespace TabML.Editor.Tablature.Layout
             if (this.Beat.IsRest)
             {
                 drawingContext.DrawRest(this.Beat.NoteValue.Base, position, this.VoicePart);
+                if (this.OwnerBeam == null && this.Beat.NoteValue.Tuplet != null)
+                {
+                    drawingContext.DrawTupletForRest(this.Beat.NoteValue.Tuplet.Value, position, this.VoicePart);
+                }
             }
             else
             {
@@ -91,11 +95,16 @@ namespace TabML.Editor.Tablature.Layout
 
         private void DrawStemAndFlag(IBarDrawingContext drawingContext, int[] strings, double position, BeamSlope beamSlope)
         {
-            this.DrawStem(drawingContext, position, beamSlope);
+            double stemTailPosition;
+            this.DrawStem(drawingContext, position, beamSlope, out stemTailPosition);
 
             if (this.OwnerBeam == null)
             {
-                drawingContext.DrawFlag(this.Beat.NoteValue.Base, position, this.GetNearestStringIndex(), this.VoicePart);
+                drawingContext.DrawFlag(this.Beat.NoteValue.Base, position, stemTailPosition, this.VoicePart);
+
+                if (this.Beat.NoteValue.Tuplet != null)
+                    drawingContext.DrawTuplet(this.Beat.NoteValue.Tuplet.Value, position, stemTailPosition,
+                                              this.VoicePart);
             }
             else
             {
@@ -126,18 +135,21 @@ namespace TabML.Editor.Tablature.Layout
             drawingContext.DrawBeam(noteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), this.VoicePart);
         }
 
-        private void DrawStem(IBarDrawingContext drawingContext, double position, BeamSlope beamSlope)
+        private void DrawStem(IBarDrawingContext drawingContext, double position, BeamSlope beamSlope, out double stemTailPosition)
         {
             if (this.Beat.NoteValue.Base > BaseNoteValue.Half)
+            {
+                stemTailPosition = 0;
                 return;
+            }
 
-            double from, to;
-            drawingContext.GetStemOffsetRange(this.GetNearestStringIndex(), this.VoicePart, out from, out to);
+            double from;
+            drawingContext.GetStemOffsetRange(this.GetNearestStringIndex(), this.VoicePart, out from, out stemTailPosition);
 
             if (beamSlope != null)
-                to = beamSlope.GetY(position);
+                stemTailPosition = beamSlope.GetY(position);
 
-            drawingContext.DrawStem(position, from, to);
+            drawingContext.DrawStem(position, from, stemTailPosition);
         }
 
 

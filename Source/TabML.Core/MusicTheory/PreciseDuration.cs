@@ -11,12 +11,12 @@ namespace TabML.Core.MusicTheory
     [DebuggerDisplay("{Duration}")]
     public struct PreciseDuration : IEquatable<PreciseDuration>, IComparable<PreciseDuration>, IEquatable<int>, IEquatable<double>
     {
-        public const long Precision = 100000000L;
+        public const long Unit = 256L * 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 29;
 
         public static readonly PreciseDuration Zero = new PreciseDuration(0L);
 
         public long FixedPointValue { get; }
-        public double Duration => (double)this.FixedPointValue / Precision;
+        public double Duration => (double)this.FixedPointValue / Unit;
 
         public PreciseDuration(long fixedPointValue)
         {
@@ -25,7 +25,7 @@ namespace TabML.Core.MusicTheory
 
         public PreciseDuration(double duration)
         {
-            this.FixedPointValue = (long)(duration * Precision);
+            this.FixedPointValue = (long)(duration * Unit);
         }
 
         public static PreciseDuration operator +(PreciseDuration d1, PreciseDuration d2)
@@ -86,15 +86,12 @@ namespace TabML.Core.MusicTheory
 
         public int CompareTo(PreciseDuration other)
         {
-            unchecked
-            {
-                return (int)(this.FixedPointValue - other.FixedPointValue);
-            }
+            return this.FixedPointValue.CompareTo(other.FixedPointValue);
         }
 
         public bool Equals(int other)
         {
-            return this.FixedPointValue == other * Precision;
+            return this.FixedPointValue == other * Unit;
         }
 
         public static bool operator ==(PreciseDuration d, int i)
@@ -109,17 +106,17 @@ namespace TabML.Core.MusicTheory
 
         public static bool operator <(PreciseDuration d1, int i)
         {
-            return d1.FixedPointValue < i * Precision;
+            return d1.FixedPointValue < i * Unit;
         }
 
         public static bool operator >(PreciseDuration d1, int i)
         {
-            return d1.FixedPointValue > i * Precision;
+            return d1.FixedPointValue > i * Unit;
         }
 
         public bool Equals(double other)
         {
-            return this.FixedPointValue == (long)(other * Precision);
+            return this.FixedPointValue == (long)(other * Unit);
         }
 
 
@@ -135,19 +132,19 @@ namespace TabML.Core.MusicTheory
 
         public static bool operator <(PreciseDuration d1, double i)
         {
-            return d1.FixedPointValue < i * Precision;
+            return d1.FixedPointValue < i * Unit;
         }
 
         public static bool operator >(PreciseDuration d1, double i)
         {
-            return d1.FixedPointValue > i * Precision;
+            return d1.FixedPointValue > i * Unit;
         }
 
         public static implicit operator double(PreciseDuration d)
         {
             return d.Duration;
         }
-        
+
         public override bool Equals(object obj)
         {
             if (null == obj) return false;
