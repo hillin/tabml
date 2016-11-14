@@ -6,7 +6,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class KeyCommandletNode : CommandletNode, IDocumentElementFactory<KeySignature>
+    class KeyCommandletNode : CommandletNode
     {
         public NoteNameNode Key { get; set; }
 

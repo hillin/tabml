@@ -37,7 +37,8 @@ namespace TabML.Editor
         public double SemiBeamWidth { get; set; } = 12;
         public double NoteValueAugmentOffset { get; set; } = 8;
 
-        public double TupletTextOffset { get; set; } = 12;
+        public double OuterNoteInstructionOffset { get; set; } = 12;
+        public double TieInstructionOffset { get; set; } = 24;
 
         public FormattedText MakeFormattedLyrics(string lyricsText)
         {

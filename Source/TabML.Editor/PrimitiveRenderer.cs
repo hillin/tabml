@@ -33,7 +33,7 @@ namespace TabML.Editor
                    .Append(string.Join(", ", args.Select(PrimitiveRenderer.FormatArg)))
                    .Append(");");
 
-            
+
             this.InvokeScriptAsync(builder.ToString());
         }
 
@@ -50,6 +50,9 @@ namespace TabML.Editor
                 return "false";
             }
 
+            if (arg == null)
+                return "null";
+
             return arg.ToString();
         }
 
@@ -64,5 +67,9 @@ namespace TabML.Editor
         public void DrawNoteValueAugment(NoteValueAugment augment, double x, double y) => this.InvokeRenderMethod("drawNoteValueAugment", (int)augment, x, y);
         public void DrawRest(BaseNoteValue noteValue, double x, double y) => this.InvokeRenderMethod("drawRest", (int)noteValue, x, y);
         public void DrawTuplet(string tuplet, double x, double y) => this.InvokeRenderMethod("drawTuplet", tuplet, x, y);
+
+        public void DrawTie(double x0, double x1, double y, string instruction, double instructionY,
+                            OffBarDirection offBarDirection)
+            => this.InvokeRenderMethod("drawTie", x0, x1, y, instruction, instructionY, (int) offBarDirection);
     }
 }

@@ -6,7 +6,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class RhythmTemplateNode : Node, IDocumentElementFactory<RhythmTemplate>
+    class RhythmTemplateNode : Node
     {
         public List<RhythmTemplateSegmentNode> Segments { get; }
 

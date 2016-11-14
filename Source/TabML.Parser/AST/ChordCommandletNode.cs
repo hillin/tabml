@@ -7,7 +7,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class ChordCommandletNode : CommandletNode, IDocumentElementFactory<ChordDefinition>
+    class ChordCommandletNode : CommandletNode
     {
         public LiteralNode<string> Name { get; set; }
         public LiteralNode<string> DisplayName { get; set; }

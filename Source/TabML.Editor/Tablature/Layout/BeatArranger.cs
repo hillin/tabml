@@ -61,14 +61,14 @@ namespace TabML.Editor.Tablature.Layout
             {
                 _rootBeats.RemoveAt(_rootBeats.Count - 1);
                 _rootBeats.AddRange(rearrangedElements);
-                foreach (var beat in rearrangedElements.OfType<ArrangedBarBeat>())
+                foreach (var beat in rearrangedElements.OfType<ArrangedBeat>())
                     beat.OwnerBeam = null;
             }
             else
             {
                 _currentBeam.Elements.RemoveAt(_currentBeam.Elements.Count - 1);
                 _currentBeam.Elements.AddRange(rearrangedElements);
-                foreach (var beat in rearrangedElements.OfType<ArrangedBarBeat>())
+                foreach (var beat in rearrangedElements.OfType<ArrangedBeat>())
                     beat.OwnerBeam = _currentBeam;
             }
         }
@@ -80,7 +80,7 @@ namespace TabML.Editor.Tablature.Layout
             for (var i = indexOfFirstNonRestBeat; i < beam.Elements.Count; ++i)
             {
                 var element = beam.Elements[i];
-                var beat = element as ArrangedBarBeat;
+                var beat = element as ArrangedBeat;
                 if (beat == null)
                     break;
 
@@ -96,7 +96,7 @@ namespace TabML.Editor.Tablature.Layout
             for (var i = indexOfLastNonRestBeat; i > indexOfFirstNonRestBeat; --i)
             {
                 var element = beam.Elements[i];
-                var beat = element as ArrangedBarBeat;
+                var beat = element as ArrangedBeat;
                 if (beat == null)
                     break;
 
@@ -112,7 +112,7 @@ namespace TabML.Editor.Tablature.Layout
 
             var result = new List<IBeatElement>(headRests);
 
-            if (beam.Elements.Count == 1 && beam.Elements[0] is ArrangedBarBeat)
+            if (beam.Elements.Count == 1 && beam.Elements[0] is ArrangedBeat)
                 // this beam contains only one beat now, reduce it to a beat
                 result.Add(beam.Elements[0]);
             else if (beam.Elements.Count > 0)
@@ -123,7 +123,7 @@ namespace TabML.Editor.Tablature.Layout
             return result;
         }
 
-        public void AddBeat(ArrangedBarBeat beat)
+        public void AddBeat(ArrangedBeat beat)
         {
 
             if (beat.Beat.NoteValue.Base >= _beamNoteValue) // beat too long to be beamed
@@ -170,14 +170,14 @@ namespace TabML.Editor.Tablature.Layout
             this.StartChildBeam(tuplet);
         }
 
-        private void InsertUnbeamedBeat(ArrangedBarBeat beat)
+        private void InsertUnbeamedBeat(ArrangedBeat beat)
         {
             this.FinishBeamStack();
             _rootBeats.Add(beat);
             _duration += beat.GetDuration();
         }
 
-        private void AddToCurrentBeam(ArrangedBarBeat beat)
+        private void AddToCurrentBeam(ArrangedBeat beat)
         {
             _currentBeam.Elements.Add(beat);
             beat.OwnerBeam = _currentBeam;

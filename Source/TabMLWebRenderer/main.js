@@ -2348,6 +2348,14 @@ var tablatureStyle = {
             fontStyle: "italic"
         }
     },
+    tie: {
+        instructionOffset: 24,
+        instructionText: {
+            fontSize: 12,
+            fontFamily: "Times New Roman",
+            fontStyle: "italic"
+        }
+    },
     title: {
         fontSize: 32,
         fontFamily: "Felix Titling"
@@ -2375,6 +2383,7 @@ window.onload = function () {
     //renderer.drawBarLine(Core.MusicTheory.BarLine.BeginAndEndRepeat, 100, 100);
     //renderer.drawFlag(BaseNoteValue.SixtyFourth, 100, 100, OffBarDirection.Top);
     //renderer.drawTuplet("3", 100, 100);
+    //renderer.drawTie(100, 300, 100, OffBarDirection.Top);
 };
 var Core;
 (function (Core) {
@@ -2673,6 +2682,30 @@ var TR;
                 group.originY = "center";
                 group.scale(_this.style.bar.lineHeight / ResourceManager.referenceBarSpacing);
             });
+        };
+        PrimitiveRenderer.prototype.drawTie = function (x0, x1, y, instruction, instructionY, direction) {
+            var _this = this;
+            var imageFile = ResourceManager.getTablatureResource("tie.svg");
+            this.drawSVGFromURL(imageFile, x0, y, function (group) {
+                group.originX = "left";
+                if (direction == OffBarDirection.Bottom) {
+                    group.originY = "top";
+                    group.flipY = true;
+                }
+                else {
+                    group.originY = "bottom";
+                }
+                group.scaleToWidth(x1 - x0);
+                group.scaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+            });
+            if (instruction != null) {
+                var text = new fabric.Text(instruction, this.style.tie.instructionText);
+                text.left = (x0 + x1) / 2;
+                text.top = instructionY;
+                text.originX = "center";
+                text.originY = "center";
+                this.canvas.add(text);
+            }
         };
         return PrimitiveRenderer;
     }());

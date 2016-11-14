@@ -7,7 +7,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class SectionCommandletNode : CommandletNode, IDocumentElementFactory<Section>
+    class SectionCommandletNode : CommandletNode
     {
         public LiteralNode<string> SectionName { get; set; }
 

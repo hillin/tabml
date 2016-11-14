@@ -90,7 +90,7 @@ namespace TabML.Editor.Rendering
         public void DrawTuplet(int tuplet, double x, double y, VoicePart voicePart)
         {
             y = this.Location.Y + y +
-                    (voicePart == VoicePart.Treble ? -this.Style.TupletTextOffset : this.Style.TupletTextOffset);
+                    (voicePart == VoicePart.Treble ? -this.Style.OuterNoteInstructionOffset : this.Style.OuterNoteInstructionOffset);
 
             this.PrimitiveRenderer.DrawTuplet(tuplet.ToString(), x + this.Location.X, y);
         }
@@ -99,12 +99,25 @@ namespace TabML.Editor.Rendering
         {
             double y;
             if (voicePart == VoicePart.Treble)
-                y = this.GetBodyCeiling() - this.Style.TupletTextOffset;
+                y = this.GetBodyCeiling() - this.Style.OuterNoteInstructionOffset;
             else
-                y = this.GetBodyFloor() + this.Style.TupletTextOffset;
+                y = this.GetBodyFloor() + this.Style.OuterNoteInstructionOffset;
 
             this.DrawTuplet(value, position, y - this.Location.Y, voicePart);
         }
+
+        public void DrawTie(double from, double to, int stringIndex, VoicePart voicePart, string instruction, double instructionY)
+        {
+            var spaceIndex = voicePart == VoicePart.Bass ? stringIndex + 1 : stringIndex;
+            var y = this.GetStringSpacePosition(spaceIndex);
+            this.PrimitiveRenderer.DrawTie(from + this.Location.X + 10, to + this.Location.X - 10, y, instruction,
+                                           instructionY + this.Location.Y +
+                                           (voicePart == VoicePart.Treble
+                                               ? -this.Style.OuterNoteInstructionOffset
+                                               : this.Style.OuterNoteInstructionOffset), voicePart.ToOffBarDirection());
+            //todo: replace magic number
+        }
+
 
         private double GetBodyCeiling() => this.Location.Y + this.Style.BarTopMargin;
         private double GetBodyFloor() => this.GetBodyCeiling() + this.Style.BarLineHeight * this.Style.StringCount;

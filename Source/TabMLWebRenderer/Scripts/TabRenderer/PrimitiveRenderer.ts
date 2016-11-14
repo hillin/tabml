@@ -58,7 +58,7 @@ namespace TR {
             this.canvas.add(text);
         }
 
-        drawTuplet(tuplet: string, x:number, y:number) {
+        drawTuplet(tuplet: string, x: number, y: number) {
             let text = new fabric.Text(tuplet, this.style.note.tuplet);
             text.left = x;
             text.top = y;
@@ -211,5 +211,34 @@ namespace TR {
                 group.scale(this.style.bar.lineHeight / ResourceManager.referenceBarSpacing);
             });
         }
+
+        drawTie(x0: number, x1: number, y: number, instruction: string, instructionY:number, direction: OffBarDirection) {
+            let imageFile = ResourceManager.getTablatureResource("tie.svg");
+            this.drawSVGFromURL(imageFile, x0, y, group => {
+
+                group.originX = "left";
+
+                if (direction == OffBarDirection.Bottom) {
+                    group.originY = "top";
+                    group.flipY = true;
+                }
+                else {
+                    group.originY = "bottom";
+                }
+
+                group.scaleToWidth(x1 - x0);
+                group.scaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+            });
+
+            if (instruction != null) {
+                let text = new fabric.Text(instruction, this.style.tie.instructionText);
+                text.left = (x0 + x1) / 2;
+                text.top = instructionY;
+                text.originX = "center";
+                text.originY = "center";
+                this.canvas.add(text);
+            }
+        }
+
     }
 }

@@ -4,10 +4,11 @@ using TabML.Parser.Parsing;
 using System.Linq;
 using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
+using System;
 
 namespace TabML.Parser.AST
 {
-    class VoiceNode : Node, IDocumentElementFactory<Voice>
+    class VoiceNode : Node
     {
         public List<BeatNode> Beats { get; }
         public PreciseDuration ExpectedDuration { get; set; }
@@ -21,7 +22,7 @@ namespace TabML.Parser.AST
 
         public PreciseDuration GetDuration() => this.Beats.Sum(b => b.NoteValue.ToNoteValue().GetDuration());
 
-        public bool ToDocumentElement(TablatureContext context, ILogger logger, out Voice voice)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, VoicePart voicePart, out Voice voice)
         {
             voice = new Voice()
             {
@@ -31,8 +32,12 @@ namespace TabML.Parser.AST
             foreach (var beat in this.Beats)
             {
                 Beat documentBeat;
-                if (!beat.ToDocumentElement(context, logger, out documentBeat))
+                if (!beat.ToDocumentElement(context, logger, voicePart, out documentBeat))
                     return false;
+
+                if (context.CurrentBar != null) // if context.CurrentBar is null, it means we are in a template
+                                                // todo: this is ugly, refactor it
+                    context.CurrentBar.SetVoiceRestedState(voicePart, documentBeat.IsRest);
 
                 voice.Beats.Add(documentBeat);
             }
@@ -62,13 +67,15 @@ namespace TabML.Parser.AST
 
                     isFirstFactor = false;
 
+                    if (context.CurrentBar != null)  // if context.CurrentBar is null, it means we are in a template
+                                                     // todo: this is ugly, refactor it
+                        context.CurrentBar.SetVoiceRestedState(voicePart, true);
                     voice.Beats.Add(beat);
                 }
             }
 
             return true;
         }
-
 
         public bool ValueEquals(Voice other)
         {

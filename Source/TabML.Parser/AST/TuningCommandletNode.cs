@@ -6,7 +6,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class TuningCommandletNode : CommandletNode, IDocumentElementFactory<TuningSignature>
+    class TuningCommandletNode : CommandletNode
     {
         public LiteralNode<string> Name { get; set; }
         public List<PitchNode> StringTunings { get; }

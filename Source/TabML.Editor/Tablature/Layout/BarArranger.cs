@@ -14,11 +14,13 @@ namespace TabML.Editor.Tablature.Layout
     class BarArranger
     {
 
-        private readonly Dictionary<Beat, ArrangedBarBeat> _beatLookup;
+        private readonly Dictionary<Beat, ArrangedBeat> _beatLookup;
+        private readonly Dictionary<BeatNote, ArrangedNote> _noteLookup;
 
         public BarArranger()
         {
-            _beatLookup = new Dictionary<Beat, ArrangedBarBeat>();
+            _beatLookup = new Dictionary<Beat, ArrangedBeat>();
+            _noteLookup = new Dictionary<BeatNote, ArrangedNote>();
         }
 
         public ArrangedBar Arrange(DocumentBar bar)
@@ -30,7 +32,8 @@ namespace TabML.Editor.Tablature.Layout
                 CloseLine = bar.CloseLine
             };
 
-            this.CreateArrangedBeats(bar);
+            this.CreateArrangedBeatsAndNotes(bar);
+            this.ResolveBeatAndNoteReferences();
             this.ArrangeColumns(bar, arrangedBar);
             this.ArrangeVoices(bar, arrangedBar);
             //todo
@@ -38,21 +41,56 @@ namespace TabML.Editor.Tablature.Layout
             return arrangedBar;
         }
 
-        private void CreateArrangedBeats(DocumentBar bar)
+        private void ResolveBeatAndNoteReferences()
+        {
+            foreach (var note in _noteLookup.Values)
+            {
+                if (note.Note.PreConnectedNote != null)
+                {
+                    ArrangedNote preConnectedNote;
+                    if (_noteLookup.TryGetValue(note.Note.PreConnectedNote, out preConnectedNote))
+                        note.PreConnectedNote = preConnectedNote;
+                }
+            }
+        }
+
+        private void CreateArrangedBeatsAndNotes(DocumentBar bar)
         {
             _beatLookup.Clear();
+            _noteLookup.Clear();
             foreach (var segment in bar.Rhythm.Segments)
             {
                 if (segment.BassVoice != null)
                 {
-                    foreach (var beat in segment.BassVoice.Beats)
-                        _beatLookup.Add(beat, new ArrangedBarBeat(beat, VoicePart.Bass));
+                    this.ArrangeBeatsAndNotes(segment.BassVoice, VoicePart.Bass);
                 }
 
                 if (segment.TrebleVoice != null)
                 {
-                    foreach (var beat in segment.TrebleVoice.Beats)
-                        _beatLookup.Add(beat, new ArrangedBarBeat(beat, VoicePart.Treble));
+                    this.ArrangeBeatsAndNotes(segment.TrebleVoice, VoicePart.Treble);
+                }
+            }
+        }
+
+        private void ArrangeBeatsAndNotes(Voice voice, VoicePart voicePart)
+        {
+            ArrangedBeat previousBeat = null;
+            foreach (var beat in voice.Beats)
+            {
+                var arrangedBeat = new ArrangedBeat(beat, voicePart) { PreviousBeat = previousBeat };
+                _beatLookup.Add(beat, arrangedBeat);
+                if (previousBeat != null)
+                    previousBeat.NextBeat = arrangedBeat;
+                previousBeat = arrangedBeat;
+
+                if (beat.Notes != null)
+                {
+                    foreach (var note in beat.Notes)
+                    {
+                        var arrangedNote = new ArrangedNote(note, arrangedBeat);
+                        _noteLookup.Add(note, arrangedNote);
+                        arrangedBeat.Notes.Add(arrangedNote);
+                    }
                 }
             }
         }
@@ -98,7 +136,7 @@ namespace TabML.Editor.Tablature.Layout
                 if (segment.IsOmittedByTemplate)
                     continue;
 
-                var arrangedBeats = new List<ArrangedBarBeat>();
+                var arrangedBeats = new List<ArrangedBeat>();
 
                 this.CreateArrangedBarBeats(arrangedBeats, segment.TrebleVoice);
                 this.CreateArrangedBarBeats(arrangedBeats, segment.BassVoice);
@@ -143,7 +181,7 @@ namespace TabML.Editor.Tablature.Layout
 
         }
 
-        private void CreateArrangedBarBeats(List<ArrangedBarBeat> arrangedBeats, Voice voice)
+        private void CreateArrangedBarBeats(List<ArrangedBeat> arrangedBeats, Voice voice)
         {
             if (voice == null)
                 return; // todo: insert rest?

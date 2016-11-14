@@ -9,7 +9,7 @@ using TheoreticalChord = TabML.Core.MusicTheory.Chord;
 
 namespace TabML.Parser.AST
 {
-    class RhythmSegmentNode : RhythmSegmentNodeBase, IDocumentElementFactory<RhythmSegment>
+    class RhythmSegmentNode : RhythmSegmentNodeBase
     {
         public LiteralNode<string> ChordName { get; set; }
         public LiteralNode<Chord> Chord { get; set; }

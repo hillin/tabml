@@ -6,7 +6,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class TempoCommandletNode : CommandletNode, IDocumentElementFactory<TempoSignature>
+    class TempoCommandletNode : CommandletNode
     {
         public LiteralNode<BaseNoteValue> NoteValue { get; set; }
         public LiteralNode<int> Beats { get; set; }

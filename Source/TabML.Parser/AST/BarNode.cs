@@ -10,7 +10,7 @@ using TabML.Parser.Parsing;
 namespace TabML.Parser.AST
 {
     [DebuggerDisplay("bar: {Range.Content}")]
-    class BarNode : TopLevelNode, IDocumentElementFactory<Bar>
+    class BarNode : TopLevelNode
     {
         public LiteralNode<OpenBarLine> OpenLine { get; set; }
         public LiteralNode<CloseBarLine> CloseLine { get; set; }
@@ -53,11 +53,20 @@ namespace TabML.Parser.AST
 
         public bool ToDocumentElement(TablatureContext context, ILogger logger, out Bar bar)
         {
-            Rhythm rhythm;
+            bar = new Bar
+            {
+                OpenLine = this.OpenLine?.Value,
+                CloseLine = this.CloseLine?.Value,
+                Range = this.Range
+            };
+
+            context.CurrentBar = bar;
+
             if (this.Rhythm == null)
-                rhythm = null;
+                bar.Rhythm = null;
             else
             {
+                Rhythm rhythm;
                 if (!this.Rhythm.ToDocumentElement(context, logger, out rhythm))
                 {
                     bar = null;
@@ -66,26 +75,23 @@ namespace TabML.Parser.AST
 
                 if (context.DocumentState.RhythmTemplate != null)
                     rhythm = context.DocumentState.RhythmTemplate.Apply(rhythm, logger);
+                
+                bar.Rhythm = rhythm;
             }
 
-            Lyrics lyrics;
             if (this.Lyrics == null)
-                lyrics = null;
-            else if (!this.Lyrics.ToDocumentElement(context, logger, out lyrics))
+                bar.Lyrics = null;
+            else
             {
-                bar = null;
-                return false;
+                Lyrics lyrics;
+                if (!this.Lyrics.ToDocumentElement(context, logger, out lyrics))
+                {
+                    bar = null;
+                    return false;
+                }
+
+                bar.Lyrics = lyrics;
             }
-
-            bar = new Bar
-            {
-                OpenLine = this.OpenLine?.Value,
-                CloseLine = this.CloseLine?.Value,
-                Rhythm = rhythm,
-                Lyrics = lyrics,
-                Range = this.Range
-            };
-
 
             return true;
         }

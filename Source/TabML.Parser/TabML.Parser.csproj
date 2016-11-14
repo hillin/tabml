@@ -92,7 +92,6 @@
     <Compile Include="AST\ChordParser.cs" />
     <Compile Include="AST\CommandletNode.cs" />
     <Compile Include="AST\ExistencyNode.cs" />
-    <Compile Include="AST\IDocumentElementFactory.cs" />
     <Compile Include="AST\RhythmTemplateExtensions.cs" />
     <Compile Include="Document\DocumentStateExtensions.cs" />
     <Compile Include="Validation\AlternateIntegrityChecker.cs" />

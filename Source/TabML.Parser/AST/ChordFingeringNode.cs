@@ -6,7 +6,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class ChordFingeringNode : Node, IDocumentElementFactory<ChordFingering>
+    class ChordFingeringNode : Node
     {
         public const int FingeringSkipString = -1;
 

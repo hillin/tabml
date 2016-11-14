@@ -25,8 +25,17 @@ let tablatureStyle: TR.ITablatureStyle =
                 offset: 3,
                 spacing: 2
             },
-            flagSpacing : 4,
+            flagSpacing: 4,
             tuplet: {
+                fontSize: 12,
+                fontFamily: "Times New Roman",
+                fontStyle: "italic"
+            }
+        },
+
+        tie: {
+            instructionOffset: 24,
+            instructionText: {
                 fontSize: 12,
                 fontFamily: "Times New Roman",
                 fontStyle: "italic"
@@ -52,8 +61,7 @@ let tablatureStyle: TR.ITablatureStyle =
 
 let renderer: TR.PrimitiveRenderer;
 
-window.onerror = function (errorMessage, url, lineNumber)
-{
+window.onerror = function (errorMessage, url, lineNumber) {
     alert(errorMessage + "\n" + url + "#" + lineNumber);
 };
 
@@ -69,4 +77,5 @@ window.onload = () => {
     //renderer.drawBarLine(Core.MusicTheory.BarLine.BeginAndEndRepeat, 100, 100);
     //renderer.drawFlag(BaseNoteValue.SixtyFourth, 100, 100, OffBarDirection.Top);
     //renderer.drawTuplet("3", 100, 100);
+    //renderer.drawTie(100, 300, 100, OffBarDirection.Top);
 };

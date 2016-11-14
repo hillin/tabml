@@ -3,6 +3,7 @@
     public enum PostNoteConnection
     {
         None = 0,
-        SlideOut = 4,
+        SlideOutToHigher = 5,
+        SlideOutToLower = 6
     }
 }

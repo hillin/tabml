@@ -9,7 +9,7 @@ using StrumTechniqueEnum = TabML.Core.MusicTheory.StrumTechnique;
 
 namespace TabML.Parser.AST
 {
-    class BeatNode : Node, IDocumentElementFactory<Beat>
+    class BeatNode : Node
     {
         public NoteValueNode NoteValue { get; set; }
         public ExistencyNode Rest { get; set; }
@@ -69,7 +69,7 @@ namespace TabML.Parser.AST
             this.Modifiers = new List<Node>();
         }
 
-        public bool ToDocumentElement(TablatureContext context, ILogger logger, out Beat beat)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, VoicePart voicePart, out Beat beat)
         {
             beat = new Beat
             {
@@ -88,10 +88,11 @@ namespace TabML.Parser.AST
             foreach (var note in this.Notes)
             {
                 BeatNote documentNote;
-                if (!note.ToDocumentElement(context, logger, out documentNote))
+                if (!note.ToDocumentElement(context, logger, voicePart, out documentNote))
                     return false;
 
                 notes.Add(documentNote);
+                context.CurrentBar.LastNoteOnStrings[documentNote.String] = documentNote;
             }
 
             beat.Notes = notes.ToArray();

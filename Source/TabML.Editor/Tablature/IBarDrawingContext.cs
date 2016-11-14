@@ -23,5 +23,6 @@ namespace TabML.Editor.Tablature
         void GetStemOffsetRange(int stringIndex, VoicePart voicePart, out double from, out double to);
         void DrawTuplet(int tuplet, double x, double y, VoicePart voicePart);
         void DrawTupletForRest(int value, double position, VoicePart voicePart);
+        void DrawTie(double from, double to, int stringIndex, VoicePart voicePart, string instruction, double instructionY);
     }
 }

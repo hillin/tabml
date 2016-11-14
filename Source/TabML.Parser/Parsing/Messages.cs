@@ -4,6 +4,24 @@ namespace TabML.Parser.Parsing
 {
     internal static class Messages
     {
+        public const string Error_FretMissingForSlideInNote = "Fret must be specified for a note with slide-in effect";
+        public const string Warning_FretTooLowForSlideInNote = "Fret too low for a note with slide-in effect, the slide-in effect is ignored";
+        
+
+        public const string Error_FretMissingForSlideOutNote = "Fret must be specified for a note with slide-out effect";
+        public const string Warning_FretTooLowForSlideOutNote = "Fret too low for a note with slide-out effect, the slide-out effect is ignored";
+
+        public const string Error_FretMissingForSlideNote = "Fret must be specified for a note with slide effect";
+        public const string Warning_SlidingToSameFret = "Sliding from and to the same fret, the slide effect is ignored";
+
+        public const string Error_FretMissingForPullNote = "Fret must be specified for a note with pull effect";
+        public const string Warning_PullingToSameFret = "Pulling from and to the same fret, the pull effect is ignored";
+        public const string Warning_PullingFromLowerFret = "Pulling from a lower fret, the pull effect will be replaced with hammer";
+
+        public const string Error_FretMissingForHammerNote = "Fret must be specified for a note with hammer effect";
+        public const string Warning_HammeringToSameFret = "Hammering from and to the same fret, the hammer effect is ignored";
+        public const string Warning_HammeringFromHigherFret = "Hammering from a higher fret, the hammer effect will be replaced with pull";
+
         public const string Warning_TemplateBarCannotContainLyrics =
             "Pattern templates cannot contain lyrics. These lyrics will be omitted";
 
@@ -138,6 +156,9 @@ namespace TabML.Parser.Parsing
 
         public const string Error_BeatInvalidFretNumberInStringsSpecifier =
             "Unrecognizable fret number";
+
+        public const string Error_ConnectionPredecessorNotExisted = "Cannot find a note as predecessor of the pre-connection of this note";
+        public const string Warning_TiedNoteMismatch = "The tied note does not match its predecessor, the tie mark will be ignored";
 
         public const string Warning_FretUnderCapo =
             "The note on the #{1} fret of #{0} string cannot be played because it's under fret position";

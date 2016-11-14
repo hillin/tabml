@@ -124,12 +124,13 @@
       <DependentUpon>ChordDiagramGridRow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Tablature\IBarDrawingContext.cs" />
-    <Compile Include="Tablature\Layout\ArrangedBarBeat.cs" />
+    <Compile Include="Tablature\Layout\ArrangedBeat.cs" />
     <Compile Include="Tablature\Layout\ArrangedBar.cs" />
     <Compile Include="Tablature\Layout\ArrangedBarVoice.cs" />
     <Compile Include="Tablature\Layout\ArrangedBeam.cs" />
     <Compile Include="Tablature\Layout\ArrangedBarColumn.cs" />
     <Compile Include="Tablature\Layout\ArrangedBeatConnection.cs" />
+    <Compile Include="Tablature\Layout\ArrangedNote.cs" />
     <Compile Include="Tablature\Layout\BarArranger.cs" />
     <Compile Include="Tablature\Layout\BeamSlope.cs" />
     <Compile Include="Tablature\Layout\BeatArranger.cs" />

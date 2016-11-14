@@ -6,7 +6,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class LyricsSegmentNode : Node, IDocumentElementFactory<LyricsSegment>
+    class LyricsSegmentNode : Node
     {
         public LiteralNode<string> Text { get; set; }
 

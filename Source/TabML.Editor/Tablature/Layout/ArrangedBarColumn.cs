@@ -12,16 +12,18 @@ namespace TabML.Editor.Tablature.Layout
     class ArrangedBarColumn
     {
         public int ColumnIndex { get; }
-        public List<ArrangedBarBeat> VoiceBeats { get; }
+        public List<ArrangedBeat> VoiceBeats { get; }
         public Chord Chord { get; set; }
         public LyricsSegment Lyrics { get; set; }
+        public double Position { get; set; }
+        public double Width { get; set; }
 
         private bool[] _occupiedStrings; // string indices occupied by this column, in ascending order
 
         public ArrangedBarColumn(int columnIndex)
         {
             this.ColumnIndex = columnIndex;
-            this.VoiceBeats = new List<ArrangedBarBeat>();
+            this.VoiceBeats = new List<ArrangedBeat>();
         }
 
         public PreciseDuration GetDuration() => this.VoiceBeats.Min(v => v.GetDuration());
@@ -34,9 +36,6 @@ namespace TabML.Editor.Tablature.Layout
 
         public void Draw(IBarDrawingContext drawingContext, double position, double width)
         {
-            foreach (var beat in this.VoiceBeats)
-                beat.DrawHead(drawingContext, position, width);
-
             //todo: draw chord and lyrics
         }
 
@@ -45,7 +44,7 @@ namespace TabML.Editor.Tablature.Layout
             if (_occupiedStrings == null)
             {
                 _occupiedStrings = new bool[Defaults.Strings];
-                foreach (var i in this.VoiceBeats.SelectMany(b => b.Beat.Notes.Select(n => n.String - 1)))
+                foreach (var i in this.VoiceBeats.SelectMany(b => b.Beat.Notes.Select(n => n.String)))
                     _occupiedStrings[i] = true;
             }
 
@@ -53,7 +52,7 @@ namespace TabML.Editor.Tablature.Layout
                 return _occupiedStrings[1] ? -0.25 : 0;
 
             var continuousStringsBefore = 0;
-            for (var i = stringIndex - 1; i >= 0; --i)
+            for (var i = stringIndex; i >= 0; --i)
             {
                 if (_occupiedStrings[i])
                     ++continuousStringsBefore;

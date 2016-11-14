@@ -187,7 +187,7 @@ namespace TabML.Parser.Parsing
         public static bool TryReadPreNoteConnection(Scanner scanner, ILogger logger,
                                                      out LiteralNode<PreNoteConnection> connection)
         {
-            switch (scanner.ReadAny("~", @"\/", @"\\", @"\.\/", @"\`\\", "h", "p"))
+            switch (scanner.ReadAny("~", @"\/", @"\\", @"\.\/", @"\`\\", "h", "p", "s"))
 
             {
                 case @"~":
@@ -195,11 +195,14 @@ namespace TabML.Parser.Parsing
                     return true;
                 case @"/":
                 case @"\":
+                case "s":
                     connection = new LiteralNode<PreNoteConnection>(PreNoteConnection.Slide, scanner.LastReadRange);
                     return true;
                 case @"./":
+                    connection = new LiteralNode<PreNoteConnection>(PreNoteConnection.SlideInFromLower, scanner.LastReadRange);
+                    return true;
                 case @"`\":
-                    connection = new LiteralNode<PreNoteConnection>(PreNoteConnection.SlideIn, scanner.LastReadRange);
+                    connection = new LiteralNode<PreNoteConnection>(PreNoteConnection.SlideInFromHigher, scanner.LastReadRange);
                     return true;
                 case @"h":
                     connection = new LiteralNode<PreNoteConnection>(PreNoteConnection.Hammer, scanner.LastReadRange);
@@ -220,8 +223,10 @@ namespace TabML.Parser.Parsing
             switch (scanner.ReadAny(@"\/\`", @"\\\.").ToLowerInvariant())
             {
                 case @"/`":
+                    connection = new LiteralNode<PostNoteConnection>(PostNoteConnection.SlideOutToHigher, scanner.LastReadRange);
+                    return true;
                 case @"\.":
-                    connection = new LiteralNode<PostNoteConnection>(PostNoteConnection.SlideOut, scanner.LastReadRange);
+                    connection = new LiteralNode<PostNoteConnection>(PostNoteConnection.SlideOutToLower, scanner.LastReadRange);
                     return true;
             }
 

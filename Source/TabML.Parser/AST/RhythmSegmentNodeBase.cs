@@ -45,7 +45,7 @@ namespace TabML.Parser.AST
                 this.TrebleVoice.ExpectedDuration = duration;
 
                 Voice trebleVoice;
-                if (!this.TrebleVoice.ToDocumentElement(context, logger, out trebleVoice))
+                if (!this.TrebleVoice.ToDocumentElement(context, logger, VoicePart.Treble, out trebleVoice))
                     return false;
 
                 trebleVoice.Part = VoicePart.Treble;
@@ -58,7 +58,7 @@ namespace TabML.Parser.AST
                 this.BassVoice.ExpectedDuration = duration;
 
                 Voice bassVoice;
-                if (!this.BassVoice.ToDocumentElement(context, logger, out bassVoice))
+                if (!this.BassVoice.ToDocumentElement(context, logger, VoicePart.Bass, out bassVoice))
                     return false;
 
                 bassVoice.Part = VoicePart.Bass;

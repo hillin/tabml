@@ -108,6 +108,8 @@ namespace TabML.Editor.Tablature.Layout
                 var columnWidth = columnDuration < minWidthDuration
                     ? drawingContext.Style.MinimumBeatSize
                     : durationWidth * columnDuration;
+                column.Position = position;
+                column.Width = columnWidth;
                 columnPositions[i] = position;
                 column.Draw(drawingContext, position, columnWidth);
                 position += columnWidth;

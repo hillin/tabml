@@ -27,6 +27,8 @@ namespace TabML.Parser.AST
                 return true;
             }
 
+            context.CurrentBar = null;  // todo: this is ugly, refactor it
+
             RhythmTemplate rhythmTemplate;
             if (!this.TemplateNode.ToDocumentElement(context, logger, out rhythmTemplate))
                 return false;

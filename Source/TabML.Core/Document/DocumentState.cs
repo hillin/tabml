@@ -180,7 +180,6 @@ namespace TabML.Core.Document
         }
 
         public ICollection<Section> DefinedSections => _definedSections;
-
         public bool IsSealed { get; private set; }
 
 
@@ -199,6 +198,6 @@ namespace TabML.Core.Document
                 throw new InvalidOperationException("this DocumentState is sealed and uneditable");
         }
 
-       
+
     }
 }

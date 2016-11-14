@@ -55,29 +55,29 @@ namespace TabML.Editor.Tablature.Layout
             return this.BeatNoteValue.GetDuration() * this.Tuplet.Value / 2 <= this.GetDuration();
         }
 
-        public ArrangedBarBeat FirstBeat
+        public ArrangedBeat FirstBeat
         {
             get
             {
                 if (this.Elements.Count == 0)
                     return null;
-                var beat = this.Elements[0] as ArrangedBarBeat;
+                var beat = this.Elements[0] as ArrangedBeat;
                 return beat ?? ((ArrangedBeam)this.Elements[0]).FirstBeat;
             }
         }
 
-        public ArrangedBarBeat LastBeat
+        public ArrangedBeat LastBeat
         {
             get
             {
                 if (this.Elements.Count == 0)
                     return null;
-                var beat = this.Elements[this.Elements.Count - 1] as ArrangedBarBeat;
+                var beat = this.Elements[this.Elements.Count - 1] as ArrangedBeat;
                 return beat ?? ((ArrangedBeam)this.Elements[this.Elements.Count - 1]).LastBeat;
             }
         }
 
-        public bool MatchesTuplet(ArrangedBarBeat beat)
+        public bool MatchesTuplet(ArrangedBeat beat)
         {
             return this.BeatNoteValue > beat.Beat.NoteValue.Base    // if we are large enough to create a child beam for this beat
                 || this.Tuplet == beat.Beat.NoteValue.Tuplet;       // or our tuplet exactly matches

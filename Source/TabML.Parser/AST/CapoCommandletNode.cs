@@ -8,7 +8,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    class CapoCommandletNode : CommandletNode, IDocumentElementFactory<Capo>
+    class CapoCommandletNode : CommandletNode
     {
         public LiteralNode<int> Position { get; set; }
         public CapoStringsSpecifierNode StringsSpecifier { get; set; }

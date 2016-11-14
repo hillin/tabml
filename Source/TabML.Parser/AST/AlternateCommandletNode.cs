@@ -11,7 +11,7 @@ using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
 {
-    internal class AlternateCommandletNode : CommandletNode, IDocumentElementFactory<Alternation>
+    internal class AlternateCommandletNode : CommandletNode
     {
         public List<LiteralNode<string>> AlternationTexts { get; }
 
