@@ -14,6 +14,8 @@ namespace TabML.Parser.Parsing.Bar
         {
             var anchor = scanner.MakeAnchor();
             result = new BeatNode();
+            
+            // todo: support all pre- and post- connections
 
             ExistencyNode tiedNode;
             if (new CharExistencyParser('~').TryParse(scanner, out tiedNode))

@@ -122,6 +122,7 @@
     <Compile Include="MusicTheory\BaseNoteValues.cs" />
     <Compile Include="MusicTheory\CapoInfo.cs" />
     <Compile Include="MusicTheory\AllStringStrumTechnique.cs" />
+    <Compile Include="MusicTheory\GlissDirection.cs" />
     <Compile Include="MusicTheory\KnownTuningAttribute.cs" />
     <Compile Include="MusicTheory\NoteEffectTechnique.cs" />
     <Compile Include="MusicTheory\PostNoteConnection.cs" />

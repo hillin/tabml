@@ -24,5 +24,7 @@ namespace TabML.Editor.Tablature
         void DrawTuplet(int tuplet, double x, double y, VoicePart voicePart);
         void DrawTupletForRest(int value, double position, VoicePart voicePart);
         void DrawTie(double from, double to, int stringIndex, VoicePart voicePart, string instruction, double instructionY);
+        void DrawGliss(double x, int stringIndex, GlissDirection direction, double instructionY);
+        void DrawDeadNote(int stringIndex, double position, double horizontalOffset, bool isHalfOrLonger);
     }
 }

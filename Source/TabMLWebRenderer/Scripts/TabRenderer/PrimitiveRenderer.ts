@@ -2,6 +2,7 @@ import BarLine = Core.MusicTheory.BarLine;
 import BaseNoteValue = Core.MusicTheory.BaseNoteValue;
 import OffBarDirection = Core.MusicTheory.OffBarDirection;
 import NoteValueAugment = Core.MusicTheory.NoteValueAugment;
+import GlissDirection = Core.MusicTheory.GlissDirection;
 
 namespace TR {
     export class PrimitiveRenderer {
@@ -32,21 +33,36 @@ namespace TR {
             text.originY = "center";
             this.canvas.add(text);
 
-            let bounds = text.getBoundingRect();
-            let radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
-
             if (isHalfOrLonger && this.style.note.circleOnLongNotes) {
-                let circle = new fabric.Circle({
-                    radius: radius,
-                    left: x,
-                    top: y,
-                    originX: "center",
-                    originY: "center",
-                    stroke: "black",
-                    fill: ""
-                });
-                this.canvas.add(circle);
+                this.drawCircleAroundLongNote(x, y, text.getBoundingRect());
             }
+        }
+
+        private drawCircleAroundLongNote(x: number, y: number, bounds: { left: number; top: number; width: number; height: number }) {
+            let radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
+            let circle = new fabric.Circle({
+                radius: radius,
+                left: x,
+                top: y,
+                originX: "center",
+                originY: "center",
+                stroke: "black",
+                fill: ""
+            });
+            this.canvas.add(circle);
+        }
+
+        drawDeadNote(x: number, y: number, isHalfOrLonger: boolean) {
+            let imageFile = ResourceManager.getTablatureResource("dead_note.svg");
+            this.drawSVGFromURL(imageFile, x, y, group => {
+                group.scaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                group.originX = "center";
+                group.originY = "center";
+
+                if (isHalfOrLonger && this.style.note.circleOnLongNotes) {
+                    this.drawCircleAroundLongNote(x, y, group.getBoundingRect());
+                }
+            });
         }
 
         drawLyrics(lyrics: string, x: number, y: number) {
@@ -212,22 +228,23 @@ namespace TR {
             });
         }
 
-        drawTie(x0: number, x1: number, y: number, instruction: string, instructionY:number, direction: OffBarDirection) {
+        drawTie(x0: number, x1: number, y: number, instruction: string, instructionY: number, direction: OffBarDirection) {
             let imageFile = ResourceManager.getTablatureResource("tie.svg");
             this.drawSVGFromURL(imageFile, x0, y, group => {
 
-                group.originX = "left";
+                group.scaleToWidth(x1 - x0);
+                group.scaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
 
                 if (direction == OffBarDirection.Bottom) {
                     group.originY = "top";
+                    group.originX = "right";
                     group.flipY = true;
                 }
                 else {
+                    group.originX = "left";
                     group.originY = "bottom";
                 }
 
-                group.scaleToWidth(x1 - x0);
-                group.scaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
             });
 
             if (instruction != null) {
@@ -238,6 +255,57 @@ namespace TR {
                 text.originY = "center";
                 this.canvas.add(text);
             }
+        }
+
+        drawGliss(x: number, y: number, direction: GlissDirection, instructionY: number) {
+            let imageFile = ResourceManager.getTablatureResource("gliss.svg");
+
+            this.drawSVGFromURL(imageFile, x, y, group => {
+
+                switch (direction) {
+                    case GlissDirection.FromHigher:
+                        group.flipX = true;
+                        group.flipY = true;
+                        group.originX = "right";
+                        group.originY = "bottom";
+                        break;
+                    case GlissDirection.FromLower:
+                        group.flipX = true;
+                        group.originX = "right";
+                        group.originY = "top";
+                        break;
+                    case GlissDirection.ToHigher:
+                        group.flipY = true;
+                        group.originX = "left";
+                        group.originY = "bottom";
+                        break;
+                    case GlissDirection.ToLower:
+                        group.originX = "left";
+                        group.originY = "top";
+                        break;
+                }
+
+                group.scaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+
+                let text = new fabric.Text("gl.", this.style.tie.instructionText);
+                let instructionX = x;
+                switch (direction) {
+                    case GlissDirection.FromHigher:
+                    case GlissDirection.FromLower:
+                        instructionX -= group.width / 2;
+                        break;
+                    case GlissDirection.ToHigher:
+                    case GlissDirection.ToLower:
+                        instructionX += group.width / 2;
+                        break;
+                }
+                text.left = instructionX;
+                text.top = instructionY;
+                text.originX = "center";
+                text.originY = "center";
+                this.canvas.add(text);
+            });
+
         }
 
     }

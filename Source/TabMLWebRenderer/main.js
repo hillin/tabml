@@ -2426,6 +2426,19 @@ var Core;
 (function (Core) {
     var MusicTheory;
     (function (MusicTheory) {
+        (function (GlissDirection) {
+            GlissDirection[GlissDirection["FromHigher"] = 0] = "FromHigher";
+            GlissDirection[GlissDirection["FromLower"] = 1] = "FromLower";
+            GlissDirection[GlissDirection["ToHigher"] = 2] = "ToHigher";
+            GlissDirection[GlissDirection["ToLower"] = 3] = "ToLower";
+        })(MusicTheory.GlissDirection || (MusicTheory.GlissDirection = {}));
+        var GlissDirection = MusicTheory.GlissDirection;
+    })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
+})(Core || (Core = {}));
+var Core;
+(function (Core) {
+    var MusicTheory;
+    (function (MusicTheory) {
         (function (NoteValueAugment) {
             NoteValueAugment[NoteValueAugment["None"] = 0] = "None";
             NoteValueAugment[NoteValueAugment["Dot"] = 1] = "Dot";
@@ -2482,6 +2495,7 @@ var BarLine = Core.MusicTheory.BarLine;
 var BaseNoteValue = Core.MusicTheory.BaseNoteValue;
 var OffBarDirection = Core.MusicTheory.OffBarDirection;
 var NoteValueAugment = Core.MusicTheory.NoteValueAugment;
+var GlissDirection = Core.MusicTheory.GlissDirection;
 var TR;
 (function (TR) {
     var PrimitiveRenderer = (function () {
@@ -2504,20 +2518,34 @@ var TR;
             text.originX = "center";
             text.originY = "center";
             this.canvas.add(text);
-            var bounds = text.getBoundingRect();
-            var radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
             if (isHalfOrLonger && this.style.note.circleOnLongNotes) {
-                var circle = new fabric.Circle({
-                    radius: radius,
-                    left: x,
-                    top: y,
-                    originX: "center",
-                    originY: "center",
-                    stroke: "black",
-                    fill: ""
-                });
-                this.canvas.add(circle);
+                this.drawCircleAroundLongNote(x, y, text.getBoundingRect());
             }
+        };
+        PrimitiveRenderer.prototype.drawCircleAroundLongNote = function (x, y, bounds) {
+            var radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
+            var circle = new fabric.Circle({
+                radius: radius,
+                left: x,
+                top: y,
+                originX: "center",
+                originY: "center",
+                stroke: "black",
+                fill: ""
+            });
+            this.canvas.add(circle);
+        };
+        PrimitiveRenderer.prototype.drawDeadNote = function (x, y, isHalfOrLonger) {
+            var _this = this;
+            var imageFile = ResourceManager.getTablatureResource("dead_note.svg");
+            this.drawSVGFromURL(imageFile, x, y, function (group) {
+                group.scaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                group.originX = "center";
+                group.originY = "center";
+                if (isHalfOrLonger && _this.style.note.circleOnLongNotes) {
+                    _this.drawCircleAroundLongNote(x, y, group.getBoundingRect());
+                }
+            });
         };
         PrimitiveRenderer.prototype.drawLyrics = function (lyrics, x, y) {
             var text = new fabric.Text(lyrics, this.style.lyrics);
@@ -2687,16 +2715,17 @@ var TR;
             var _this = this;
             var imageFile = ResourceManager.getTablatureResource("tie.svg");
             this.drawSVGFromURL(imageFile, x0, y, function (group) {
-                group.originX = "left";
+                group.scaleToWidth(x1 - x0);
+                group.scaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
                 if (direction == OffBarDirection.Bottom) {
                     group.originY = "top";
+                    group.originX = "right";
                     group.flipY = true;
                 }
                 else {
+                    group.originX = "left";
                     group.originY = "bottom";
                 }
-                group.scaleToWidth(x1 - x0);
-                group.scaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
             });
             if (instruction != null) {
                 var text = new fabric.Text(instruction, this.style.tie.instructionText);
@@ -2706,6 +2735,52 @@ var TR;
                 text.originY = "center";
                 this.canvas.add(text);
             }
+        };
+        PrimitiveRenderer.prototype.drawGliss = function (x, y, direction, instructionY) {
+            var _this = this;
+            var imageFile = ResourceManager.getTablatureResource("gliss.svg");
+            this.drawSVGFromURL(imageFile, x, y, function (group) {
+                switch (direction) {
+                    case GlissDirection.FromHigher:
+                        group.flipX = true;
+                        group.flipY = true;
+                        group.originX = "right";
+                        group.originY = "bottom";
+                        break;
+                    case GlissDirection.FromLower:
+                        group.flipX = true;
+                        group.originX = "right";
+                        group.originY = "top";
+                        break;
+                    case GlissDirection.ToHigher:
+                        group.flipY = true;
+                        group.originX = "left";
+                        group.originY = "bottom";
+                        break;
+                    case GlissDirection.ToLower:
+                        group.originX = "left";
+                        group.originY = "top";
+                        break;
+                }
+                group.scaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                var text = new fabric.Text("gl.", _this.style.tie.instructionText);
+                var instructionX = x;
+                switch (direction) {
+                    case GlissDirection.FromHigher:
+                    case GlissDirection.FromLower:
+                        instructionX -= group.width / 2;
+                        break;
+                    case GlissDirection.ToHigher:
+                    case GlissDirection.ToLower:
+                        instructionX += group.width / 2;
+                        break;
+                }
+                text.left = instructionX;
+                text.top = instructionY;
+                text.originX = "center";
+                text.originY = "center";
+                _this.canvas.add(text);
+            });
         };
         return PrimitiveRenderer;
     }());

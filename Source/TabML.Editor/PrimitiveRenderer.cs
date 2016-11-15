@@ -53,12 +53,17 @@ namespace TabML.Editor
             if (arg == null)
                 return "null";
 
+            if (arg is Enum)
+                // ReSharper disable once PossibleInvalidCastException
+                return ((int)arg).ToString();
+
             return arg.ToString();
         }
 
         public void DrawTitle(string title, double x, double y) => this.InvokeRenderMethod("drawTitle", title, x, y);
         public void DrawLyrics(string lyrics, double x, double y) => this.InvokeRenderMethod("drawLyrics", lyrics, x, y);
         public void DrawFretNumber(string fretNumber, double x, double y, bool isHalfOrLonger) => this.InvokeRenderMethod("drawFretNumber", fretNumber, x, y, isHalfOrLonger);
+        public void DrawDeadNote(double x, double y, bool isHalfOrLonger) => this.InvokeRenderMethod("drawDeadNote", x, y, isHalfOrLonger);
         public void DrawHorizontalBarLine(double x, double y, double length) => this.InvokeRenderMethod("drawHorizontalBarLine", x, y, length);
         public void DrawBarLine(BarLine line, double x, double y) => this.InvokeRenderMethod("drawBarLine", (int)line, x, y);
         public void DrawStem(double x, double yFrom, double yTo) => this.InvokeRenderMethod("drawStem", x, yFrom, yTo);
@@ -70,6 +75,11 @@ namespace TabML.Editor
 
         public void DrawTie(double x0, double x1, double y, string instruction, double instructionY,
                             OffBarDirection offBarDirection)
-            => this.InvokeRenderMethod("drawTie", x0, x1, y, instruction, instructionY, (int) offBarDirection);
+            => this.InvokeRenderMethod("drawTie", x0, x1, y, instruction, instructionY, (int)offBarDirection);
+
+        public void DrawGliss(double x, double y, GlissDirection direction, double instructionY)
+            => this.InvokeRenderMethod("drawGliss", x, y, direction, instructionY);
+
+
     }
 }

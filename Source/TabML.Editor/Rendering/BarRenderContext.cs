@@ -34,13 +34,28 @@ namespace TabML.Editor.Rendering
 
         public void DrawFretNumber(int stringIndex, string fretNumber, double position, double horizontalOffset, bool isHalfOrLonger)
         {
-            this.DrawHorizontalBarLineTo(stringIndex, position - 10); // todo: use measure string to handle spaces
-
-            this.StringCarets[stringIndex] = position + 10;
+            this.UpdateHorizontalBarLine(stringIndex, position);
 
             this.PrimitiveRenderer.DrawFretNumber(fretNumber, this.Location.X + position + horizontalOffset * 10,
                                                   this.GetStringPosition(stringIndex), isHalfOrLonger);
         }
+
+        private void UpdateHorizontalBarLine(int stringIndex, double position)
+        {
+            this.DrawHorizontalBarLineTo(stringIndex, position - 10); // todo: use measure string to handle spaces
+
+            this.StringCarets[stringIndex] = position + 10;
+        }
+
+
+        public void DrawDeadNote(int stringIndex, double position, double horizontalOffset, bool isHalfOrLonger)
+        {
+            this.UpdateHorizontalBarLine(stringIndex, position);
+
+            this.PrimitiveRenderer.DrawDeadNote(this.Location.X + position + horizontalOffset * 10,
+                                                this.GetStringPosition(stringIndex), isHalfOrLonger);
+        }
+
 
         public void FinishHorizontalBarLines(double width)
         {
@@ -116,6 +131,26 @@ namespace TabML.Editor.Rendering
                                                ? -this.Style.OuterNoteInstructionOffset
                                                : this.Style.OuterNoteInstructionOffset), voicePart.ToOffBarDirection());
             //todo: replace magic number
+        }
+
+        public void DrawGliss(double x, int stringIndex, GlissDirection direction, double instructionY)
+        {
+            x = x + this.Location.X;
+
+            switch (direction)
+            {
+                case GlissDirection.FromHigher:
+                case GlissDirection.FromLower:
+                    x -= 10;    //todo: replace magic number
+                    break;
+                case GlissDirection.ToHigher:
+                case GlissDirection.ToLower:
+                    x += 10;    //todo: replace magic number
+                    break;
+            }
+
+
+            this.PrimitiveRenderer.DrawGliss(x, this.GetStringPosition(stringIndex), direction, instructionY);
         }
 
 
