@@ -52,7 +52,7 @@ namespace TabML.Editor.Tablature.Layout
                 return _occupiedStrings[1] ? -0.25 : 0;
 
             var continuousStringsBefore = 0;
-            for (var i = stringIndex; i >= 0; --i)
+            for (var i = stringIndex - 1; i >= 0; --i)
             {
                 if (_occupiedStrings[i])
                     ++continuousStringsBefore;

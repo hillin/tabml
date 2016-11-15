@@ -56,6 +56,14 @@ namespace TabML.Editor.Rendering
                                                 this.GetStringPosition(stringIndex), isHalfOrLonger);
         }
 
+        public void DrawPlayToChordMark(int stringIndex, double position, double horizontalOffset, bool isHalfOrLonger)
+        {
+            this.UpdateHorizontalBarLine(stringIndex, position);
+
+            this.PrimitiveRenderer.DrawPlayToChordMark(this.Location.X + position + horizontalOffset*10,
+                                                       this.GetStringPosition(stringIndex), isHalfOrLonger);
+        }
+
 
         public void FinishHorizontalBarLines(double width)
         {

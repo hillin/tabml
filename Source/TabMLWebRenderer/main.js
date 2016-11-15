@@ -2375,7 +2375,8 @@ window.onerror = function (errorMessage, url, lineNumber) {
 };
 window.onload = function () {
     var canvas = document.getElementById("staff");
-    var fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
+    //let fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
+    var fabricCanvas = new fabric.Canvas(canvas, tablatureStyle.page);
     fabricCanvas.backgroundColor = "white";
     renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
     //renderer.drawFretNumber("2", 100, 100, true);
@@ -2511,6 +2512,17 @@ var TR;
             text.originY = "top";
             this.canvas.add(text);
         };
+        PrimitiveRenderer.prototype.drawSpecialFretting = function (imageFile, x, y, isHalfOrLonger) {
+            var _this = this;
+            this.drawSVGFromURL(imageFile, x, y, function (group) {
+                group.scaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                group.originX = "center";
+                group.originY = "center";
+                if (isHalfOrLonger && _this.style.note.circleOnLongNotes) {
+                    _this.drawCircleAroundLongNote(x, y, group.getBoundingRect());
+                }
+            });
+        };
         PrimitiveRenderer.prototype.drawFretNumber = function (fretNumber, x, y, isHalfOrLonger) {
             var text = new fabric.Text(fretNumber, this.style.fretNumber);
             text.left = x;
@@ -2536,16 +2548,10 @@ var TR;
             this.canvas.add(circle);
         };
         PrimitiveRenderer.prototype.drawDeadNote = function (x, y, isHalfOrLonger) {
-            var _this = this;
-            var imageFile = ResourceManager.getTablatureResource("dead_note.svg");
-            this.drawSVGFromURL(imageFile, x, y, function (group) {
-                group.scaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
-                group.originX = "center";
-                group.originY = "center";
-                if (isHalfOrLonger && _this.style.note.circleOnLongNotes) {
-                    _this.drawCircleAroundLongNote(x, y, group.getBoundingRect());
-                }
-            });
+            this.drawSpecialFretting(ResourceManager.getTablatureResource("dead_note.svg"), x, y, isHalfOrLonger);
+        };
+        PrimitiveRenderer.prototype.drawPlayToChordMark = function (x, y, isHalfOrLonger) {
+            this.drawSpecialFretting(ResourceManager.getTablatureResource("play_to_chord_mark.svg"), x, y, isHalfOrLonger);
         };
         PrimitiveRenderer.prototype.drawLyrics = function (lyrics, x, y) {
             var text = new fabric.Text(lyrics, this.style.lyrics);

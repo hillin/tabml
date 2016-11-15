@@ -25,17 +25,22 @@ namespace TabML.Editor.Tablature.Layout
         /// </remarks>
         public void Draw(IBarDrawingContext drawingContext, ArrangedBeat beat, BeamSlope beamSlope)
         {
+            var noteHeadOffset = beat.Column.GetNoteHeadOffset(this.Note.String);
+            var isHalfOrLonger = beat.Beat.NoteValue.Base >= BaseNoteValue.Half;
             if (this.Note.EffectTechnique == NoteEffectTechnique.DeadNote)
             {
                 drawingContext.DrawDeadNote(this.Note.String, beat.Column.Position,
-                                            beat.Column.GetNoteHeadOffset(this.Note.String),
-                                            beat.Beat.NoteValue.Base >= BaseNoteValue.Half);
+                                            noteHeadOffset, isHalfOrLonger);
+            }
+            else if (this.Note.Fret == BeatNote.UnspecifiedFret)
+            {
+                drawingContext.DrawPlayToChordMark(this.Note.String, beat.Column.Position,
+                                                   noteHeadOffset, isHalfOrLonger);
             }
             else
             {
                 drawingContext.DrawFretNumber(this.Note.String, this.Note.Fret.ToString(), beat.Column.Position,
-                                              beat.Column.GetNoteHeadOffset(this.Note.String),
-                                              beat.Beat.NoteValue.Base >= BaseNoteValue.Half);
+                                              noteHeadOffset, isHalfOrLonger);
             }
 
             if (beat == this.OwnerBeat) // only draw connections if we are drawing for ourselves
@@ -79,7 +84,7 @@ namespace TabML.Editor.Tablature.Layout
             else
             {
                 var instructionX = this.PreConnectedNote != null
-                    ? (this.OwnerBeat.Column.Position + this.PreConnectedNote.OwnerBeat.Column.Position)/2
+                    ? (this.OwnerBeat.Column.Position + this.PreConnectedNote.OwnerBeat.Column.Position) / 2
                     : this.OwnerBeat.Column.Position;
                 return beamSlope.GetY(instructionX);
             }
@@ -90,13 +95,13 @@ namespace TabML.Editor.Tablature.Layout
             switch (this.Note.PreConnection)
             {
                 case PreNoteConnection.Tie:
-                        this.DrawTie(drawingContext, null, beamSlope);
-                        drawingContext.DrawTie(this.PreConnectedNote.OwnerBeat.Column.Position,
-                                               this.OwnerBeat.Column.Position, this.Note.String,
-                                               this.OwnerBeat.VoicePart, null, 0);
+                    this.DrawTie(drawingContext, null, beamSlope);
+                    drawingContext.DrawTie(this.PreConnectedNote.OwnerBeat.Column.Position,
+                                           this.OwnerBeat.Column.Position, this.Note.String,
+                                           this.OwnerBeat.VoicePart, null, 0);
                     break;
                 case PreNoteConnection.Slide:
-                        this.DrawTie(drawingContext, "sl.", beamSlope);
+                    this.DrawTie(drawingContext, "sl.", beamSlope);
                     break;
                 case PreNoteConnection.SlideInFromHigher:
                     drawingContext.DrawGliss(this.OwnerBeat.Column.Position, this.Note.String, GlissDirection.FromHigher, this.GetInstructionY(drawingContext, beamSlope));
@@ -105,10 +110,10 @@ namespace TabML.Editor.Tablature.Layout
                     drawingContext.DrawGliss(this.OwnerBeat.Column.Position, this.Note.String, GlissDirection.FromLower, this.GetInstructionY(drawingContext, beamSlope));
                     break;
                 case PreNoteConnection.Hammer:
-                        this.DrawTie(drawingContext, "h.", beamSlope);
+                    this.DrawTie(drawingContext, "h.", beamSlope);
                     break;
                 case PreNoteConnection.Pull:
-                        this.DrawTie(drawingContext, "p.", beamSlope);
+                    this.DrawTie(drawingContext, "p.", beamSlope);
                     break;
             }
         }

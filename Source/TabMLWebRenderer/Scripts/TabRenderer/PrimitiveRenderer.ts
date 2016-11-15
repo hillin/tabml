@@ -24,6 +24,18 @@ namespace TR {
             this.canvas.add(text);
         }
 
+        private drawSpecialFretting(imageFile: string, x: number, y: number, isHalfOrLonger: boolean) {
+            this.drawSVGFromURL(imageFile, x, y, group => {
+                group.scaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                group.originX = "center";
+                group.originY = "center";
+
+                if (isHalfOrLonger && this.style.note.circleOnLongNotes) {
+                    this.drawCircleAroundLongNote(x, y, group.getBoundingRect());
+                }
+            });
+        }
+
         drawFretNumber(fretNumber: string, x: number, y: number, isHalfOrLonger: boolean) {
 
             let text = new fabric.Text(fretNumber, this.style.fretNumber);
@@ -53,16 +65,13 @@ namespace TR {
         }
 
         drawDeadNote(x: number, y: number, isHalfOrLonger: boolean) {
-            let imageFile = ResourceManager.getTablatureResource("dead_note.svg");
-            this.drawSVGFromURL(imageFile, x, y, group => {
-                group.scaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
-                group.originX = "center";
-                group.originY = "center";
+            this.drawSpecialFretting(ResourceManager.getTablatureResource("dead_note.svg"),
+                x, y, isHalfOrLonger);
+        }
 
-                if (isHalfOrLonger && this.style.note.circleOnLongNotes) {
-                    this.drawCircleAroundLongNote(x, y, group.getBoundingRect());
-                }
-            });
+        drawPlayToChordMark(x: number, y: number, isHalfOrLonger: boolean) {
+            this.drawSpecialFretting(ResourceManager.getTablatureResource("play_to_chord_mark.svg"),
+                x, y, isHalfOrLonger);
         }
 
         drawLyrics(lyrics: string, x: number, y: number) {

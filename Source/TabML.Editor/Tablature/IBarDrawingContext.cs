@@ -26,5 +26,6 @@ namespace TabML.Editor.Tablature
         void DrawTie(double from, double to, int stringIndex, VoicePart voicePart, string instruction, double instructionY);
         void DrawGliss(double x, int stringIndex, GlissDirection direction, double instructionY);
         void DrawDeadNote(int stringIndex, double position, double horizontalOffset, bool isHalfOrLonger);
+        void DrawPlayToChordMark(int stringIndex, double position, double horizontalOffset, bool isHalfOrLonger);
     }
 }

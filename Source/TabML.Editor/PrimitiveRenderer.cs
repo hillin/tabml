@@ -64,6 +64,7 @@ namespace TabML.Editor
         public void DrawLyrics(string lyrics, double x, double y) => this.InvokeRenderMethod("drawLyrics", lyrics, x, y);
         public void DrawFretNumber(string fretNumber, double x, double y, bool isHalfOrLonger) => this.InvokeRenderMethod("drawFretNumber", fretNumber, x, y, isHalfOrLonger);
         public void DrawDeadNote(double x, double y, bool isHalfOrLonger) => this.InvokeRenderMethod("drawDeadNote", x, y, isHalfOrLonger);
+        public void DrawPlayToChordMark(double x, double y, bool isHalfOrLonger) => this.InvokeRenderMethod("drawPlayToChordMark", x, y, isHalfOrLonger);
         public void DrawHorizontalBarLine(double x, double y, double length) => this.InvokeRenderMethod("drawHorizontalBarLine", x, y, length);
         public void DrawBarLine(BarLine line, double x, double y) => this.InvokeRenderMethod("drawBarLine", (int)line, x, y);
         public void DrawStem(double x, double yFrom, double yTo) => this.InvokeRenderMethod("drawStem", x, yFrom, yTo);
@@ -79,7 +80,6 @@ namespace TabML.Editor
 
         public void DrawGliss(double x, double y, GlissDirection direction, double instructionY)
             => this.InvokeRenderMethod("drawGliss", x, y, direction, instructionY);
-
 
     }
 }

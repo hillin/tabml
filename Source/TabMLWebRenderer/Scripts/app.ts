@@ -68,7 +68,8 @@ window.onerror = function (errorMessage, url, lineNumber) {
 window.onload = () => {
     let canvas = document.getElementById("staff") as HTMLCanvasElement;
 
-    let fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
+    //let fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
+    let fabricCanvas = new fabric.Canvas(canvas, tablatureStyle.page);
     fabricCanvas.backgroundColor = "white";
 
     renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
