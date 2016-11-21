@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,16 +12,17 @@ using BarLine = TabML.Core.MusicTheory.BarLine;
 
 namespace TabML.Editor.Rendering
 {
-    class BarRenderContext : IBarDrawingContext
+    class BarDrawingContext
     {
         public Size AvailableSize { get; }
         public PrimitiveRenderer PrimitiveRenderer { get; }
         public Point Location { get; }
         public TablatureStyle Style { get; }
-
+        public BarColumnRenderingInfo[] ColumnRenderingInfos { get; set; }
         private double[] StringCarets { get; }
 
-        public BarRenderContext(Point location, Size availableSize, PrimitiveRenderer primitiveRenderer, TablatureStyle style)
+
+        public BarDrawingContext(Point location, Size availableSize, PrimitiveRenderer primitiveRenderer, TablatureStyle style)
         {
             this.Location = location;
             this.AvailableSize = availableSize;
@@ -200,7 +201,8 @@ namespace TabML.Editor.Rendering
                 return -offset;
         }
 
-        public void DrawNoteValueAugment(NoteValueAugment noteValueAugment, BaseNoteValue noteValue, double position, int[] strings, VoicePart voicePart)
+        public void DrawNoteValueAugment(NoteValueAugment noteValueAugment, BaseNoteValue noteValue, double position,
+                                         int[] strings, VoicePart voicePart)
         {
             var x = this.Location.X + position + this.Style.NoteValueAugmentOffset;
 

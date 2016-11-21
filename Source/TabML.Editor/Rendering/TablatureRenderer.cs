@@ -8,22 +8,21 @@ using CoreTablature = TabML.Core.Document.Tablature;
 
 namespace TabML.Editor.Rendering
 {
-    class TablatureRenderer : RendererBase
+    class TablatureRenderer
     {
-        private readonly CoreTablature _tablature;
+        public PrimitiveRenderer PrimitiveRenderer { get; }
+        public TablatureStyle Style { get; }
 
-        public TablatureRenderer(PrimitiveRenderer primitiveRenderer, TablatureStyle style, CoreTablature tablature)
-            : base(primitiveRenderer, style)
+        public TablatureRenderer(PrimitiveRenderer primitiveRenderer, TablatureStyle style)
         {
-            _tablature = tablature;
+            this.PrimitiveRenderer = primitiveRenderer;
+            this.Style = style;
         }
 
-        public override void Render(Point location, Size availableSize)
+
+        public void Render(CoreTablature tablature, Point location, Size availableSize)
         {
-            //foreach (var bar in _tablature.Bars)
-            //{
-            new BarRenderer(this.PrimitiveRenderer, this.Style, _tablature.Bars[0]).Render(location, availableSize);
-            //}
+            new BarRenderer(this.PrimitiveRenderer, this.Style).Render(tablature.Bars[0], location, availableSize);
         }
     }
 }

@@ -35,6 +35,9 @@ namespace TabML.Parser
             bar.Index = _bars.Count;
             bar.DocumentState = this.DocumentState;
             bar.LogicalPreviousBar = _bars.LastOrDefault(); // todo: handle alternation
+
+            new BarArranger(bar).Arrange();
+
             _bars.Add(bar);
         }
 

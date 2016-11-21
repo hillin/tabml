@@ -70,27 +70,6 @@ namespace TabML.Core.Document
             return this.BeatNoteValue.GetDuration() * this.Tuplet.Value / 2 <= this.GetDuration();
         }
 
-        public Beat FirstBeat
-        {
-            get
-            {
-                if (this.Elements.Count == 0)
-                    return null;
-                var beat = this.Elements[0] as Beat;
-                return beat ?? ((Beam)this.Elements[0]).FirstBeat;
-            }
-        }
-
-        public Beat LastBeat
-        {
-            get
-            {
-                if (this.Elements.Count == 0)
-                    return null;
-                var beat = this.Elements[this.Elements.Count - 1] as Beat;
-                return beat ?? ((Beam)this.Elements[this.Elements.Count - 1]).LastBeat;
-            }
-        }
 
         public bool MatchesTuplet(Beat beat)
         {

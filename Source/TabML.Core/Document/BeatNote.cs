@@ -21,6 +21,7 @@ namespace TabML.Core.Document
         /// The note to which this note is post-connected to, if this note has any note pre-connected to it
         /// </summary>
         public BeatNote PostConnectedNote { get; set; }
+        public Beat OwnerBeat { get; set; }
 
         public void ClearRange()
         {

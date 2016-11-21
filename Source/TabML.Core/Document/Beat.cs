@@ -24,6 +24,7 @@ namespace TabML.Core.Document
         public PreciseDuration Position { get; set; }
         public BarColumn Column { get; set; }
         public Beam OwnerBeam { get; set; }
+        public VoicePart VoicePart { get; set; }
 
         public PreciseDuration GetDuration()
         {
@@ -50,7 +51,9 @@ namespace TabML.Core.Document
                 EffectTechniqueParameter = this.EffectTechniqueParameter,
                 DurationEffect = this.DurationEffect,
                 Accent = this.Accent,
-                Notes = this.Notes?.Select(n => n.Clone()).ToArray()
+                Notes = this.Notes?.Select(n => n.Clone()).ToArray(),
+                OwnerBeam = this.OwnerBeam,
+                VoicePart = this.VoicePart
             };
         }
 

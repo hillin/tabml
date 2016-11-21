@@ -5,8 +5,6 @@ using TabML.Editor.Rendering;
 using TabML.Editor.Tablature;
 using TabML.Parser;
 using TabML.Parser.Document;
-using Bar = TabML.Editor.Tablature.Bar;
-
 namespace TabML.Editor
 {
     /// <summary>
@@ -31,13 +29,15 @@ namespace TabML.Editor
 
         private void RenderTablature()
         {
-            var renderer = new PrimitiveRenderer(this.Browser);
+            var primitiveRenderer = new PrimitiveRenderer(this.Browser);
             var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\bartest.txt"));
             var style = new TablatureStyle();
-            new TablatureRenderer(renderer, style, tablature).Render(new Point(style.Padding.Left, style.Padding.Top),
-                                                                     new Size(
-                                                                         800 - style.Padding.Left - style.Padding.Right,
-                                                                         1200 - style.Padding.Top - style.Padding.Bottom));
+            var location = new Point(style.Padding.Left, style.Padding.Top);
+            var size = new Size(
+                800 - style.Padding.Left - style.Padding.Right,
+                1200 - style.Padding.Top - style.Padding.Bottom);
+
+            new TablatureRenderer(primitiveRenderer, style).Render(tablature, location, size);
         }
 
         private void Browser_LoadError(object sender, CefSharp.LoadErrorEventArgs e)

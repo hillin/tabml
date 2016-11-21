@@ -104,37 +104,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Rendering\BarRenderContext.cs" />
+    <Compile Include="Rendering\BarDrawingContext.cs" />
+    <Compile Include="Rendering\BarExtensions.cs" />
     <Compile Include="Rendering\BarRenderer.cs" />
+    <Compile Include="Rendering\BarColumnExtensions.cs" />
+    <Compile Include="Rendering\BarColumnRenderingInfo.cs" />
+    <Compile Include="Rendering\BarColumnRenderer.cs" />
+    <Compile Include="Rendering\BarVoiceRenderer.cs" />
+    <Compile Include="Rendering\BeatElementRenderer.cs" />
+    <Compile Include="Rendering\BeamExtensions.cs" />
+    <Compile Include="Rendering\BeamRenderer.cs" />
+    <Compile Include="Rendering\BeatExtensions.cs" />
+    <Compile Include="Rendering\BeatRenderer.cs" />
+    <Compile Include="Rendering\NoteRenderer.cs" />
     <Compile Include="Rendering\OffBarDirection.cs" />
-    <Compile Include="Rendering\RendererBase.cs" />
     <Compile Include="Rendering\TablatureRenderer.cs" />
     <Compile Include="Rendering\VoicePartExtensions.cs" />
     <Compile Include="TablatureStyle.cs" />
-    <Compile Include="Tablature\Bar.xaml.cs">
-      <DependentUpon>Bar.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Tablature\BarLine.xaml.cs">
-      <DependentUpon>BarLine.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Tablature\ChordDiagram.xaml.cs">
       <DependentUpon>ChordDiagram.xaml</DependentUpon>
     </Compile>
     <Compile Include="Tablature\ChordDiagramGridRow.xaml.cs">
       <DependentUpon>ChordDiagramGridRow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tablature\IBarDrawingContext.cs" />
-    <Compile Include="Tablature\Layout\ArrangedBeat.cs" />
-    <Compile Include="Tablature\Layout\ArrangedBar.cs" />
-    <Compile Include="Tablature\Layout\ArrangedBarVoice.cs" />
-    <Compile Include="Tablature\Layout\ArrangedBeam.cs" />
-    <Compile Include="Tablature\Layout\ArrangedBarColumn.cs" />
     <Compile Include="Tablature\Layout\ArrangedBeatConnection.cs" />
-    <Compile Include="Tablature\Layout\ArrangedNote.cs" />
-    <Compile Include="Tablature\Layout\BarArranger.cs" />
     <Compile Include="Tablature\Layout\BeamSlope.cs" />
-    <Compile Include="Tablature\Layout\BeatArranger.cs" />
-    <Compile Include="Tablature\Layout\IBeatElement.cs" />
     <Compile Include="Tablature\Test\ChordTest.xaml.cs">
       <DependentUpon>ChordTest.xaml</DependentUpon>
     </Compile>
@@ -156,14 +150,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\ChordDiagram.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Tablature\Bar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Tablature\BarLine.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

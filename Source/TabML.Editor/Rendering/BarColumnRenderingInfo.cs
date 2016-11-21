@@ -1,0 +1,62 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TabML.Core;
+using TabML.Core.Document;
+
+namespace TabML.Editor.Rendering
+{
+    class BarColumnRenderingInfo
+    {
+        private bool[] _occupiedStrings;
+        public BarColumn Column { get;  }
+        public double Position { get; }
+        public double Width { get; }
+        
+
+        public BarColumnRenderingInfo(BarColumn column, double position, double width)
+        {
+            this.Column = column;
+            this.Position = position;
+            this.Width = width;
+        }
+
+        public double GetNoteHeadOffset(int stringIndex)
+        {
+            if (_occupiedStrings == null)
+            {
+                _occupiedStrings = new bool[Defaults.Strings];
+                foreach (var i in this.Column.VoiceBeats.SelectMany(b => b.Notes.Select(n => n.String)))
+                    _occupiedStrings[i] = true;
+            }
+
+            if (stringIndex == 0)
+                return _occupiedStrings[1] ? -0.25 : 0;
+
+            var continuousStringsBefore = 0;
+            for (var i = stringIndex - 1; i >= 0; --i)
+            {
+                if (_occupiedStrings[i])
+                    ++continuousStringsBefore;
+                else
+                    break;
+            }
+
+            if (continuousStringsBefore == 0)
+            {
+                if (stringIndex == Defaults.Strings - 1)
+                    return 0;
+
+                if (_occupiedStrings[stringIndex + 1])
+                    return -0.25;
+
+                return 0;
+            }
+
+            return (continuousStringsBefore % 2 - 0.5) / 2;
+        }
+
+    }
+}

@@ -13,8 +13,6 @@ namespace TabML.Core.Document
         public List<Beat> VoiceBeats { get; }
         public Chord Chord { get; set; }
         public LyricsSegment Lyrics { get; set; }
-        public double Position { get; set; }
-        public double Width { get; set; }
 
         public BarColumn(int columnIndex)
         {

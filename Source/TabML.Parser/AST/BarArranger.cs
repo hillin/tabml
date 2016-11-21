@@ -23,6 +23,8 @@ namespace TabML.Parser.AST
 
         public void Arrange()
         {
+            _bar.Duration = _bar.Rhythm.GetDuration();
+
             this.ArrangeBeatsAndNotes();
             this.ArrangeColumns();
             this.ArrangeVoices();

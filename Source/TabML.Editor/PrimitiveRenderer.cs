@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace TabML.Editor
                    .Append(string.Join(", ", args.Select(PrimitiveRenderer.FormatArg)))
                    .Append(");");
 
-
+            Debug.WriteLine(builder.ToString());
             this.InvokeScriptAsync(builder.ToString());
         }
 

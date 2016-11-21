@@ -38,7 +38,6 @@ namespace TabML.Parser.AST
             if (!this.ToDocumentElement(context, logger, out bar))
                 return false;
 
-
             if (bar.Rhythm != null && bar.Lyrics != null)
             {
                 var beats = bar.Rhythm.Segments.Sum(s => s.FirstVoice.BeatElements?.Count ?? 0);
@@ -77,8 +76,6 @@ namespace TabML.Parser.AST
                     rhythm = context.DocumentState.RhythmTemplate.Apply(rhythm, logger);
                 
                 bar.Rhythm = rhythm;
-
-                new BarArranger(bar).Arrange();
             }
 
             if (this.Lyrics == null)

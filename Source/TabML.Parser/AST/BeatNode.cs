@@ -82,6 +82,7 @@ namespace TabML.Parser.AST
                 IsRest = this.Rest != null,
                 IsTied = this.Tied != null,
                 NoteValue = this.NoteValue.ToNoteValue(),
+                VoicePart = voicePart
             };
 
             var notes = new List<BeatNote>();
@@ -90,7 +91,8 @@ namespace TabML.Parser.AST
                 BeatNote documentNote;
                 if (!note.ToDocumentElement(context, logger, voicePart, out documentNote))
                     return false;
-                
+                documentNote.OwnerBeat = beat;
+
                 notes.Add(documentNote);
                 context.CurrentBar.LastNoteOnStrings[documentNote.String] = documentNote;
             }
