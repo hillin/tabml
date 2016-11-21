@@ -81,7 +81,6 @@ namespace TabML.Parser.AST
 
             element = new BeatNote
             {
-                OwnerBar = context.CurrentBar,
                 PreConnection = this.PreConnection?.Value ?? PreNoteConnection.None,
                 PostConnection = this.PostConnection?.Value ?? PostNoteConnection.None,
                 String = this.String.Value - 1,

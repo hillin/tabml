@@ -22,9 +22,9 @@ namespace TabML.Parser.AST
 
         public PreciseDuration GetDuration() => this.Beats.Sum(b => b.NoteValue.ToNoteValue().GetDuration());
 
-        public bool ToDocumentElement(TablatureContext context, ILogger logger, VoicePart voicePart, out Voice voice)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, VoicePart voicePart, out RhythmSegmentVoice voice)
         {
-            voice = new Voice()
+            voice = new RhythmSegmentVoice(voicePart)
             {
                 Range = this.Range
             };
@@ -39,7 +39,7 @@ namespace TabML.Parser.AST
                                                 // todo: this is ugly, refactor it
                     context.CurrentBar.SetVoiceRestedState(voicePart, documentBeat.IsRest);
 
-                voice.Beats.Add(documentBeat);
+                voice.BeatElements.Add(documentBeat);
             }
 
             var duration = this.GetDuration();
@@ -70,20 +70,22 @@ namespace TabML.Parser.AST
                     if (context.CurrentBar != null)  // if context.CurrentBar is null, it means we are in a template
                                                      // todo: this is ugly, refactor it
                         context.CurrentBar.SetVoiceRestedState(voicePart, true);
-                    voice.Beats.Add(beat);
+                    voice.BeatElements.Add(beat);
                 }
             }
 
             return true;
         }
 
-        public bool ValueEquals(Voice other)
+        public bool ValueEquals(RhythmSegmentVoice other)
         {
             if (other == null)
                 return false;
 
-            return other.Beats.Count == this.Beats.Count
-                   && this.Beats.Where((b, i) => !b.ValueEquals(other.Beats[i])).Any();
+            return other.BeatElements.Count == this.Beats.Count
+                   && this.Beats.Where((b, i) => !b.ValueEquals(other.BeatElements[i])).Any();
         }
+
+
     }
 }

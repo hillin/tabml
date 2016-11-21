@@ -19,14 +19,14 @@ namespace TabML.Core.Document
 
         public Rhythm Clone()
         {
-            var clone = new Rhythm
+            var rhythm = new Rhythm
             {
                 Range = this.Range,
                 NotMatchingTime = this.NotMatchingTime
             };
 
-            clone.Segments.AddRange(this.Segments.Select(s => s.Clone()));
-            return clone;
+            rhythm.Segments.AddRange(this.Segments.Select(s => s.Clone()));
+            return rhythm;
         }
     }
 }

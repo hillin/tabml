@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
@@ -79,6 +80,7 @@ namespace TabML.Core.Document
             return Bar.MergeBarLine(bar1.CloseLine, bar2.OpenLine);
         }
 
+        #region Basic structures
         /// <summary>
         /// The index of the bar within the entire tablature
         /// </summary>
@@ -89,11 +91,24 @@ namespace TabML.Core.Document
         public Lyrics Lyrics { get; set; }
         public DocumentState DocumentState { get; set; }
 
+        #endregion
+
+        #region Arranged structures
+
+        public Voice TrebleVoice { get; set; }
+        public Voice BassVoice { get; set; }
+        public PreciseDuration Duration { get; set; }
+        public List<BarColumn> Columns { get; }
+
+        #endregion
+
+        #region States
+
         /// <summary>
         /// whether the treble voice is rested at the end of the bar. this propery is graduately updated to reflect
         /// the rest state of the treble voice, in order to determine whether a note can be tied to a previous note
         /// </summary>
-        public bool TrebleRested { get; set; }
+        public bool TrebleRested { get; set; }  // todo: refactor to voices
 
         /// <summary>
         /// whether the bass voice is rested at the end of the bar. this propery is graduately updated to reflect
@@ -108,8 +123,13 @@ namespace TabML.Core.Document
         /// </summary>
         public Bar LogicalPreviousBar { get; set; }
 
-        public PreciseDuration GetDuration() => this.Rhythm.GetDuration();
+        #endregion
 
+        public Bar()
+        {
+            this.Columns = new List<BarColumn>();
+        }
+        
         public void SetVoiceRestedState(VoicePart voice, bool rested)
         {
             switch (voice)

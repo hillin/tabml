@@ -81,7 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AST\AlternateCommandletNode.cs" />
+    <Compile Include="AST\BarArranger.cs" />
     <Compile Include="AST\BarNode.cs" />
+    <Compile Include="AST\BeatArranger.cs" />
     <Compile Include="AST\CapoCommandletNode.cs" />
     <Compile Include="AST\CapoDiscreteStringsSpecifierNode.cs" />
     <Compile Include="AST\CapoRangeStringsSpecifierNode.cs" />

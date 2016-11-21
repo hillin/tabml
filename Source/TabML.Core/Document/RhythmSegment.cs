@@ -2,6 +2,7 @@
 {
     public class RhythmSegment : RhythmSegmentBase
     {
+
         public Chord Chord { get; set; }
         public bool IsOmittedByTemplate { get; set; }
 

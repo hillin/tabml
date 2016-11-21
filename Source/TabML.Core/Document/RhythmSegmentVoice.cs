@@ -1,18 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
 {
-    public class Voice : Element
+    public class RhythmSegmentVoice : Element
     {
-        public List<IBeatElement> BeatElements { get; }
+        public List<Beat> BeatElements { get; }
         public VoicePart Part { get; }
 
-        public Voice(VoicePart part)
+        public RhythmSegmentVoice(VoicePart part)
         {
             this.Part = part;
-            this.BeatElements = new List<IBeatElement>();
+            this.BeatElements = new List<Beat>();
         }
         public PreciseDuration GetDuration() => this.BeatElements.Sum(n => n.GetDuration());
 
@@ -24,9 +27,9 @@ namespace TabML.Core.Document
                 beat.ClearRange();
         }
 
-        public Voice Clone()
+        public RhythmSegmentVoice Clone()
         {
-            var clone = new Voice(this.Part)
+            var clone = new RhythmSegmentVoice(this.Part)
             {
                 Range = this.Range,
             };

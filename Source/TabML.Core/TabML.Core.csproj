@@ -84,6 +84,8 @@
     <Compile Include="Defaults.cs" />
     <Compile Include="Document\Alternation.cs" />
     <Compile Include="Document\Bar.cs" />
+    <Compile Include="Document\BarColumn.cs" />
+    <Compile Include="Document\Beam.cs" />
     <Compile Include="Document\Beat.cs" />
     <Compile Include="Document\BeatNote.cs" />
     <Compile Include="Document\Capo.cs" />
@@ -95,12 +97,14 @@
     <Compile Include="Document\EditableDocumentState.cs" />
     <Compile Include="Document\Element.cs" />
     <Compile Include="Document\Explicity.cs" />
+    <Compile Include="Document\IBeatElement.cs" />
     <Compile Include="Document\KeySignature.cs" />
     <Compile Include="Document\Lyrics.cs" />
     <Compile Include="Document\LyricsSegment.cs" />
     <Compile Include="Document\Rhythm.cs" />
     <Compile Include="Document\RhythmSegment.cs" />
     <Compile Include="Document\RhythmSegmentBase.cs" />
+    <Compile Include="Document\RhythmSegmentVoice.cs" />
     <Compile Include="Document\RhythmTemplate.cs" />
     <Compile Include="Document\RhythmTemplateSegment.cs" />
     <Compile Include="Document\SealableCollection.cs" />

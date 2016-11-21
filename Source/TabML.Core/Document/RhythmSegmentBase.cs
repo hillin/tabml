@@ -5,10 +5,10 @@ namespace TabML.Core.Document
 {
     public abstract class RhythmSegmentBase : Element
     {
-        public Voice TrebleVoice { get; set; }
-        public Voice BassVoice { get; set; }
+        public RhythmSegmentVoice TrebleVoice { get; set; }
+        public RhythmSegmentVoice BassVoice { get; set; }
 
-        public Voice FirstVoice => this.TrebleVoice ?? this.BassVoice;
+        public RhythmSegmentVoice FirstVoice => this.TrebleVoice ?? this.BassVoice;
         
         public PreciseDuration GetDuration() => new PreciseDuration(Math.Max(this.BassVoice?.GetDuration().FixedPointValue ?? 0,
                                                                              this.TrebleVoice?.GetDuration().FixedPointValue ?? 0));

@@ -1,12 +1,16 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
 {
-    public class Beat : Element
+    public class Beat : Element, IBeatElement
     {
-        public NoteValue NoteValue { get;
-            set; }
+        public NoteValue NoteValue
+        {
+            get;
+            set;
+        }
         public BeatNote[] Notes { get; set; }
         public bool IsRest { get; set; }
         public bool IsTied { get; set; }
@@ -15,7 +19,11 @@ namespace TabML.Core.Document
         public double EffectTechniqueParameter { get; set; }
         public BeatDurationEffect DurationEffect { get; set; } = BeatDurationEffect.None;
         public BeatAccent Accent { get; set; } = BeatAccent.Normal;
-
+        public Beat PreviousBeat { get; set; }
+        public Beat NextBeat { get; set; }
+        public PreciseDuration Position { get; set; }
+        public BarColumn Column { get; set; }
+        public Beam OwnerBeam { get; set; }
 
         public PreciseDuration GetDuration()
         {
@@ -45,5 +53,7 @@ namespace TabML.Core.Document
                 Notes = this.Notes?.Select(n => n.Clone()).ToArray()
             };
         }
+
+        IBeatElement IBeatElement.Clone() => this.Clone();
     }
 }

@@ -90,7 +90,7 @@ namespace TabML.Parser.AST
                 BeatNote documentNote;
                 if (!note.ToDocumentElement(context, logger, voicePart, out documentNote))
                     return false;
-
+                
                 notes.Add(documentNote);
                 context.CurrentBar.LastNoteOnStrings[documentNote.String] = documentNote;
             }

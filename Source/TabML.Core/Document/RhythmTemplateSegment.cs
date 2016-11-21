@@ -2,7 +2,9 @@
 {
     public class RhythmTemplateSegment : RhythmSegmentBase
     {
-        private static Voice InstantializeVoice(Voice voice)
+        public RhythmTemplate OwnerRhythmTemplate { get; set; }
+
+        private static RhythmSegmentVoice InstantializeVoice(RhythmSegmentVoice voice)
         {
             var instance = voice.Clone();
             instance.ClearRange();
