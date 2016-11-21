@@ -13,6 +13,12 @@ namespace TR {
         constructor(canvas: fabric.IStaticCanvas, style: ITablatureStyle) {
             this.canvas = canvas;
             this.style = style;
+            this.clear();
+        }
+
+        clear() {
+            this.canvas.clear();
+            this.canvas.backgroundColor = "white";
         }
 
         drawTitle(title: string, x: number, y: number) {

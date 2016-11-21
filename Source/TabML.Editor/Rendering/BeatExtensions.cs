@@ -56,10 +56,13 @@ namespace TabML.Editor.Rendering
                 return beat.Notes.Select(n => n.String).ToArray();
         }
 
-        public static double GetAlternationOffset(this Beat beat, BarDrawingContext drawingContext)
+        public static double GetAlternationOffset(this Beat beat, BarDrawingContext drawingContext, int? stringIndex = null)
         {
             var column = drawingContext.ColumnRenderingInfos[beat.OwnerColumn.ColumnIndex];
-            return drawingContext.GetNoteAlternationOffset(column.GetNoteAlternationOffsetRatio(beat.GetNearestStringIndex()));
+            var ratio = column.GetNoteAlternationOffsetRatio(stringIndex ?? beat.GetNearestStringIndex());
+            return drawingContext.GetNoteAlternationOffset(ratio);
         }
+
+
     }
 }

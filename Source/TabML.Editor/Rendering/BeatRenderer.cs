@@ -55,8 +55,12 @@ namespace TabML.Editor.Rendering
                 {
                     foreach (var note in beat.Notes)
                     {
-                        drawingContext.DrawTie(current.OwnerColumn.GetPosition(drawingContext),
-                                               next.OwnerColumn.GetPosition(drawingContext),
+                        var tieFrom = current.OwnerColumn.GetPosition(drawingContext)
+                            + current.GetAlternationOffset(drawingContext);
+                        var tieTo = next.OwnerColumn.GetPosition(drawingContext)
+                            + next.GetAlternationOffset(drawingContext);
+                        drawingContext.DrawTie(tieFrom,
+                                               tieTo,
                                                note.String,
                                                beat.VoicePart, null, 0);
                     }
@@ -145,6 +149,6 @@ namespace TabML.Editor.Rendering
 
             drawingContext.DrawBeam(noteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), voicePart);
         }
-        
+
     }
 }

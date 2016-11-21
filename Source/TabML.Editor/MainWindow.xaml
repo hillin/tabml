@@ -9,6 +9,9 @@
         xmlns:wpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="1300" Width="900">
+    <Window.CommandBindings>
+        <CommandBinding Command="Refresh" Executed="Refresh_Executed" />
+    </Window.CommandBindings>
     <wpf:ChromiumWebBrowser x:Name="Browser"
                             LoadError="Browser_LoadError"
                             

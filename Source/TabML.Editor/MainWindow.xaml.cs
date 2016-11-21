@@ -12,6 +12,8 @@ namespace TabML.Editor
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool _rendered = false;
+        private bool _fakeLoaded = true;
         public MainWindow()
         {
             this.InitializeComponent();
@@ -21,7 +23,16 @@ namespace TabML.Editor
 
         private void Browser_LoadingStateChanged(object sender, CefSharp.LoadingStateChangedEventArgs e)
         {
-            if (!e.IsLoading)
+            if (e.IsLoading)
+                return;
+
+            if (_fakeLoaded)
+            {
+                _fakeLoaded = false;
+                return;
+            }
+
+            if (!_rendered)
             {
                 this.RenderTablature();
             }
@@ -38,11 +49,18 @@ namespace TabML.Editor
                 1200 - style.Padding.Top - style.Padding.Bottom);
 
             new TablatureRenderer(primitiveRenderer, style).Render(tablature, location, size);
+
+            _rendered = true;
         }
 
         private void Browser_LoadError(object sender, CefSharp.LoadErrorEventArgs e)
         {
 
+        }
+
+        private void Refresh_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        {
+            this.RenderTablature();
         }
     }
 }

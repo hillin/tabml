@@ -70,7 +70,6 @@ window.onload = () => {
 
     //let fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
     let fabricCanvas = new fabric.Canvas(canvas, tablatureStyle.page);
-    fabricCanvas.backgroundColor = "white";
 
     renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
     //renderer.drawFretNumber("2", 100, 100, true);

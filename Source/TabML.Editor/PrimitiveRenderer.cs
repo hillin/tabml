@@ -82,5 +82,6 @@ namespace TabML.Editor
         public void DrawGliss(double x, double y, GlissDirection direction, double instructionY)
             => this.InvokeRenderMethod("drawGliss", x, y, direction, instructionY);
 
+        public void Clear() => this.InvokeRenderMethod("clear");
     }
 }

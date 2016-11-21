@@ -116,6 +116,7 @@
     <Compile Include="Rendering\BeamRenderer.cs" />
     <Compile Include="Rendering\BeatExtensions.cs" />
     <Compile Include="Rendering\BeatRenderer.cs" />
+    <Compile Include="Rendering\NoteExtensions.cs" />
     <Compile Include="Rendering\NoteRenderer.cs" />
     <Compile Include="Rendering\OffBarDirection.cs" />
     <Compile Include="Rendering\TablatureRenderer.cs" />

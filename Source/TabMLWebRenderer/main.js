@@ -2377,7 +2377,6 @@ window.onload = function () {
     var canvas = document.getElementById("staff");
     //let fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
     var fabricCanvas = new fabric.Canvas(canvas, tablatureStyle.page);
-    fabricCanvas.backgroundColor = "white";
     renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
     //renderer.drawFretNumber("2", 100, 100, true);
     //renderer.drawTitle("test!!!", 400, 100);
@@ -2503,7 +2502,12 @@ var TR;
         function PrimitiveRenderer(canvas, style) {
             this.canvas = canvas;
             this.style = style;
+            this.clear();
         }
+        PrimitiveRenderer.prototype.clear = function () {
+            this.canvas.clear();
+            this.canvas.backgroundColor = "white";
+        };
         PrimitiveRenderer.prototype.drawTitle = function (title, x, y) {
             var text = new fabric.Text(title, this.style.title);
             text.left = x;

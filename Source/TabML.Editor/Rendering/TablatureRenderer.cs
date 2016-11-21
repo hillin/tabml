@@ -22,6 +22,7 @@ namespace TabML.Editor.Rendering
 
         public void Render(CoreTablature tablature, Point location, Size availableSize)
         {
+            this.PrimitiveRenderer.Clear();
             new BarRenderer(this.PrimitiveRenderer, this.Style).Render(tablature.Bars[0], location, availableSize);
         }
     }

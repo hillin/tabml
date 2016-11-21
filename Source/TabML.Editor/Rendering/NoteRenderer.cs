@@ -16,11 +16,7 @@ namespace TabML.Editor.Rendering
         /// </remarks>
         public void Render(BarDrawingContext drawingContext, BeatNote note, Beat beat, BeamSlope beamSlope)
         {
-            var alternationOffsetRatio =
-                drawingContext.ColumnRenderingInfos[beat.OwnerColumn.ColumnIndex].GetNoteAlternationOffsetRatio(note.String);
-
-            var x = beat.OwnerColumn.GetPosition(drawingContext) +
-                    drawingContext.GetNoteAlternationOffset(alternationOffsetRatio);
+            var x = note.GetRenderPosition(drawingContext, beat);
 
             var isHalfOrLonger = beat.NoteValue.Base >= BaseNoteValue.Half;
             if (note.EffectTechnique == NoteEffectTechnique.DeadNote)
@@ -68,9 +64,9 @@ namespace TabML.Editor.Rendering
                     ? 0.0
                     : this.GetInstructionY(drawingContext, note, beamSlope);
 
-                drawingContext.DrawTie(note.PreConnectedNote.OwnerBeat.OwnerColumn.GetPosition(drawingContext),
-                                       note.OwnerBeat.OwnerColumn.GetPosition(drawingContext), note.String,
-                                       note.OwnerBeat.VoicePart, instruction, instructionY);
+                var tieFrom = note.PreConnectedNote.GetRenderPosition(drawingContext);
+                var tieTo = note.GetRenderPosition(drawingContext);
+                drawingContext.DrawTie(tieFrom, tieTo, note.String, note.OwnerBeat.VoicePart, instruction, instructionY);
             }
         }
 
@@ -96,9 +92,6 @@ namespace TabML.Editor.Rendering
             {
                 case PreNoteConnection.Tie:
                     this.DrawTie(drawingContext, note, null, beamSlope);
-                    drawingContext.DrawTie(note.PreConnectedNote.OwnerBeat.OwnerColumn.GetPosition(drawingContext),
-                                           note.OwnerBeat.OwnerColumn.GetPosition(drawingContext), note.String,
-                                           note.OwnerBeat.VoicePart, null, 0);
                     break;
                 case PreNoteConnection.Slide:
                     this.DrawTie(drawingContext, note, "sl.", beamSlope);
