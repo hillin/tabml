@@ -85,6 +85,7 @@
     <Compile Include="Document\Alternation.cs" />
     <Compile Include="Document\Bar.cs" />
     <Compile Include="Document\BarColumn.cs" />
+    <Compile Include="Document\BarElement.cs" />
     <Compile Include="Document\Beam.cs" />
     <Compile Include="Document\Beat.cs" />
     <Compile Include="Document\BeatNote.cs" />

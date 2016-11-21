@@ -1,4 +1,5 @@
-﻿using TabML.Core;
+﻿using System.Diagnostics;
+using TabML.Core;
 using TabML.Core.Logging;
 using TabML.Parser.AST;
 
@@ -17,6 +18,8 @@ namespace TabML.Parser.Parsing
 
         protected void Report(LogLevel level, TextRange? position, string message, params object[] args)
         {
+            Debug.WriteLine($"[{level}] [{position}] {string.Format(message, args)}");
+
             if (level == LogLevel.Error)
                 this.HasError = true;
 

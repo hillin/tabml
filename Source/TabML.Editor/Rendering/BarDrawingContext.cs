@@ -33,11 +33,11 @@ namespace TabML.Editor.Rendering
             this.StringCarets = new double[style.StringCount];
         }
 
-        public void DrawFretNumber(int stringIndex, string fretNumber, double position, double horizontalOffset, bool isHalfOrLonger)
+        public void DrawFretNumber(int stringIndex, string fretNumber, double position,  bool isHalfOrLonger)
         {
             this.UpdateHorizontalBarLine(stringIndex, position);
 
-            this.PrimitiveRenderer.DrawFretNumber(fretNumber, this.Location.X + position + horizontalOffset * 10,
+            this.PrimitiveRenderer.DrawFretNumber(fretNumber, this.Location.X + position,
                                                   this.GetStringPosition(stringIndex), isHalfOrLonger);
         }
 
@@ -49,19 +49,19 @@ namespace TabML.Editor.Rendering
         }
 
 
-        public void DrawDeadNote(int stringIndex, double position, double horizontalOffset, bool isHalfOrLonger)
+        public void DrawDeadNote(int stringIndex, double position, bool isHalfOrLonger)
         {
             this.UpdateHorizontalBarLine(stringIndex, position);
 
-            this.PrimitiveRenderer.DrawDeadNote(this.Location.X + position + horizontalOffset * 10,
+            this.PrimitiveRenderer.DrawDeadNote(this.Location.X + position,
                                                 this.GetStringPosition(stringIndex), isHalfOrLonger);
         }
 
-        public void DrawPlayToChordMark(int stringIndex, double position, double horizontalOffset, bool isHalfOrLonger)
+        public void DrawPlayAsChordMark(int stringIndex, double position, bool isHalfOrLonger)
         {
             this.UpdateHorizontalBarLine(stringIndex, position);
 
-            this.PrimitiveRenderer.DrawPlayToChordMark(this.Location.X + position + horizontalOffset*10,
+            this.PrimitiveRenderer.DrawPlayToChordMark(this.Location.X + position,
                                                        this.GetStringPosition(stringIndex), isHalfOrLonger);
         }
 
@@ -90,7 +90,13 @@ namespace TabML.Editor.Rendering
 
         public void DrawStem(double x, double y0, double y1)
         {
-            this.PrimitiveRenderer.DrawStem(this.Location.X + x, this.Location.Y + Math.Min(y0, y1), this.Location.Y + Math.Max(y0, y1));
+            this.PrimitiveRenderer.DrawStem(this.Location.X + x, this.Location.Y + Math.Min(y0, y1),
+                                            this.Location.Y + Math.Max(y0, y1));
+        }
+
+        public double GetNoteAlternationOffset(double offsetRatio)
+        {
+            return this.Style.NoteAlternationOffset*offsetRatio;
         }
 
         public void GetStemOffsetRange(int stringIndex, VoicePart voicePart, out double from, out double to)

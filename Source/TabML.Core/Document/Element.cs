@@ -1,7 +1,12 @@
-﻿namespace TabML.Core.Document
+﻿using System.Collections.Generic;
+
+namespace TabML.Core.Document
 {
     public abstract class Element
     {
+        public abstract IEnumerable<Element> Children { get; }
+
         public TextRange? Range { get; set; }
     }
 }
+ 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace TabML.Parser
         {
             public void Report(LogLevel level, TextRange? position, string message, params object[] args)
             {
+                Debug.WriteLine($"[{level}] [{position}] {string.Format(message, args)}");
                 if (level == LogLevel.Error)
                 {
                     

@@ -10,8 +10,10 @@ namespace TabML.Editor.Rendering
         {
             var firstBeat = beam.GetFirstBeat();
             var lastBeat = beam.GetLastBeat();
-            var x0 = drawingContext.ColumnRenderingInfos[firstBeat.Column.ColumnIndex].Position;
-            var x1 = drawingContext.ColumnRenderingInfos[lastBeat.Column.ColumnIndex].Position;
+            var x0 = drawingContext.ColumnRenderingInfos[firstBeat.OwnerColumn.ColumnIndex].Position
+                + firstBeat.GetAlternationOffset(drawingContext);
+            var x1 = drawingContext.ColumnRenderingInfos[lastBeat.OwnerColumn.ColumnIndex].Position
+                + lastBeat.GetAlternationOffset(drawingContext);
 
             if (beamSlope == null)
             {

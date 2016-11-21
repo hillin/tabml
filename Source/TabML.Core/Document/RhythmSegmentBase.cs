@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
@@ -12,5 +13,17 @@ namespace TabML.Core.Document
         
         public PreciseDuration GetDuration() => new PreciseDuration(Math.Max(this.BassVoice?.GetDuration().FixedPointValue ?? 0,
                                                                              this.TrebleVoice?.GetDuration().FixedPointValue ?? 0));
+
+        public override IEnumerable<Element> Children
+        {
+            get
+            {
+                if (this.TrebleVoice != null)
+                    yield return this.TrebleVoice;
+
+                if (this.BassVoice != null)
+                    yield return this.BassVoice;
+            }
+        }
     }
 }

@@ -30,6 +30,7 @@ namespace TabML.Editor
         public double NoteStemOffset { get; set; } = 2;
         public double MinimumNoteTailOffset { get; set; } = 16;
         public double NoteStemHeight { get; set; } = 24;
+        public double NoteAlternationOffset { get; set; } = 10;
 
 
         public double BeamThickness { get; set; } = 4;

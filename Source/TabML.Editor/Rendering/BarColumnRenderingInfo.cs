@@ -23,7 +23,7 @@ namespace TabML.Editor.Rendering
             this.Width = width;
         }
 
-        public double GetNoteHeadOffset(int stringIndex)
+        public double GetNoteAlternationOffsetRatio(int stringIndex)
         {
             if (_occupiedStrings == null)
             {

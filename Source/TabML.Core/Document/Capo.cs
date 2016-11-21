@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
@@ -6,6 +7,7 @@ namespace TabML.Core.Document
     public class Capo : Element
     {
         public CapoInfo CapoInfo { get; set; }
+        public override IEnumerable<Element> Children { get { yield break; } }
 
         public int[] OffsetFrets(int[] capoFretOffsets)
         {

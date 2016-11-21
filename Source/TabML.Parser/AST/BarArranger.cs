@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
@@ -8,11 +9,13 @@ namespace TabML.Parser.AST
 {
     class BarArranger
     {
+        private readonly TablatureContext _context;
         private readonly DocumentBar _bar;
         private readonly Dictionary<VoicePart, Beat> _previousBeats;
 
-        public BarArranger(DocumentBar bar)
+        public BarArranger(TablatureContext context,  DocumentBar bar)
         {
+            _context = context;
             _bar = bar;
             _previousBeats = new Dictionary<VoicePart, Beat>
             {
@@ -28,8 +31,6 @@ namespace TabML.Parser.AST
             this.ArrangeBeatsAndNotes();
             this.ArrangeColumns();
             this.ArrangeVoices();
-            //todo
-
         }
 
 
@@ -51,18 +52,25 @@ namespace TabML.Parser.AST
 
         private void ArrangeBeatsAndNotes(RhythmSegmentVoice voice)
         {
-            foreach (var beat in voice.BeatElements)
+            foreach (var beat in voice.Beats)
             {
-                if (_previousBeats[voice.Part] != null)
-                    _previousBeats[voice.Part].NextBeat = beat;
+                var previousBeat = _previousBeats[voice.Part];
+                if (previousBeat != null)
+                {
+                    previousBeat.NextBeat = beat;
+                    beat.PreviousBeat = previousBeat;
+                }
                 _previousBeats[voice.Part] = beat;
             }
         }
 
         private void ArrangeVoices()
         {
-            var bassBeatArranger = new BeatArranger(_bar.DocumentState.Time.NoteValue, VoicePart.Bass);
-            var trebleBeatArranger = new BeatArranger(_bar.DocumentState.Time.NoteValue, VoicePart.Treble);
+            var bassBeatArranger = new BeatArranger(_context.DocumentState.Time.NoteValue, VoicePart.Bass);
+            var trebleBeatArranger = new BeatArranger(_context.DocumentState.Time.NoteValue, VoicePart.Treble);
+
+            _bar.BassVoice = new Voice(VoicePart.Bass);
+            _bar.TrebleVoice = new Voice(VoicePart.Treble);
 
             foreach (var segment in _bar.Rhythm.Segments)
             {
@@ -74,11 +82,9 @@ namespace TabML.Parser.AST
             }
 
             bassBeatArranger.Finish();
-            _bar.BassVoice = new Voice(VoicePart.Bass);
             _bar.BassVoice.BeatElements.AddRange(bassBeatArranger.GetRootBeats());
 
             trebleBeatArranger.Finish();
-            _bar.TrebleVoice = new Voice(VoicePart.Treble);
             _bar.TrebleVoice.BeatElements.AddRange(trebleBeatArranger.GetRootBeats());
         }
 
@@ -87,8 +93,13 @@ namespace TabML.Parser.AST
             if (voice == null)
                 return;
 
-            foreach (var beat in voice.BeatElements)
+            foreach (var beat in voice.Beats)
                 beatArranger.AddBeat(beat);
+
+            var barVoice = _bar.GetVoice(voice.Part);
+
+            voice.LastNoteOnStrings.CopyTo(barVoice.LastNoteOnStrings, 0);
+            barVoice.IsTerminatedWithRest = voice.IsTerminatedWithRest;
         }
 
         private void ArrangeColumns()
@@ -116,7 +127,7 @@ namespace TabML.Parser.AST
 
                     foreach (var beat in group)
                     {
-                        beat.Column = column;
+                        beat.OwnerColumn = column;
                         column.VoiceBeats.Add(beat);
                     }
 
@@ -133,12 +144,12 @@ namespace TabML.Parser.AST
                     && _bar.Lyrics != null
                     && lyricsSegmentIndex < _bar.Lyrics.Segments.Count)
                 {
-                    foreach (var beat in segment.TrebleVoice.BeatElements)
+                    foreach (var beat in segment.TrebleVoice.Beats)
                     {
                         if (lyricsSegmentIndex >= _bar.Lyrics.Segments.Count)
                             break;
 
-                        beat.Column.Lyrics = _bar.Lyrics.Segments[lyricsSegmentIndex];
+                        beat.OwnerColumn.Lyrics = _bar.Lyrics.Segments[lyricsSegmentIndex];
                         ++lyricsSegmentIndex;
                     }
                 }
@@ -151,14 +162,14 @@ namespace TabML.Parser.AST
             if (voice == null)
                 return; // todo: insert rest?
 
-            if (voice.BeatElements.Count == 0)
+            if (voice.Beats.Count == 0)
             {
                 // todo: insert rest?
             }
 
             var position = PreciseDuration.Zero;
 
-            foreach (var beat in voice.BeatElements)
+            foreach (var beat in voice.Beats)
             {
                 beat.Position = position;
                 beats.Add(beat);

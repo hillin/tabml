@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TabML.Core.MusicTheory;
 
@@ -22,9 +23,11 @@ namespace TabML.Core.Document
         public Beat PreviousBeat { get; set; }
         public Beat NextBeat { get; set; }
         public PreciseDuration Position { get; set; }
-        public BarColumn Column { get; set; }
+        public BarColumn OwnerColumn { get; set; }
         public Beam OwnerBeam { get; set; }
         public VoicePart VoicePart { get; set; }
+
+        public override IEnumerable<Element> Children => this.Notes;
 
         public PreciseDuration GetDuration()
         {

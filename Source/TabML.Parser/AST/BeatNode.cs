@@ -69,7 +69,7 @@ namespace TabML.Parser.AST
             this.Modifiers = new List<Node>();
         }
 
-        public bool ToDocumentElement(TablatureContext context, ILogger logger, VoicePart voicePart, out Beat beat)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, RhythmSegmentVoice ownerVoice, out Beat beat)
         {
             beat = new Beat
             {
@@ -82,22 +82,25 @@ namespace TabML.Parser.AST
                 IsRest = this.Rest != null,
                 IsTied = this.Tied != null,
                 NoteValue = this.NoteValue.ToNoteValue(),
-                VoicePart = voicePart
+                VoicePart = ownerVoice.Part
             };
 
             var notes = new List<BeatNote>();
             foreach (var note in this.Notes)
             {
                 BeatNote documentNote;
-                if (!note.ToDocumentElement(context, logger, voicePart, out documentNote))
+                if (!note.ToDocumentElement(context, logger, ownerVoice.Part, out documentNote))
                     return false;
                 documentNote.OwnerBeat = beat;
 
                 notes.Add(documentNote);
-                context.CurrentBar.LastNoteOnStrings[documentNote.String] = documentNote;
+                
+                ownerVoice.LastNoteOnStrings[documentNote.String] = documentNote;
             }
 
             beat.Notes = notes.ToArray();
+
+            ownerVoice.IsTerminatedWithRest = beat.IsRest;
 
             return true;
         }

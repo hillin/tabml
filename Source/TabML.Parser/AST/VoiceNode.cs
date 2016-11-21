@@ -29,19 +29,18 @@ namespace TabML.Parser.AST
                 Range = this.Range
             };
 
+            context.CurrentVoice = voice;
+
             foreach (var beat in this.Beats)
             {
                 Beat documentBeat;
-                if (!beat.ToDocumentElement(context, logger, voicePart, out documentBeat))
+                if (!beat.ToDocumentElement(context, logger, voice, out documentBeat))
                     return false;
 
-                if (context.CurrentBar != null) // if context.CurrentBar is null, it means we are in a template
-                                                // todo: this is ugly, refactor it
-                    context.CurrentBar.SetVoiceRestedState(voicePart, documentBeat.IsRest);
-
-                voice.BeatElements.Add(documentBeat);
+                voice.Beats.Add(documentBeat);
             }
 
+            // try to fill voice with rests if insufficient notes fed
             var duration = this.GetDuration();
             if (duration < this.ExpectedDuration)
             {
@@ -67,10 +66,9 @@ namespace TabML.Parser.AST
 
                     isFirstFactor = false;
 
-                    if (context.CurrentBar != null)  // if context.CurrentBar is null, it means we are in a template
-                                                     // todo: this is ugly, refactor it
-                        context.CurrentBar.SetVoiceRestedState(voicePart, true);
-                    voice.BeatElements.Add(beat);
+                    context.CurrentVoice.IsTerminatedWithRest = true;
+
+                    voice.Beats.Add(beat);
                 }
             }
 
@@ -82,8 +80,8 @@ namespace TabML.Parser.AST
             if (other == null)
                 return false;
 
-            return other.BeatElements.Count == this.Beats.Count
-                   && this.Beats.Where((b, i) => !b.ValueEquals(other.BeatElements[i])).Any();
+            return other.Beats.Count == this.Beats.Count
+                   && this.Beats.Where((b, i) => !b.ValueEquals(other.Beats[i])).Any();
         }
 
 

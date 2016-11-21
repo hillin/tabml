@@ -102,5 +102,8 @@ namespace TabML.Core
                 return (this.Row * 397) ^ this.Column;
             }
         }
+
+        
+        
     }
 }

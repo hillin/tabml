@@ -94,5 +94,10 @@ namespace TabML.Core
             return new TextRange(this.From > range.From ? range.From : this.From,
                                  this.To > range.To ? this.To : range.To);
         }
+
+        public override string ToString()
+        {
+            return $"{this.From} - {this.To}";
+        }
     }
 }

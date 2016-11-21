@@ -151,7 +151,7 @@ namespace TabML.Parser.AST
                 return true;
             }
 
-            var lastNote = context.GetLastNoteOnString(this.String.Value - 1, voicePart);
+            var lastNote = context.GetLastNoteOnString(this.String.Value - 1);
 
             if (lastNote == null)
             {

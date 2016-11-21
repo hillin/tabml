@@ -1,10 +1,14 @@
-﻿namespace TabML.Core.Document
+﻿using System.Collections.Generic;
+
+namespace TabML.Core.Document
 {
     public class ChordFingeringNote : Element
     {
         public int Fret { get; set; }
         public LeftHandFingerIndex? FingerIndex { get; set; }
         public bool IsImportant { get; set; }
+
+        public override IEnumerable<Element> Children { get { yield break; } }
 
         public ChordFingeringNote()
         {

@@ -1,4 +1,5 @@
-﻿using TabML.Core.MusicTheory;
+﻿using System.Collections.Generic;
+using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
 {
@@ -23,6 +24,8 @@ namespace TabML.Core.Document
         public BeatNote PostConnectedNote { get; set; }
         public Beat OwnerBeat { get; set; }
 
+        public override IEnumerable<Element> Children { get { yield break; } }
+
         public void ClearRange()
         {
             this.Range = null;
@@ -32,5 +35,6 @@ namespace TabML.Core.Document
         {
             return (BeatNote)this.MemberwiseClone();
         }
+        
     }
 }

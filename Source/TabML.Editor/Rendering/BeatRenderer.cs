@@ -42,7 +42,7 @@ namespace TabML.Editor.Rendering
             {
                 drawingContext.DrawNoteValueAugment(noteValue.Augment,
                                                     noteValue.Base,
-                                                    beat.Column.GetPosition(drawingContext),
+                                                    beat.OwnerColumn.GetPosition(drawingContext),
                                                     beat.GetNoteStrings(),
                                                     beat.VoicePart);
             }
@@ -53,10 +53,10 @@ namespace TabML.Editor.Rendering
                 var next = current.NextBeat;
                 while (next != null && next.IsTied)
                 {
-                    foreach (var note in next.Notes)
+                    foreach (var note in beat.Notes)
                     {
-                        drawingContext.DrawTie(current.Column.GetPosition(drawingContext),
-                                               next.Column.GetPosition(drawingContext),
+                        drawingContext.DrawTie(current.OwnerColumn.GetPosition(drawingContext),
+                                               next.OwnerColumn.GetPosition(drawingContext),
                                                note.String,
                                                beat.VoicePart, null, 0);
                     }
@@ -73,7 +73,7 @@ namespace TabML.Editor.Rendering
             if (beat.IsRest)
             {
                 var targetNoteValue = targetBeat.NoteValue;
-                var position = targetBeat.Column.GetPosition(drawingContext);
+                var position = targetBeat.OwnerColumn.GetPosition(drawingContext);
                 drawingContext.DrawRest(targetNoteValue.Base, position, beat.VoicePart);
                 if (beat.OwnerBeam == null && targetNoteValue.Tuplet != null)
                 {
@@ -84,18 +84,29 @@ namespace TabML.Editor.Rendering
             {
                 foreach (var note in beat.Notes)
                 {
-                    new NoteRenderer().Render(drawingContext, note, beat, beamSlope);
+                    new NoteRenderer().Render(drawingContext, note, targetBeat, beamSlope);
                 }
             }
         }
 
         private void DrawStemAndFlag(BarDrawingContext drawingContext, Beat beat, BeamSlope beamSlope, Beat asTiedFor)
         {
-            double stemTailPosition;
+            var stemTailPosition = 0.0;
             var targetBeat = asTiedFor ?? beat;
-            var position = targetBeat.Column.GetPosition(drawingContext);
+            var position = targetBeat.OwnerColumn.GetPosition(drawingContext)
+                + beat.GetAlternationOffset(drawingContext);
 
-            this.DrawStem(drawingContext, targetBeat.NoteValue, beat, beamSlope, out stemTailPosition);
+            if (targetBeat.NoteValue.Base <= BaseNoteValue.Half)
+            {
+                double from;
+                drawingContext.GetStemOffsetRange(beat.GetNearestStringIndex(), beat.VoicePart, out from,
+                                                  out stemTailPosition);
+
+                if (beamSlope != null)
+                    stemTailPosition = beamSlope.GetY(position);
+
+                drawingContext.DrawStem(position, from, stemTailPosition);
+            }
 
             if (targetBeat.OwnerBeam == null)
             {
@@ -134,25 +145,6 @@ namespace TabML.Editor.Rendering
 
             drawingContext.DrawBeam(noteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), voicePart);
         }
-
-        private void DrawStem(BarDrawingContext drawingContext, NoteValue noteValue, Beat beat, BeamSlope beamSlope, out double stemTailPosition)
-        {
-            if (noteValue.Base > BaseNoteValue.Half)
-            {
-                stemTailPosition = 0;
-                return;
-            }
-
-            double from;
-            drawingContext.GetStemOffsetRange(beat.GetNearestStringIndex(), beat.VoicePart, out from, out stemTailPosition);
-
-            var position = beat.Column.GetPosition(drawingContext);
-
-            if (beamSlope != null)
-                stemTailPosition = beamSlope.GetY(position);
-
-            drawingContext.DrawStem(position, from, stemTailPosition);
-        }
-
+        
     }
 }

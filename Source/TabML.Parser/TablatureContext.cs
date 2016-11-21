@@ -18,6 +18,7 @@ namespace TabML.Parser
         public IReadOnlyList<Bar> Bars => _bars;
 
         public Bar CurrentBar { get; set; }
+        public RhythmSegmentVoice CurrentVoice { get; set; }
 
         public TablatureContext()
         {
@@ -35,8 +36,6 @@ namespace TabML.Parser
             bar.Index = _bars.Count;
             bar.DocumentState = this.DocumentState;
             bar.LogicalPreviousBar = _bars.LastOrDefault(); // todo: handle alternation
-
-            new BarArranger(bar).Arrange();
 
             _bars.Add(bar);
         }
@@ -56,9 +55,9 @@ namespace TabML.Parser
             };
         }
 
-        public BeatNote GetLastNoteOnString(int stringIndex, VoicePart voicePart)
+        public BeatNote GetLastNoteOnString(int stringIndex)
         {
-            var note = this.CurrentBar.LastNoteOnStrings[stringIndex];
+            var note = this.CurrentVoice.LastNoteOnStrings[stringIndex];
             if (note != null)
                 return note;
 
@@ -74,10 +73,13 @@ namespace TabML.Parser
                     if (bar.OpenLine == OpenBarLine.BeginRepeat)
                         break;
 
-                    if (bar.GetVoiceRestedState(voicePart))
+                    var voice = bar.GetVoice(this.CurrentVoice.Part);
+
+                    if (voice.IsTerminatedWithRest)
                         break;
 
-                    note = bar.LastNoteOnStrings[stringIndex];
+                    note = voice.LastNoteOnStrings[stringIndex];
+
                     if (note != null)
                     {
                         return note;
@@ -86,7 +88,7 @@ namespace TabML.Parser
                     bar = bar.LogicalPreviousBar;
                 }
             }
-            
+
             return null;
         }
 

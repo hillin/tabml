@@ -7,6 +7,7 @@ namespace TabML.Core.Document
     public class Rhythm : Element
     {
         public List<RhythmSegment> Segments { get; }
+        public override IEnumerable<Element> Children => this.Segments;
 
         public bool NotMatchingTime { get; set; }
 

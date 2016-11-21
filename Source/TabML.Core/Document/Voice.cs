@@ -4,10 +4,31 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
 {
-    public class Voice : Element
+    public class Voice
     {
         public List<IBeatElement> BeatElements { get; }
+
         public VoicePart Part { get; }
+
+
+        private bool _isTerminatedWithRest;
+        public bool IsTerminatedWithRest
+        {
+            get { return _isTerminatedWithRest; }
+            set
+            {
+                _isTerminatedWithRest = value;
+                if (_isTerminatedWithRest)
+                    for (var i = 0; i < this.LastNoteOnStrings.Length; ++i)
+                        this.LastNoteOnStrings[i] = null;
+            }
+        }
+
+        /// <summary>
+        /// the last notes appeared on each string of this voice. this propery is graduately updated to reflect
+        /// the state of the voice, in order to determine the predecessor note to be tied to another note
+        /// </summary>
+        public BeatNote[] LastNoteOnStrings { get; } = new BeatNote[Defaults.Strings];
 
         public Voice(VoicePart part)
         {
@@ -15,23 +36,5 @@ namespace TabML.Core.Document
             this.BeatElements = new List<IBeatElement>();
         }
         public PreciseDuration GetDuration() => this.BeatElements.Sum(n => n.GetDuration());
-
-        public void ClearRange()
-        {
-            this.Range = null;
-
-            foreach (var beat in this.BeatElements)
-                beat.ClearRange();
-        }
-
-        public Voice Clone()
-        {
-            var clone = new Voice(this.Part)
-            {
-                Range = this.Range,
-            };
-            clone.BeatElements.AddRange(this.BeatElements.Select(b => b.Clone()));
-            return clone;
-        }
     }
 }

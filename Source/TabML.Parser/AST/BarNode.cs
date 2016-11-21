@@ -40,7 +40,7 @@ namespace TabML.Parser.AST
 
             if (bar.Rhythm != null && bar.Lyrics != null)
             {
-                var beats = bar.Rhythm.Segments.Sum(s => s.FirstVoice.BeatElements?.Count ?? 0);
+                var beats = bar.Rhythm.Segments.Sum(s => s.FirstVoice.Beats?.Count ?? 0);
                 if (beats < bar.Lyrics.Segments.Count)
                     logger.Report(LogLevel.Suggestion, bar.Lyrics.Range, Messages.Suggestion_LyricsTooLong);
             }
@@ -91,6 +91,9 @@ namespace TabML.Parser.AST
 
                 bar.Lyrics = lyrics;
             }
+
+
+            new BarArranger(context, bar).Arrange();
 
             return true;
         }

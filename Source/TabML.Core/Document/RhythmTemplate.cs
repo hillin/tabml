@@ -7,6 +7,7 @@ namespace TabML.Core.Document
     public class RhythmTemplate : Element
     {
         public List<RhythmTemplateSegment> Segments { get; }
+        public override IEnumerable<Element> Children => this.Segments;
 
         public RhythmTemplate()
         {
