@@ -48,7 +48,7 @@ namespace TabML.Editor
                 800 - style.Padding.Left - style.Padding.Right,
                 1200 - style.Padding.Top - style.Padding.Bottom);
 
-            new TablatureRenderer(primitiveRenderer, style).Render(tablature, location, size);
+            new TablatureRenderer(primitiveRenderer, style, tablature).Render(location, size);
 
             _rendered = true;
         }

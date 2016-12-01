@@ -28,7 +28,6 @@ namespace TabML.Editor.Rendering
             this.AvailableSize = availableSize;
             this.PrimitiveRenderer = primitiveRenderer;
             this.Style = style;
-            this.Style = style;
 
             this.StringCarets = new double[style.StringCount];
         }

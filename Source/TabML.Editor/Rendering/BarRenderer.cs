@@ -15,34 +15,43 @@ namespace TabML.Editor.Rendering
     {
         public PrimitiveRenderer PrimitiveRenderer { get; }
         public TablatureStyle Style { get; }
+        public Bar Bar { get; }
 
-        public BarRenderer(PrimitiveRenderer primitiveRenderer, TablatureStyle style)
+        private double? _minSize;
+
+        public BarRenderer(PrimitiveRenderer primitiveRenderer, TablatureStyle style, Bar bar)
         {
             this.PrimitiveRenderer = primitiveRenderer;
             this.Style = style;
+            this.Bar = bar;
         }
 
-        public void Render(Bar bar, Point location, Size availableSize)
+        public double MeasureMinSize()
+        {
+            return _minSize ?? (_minSize = this.Bar.GetMinWidth(this.Style)).Value;
+        }
+
+        public void Render(Point location, Size availableSize)
         {
             var drawingContext = new BarDrawingContext(location, availableSize, this.PrimitiveRenderer, this.Style);
 
-            this.Draw(bar, drawingContext, availableSize.Width);
+            this.Draw(drawingContext, availableSize.Width);
         }
 
-        
-        private void Draw(Bar bar, BarDrawingContext drawingContext, double width)
-        {
-            if (bar.OpenLine != null)
-                drawingContext.DrawBarLine(bar.OpenLine.Value, 0.0);
 
-            switch (drawingContext.Style.BeatLayout)
+        private void Draw(BarDrawingContext drawingContext, double width)
+        {
+            if (this.Bar.OpenLine != null)
+                drawingContext.DrawBarLine(this.Bar.OpenLine.Value, 0.0);
+
+            switch (this.Style.BeatLayout)
             {
                 case BeatLayout.SizeByNoteValue:
-                    if (drawingContext.Style.FlexibleBeatSize)
+                    if (this.Style.FlexibleBeatSize)
                         throw new NotImplementedException(); //todo
                     else
                     {
-                        this.Draw_FixedBeatSizeByNoteValue(bar, drawingContext, width);
+                        this.Draw_FixedBeatSizeByNoteValue(drawingContext, width);
                     }
 
                     break;
@@ -52,11 +61,11 @@ namespace TabML.Editor.Rendering
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (bar.CloseLine != null)
-                drawingContext.DrawBarLine(bar.CloseLine.Value, width);
+            if (this.Bar.CloseLine != null)
+                drawingContext.DrawBarLine(this.Bar.CloseLine.Value, width);
         }
 
-        private void Draw_FixedBeatSizeByNoteValue(Bar bar, BarDrawingContext drawingContext, double width)
+        private void Draw_FixedBeatSizeByNoteValue(BarDrawingContext drawingContext, double width)
         {
             // size is equally and explicitly divided by NoteValue
 
@@ -64,9 +73,9 @@ namespace TabML.Editor.Rendering
             // and the size of unit duration
             var durationWidth = drawingContext.Style.MinimumBeatSize;
             var minWidthDuration = PreciseDuration.Zero;
-            var sumDuration = bar.Duration;
+            var sumDuration = this.Bar.Duration;
             var remainingWidth = width - drawingContext.Style.BarHorizontalPadding * 2;
-            foreach (var column in bar.Columns.OrderBy(c => c.GetDuration()))
+            foreach (var column in this.Bar.Columns.OrderBy(c => c.GetDuration()))
             {
                 durationWidth = remainingWidth / sumDuration;
                 var columnDuration = column.GetDuration();
@@ -80,11 +89,11 @@ namespace TabML.Editor.Rendering
 
             var position = drawingContext.Style.BarHorizontalPadding;
 
-            drawingContext.ColumnRenderingInfos = new BarColumnRenderingInfo[bar.Columns.Count];
+            drawingContext.ColumnRenderingInfos = new BarColumnRenderingInfo[this.Bar.Columns.Count];
 
-            for (var i = 0; i < bar.Columns.Count; i++)
+            for (var i = 0; i < this.Bar.Columns.Count; i++)
             {
-                var column = bar.Columns[i];
+                var column = this.Bar.Columns[i];
                 var columnDuration = column.GetDuration();
                 var columnWidth = columnDuration < minWidthDuration
                     ? drawingContext.Style.MinimumBeatSize
@@ -94,11 +103,11 @@ namespace TabML.Editor.Rendering
                 position += columnWidth;
             }
 
-            if (bar.BassVoice != null)
-                new BarVoiceRenderer().Render(drawingContext, bar.BassVoice);
+            if (this.Bar.BassVoice != null)
+                new BarVoiceRenderer().Render(drawingContext, this.Bar.BassVoice);
 
-            if (bar.TrebleVoice != null)
-                new BarVoiceRenderer().Render(drawingContext, bar.TrebleVoice);
+            if (this.Bar.TrebleVoice != null)
+                new BarVoiceRenderer().Render(drawingContext, this.Bar.TrebleVoice);
 
             drawingContext.FinishHorizontalBarLines(width);
         }

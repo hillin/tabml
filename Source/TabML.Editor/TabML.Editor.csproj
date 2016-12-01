@@ -110,6 +110,7 @@
     <Compile Include="Rendering\BarColumnExtensions.cs" />
     <Compile Include="Rendering\BarColumnRenderingInfo.cs" />
     <Compile Include="Rendering\BarColumnRenderer.cs" />
+    <Compile Include="Rendering\BarRowRenderer.cs" />
     <Compile Include="Rendering\BarVoiceRenderer.cs" />
     <Compile Include="Rendering\BeatElementRenderer.cs" />
     <Compile Include="Rendering\BeamExtensions.cs" />

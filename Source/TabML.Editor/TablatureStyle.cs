@@ -20,6 +20,9 @@ namespace TabML.Editor
         public double BarBottomMargin { get; set; } = 60;
         public double BarHorizontalPadding { get; set; } = 32;
 
+        public int RegularBarsPerRow { get; set; } = 4;
+        public double FirstRowIndention { get; set; } = 48;
+
         public Thickness Padding { get; set; } = new Thickness(24);
 
         public bool FlexibleBeatSize { get; set; } = false;
