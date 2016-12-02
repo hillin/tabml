@@ -35,7 +35,7 @@ namespace TabML.Editor.Rendering
             var startY = location.Y;
 
             var row = new RowRenderer(this.PrimitiveRenderer, this.Style, true);
-            var rowSumWidth = this.Style.FirstRowIndention;
+            var caret = this.Style.FirstRowIndention;
 
             var barIndex = 0;
             while (barIndex < this.Tablature.Bars.Length)
@@ -45,10 +45,10 @@ namespace TabML.Editor.Rendering
                     var bar = this.Tablature.Bars[barIndex];
                     var barRenderer = new BarRenderer(this.PrimitiveRenderer, this.Style, bar);
                     var minWidth = barRenderer.MeasureMinSize();
-                    if (rowSumWidth + minWidth <= availableSize.Width || row.BarRenderers.Count == 0)
+                    if (caret + minWidth <= availableSize.Width || row.BarRenderers.Count == 0)
                     {
                         row.BarRenderers.Add(barRenderer);
-                        rowSumWidth += minWidth;
+                        caret += minWidth;
                         ++barIndex;
                         continue;
                     }
@@ -58,6 +58,7 @@ namespace TabML.Editor.Rendering
                 location.Y += 200;  //todo
                 // todo: handle new page
                 row = new RowRenderer(this.PrimitiveRenderer, this.Style, false);
+                caret = 0;
             }
             
             if (row.BarRenderers.Count > 0)

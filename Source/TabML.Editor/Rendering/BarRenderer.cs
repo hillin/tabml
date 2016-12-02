@@ -45,7 +45,7 @@ namespace TabML.Editor.Rendering
                 drawingContext.DrawBarLine(this.Bar.OpenLine.Value, 0.0);
 
             var minDuration = this.Bar.Columns.Min(c => c.GetDuration());
-            var widthRatio = width/this.Bar.GetMinWidth(this.Style);
+            var widthRatio = (width - drawingContext.Style.BarHorizontalPadding * 2) / this.Bar.GetMinWidth(this.Style);
 
             var position = drawingContext.Style.BarHorizontalPadding;
 
@@ -54,7 +54,7 @@ namespace TabML.Editor.Rendering
             for (var i = 0; i < this.Bar.Columns.Count; i++)
             {
                 var column = this.Bar.Columns[i];
-                
+
                 var columnWidth = this.Bar.GetColumnMinWidthInBar(column, this.Style, minDuration) * widthRatio;
                 drawingContext.ColumnRenderingInfos[i] = new BarColumnRenderingInfo(column, position, columnWidth);
                 new BarColumnRenderer().Render(drawingContext, drawingContext.ColumnRenderingInfos[i]);

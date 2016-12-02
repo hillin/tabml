@@ -13,14 +13,14 @@ namespace TabML.Editor
     class TablatureStyle
     {
         public int StringCount { get; set; } = 6;
-        public double MinimumBeatSize { get; set; } = 8;
-        public double MaximumBeatSizeWithoutLyrics { get; set; } = 16;
+        public double MinimumBeatSize { get; set; } = 16;
+        public double MaximumBeatSizeWithoutLyrics { get; set; } = 24;
         public double BarLineHeight { get; set; } = 12;
         public double BarTopMargin { get; set; } = 120;
         public double BarBottomMargin { get; set; } = 60;
         public double BarHorizontalPadding { get; set; } = 32;
 
-        public int RegularBarsPerRow { get; set; } = 2;
+        public int RegularBarsPerRow { get; set; } = 3;
         public double FirstRowIndention { get; set; } = 48;
 
         public Thickness Padding { get; set; } = new Thickness(24);
