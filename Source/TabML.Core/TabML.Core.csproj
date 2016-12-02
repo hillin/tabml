@@ -170,7 +170,6 @@
     <Compile Include="MusicTheory\Tunings.cs" />
     <Compile Include="RightHandFingerIndex.cs" />
     <Compile Include="RightHandFingerIndexExtensions.cs" />
-    <Compile Include="Document\BeatLayout.cs" />
     <Compile Include="TextPointer.cs" />
     <Compile Include="TextRange.cs" />
     <Compile Include="TextSource.cs" />

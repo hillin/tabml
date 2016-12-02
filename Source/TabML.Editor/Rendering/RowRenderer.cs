@@ -9,21 +9,21 @@ using TabML.Core.Document;
 
 namespace TabML.Editor.Rendering
 {
-    class BarRowRenderer
+    class RowRenderer
     {
         public PrimitiveRenderer PrimitiveRenderer { get; }
         public TablatureStyle Style { get; }
         public List<BarRenderer> BarRenderers { get; }
         public bool IsFirstRow { get; set; }
 
-        private BarRowRenderer(PrimitiveRenderer primitiveRenderer, TablatureStyle style)
+        private RowRenderer(PrimitiveRenderer primitiveRenderer, TablatureStyle style)
         {
             this.PrimitiveRenderer = primitiveRenderer;
             this.Style = style;
             this.BarRenderers = new List<BarRenderer>();
         }
 
-        public BarRowRenderer(PrimitiveRenderer primitiveRenderer, TablatureStyle style, bool isFirstRow)
+        public RowRenderer(PrimitiveRenderer primitiveRenderer, TablatureStyle style, bool isFirstRow)
             : this(primitiveRenderer, style)
         {
             this.IsFirstRow = isFirstRow;
@@ -32,6 +32,8 @@ namespace TabML.Editor.Rendering
 
         public void Render(Point location, Size availableSize)
         {
+            var drawingContext = new RowDrawingContext(location, availableSize, this.PrimitiveRenderer, this.Style);
+
             var availableWidth = availableSize.Width;
             var count = this.BarRenderers.Count;
             var averageWidth = availableWidth / count;
@@ -49,10 +51,14 @@ namespace TabML.Editor.Rendering
             foreach (var bar in this.BarRenderers)
             {
                 var minSize = bar.MeasureMinSize();
-                var size = new Size(Math.Max(minSize, averageWidth), availableSize.Height);
-                bar.Render(location, size);
+                var width = Math.Min(availableSize.Width, Math.Max(minSize, averageWidth));
+                var size = new Size(width, availableSize.Height);
+                bar.Render(drawingContext, location, size);
                 location.X += size.Width;
             }
+
+
+            drawingContext.FinishHorizontalBarLines(availableSize.Width);
         }
     }
 }

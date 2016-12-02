@@ -13,19 +13,18 @@ namespace TabML.Editor
     class TablatureStyle
     {
         public int StringCount { get; set; } = 6;
-        public BeatLayout BeatLayout { get; set; } = BeatLayout.SizeByNoteValue;
-        public double MinimumBeatSize { get; set; } = 24;
+        public double MinimumBeatSize { get; set; } = 8;
+        public double MaximumBeatSizeWithoutLyrics { get; set; } = 16;
         public double BarLineHeight { get; set; } = 12;
         public double BarTopMargin { get; set; } = 120;
         public double BarBottomMargin { get; set; } = 60;
         public double BarHorizontalPadding { get; set; } = 32;
 
-        public int RegularBarsPerRow { get; set; } = 4;
+        public int RegularBarsPerRow { get; set; } = 2;
         public double FirstRowIndention { get; set; } = 48;
 
         public Thickness Padding { get; set; } = new Thickness(24);
-
-        public bool FlexibleBeatSize { get; set; } = false;
+        
         public Typeface LyricsTypeface { get; set; } = new Typeface("Segoe UI");
         public double LyricsFontSize { get; set; } = 12;
         public Brush LyricsForeground { get; set; } = Brushes.Black;

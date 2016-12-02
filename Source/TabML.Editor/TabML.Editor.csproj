@@ -110,7 +110,7 @@
     <Compile Include="Rendering\BarColumnExtensions.cs" />
     <Compile Include="Rendering\BarColumnRenderingInfo.cs" />
     <Compile Include="Rendering\BarColumnRenderer.cs" />
-    <Compile Include="Rendering\BarRowRenderer.cs" />
+    <Compile Include="Rendering\RowRenderer.cs" />
     <Compile Include="Rendering\BarVoiceRenderer.cs" />
     <Compile Include="Rendering\BeatElementRenderer.cs" />
     <Compile Include="Rendering\BeamExtensions.cs" />
@@ -120,6 +120,7 @@
     <Compile Include="Rendering\NoteExtensions.cs" />
     <Compile Include="Rendering\NoteRenderer.cs" />
     <Compile Include="Rendering\OffBarDirection.cs" />
+    <Compile Include="Rendering\RowDrawingContext.cs" />
     <Compile Include="Rendering\TablatureRenderer.cs" />
     <Compile Include="Rendering\VoicePartExtensions.cs" />
     <Compile Include="TablatureStyle.cs" />

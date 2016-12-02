@@ -34,7 +34,7 @@ namespace TabML.Editor.Rendering
         {
             var startY = location.Y;
 
-            var row = new BarRowRenderer(this.PrimitiveRenderer, this.Style, true);
+            var row = new RowRenderer(this.PrimitiveRenderer, this.Style, true);
             var rowSumWidth = this.Style.FirstRowIndention;
 
             var barIndex = 0;
@@ -57,7 +57,7 @@ namespace TabML.Editor.Rendering
                 row.Render(location, new Size(availableSize.Width, availableSize.Height - location.Y + startY));
                 location.Y += 200;  //todo
                 // todo: handle new page
-                row = new BarRowRenderer(this.PrimitiveRenderer, this.Style, false);
+                row = new RowRenderer(this.PrimitiveRenderer, this.Style, false);
             }
             
             if (row.BarRenderers.Count > 0)

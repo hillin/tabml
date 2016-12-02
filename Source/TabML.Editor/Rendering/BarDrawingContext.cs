@@ -15,36 +15,35 @@ namespace TabML.Editor.Rendering
     class BarDrawingContext
     {
         public Size AvailableSize { get; }
-        public PrimitiveRenderer PrimitiveRenderer { get; }
+        public PrimitiveRenderer PrimitiveRenderer => this.Owner.PrimitiveRenderer;
+        public TablatureStyle Style => this.Owner.Style;
         public Point Location { get; }
-        public TablatureStyle Style { get; }
         public BarColumnRenderingInfo[] ColumnRenderingInfos { get; set; }
         private double[] StringCarets { get; }
+        public RowDrawingContext Owner { get; }
 
 
-        public BarDrawingContext(Point location, Size availableSize, PrimitiveRenderer primitiveRenderer, TablatureStyle style)
+        public BarDrawingContext(Point location, Size availableSize, RowDrawingContext owner)
         {
             this.Location = location;
             this.AvailableSize = availableSize;
-            this.PrimitiveRenderer = primitiveRenderer;
-            this.Style = style;
+            this.Owner = owner;
 
-            this.StringCarets = new double[style.StringCount];
+            this.StringCarets = new double[owner.Style.StringCount];
         }
 
-        public void DrawFretNumber(int stringIndex, string fretNumber, double position,  bool isHalfOrLonger)
+        public void DrawFretNumber(int stringIndex, string fretNumber, double position, bool isHalfOrLonger)
         {
             this.UpdateHorizontalBarLine(stringIndex, position);
 
             this.PrimitiveRenderer.DrawFretNumber(fretNumber, this.Location.X + position,
-                                                  this.GetStringPosition(stringIndex), isHalfOrLonger);
+                                                  this.Owner.GetStringPosition(stringIndex), isHalfOrLonger);
         }
 
         private void UpdateHorizontalBarLine(int stringIndex, double position)
         {
-            this.DrawHorizontalBarLineTo(stringIndex, position - 10); // todo: use measure string to handle spaces
-
-            this.StringCarets[stringIndex] = position + 10;
+            this.Owner.UpdateHorizontalBarLine(stringIndex,
+                                               this.Owner.GetRelativePosition(position + this.Location.X));
         }
 
 
@@ -53,7 +52,7 @@ namespace TabML.Editor.Rendering
             this.UpdateHorizontalBarLine(stringIndex, position);
 
             this.PrimitiveRenderer.DrawDeadNote(this.Location.X + position,
-                                                this.GetStringPosition(stringIndex), isHalfOrLonger);
+                                                this.Owner.GetStringPosition(stringIndex), isHalfOrLonger);
         }
 
         public void DrawPlayAsChordMark(int stringIndex, double position, bool isHalfOrLonger)
@@ -61,30 +60,17 @@ namespace TabML.Editor.Rendering
             this.UpdateHorizontalBarLine(stringIndex, position);
 
             this.PrimitiveRenderer.DrawPlayToChordMark(this.Location.X + position,
-                                                       this.GetStringPosition(stringIndex), isHalfOrLonger);
+                                                       this.Owner.GetStringPosition(stringIndex), isHalfOrLonger);
         }
-
-
-        public void FinishHorizontalBarLines(double width)
-        {
-            for (var i = 0; i < this.StringCarets.Length; ++i)
-            {
-                if (this.StringCarets[i] < width)
-                {
-                    this.DrawHorizontalBarLineTo(i, width);
-                    this.StringCarets[i] = width;
-                }
-            }
-        }
-
+        
         public void DrawBarLine(OpenBarLine line, double position)
         {
-            this.PrimitiveRenderer.DrawBarLine((BarLine)line, this.Location.X + position, this.GetStringPosition(0));
+            this.PrimitiveRenderer.DrawBarLine((BarLine)line, this.Location.X + position, this.Owner.GetStringPosition(0));
         }
 
         public void DrawBarLine(CloseBarLine line, double position)
         {
-            this.PrimitiveRenderer.DrawBarLine((BarLine)line, this.Location.X + position, this.GetStringPosition(0));
+            this.PrimitiveRenderer.DrawBarLine((BarLine)line, this.Location.X + position, this.Owner.GetStringPosition(0));
         }
 
         public void DrawStem(double x, double y0, double y1)
@@ -95,21 +81,21 @@ namespace TabML.Editor.Rendering
 
         public double GetNoteAlternationOffset(double offsetRatio)
         {
-            return this.Style.NoteAlternationOffset*offsetRatio;
+            return this.Style.NoteAlternationOffset * offsetRatio;
         }
 
         public void GetStemOffsetRange(int stringIndex, VoicePart voicePart, out double from, out double to)
         {
             if (voicePart == VoicePart.Treble)
             {
-                from = this.GetStringSpacePosition(stringIndex) - this.Style.NoteStemOffset;
+                from = this.Owner.GetStringSpacePosition(stringIndex) - this.Style.NoteStemOffset;
                 to = Math.Min(from - this.Style.NoteStemHeight,
-                               this.GetBodyCeiling() - this.Style.MinimumNoteTailOffset);
+                               this.Owner.GetBodyCeiling() - this.Style.MinimumNoteTailOffset);
             }
             else
             {
-                from = this.GetStringSpacePosition(stringIndex + 1) + this.Style.NoteStemOffset;
-                to = Math.Max(from + this.Style.NoteStemHeight, this.GetBodyFloor() - this.Style.MinimumNoteTailOffset);
+                from = this.Owner.GetStringSpacePosition(stringIndex + 1) + this.Style.NoteStemOffset;
+                to = Math.Max(from + this.Style.NoteStemHeight, this.Owner.GetBodyFloor() - this.Style.MinimumNoteTailOffset);
             }
 
             from -= this.Location.Y;
@@ -128,9 +114,9 @@ namespace TabML.Editor.Rendering
         {
             double y;
             if (voicePart == VoicePart.Treble)
-                y = this.GetBodyCeiling() - this.Style.OuterNoteInstructionOffset;
+                y = this.Owner.GetBodyCeiling() - this.Style.OuterNoteInstructionOffset;
             else
-                y = this.GetBodyFloor() + this.Style.OuterNoteInstructionOffset;
+                y = this.Owner.GetBodyFloor() + this.Style.OuterNoteInstructionOffset;
 
             this.DrawTuplet(value, position, y - this.Location.Y, voicePart);
         }
@@ -138,7 +124,7 @@ namespace TabML.Editor.Rendering
         public void DrawTie(double from, double to, int stringIndex, VoicePart voicePart, string instruction, double instructionY)
         {
             var spaceIndex = voicePart == VoicePart.Bass ? stringIndex + 1 : stringIndex;
-            var y = this.GetStringSpacePosition(spaceIndex);
+            var y = this.Owner.GetStringSpacePosition(spaceIndex);
             this.PrimitiveRenderer.DrawTie(from + this.Location.X + 10, to + this.Location.X - 10, y, instruction,
                                            instructionY + this.Location.Y +
                                            (voicePart == VoicePart.Treble
@@ -164,21 +150,7 @@ namespace TabML.Editor.Rendering
             }
 
 
-            this.PrimitiveRenderer.DrawGliss(x, this.GetStringPosition(stringIndex), direction, instructionY);
-        }
-
-
-        private double GetBodyCeiling() => this.Location.Y + this.Style.BarTopMargin;
-        private double GetBodyFloor() => this.GetBodyCeiling() + this.Style.BarLineHeight * this.Style.StringCount;
-
-        private double GetStringPosition(int stringIndex) => this.Location.Y + this.Style.BarTopMargin + (stringIndex + 0.5) * this.Style.BarLineHeight;
-        private double GetStringSpacePosition(int stringIndex) => this.Location.Y + this.Style.BarTopMargin + stringIndex * this.Style.BarLineHeight;
-
-        private void DrawHorizontalBarLineTo(int stringIndex, double position)
-        {
-            this.PrimitiveRenderer.DrawHorizontalBarLine(this.Location.X + this.StringCarets[stringIndex],
-                                                         this.GetStringPosition(stringIndex),
-                                                         position - this.StringCarets[stringIndex]);
+            this.PrimitiveRenderer.DrawGliss(x, this.Owner.GetStringPosition(stringIndex), direction, instructionY);
         }
 
         public void DrawFlag(BaseNoteValue noteValue, double x, double y, VoicePart voicePart)
@@ -214,7 +186,7 @@ namespace TabML.Editor.Rendering
             var spaceOffset = voicePart == VoicePart.Treble ? -1 : 0;
             foreach (var stringIndex in strings)
             {
-                var y = this.GetStringSpacePosition(stringIndex + spaceOffset);
+                var y = this.Owner.GetStringSpacePosition(stringIndex + spaceOffset);
                 this.PrimitiveRenderer.DrawNoteValueAugment(noteValueAugment, x, y);
             }
         }
@@ -231,8 +203,8 @@ namespace TabML.Editor.Rendering
         public void DrawRest(BaseNoteValue noteValue, double position, VoicePart voicePart)
         {
             var y = voicePart == VoicePart.Treble
-                ? this.GetStringSpacePosition(0)   // above the first line
-                : this.GetStringSpacePosition(this.Style.StringCount - 1);  // between the 5th and 6th line
+                ? this.Owner.GetStringSpacePosition(0)   // above the first line
+                : this.Owner.GetStringSpacePosition(this.Style.StringCount - 1);  // between the 5th and 6th line
             this.PrimitiveRenderer.DrawRest(noteValue, this.Location.X + position, y);
         }
 

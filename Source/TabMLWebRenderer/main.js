@@ -2325,8 +2325,8 @@ var tablatureStyle = {
         fontFamily: "Segoe UI"
     },
     page: {
-        width: 800,
-        height: 1200
+        width: 1200,
+        height: 1600
     },
     bar: {
         lineHeight: 12,

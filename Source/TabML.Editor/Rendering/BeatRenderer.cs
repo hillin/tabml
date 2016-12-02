@@ -47,7 +47,9 @@ namespace TabML.Editor.Rendering
                                                     beat.VoicePart);
             }
 
-            if (!beat.IsTied && !beat.IsRest)
+            if (!beat.IsTied 
+                && !beat.IsRest 
+                && asTiedFor == null)  // only draw ties for the beat itself
             {
                 var current = beat;
                 var next = current.NextBeat;

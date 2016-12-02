@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabML.Core.Document;
+using TabML.Core.MusicTheory;
 
 namespace TabML.Editor.Rendering
 {
@@ -11,29 +12,19 @@ namespace TabML.Editor.Rendering
     {
         public static double GetMinWidth(this Bar bar, TablatureStyle style)
         {
-            switch (style.BeatLayout)
-            {
-                case BeatLayout.SizeByNoteValue:
-                    if (style.FlexibleBeatSize)
-                        throw new NotImplementedException(); //todo
-                    else
-                    {
-                        // size is equally and explicitly divided by NoteValue
-                        var minWidth = 0.0;
-                        foreach (var column in bar.Columns)
-                        {
-                            var columnMinWidth = column.GetMinWidth(style);
-                            minWidth = Math.Max(minWidth,
-                                                columnMinWidth / column.GetDuration() * bar.Duration);
-                        }
+            var minDuration = Enumerable.Min(bar.Columns, c => c.GetDuration());
 
-                        return minWidth;
-                    }
-                case BeatLayout.DivideInBeats:
-                    throw new NotImplementedException();    //todo
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            return bar.Columns.Sum(column => bar.GetColumnMinWidthInBar(column, style, minDuration));
+        }
+
+        public static double GetColumnMinWidthInBar(this Bar bar, BarColumn column, TablatureStyle style,
+                                                    PreciseDuration minDurationInBar)
+        {
+            var columnRegularWidth = Math.Min(style.MaximumBeatSizeWithoutLyrics,
+                                              style.MinimumBeatSize*column.GetDuration()/minDurationInBar);
+            var columnMinWidth = column.GetMinWidth(style);
+
+            return Math.Max(columnRegularWidth, columnMinWidth);
         }
     }
 }
