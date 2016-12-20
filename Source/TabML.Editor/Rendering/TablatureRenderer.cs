@@ -15,8 +15,10 @@ namespace TabML.Editor.Rendering
         public PrimitiveRenderer PrimitiveRenderer { get; }
         public TablatureStyle Style { get; }
         public RenderingContext RenderingContext { get; private set; }
-        
+
         private readonly Dictionary<ElementBase, ElementRenderer> _rendererLookup;
+
+        private readonly List<BarRenderer> _barRenderers;
 
         public TablatureRenderer(PrimitiveRenderer primitiveRenderer, TablatureStyle style, CoreTablature tablature)
             : base(null, tablature)
@@ -26,60 +28,110 @@ namespace TabML.Editor.Rendering
             this.Style = style;
 
             _rendererLookup = new Dictionary<ElementBase, ElementRenderer>();
+            _barRenderers = new List<BarRenderer>();
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            _barRenderers.Clear();
+
+            _barRenderers.AddRange(this.Element.Bars.Select(b => new BarRenderer(this, this.Style, b)));
+
+            _barRenderers.Initialize();
         }
 
         public void Render(RenderingContext rootRc, Point location, Size size)
         {
             this.RenderingContext = rootRc;
-            
+
             this.PrimitiveRenderer.Clear();
             var tablatureRc = new TablatureRenderingContext(rootRc, this.PrimitiveRenderer, this.Style);
-            this.DrawBars(tablatureRc, location, size);
+            this.RenderBars(tablatureRc, location, size);
         }
 
-        private void DrawBars(TablatureRenderingContext tablatureRc, Point location, Size availableSize)
+        private void RenderBars(TablatureRenderingContext renderingContext, Point location, Size availableSize)
         {
-            Func<bool, RowRenderer> createRowRenderer = isFirstRow =>
-            {
-                var r = new RowRenderer(this, isFirstRow);
-                tablatureRc.Root.AssignRenderingContext(r, tablatureRc);
-                return r;
-            };
-
             var startY = location.Y;
 
-            var rowRenderer = createRowRenderer(true);
+            var isFirstRow = true;
 
             var caret = this.Style.FirstRowIndention;
-
             var barIndex = 0;
+            var barRenders = new List<BarRenderer>();
+
+            // ReSharper disable once AccessToModifiedClosure
+            Action renderRow = () => this.RenderRow(renderingContext, barRenders, location,
+                                                    new Size(availableSize.Width,
+                                                             availableSize.Height - location.Y + startY),
+                                                    isFirstRow);
+
             while (barIndex < this.Tablature.Bars.Length)
             {
-                if (rowRenderer.BarRenderers.Count < this.Style.RegularBarsPerRow)
+                if (barRenders.Count < this.Style.RegularBarsPerRow)
                 {
-                    var bar = this.Tablature.Bars[barIndex];
-                    var barRenderer = new BarRenderer(rowRenderer, this.Style, bar);
+                    var barRenderer = _barRenderers[barIndex];
                     var minWidth = barRenderer.MeasureMinSize();
-                    if (caret + minWidth <= availableSize.Width || rowRenderer.BarRenderers.Count == 0)
+                    if (caret + minWidth <= availableSize.Width || barRenders.Count == 0)
                     {
-                        rowRenderer.BarRenderers.Add(barRenderer);
+                        barRenders.Add(barRenderer);
                         caret += minWidth;
                         ++barIndex;
                         continue;
                     }
                 }
 
-                rowRenderer.Render(location, new Size(availableSize.Width, availableSize.Height - location.Y + startY));
-                location.Y += 200;  //todo
+                renderRow();
+
+                location.Y += 200;  //todo: replace magic number
                 // todo: handle new page
-                rowRenderer = createRowRenderer(false);
+
+                isFirstRow = false;
+                barRenders.Clear();
                 caret = 0;
             }
 
-            if (rowRenderer.BarRenderers.Count > 0)
+            if (barRenders.Count > 0)
             {
-                rowRenderer.Render(location, new Size(availableSize.Width, availableSize.Height - location.Y + startY));
+                renderRow();
             }
+        }
+
+
+        public void RenderRow(TablatureRenderingContext renderingContext, List<BarRenderer> barRenderers, Point location, Size availableSize, bool isFirstRow)
+        {
+            var rowRenderingContext = new RowRenderingContext(renderingContext, location, availableSize);
+
+            barRenderers.AssignRenderingContexts(rowRenderingContext);
+
+            var availableWidth = availableSize.Width;
+            var count = barRenderers.Count;
+            var averageWidth = availableWidth / count;
+            foreach (var bar in barRenderers.OrderByDescending(b => b.MeasureMinSize()))
+            {
+                var minSize = bar.MeasureMinSize();
+                if (minSize < averageWidth)
+                    break;
+
+                --count;
+                availableWidth -= minSize;
+                averageWidth = availableWidth / count;
+            }
+
+            foreach (var bar in barRenderers)
+            {
+                var minSize = bar.MeasureMinSize();
+                var width = Math.Min(availableSize.Width, Math.Max(minSize, averageWidth));
+                var size = new Size(width, availableSize.Height);
+
+                bar.Render(location, size);
+
+                location.X += size.Width;
+            }
+
+
+            rowRenderingContext.FinishHorizontalBarLines(availableSize.Width);
         }
 
         TRenderer IRootElementRenderer.GetRenderer<TElement, TRenderer>(TElement element)

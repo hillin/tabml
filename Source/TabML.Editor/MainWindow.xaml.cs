@@ -51,6 +51,7 @@ namespace TabML.Editor
             var renderingContext = new RenderingContext();
 
             var renderer = new TablatureRenderer(primitiveRenderer, style, tablature);
+            renderer.Initialize();
             renderingContext.AssignRenderingContext(renderer, renderingContext);
             renderer.Render(renderingContext, location, size);
 

@@ -7,7 +7,7 @@ using TabML.Core.Document;
 
 namespace TabML.Editor.Rendering
 {
-    public static class VoicePartExtensions
+    static class VoicePartExtensions
     {
         public static OffBarDirection ToOffBarDirection(this VoicePart voicePart)
         {

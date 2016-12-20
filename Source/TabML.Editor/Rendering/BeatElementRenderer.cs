@@ -26,14 +26,7 @@ namespace TabML.Editor.Rendering
 
             throw new InvalidOperationException();
         }
-
-        public static void Render(ElementRenderer owner, BarRenderingContext renderingContext, IBeatElement element, BeamSlope beamSlope)
-        {
-            var renderer = BeatElementRenderer.Create(owner, element);
-            renderer.RenderingContext = renderingContext;
-            renderer.Render(beamSlope);
-        }
-
+        
         public static BarRenderer FindOwnerBarRenderer(ElementRenderer renderer)
         {
             var owner = renderer.Owner;

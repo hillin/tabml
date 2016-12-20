@@ -20,6 +20,7 @@ namespace TabML.Editor.Rendering
             this.Owner = owner;
         }
 
+        public virtual void Initialize() { }
     }
 
     abstract class ElementRenderer<TElement> : ElementRenderer
@@ -35,7 +36,7 @@ namespace TabML.Editor.Rendering
         }
     }
 
-    abstract class ElementRenderer<TElement, TRenderingContext> 
+    abstract class ElementRenderer<TElement, TRenderingContext>
         : ElementRenderer<TElement>, IElementRendererWithContext<TRenderingContext>
         where TElement : ElementBase
         where TRenderingContext : RenderingContextBase
@@ -43,7 +44,11 @@ namespace TabML.Editor.Rendering
         public TRenderingContext RenderingContext
         {
             get { return this.Root.RenderingContext.GetRenderingContext<TRenderingContext>(this); }
-            set { this.Root.RenderingContext.AssignRenderingContext(this, value); }
+            set
+            {
+                this.Root.RenderingContext.AssignRenderingContext(this, value);
+                this.OnAssignRenderingContext(value);
+            }
         }
 
         protected ElementRenderer(ElementRenderer owner, TElement element)
@@ -51,5 +56,9 @@ namespace TabML.Editor.Rendering
         {
         }
 
+        protected virtual void OnAssignRenderingContext(TRenderingContext renderingContext)
+        {
+
+        }
     }
 }

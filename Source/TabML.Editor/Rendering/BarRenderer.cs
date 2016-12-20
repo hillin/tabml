@@ -19,11 +19,33 @@ namespace TabML.Editor.Rendering
 
         private double? _minSize;
 
-       
-        public BarRenderer(RowRenderer owner, TablatureStyle style, Bar bar)
+        private readonly List<BarColumnRenderer> _columnRenderers;
+        private readonly List<BarVoiceRenderer> _voiceRenderers;
+
+        public BarRenderer(TablatureRenderer owner, TablatureStyle style, Bar bar)
             : base(owner, bar)
         {
             this.Style = style;
+
+            _columnRenderers = new List<BarColumnRenderer>();
+            _voiceRenderers = new List<BarVoiceRenderer>();
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            _columnRenderers.AddRange(this.Element.Columns.Select(c => new BarColumnRenderer(this, c)));
+
+            _columnRenderers.Initialize();
+
+            if (this.Element.BassVoice != null)
+                _voiceRenderers.Add(new BarVoiceRenderer(this, this.Element.BassVoice));
+
+            if (this.Element.TrebleVoice != null)
+                _voiceRenderers.Add(new BarVoiceRenderer(this, this.Element.TrebleVoice));
+
+            _voiceRenderers.Initialize();
         }
 
         public double MeasureMinSize()
@@ -35,8 +57,11 @@ namespace TabML.Editor.Rendering
         {
             this.Location = location;
             this.RenderSize = size;
-            
+
             var renderingContext = new BarRenderingContext(this.RenderingContext, location, size);
+            _columnRenderers.AssignRenderingContexts(renderingContext);
+            _voiceRenderers.AssignRenderingContexts(renderingContext);
+
             var width = size.Width;
             if (this.Element.OpenLine != null)
                 renderingContext.DrawBarLine(this.Element.OpenLine.Value, 0.0);
@@ -54,28 +79,17 @@ namespace TabML.Editor.Rendering
 
                 var columnWidth = this.Element.GetColumnMinWidthInBar(column, this.Style, minDuration) * widthRatio;
                 renderingContext.ColumnRenderingInfos[i] = new BarColumnRenderingInfo(column, position, columnWidth);
-                var barColumnRenderer = new BarColumnRenderer(this, column);
-                barColumnRenderer.RenderingContext = renderingContext;
+
+                var barColumnRenderer = _columnRenderers[i];
                 barColumnRenderer.Render(renderingContext.ColumnRenderingInfos[i]);
                 position += columnWidth;
             }
 
-            if (this.Element.BassVoice != null)
-            {
-                var voiceRenderer = new BarVoiceRenderer(this, this.Element.BassVoice);
-                voiceRenderer.RenderingContext = renderingContext;
-                voiceRenderer.Render();
-            }
-
-            if (this.Element.TrebleVoice != null)
-            {
-                var voiceRenderer = new BarVoiceRenderer(this, this.Element.TrebleVoice);
-                voiceRenderer.RenderingContext = renderingContext;
-                voiceRenderer.Render();
-            }
+            _voiceRenderers.ForEach(r => r.Render());
 
             if (this.Element.CloseLine != null)
                 renderingContext.DrawBarLine(this.Element.CloseLine.Value, width);
         }
+
     }
 }

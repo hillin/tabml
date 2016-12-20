@@ -111,12 +111,12 @@
     <Compile Include="Rendering\BarColumnRenderingInfo.cs" />
     <Compile Include="Rendering\BarColumnRenderer.cs" />
     <Compile Include="Rendering\ElementRenderer.cs" />
+    <Compile Include="Rendering\ElementRendererExtensions.cs" />
     <Compile Include="Rendering\IBeatElementRenderer.cs" />
     <Compile Include="Rendering\IElementRendererWithContext.cs" />
     <Compile Include="Rendering\IRootElementRenderer.cs" />
     <Compile Include="Rendering\RenderingContext.cs" />
     <Compile Include="Rendering\RenderingContextBase.cs" />
-    <Compile Include="Rendering\RowRenderer.cs" />
     <Compile Include="Rendering\BarVoiceRenderer.cs" />
     <Compile Include="Rendering\BeatElementRenderer.cs" />
     <Compile Include="Rendering\BeamExtensions.cs" />

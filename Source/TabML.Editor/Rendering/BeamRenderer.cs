@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using TabML.Core.Document;
 using TabML.Editor.Tablature.Layout;
 
@@ -12,10 +13,27 @@ namespace TabML.Editor.Rendering
 
         public Beam Beam { get; }
 
+        private readonly List<IBeatElementRenderer> _beatElementRenderers;
+
         public BeamRenderer(ElementRenderer owner, Beam beam)
             : base(owner, beam)
         {
             this.Beam = beam;
+            _beatElementRenderers = new List<IBeatElementRenderer>();
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            _beatElementRenderers.AddRange(this.Beam.Elements.Select(e => BeatElementRenderer.Create(this, e)));
+            _beatElementRenderers.ForEach(e => e.Initialize());
+        }
+
+        protected override void OnAssignRenderingContext(BarRenderingContext renderingContext)
+        {
+            base.OnAssignRenderingContext(renderingContext);
+            _beatElementRenderers.AssignRenderingContexts(renderingContext);
         }
 
         public override void Render(BeamSlope beamSlope)
@@ -34,10 +52,7 @@ namespace TabML.Editor.Rendering
                 beamSlope = new BeamSlope(x0, y0, (y1 - y0) / (x1 - x0));
             }
 
-            foreach (var element in this.Beam.Elements)
-            {
-                BeatElementRenderer.Render(this, this.RenderingContext, element, beamSlope);
-            }
+            _beatElementRenderers.ForEach(r => r.Render(beamSlope));
 
             this.RenderingContext.DrawBeam(this.Beam.BeatNoteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), this.Beam.VoicePart);
             if (this.Beam.Tuplet != null

@@ -11,18 +11,32 @@ namespace TabML.Editor.Rendering
     {
         public Voice Voice { get; }
 
+        private readonly List<IBeatElementRenderer> _beatElementRenderers;
+
         public BarVoiceRenderer(BarRenderer owner, Voice voice)
             : base(owner, voice)
         {
             this.Voice = voice;
+            _beatElementRenderers = new List<IBeatElementRenderer>();
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            _beatElementRenderers.AddRange(this.Voice.BeatElements.Select(e => BeatElementRenderer.Create(this, e)));
+            _beatElementRenderers.ForEach(e => e.Initialize());
+        }
+
+        protected override void OnAssignRenderingContext(BarRenderingContext renderingContext)
+        {
+            base.OnAssignRenderingContext(renderingContext);
+            _beatElementRenderers.AssignRenderingContexts(renderingContext);
         }
 
         public void Render()
         {
-            foreach (var beatElement in this.Voice.BeatElements)
-            {
-                BeatElementRenderer.Render(this, this.RenderingContext, beatElement, null);
-            }
+            _beatElementRenderers.ForEach(r => r.Render(null));
         }
 
     }

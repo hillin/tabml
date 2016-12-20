@@ -10,5 +10,7 @@ namespace TabML.Editor.Rendering
         where TRenderingContext : RenderingContextBase
     {
         TRenderingContext RenderingContext { get; set; }
+
+        void Initialize();
     }
 }
