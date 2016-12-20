@@ -3,68 +3,80 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
 using TabML.Editor.Tablature.Layout;
 
 namespace TabML.Editor.Rendering
 {
-    class BeatRenderer
+    class BeatRenderer : BeatElementRenderer<Beat>
     {
-        public void Render(BarDrawingContext drawingContext, Beat beat, BeamSlope beamSlope)
+
+        private BarRenderer _ownerBar;
+        public BarRenderer OwnerBar => _ownerBar ?? (_ownerBar = BeatElementRenderer.FindOwnerBarRenderer(this));
+
+        public BeatRenderer(ElementRenderer owner, Beat beat)
+            : base(owner, beat)
         {
-            this.Render(drawingContext, beat, beamSlope, null);
         }
 
-        public void Render(BarDrawingContext drawingContext, Beat beat, BeamSlope beamSlope, Beat asTiedFor)
+
+        public override void Render(BeamSlope beamSlope)
         {
-            if (beat.IsTied)
+            this.Render(beamSlope, null);
+        }
+
+        private void Render(BeamSlope beamSlope, Beat tieTarget)
+        {
+            if (this.Element.IsTied)
             {
-                if (beat.PreviousBeat == null)
+                if (this.Element.PreviousBeat == null)
                 {
-                    // todo: handle cross-bar ties
+                    // todo: raise an error?
                 }
                 else
                 {
-                    new BeatRenderer().Render(drawingContext, beat.PreviousBeat, beamSlope, asTiedFor ?? beat);
+                    this.Root.GetRenderer<Beat, BeatRenderer>(this.Element.PreviousBeat)
+                        .Render(beamSlope, tieTarget ?? this.Element);
                 }
 
                 return;
             }
 
-            this.DrawHead(drawingContext, beat, beamSlope, asTiedFor);
+            this.DrawHead(this.Element, beamSlope, tieTarget);
 
-            if (!beat.IsRest)
-                this.DrawStemAndFlag(drawingContext, beat, beamSlope, asTiedFor);
+            if (!this.Element.IsRest)
+                this.DrawStemAndFlag(this.Element, beamSlope, tieTarget);
 
-            var noteValue = asTiedFor?.NoteValue ?? beat.NoteValue;
+            var noteValue = tieTarget?.NoteValue ?? this.Element.NoteValue;
             if (noteValue.Augment != NoteValueAugment.None)
             {
-                drawingContext.DrawNoteValueAugment(noteValue.Augment,
-                                                    noteValue.Base,
-                                                    beat.OwnerColumn.GetPosition(drawingContext),
-                                                    beat.GetNoteStrings(),
-                                                    beat.VoicePart);
+                this.RenderingContext.DrawNoteValueAugment(noteValue.Augment,
+                                                           noteValue.Base,
+                                                           this.Element.OwnerColumn.GetPosition(this.RenderingContext),
+                                                           this.Element.GetNoteStrings(),
+                                                           this.Element.VoicePart);
             }
 
-            if (!beat.IsTied 
-                && !beat.IsRest 
-                && asTiedFor == null)  // only draw ties for the beat itself
+            if (!this.Element.IsTied
+                && !this.Element.IsRest
+                && tieTarget == null) // only draw ties for the beat itself
             {
-                var current = beat;
+                var current = this.Element;
                 var next = current.NextBeat;
                 while (next != null && next.IsTied)
                 {
-                    foreach (var note in beat.Notes)
+                    foreach (var note in this.Element.Notes)
                     {
-                        var tieFrom = current.OwnerColumn.GetPosition(drawingContext)
-                            + current.GetAlternationOffset(drawingContext);
-                        var tieTo = next.OwnerColumn.GetPosition(drawingContext)
-                            + next.GetAlternationOffset(drawingContext);
-                        drawingContext.DrawTie(tieFrom,
-                                               tieTo,
-                                               note.String,
-                                               beat.VoicePart, null, 0);
+                        var tieFrom = current.OwnerColumn.GetPositionInRow(this.RenderingContext)
+                                      + current.GetAlternationOffset(this.RenderingContext);
+                        var tieTo = next.OwnerColumn.GetPositionInRow(this.RenderingContext)
+                                    + next.GetAlternationOffset(this.RenderingContext);
+                        this.RenderingContext.Owner.DrawTie(tieFrom,
+                                                            tieTo,
+                                                            note.String,
+                                                            this.Element.VoicePart, null, 0);
                     }
 
                     current = next;
@@ -73,54 +85,56 @@ namespace TabML.Editor.Rendering
             }
         }
 
-        public void DrawHead(BarDrawingContext drawingContext, Beat beat, BeamSlope beamSlope, Beat asTiedFor = null)
+        public void DrawHead(Beat beat, BeamSlope beamSlope, Beat tieTarget = null)
         {
-            var targetBeat = asTiedFor ?? beat;
+            var targetBeat = tieTarget ?? beat;
             if (beat.IsRest)
             {
                 var targetNoteValue = targetBeat.NoteValue;
-                var position = targetBeat.OwnerColumn.GetPosition(drawingContext);
-                drawingContext.DrawRest(targetNoteValue.Base, position, beat.VoicePart);
+                var position = targetBeat.OwnerColumn.GetPosition(this.RenderingContext);
+                this.RenderingContext.DrawRest(targetNoteValue.Base, position, beat.VoicePart);
                 if (beat.OwnerBeam == null && targetNoteValue.Tuplet != null)
                 {
-                    drawingContext.DrawTupletForRest(targetNoteValue.Tuplet.Value, position, beat.VoicePart);
+                    this.RenderingContext.DrawTupletForRest(targetNoteValue.Tuplet.Value, position, beat.VoicePart);
                 }
             }
             else
             {
                 foreach (var note in beat.Notes)
                 {
-                    new NoteRenderer().Render(drawingContext, note, targetBeat, beamSlope);
+                    var noteRenderer = new NoteRenderer(this, note);
+                    noteRenderer.RenderingContext = this.RenderingContext;
+                    noteRenderer.Render(targetBeat, beamSlope);
                 }
             }
         }
 
-        private void DrawStemAndFlag(BarDrawingContext drawingContext, Beat beat, BeamSlope beamSlope, Beat asTiedFor)
+        private void DrawStemAndFlag(Beat beat, BeamSlope beamSlope, Beat tieTarget)
         {
             var stemTailPosition = 0.0;
-            var targetBeat = asTiedFor ?? beat;
-            var position = targetBeat.OwnerColumn.GetPosition(drawingContext)
-                + beat.GetAlternationOffset(drawingContext);
+            var targetBeat = tieTarget ?? beat;
+            var position = targetBeat.OwnerColumn.GetPosition(this.RenderingContext)
+                           + beat.GetAlternationOffset(this.RenderingContext, tieTarget: tieTarget);
 
             if (targetBeat.NoteValue.Base <= BaseNoteValue.Half)
             {
                 double from;
-                drawingContext.GetStemOffsetRange(beat.GetNearestStringIndex(), beat.VoicePart, out from,
-                                                  out stemTailPosition);
+                this.RenderingContext.GetStemOffsetRange(beat.GetNearestStringIndex(), beat.VoicePart, out from,
+                                      out stemTailPosition);
 
                 if (beamSlope != null)
                     stemTailPosition = beamSlope.GetY(position);
 
-                drawingContext.DrawStem(position, from, stemTailPosition);
+                this.RenderingContext.DrawStem(position, from, stemTailPosition);
             }
 
             if (targetBeat.OwnerBeam == null)
             {
-                drawingContext.DrawFlag(targetBeat.NoteValue.Base, position, stemTailPosition, beat.VoicePart);
+                this.RenderingContext.DrawFlag(targetBeat.NoteValue.Base, position, stemTailPosition, beat.VoicePart);
 
                 if (targetBeat.NoteValue.Tuplet != null)
-                    drawingContext.DrawTuplet(targetBeat.NoteValue.Tuplet.Value, position, stemTailPosition,
-                                              beat.VoicePart);
+                    this.RenderingContext.DrawTuplet(targetBeat.NoteValue.Tuplet.Value, position, stemTailPosition,
+                                  beat.VoicePart);
             }
             else
             {
@@ -128,29 +142,28 @@ namespace TabML.Editor.Rendering
                 var isLastOfBeam = targetBeat == targetBeat.OwnerBeam.Elements[targetBeat.OwnerBeam.Elements.Count - 1];
                 while (baseNoteValue != targetBeat.OwnerBeam.BeatNoteValue)
                 {
-                    this.DrawSemiBeam(drawingContext, baseNoteValue, position, beat.VoicePart, beamSlope, isLastOfBeam);
+                    this.DrawSemiBeam(baseNoteValue, position, beat.VoicePart, beamSlope, isLastOfBeam);
                     baseNoteValue = baseNoteValue.Double();
                 }
             }
         }
 
-        private void DrawSemiBeam(BarDrawingContext drawingContext, BaseNoteValue noteValue, double position,
+        private void DrawSemiBeam(BaseNoteValue noteValue, double position,
                                   VoicePart voicePart, BeamSlope beamSlope, bool isLastOfBeam)
         {
             double x0, x1;
             if (isLastOfBeam)
             {
-                x0 = position - drawingContext.Style.SemiBeamWidth;
+                x0 = position - this.RenderingContext.Style.SemiBeamWidth;
                 x1 = position;
             }
             else
             {
                 x0 = position;
-                x1 = position + drawingContext.Style.SemiBeamWidth;
+                x1 = position + this.RenderingContext.Style.SemiBeamWidth;
             }
 
-            drawingContext.DrawBeam(noteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), voicePart);
+            this.RenderingContext.DrawBeam(noteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), voicePart);
         }
-
     }
 }

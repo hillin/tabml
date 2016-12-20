@@ -8,25 +8,52 @@ using TabML.Editor.Tablature.Layout;
 
 namespace TabML.Editor.Rendering
 {
-    class BeatElementRenderer
+    static class BeatElementRenderer
     {
-        public void Render(BarDrawingContext drawingContext, IBeatElement element, BeamSlope beamSlope)
+        public static IBeatElementRenderer Create(ElementRenderer owner, IBeatElement element)
         {
             var beat = element as Beat;
             if (beat != null)
             {
-                new BeatRenderer().Render(drawingContext, beat, beamSlope);
-                return;
+                return new BeatRenderer(owner, beat);
             }
 
             var beam = element as Beam;
             if (beam != null)
             {
-                new BeamRenderer().Render(drawingContext, beam, beamSlope);
-                return;
+                return new BeamRenderer(owner, beam);
             }
 
             throw new InvalidOperationException();
         }
+
+        public static void Render(ElementRenderer owner, BarRenderingContext renderingContext, IBeatElement element, BeamSlope beamSlope)
+        {
+            var renderer = BeatElementRenderer.Create(owner, element);
+            renderer.RenderingContext = renderingContext;
+            renderer.Render(beamSlope);
+        }
+
+        public static BarRenderer FindOwnerBarRenderer(ElementRenderer renderer)
+        {
+            var owner = renderer.Owner;
+            while (owner != null && !(owner is BarRenderer))
+                owner = owner.Owner;
+
+            return owner as BarRenderer;
+        }
     }
+
+    abstract class BeatElementRenderer<TElement> 
+        : ElementRenderer<TElement, BarRenderingContext>, IBeatElementRenderer
+        where TElement : ElementBase, IBeatElement
+    {
+        protected BeatElementRenderer(ElementRenderer owner, TElement element) 
+            : base(owner, element)
+        {
+        }
+        public abstract void Render(BeamSlope beamSlope);
+    }
+    
+
 }

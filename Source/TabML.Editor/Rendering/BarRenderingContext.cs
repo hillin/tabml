@@ -12,24 +12,21 @@ using BarLine = TabML.Core.MusicTheory.BarLine;
 
 namespace TabML.Editor.Rendering
 {
-    class BarDrawingContext
+    class BarRenderingContext : RenderingContextBase<RowRenderingContext>
     {
         public Size AvailableSize { get; }
         public PrimitiveRenderer PrimitiveRenderer => this.Owner.PrimitiveRenderer;
         public TablatureStyle Style => this.Owner.Style;
         public Point Location { get; }
         public BarColumnRenderingInfo[] ColumnRenderingInfos { get; set; }
-        private double[] StringCarets { get; }
-        public RowDrawingContext Owner { get; }
+        public TablatureRenderingContext TablatureRenderingContext => this.Owner.TablatureRenderingContext;
 
 
-        public BarDrawingContext(Point location, Size availableSize, RowDrawingContext owner)
+        public BarRenderingContext(RowRenderingContext owner, Point location, Size availableSize)
+            : base(owner)
         {
             this.Location = location;
             this.AvailableSize = availableSize;
-            this.Owner = owner;
-
-            this.StringCarets = new double[owner.Style.StringCount];
         }
 
         public void DrawFretNumber(int stringIndex, string fretNumber, double position, bool isHalfOrLonger)
@@ -62,7 +59,7 @@ namespace TabML.Editor.Rendering
             this.PrimitiveRenderer.DrawPlayToChordMark(this.Location.X + position,
                                                        this.Owner.GetStringPosition(stringIndex), isHalfOrLonger);
         }
-        
+
         public void DrawBarLine(OpenBarLine line, double position)
         {
             this.PrimitiveRenderer.DrawBarLine((BarLine)line, this.Location.X + position, this.Owner.GetStringPosition(0));

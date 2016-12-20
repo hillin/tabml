@@ -2,7 +2,7 @@
 
 namespace TabML.Core.Document
 {
-    public abstract class Element
+    public abstract class Element : ElementBase
     {
         public abstract IEnumerable<Element> Children { get; }
 

@@ -7,14 +7,23 @@ using TabML.Core.Document;
 
 namespace TabML.Editor.Rendering
 {
-    class BarVoiceRenderer
+    class BarVoiceRenderer : ElementRenderer<Voice, BarRenderingContext>
     {
-        public void Render(BarDrawingContext drawingContext, Voice voice)
+        public Voice Voice { get; }
+
+        public BarVoiceRenderer(BarRenderer owner, Voice voice)
+            : base(owner, voice)
         {
-            foreach (var beatElement in voice.BeatElements)
+            this.Voice = voice;
+        }
+
+        public void Render()
+        {
+            foreach (var beatElement in this.Voice.BeatElements)
             {
-                new BeatElementRenderer().Render(drawingContext, beatElement, null);
+                BeatElementRenderer.Render(this, this.RenderingContext, beatElement, null);
             }
         }
+
     }
 }

@@ -9,110 +9,119 @@ using TabML.Editor.Tablature.Layout;
 
 namespace TabML.Editor.Rendering
 {
-    class NoteRenderer
+    class NoteRenderer : ElementRenderer<BeatNote, BarRenderingContext>
     {
+        public NoteRenderer(ElementRenderer owner, BeatNote element) : base(owner, element)
+        {
+        }
+
         /// <remarks>
         /// <para>beat</para> could be different than <c>this.OwnerBeat</c> because we may draw for tied beats
         /// </remarks>
-        public void Render(BarDrawingContext drawingContext, BeatNote note, Beat beat, BeamSlope beamSlope)
+        public void Render(Beat beat, BeamSlope beamSlope)
         {
-            var x = note.GetRenderPosition(drawingContext, beat);
+            var x = this.Element.GetRenderPosition(this.RenderingContext, beat);
 
             var isHalfOrLonger = beat.NoteValue.Base >= BaseNoteValue.Half;
-            if (note.EffectTechnique == NoteEffectTechnique.DeadNote)
+            if (this.Element.EffectTechnique == NoteEffectTechnique.DeadNote)
             {
-                drawingContext.DrawDeadNote(note.String, x, isHalfOrLonger);
+                this.RenderingContext.DrawDeadNote(this.Element.String, x, isHalfOrLonger);
             }
-            else if (note.Fret == BeatNote.UnspecifiedFret)
+            else if (this.Element.Fret == BeatNote.UnspecifiedFret)
             {
-                drawingContext.DrawPlayAsChordMark(note.String, x, isHalfOrLonger);
+                this.RenderingContext.DrawPlayAsChordMark(this.Element.String, x, isHalfOrLonger);
             }
             else
             {
-                drawingContext.DrawFretNumber(note.String, note.Fret.ToString(), x, isHalfOrLonger);
+                this.RenderingContext.DrawFretNumber(this.Element.String, this.Element.Fret.ToString(), x, isHalfOrLonger);
             }
 
-            if (beat == note.OwnerBeat) // only draw connections if we are drawing for ourselves
+            if (beat == this.Element.OwnerBeat) // only draw connections if we are drawing for ourselves
             {
-                this.DrawPreConnection(drawingContext, note, beamSlope);
-                this.DrawPostConnection(drawingContext, note, beamSlope);
+                this.DrawPreConnection(beamSlope);
+                this.DrawPostConnection(beamSlope);
             }
         }
 
-        private void DrawPostConnection(BarDrawingContext drawingContext, BeatNote note, BeamSlope beamSlope)
+        private void DrawPostConnection(BeamSlope beamSlope)
         {
-            switch (note.PostConnection)
+            switch (this.Element.PostConnection)
             {
                 case PostNoteConnection.SlideOutToHigher:
-                    drawingContext.DrawGliss(note.OwnerBeat.OwnerColumn.GetPosition(drawingContext), note.String,
-                                             GlissDirection.ToHigher,
-                                             this.GetInstructionY(drawingContext, note, beamSlope));
+                    this.RenderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext),
+                                                    this.Element.String,
+                                                    GlissDirection.ToHigher,
+                                                    this.GetInstructionY(this.Element, beamSlope));
                     break;
                 case PostNoteConnection.SlideOutToLower:
-                    drawingContext.DrawGliss(note.OwnerBeat.OwnerColumn.GetPosition(drawingContext), note.String,
-                                             GlissDirection.ToLower,
-                                             this.GetInstructionY(drawingContext, note, beamSlope));
+                    this.RenderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext),
+                                                    this.Element.String,
+                                                    GlissDirection.ToLower,
+                                                    this.GetInstructionY(this.Element, beamSlope));
                     break;
             }
         }
 
-        private void DrawTie(BarDrawingContext drawingContext, BeatNote note, string instruction, BeamSlope beamSlope)
+        private void DrawTie(BeatNote note, string instruction, BeamSlope beamSlope)
         {
             if (note.PreConnectedNote != null) // todo: handle cross-bar ties
             {
                 var instructionY = string.IsNullOrEmpty(instruction)
                     ? 0.0
-                    : this.GetInstructionY(drawingContext, note, beamSlope);
+                    : this.GetInstructionY(note, beamSlope);
 
-                var tieFrom = note.PreConnectedNote.GetRenderPosition(drawingContext);
-                var tieTo = note.GetRenderPosition(drawingContext);
-                drawingContext.DrawTie(tieFrom, tieTo, note.String, note.OwnerBeat.VoicePart, instruction, instructionY);
+                var tieFrom = note.PreConnectedNote.GetRenderPosition(this.RenderingContext);
+                var tieTo = note.GetRenderPosition(this.RenderingContext);
+                this.RenderingContext.DrawTie(tieFrom, tieTo, note.String, note.OwnerBeat.VoicePart, instruction, instructionY);
             }
         }
 
-        private double GetInstructionY(BarDrawingContext drawingContext, BeatNote note, BeamSlope beamSlope)
+        private double GetInstructionY(BeatNote note, BeamSlope beamSlope)
         {
             if (beamSlope == null)
             {
-                return note.OwnerBeat.GetStemTailPosition(drawingContext);
+                return note.OwnerBeat.GetStemTailPosition(this.RenderingContext);
             }
             else
             {
                 var instructionX = note.PreConnectedNote != null
-                    ? (note.OwnerBeat.OwnerColumn.GetPosition(drawingContext) +
-                       note.PreConnectedNote.OwnerBeat.OwnerColumn.GetPosition(drawingContext))/2
-                    : note.OwnerBeat.OwnerColumn.GetPosition(drawingContext);
+                    ? (note.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext) +
+                       note.PreConnectedNote.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext)) / 2
+                    : note.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext);
                 return beamSlope.GetY(instructionX);
             }
         }
 
-        private void DrawPreConnection(BarDrawingContext drawingContext, BeatNote note, BeamSlope beamSlope)
+        private void DrawPreConnection(BeamSlope beamSlope)
         {
-            switch (note.PreConnection)
+            switch (this.Element.PreConnection)
             {
                 case PreNoteConnection.Tie:
-                    this.DrawTie(drawingContext, note, null, beamSlope);
+                    this.DrawTie(this.Element, null, beamSlope);
                     break;
                 case PreNoteConnection.Slide:
-                    this.DrawTie(drawingContext, note, "sl.", beamSlope);
+                    this.DrawTie(this.Element, "sl.", beamSlope);
                     break;
                 case PreNoteConnection.SlideInFromHigher:
-                    drawingContext.DrawGliss(note.OwnerBeat.OwnerColumn.GetPosition(drawingContext), note.String,
-                                             GlissDirection.FromHigher,
-                                             this.GetInstructionY(drawingContext, note, beamSlope));
+                    this.RenderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext),
+                                                    this.Element.String,
+                                                    GlissDirection.FromHigher,
+                                                    this.GetInstructionY(this.Element, beamSlope));
                     break;
                 case PreNoteConnection.SlideInFromLower:
-                    drawingContext.DrawGliss(note.OwnerBeat.OwnerColumn.GetPosition(drawingContext), note.String,
-                                             GlissDirection.FromLower,
-                                             this.GetInstructionY(drawingContext, note, beamSlope));
+                    this.RenderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext),
+                                                    this.Element.String,
+                                                    GlissDirection.FromLower,
+                                                    this.GetInstructionY(this.Element, beamSlope));
                     break;
                 case PreNoteConnection.Hammer:
-                    this.DrawTie(drawingContext, note, "h.", beamSlope);
+                    this.DrawTie(this.Element, "h.", beamSlope);
                     break;
                 case PreNoteConnection.Pull:
-                    this.DrawTie(drawingContext, note, "p.", beamSlope);
+                    this.DrawTie(this.Element, "p.", beamSlope);
                     break;
             }
         }
+
     }
 }

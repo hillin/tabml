@@ -97,8 +97,11 @@
     <Compile Include="Document\DocumentState.cs" />
     <Compile Include="Document\EditableDocumentState.cs" />
     <Compile Include="Document\Element.cs" />
+    <Compile Include="Document\ElementBase.cs" />
     <Compile Include="Document\Explicity.cs" />
     <Compile Include="Document\IBeatElement.cs" />
+    <Compile Include="Document\IBeatElementContainer.cs" />
+    <Compile Include="Document\BeatElementContainerExtensions.cs" />
     <Compile Include="Document\KeySignature.cs" />
     <Compile Include="Document\Lyrics.cs" />
     <Compile Include="Document\LyricsSegment.cs" />
@@ -114,6 +117,7 @@
     <Compile Include="Document\TempoSignature.cs" />
     <Compile Include="Document\TimeSignature.cs" />
     <Compile Include="Document\TuningSignature.cs" />
+    <Compile Include="Document\VirtualElement.cs" />
     <Compile Include="Document\Voice.cs" />
     <Compile Include="Document\VoicePart.cs" />
     <Compile Include="LeftHandFingerIndex.cs" />

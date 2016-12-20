@@ -11,64 +11,71 @@ using TabML.Editor.Tablature.Layout;
 
 namespace TabML.Editor.Rendering
 {
-    class BarRenderer
+    class BarRenderer : ElementRenderer<Bar, RowRenderingContext>
     {
-        public PrimitiveRenderer PrimitiveRenderer { get; }
         public TablatureStyle Style { get; }
-        public Bar Bar { get; }
+        public Point Location { get; private set; }
+        public Size RenderSize { get; private set; }
 
         private double? _minSize;
 
-        public BarRenderer(PrimitiveRenderer primitiveRenderer, TablatureStyle style, Bar bar)
+       
+        public BarRenderer(RowRenderer owner, TablatureStyle style, Bar bar)
+            : base(owner, bar)
         {
-            this.PrimitiveRenderer = primitiveRenderer;
             this.Style = style;
-            this.Bar = bar;
         }
 
         public double MeasureMinSize()
         {
-            return _minSize ?? (_minSize = this.Bar.GetMinWidth(this.Style)).Value;
+            return _minSize ?? (_minSize = this.Element.GetMinWidth(this.Style)).Value;
         }
 
-        public void Render(RowDrawingContext context, Point location, Size availableSize)
+        public void Render(Point location, Size size)
         {
-            var drawingContext = new BarDrawingContext(location, availableSize, context);
+            this.Location = location;
+            this.RenderSize = size;
+            
+            var renderingContext = new BarRenderingContext(this.RenderingContext, location, size);
+            var width = size.Width;
+            if (this.Element.OpenLine != null)
+                renderingContext.DrawBarLine(this.Element.OpenLine.Value, 0.0);
 
-            this.Draw(drawingContext, availableSize.Width);
-        }
+            var minDuration = this.Element.Columns.Min(c => c.GetDuration());
+            var widthRatio = (width - renderingContext.Style.BarHorizontalPadding * 2) / this.Element.GetMinWidth(this.Style);
 
+            var position = renderingContext.Style.BarHorizontalPadding;
 
-        private void Draw(BarDrawingContext drawingContext, double width)
-        {
-            if (this.Bar.OpenLine != null)
-                drawingContext.DrawBarLine(this.Bar.OpenLine.Value, 0.0);
+            renderingContext.ColumnRenderingInfos = new BarColumnRenderingInfo[this.Element.Columns.Count];
 
-            var minDuration = this.Bar.Columns.Min(c => c.GetDuration());
-            var widthRatio = (width - drawingContext.Style.BarHorizontalPadding * 2) / this.Bar.GetMinWidth(this.Style);
-
-            var position = drawingContext.Style.BarHorizontalPadding;
-
-            drawingContext.ColumnRenderingInfos = new BarColumnRenderingInfo[this.Bar.Columns.Count];
-
-            for (var i = 0; i < this.Bar.Columns.Count; i++)
+            for (var i = 0; i < this.Element.Columns.Count; i++)
             {
-                var column = this.Bar.Columns[i];
+                var column = this.Element.Columns[i];
 
-                var columnWidth = this.Bar.GetColumnMinWidthInBar(column, this.Style, minDuration) * widthRatio;
-                drawingContext.ColumnRenderingInfos[i] = new BarColumnRenderingInfo(column, position, columnWidth);
-                new BarColumnRenderer().Render(drawingContext, drawingContext.ColumnRenderingInfos[i]);
+                var columnWidth = this.Element.GetColumnMinWidthInBar(column, this.Style, minDuration) * widthRatio;
+                renderingContext.ColumnRenderingInfos[i] = new BarColumnRenderingInfo(column, position, columnWidth);
+                var barColumnRenderer = new BarColumnRenderer(this, column);
+                barColumnRenderer.RenderingContext = renderingContext;
+                barColumnRenderer.Render(renderingContext.ColumnRenderingInfos[i]);
                 position += columnWidth;
             }
 
-            if (this.Bar.BassVoice != null)
-                new BarVoiceRenderer().Render(drawingContext, this.Bar.BassVoice);
+            if (this.Element.BassVoice != null)
+            {
+                var voiceRenderer = new BarVoiceRenderer(this, this.Element.BassVoice);
+                voiceRenderer.RenderingContext = renderingContext;
+                voiceRenderer.Render();
+            }
 
-            if (this.Bar.TrebleVoice != null)
-                new BarVoiceRenderer().Render(drawingContext, this.Bar.TrebleVoice);
+            if (this.Element.TrebleVoice != null)
+            {
+                var voiceRenderer = new BarVoiceRenderer(this, this.Element.TrebleVoice);
+                voiceRenderer.RenderingContext = renderingContext;
+                voiceRenderer.Render();
+            }
 
-            if (this.Bar.CloseLine != null)
-                drawingContext.DrawBarLine(this.Bar.CloseLine.Value, width);
+            if (this.Element.CloseLine != null)
+                renderingContext.DrawBarLine(this.Element.CloseLine.Value, width);
         }
     }
 }

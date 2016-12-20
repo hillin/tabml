@@ -4,9 +4,10 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
 {
-    public class Voice
+    public class Voice : VirtualElement, IBeatElementContainer
     {
         public List<IBeatElement> BeatElements { get; }
+        List<IBeatElement> IBeatElementContainer.Elements => this.BeatElements;
 
         public VoicePart Part { get; }
 
@@ -36,5 +37,6 @@ namespace TabML.Core.Document
             this.BeatElements = new List<IBeatElement>();
         }
         public PreciseDuration GetDuration() => this.BeatElements.Sum(n => n.GetDuration());
+        
     }
 }

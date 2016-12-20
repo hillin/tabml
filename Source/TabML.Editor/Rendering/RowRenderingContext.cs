@@ -4,27 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using TabML.Core.Document;
 
 namespace TabML.Editor.Rendering
 {
-    class RowDrawingContext
+    class RowRenderingContext : RenderingContextBase<TablatureRenderingContext>
     {
         public Point Location { get; }
         public Size AvailableSize { get; }
-        public PrimitiveRenderer PrimitiveRenderer { get; }
-        public TablatureStyle Style { get; }
+        public PrimitiveRenderer PrimitiveRenderer => this.Owner.PrimitiveRenderer;
+        public TablatureStyle Style => this.Owner.Style;
 
         private double[] StringCarets { get; }
+        public TablatureRenderingContext TablatureRenderingContext => this.Owner;
 
-        public RowDrawingContext(Point location, Size availableSize, PrimitiveRenderer primitiveRenderer, TablatureStyle style)
+        public RowRenderingContext(TablatureRenderingContext owner, Point location, Size availableSize)
+            : base(owner)
         {
             this.Location = location;
             this.AvailableSize = availableSize;
-            this.PrimitiveRenderer = primitiveRenderer;
-            this.Style = style;
 
             this.StringCarets = new double[this.Style.StringCount];
         }
+
 
         public double GetRelativePosition(double position)
         {
@@ -62,5 +64,18 @@ namespace TabML.Editor.Rendering
 
         public double GetStringPosition(int stringIndex) => this.Location.Y + this.Style.BarTopMargin + (stringIndex + 0.5) * this.Style.BarLineHeight;
         public double GetStringSpacePosition(int stringIndex) => this.Location.Y + this.Style.BarTopMargin + stringIndex * this.Style.BarLineHeight;
+
+        public void DrawTie(double from, double to, int stringIndex, VoicePart voicePart, string instruction,
+                            double instructionY)
+        {
+            var spaceIndex = voicePart == VoicePart.Bass ? stringIndex + 1 : stringIndex;
+            var y = this.GetStringSpacePosition(spaceIndex);
+            this.PrimitiveRenderer.DrawTie(from + this.Location.X + 10, to + this.Location.X - 10, y, instruction,
+                                           instructionY + this.Location.Y +
+                                           (voicePart == VoicePart.Treble
+                                               ? -this.Style.OuterNoteInstructionOffset
+                                               : this.Style.OuterNoteInstructionOffset), voicePart.ToOffBarDirection());
+            //todo: replace magic number
+        }
     }
 }

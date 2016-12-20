@@ -104,12 +104,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Rendering\BarDrawingContext.cs" />
+    <Compile Include="Rendering\BarRenderingContext.cs" />
     <Compile Include="Rendering\BarExtensions.cs" />
     <Compile Include="Rendering\BarRenderer.cs" />
     <Compile Include="Rendering\BarColumnExtensions.cs" />
     <Compile Include="Rendering\BarColumnRenderingInfo.cs" />
     <Compile Include="Rendering\BarColumnRenderer.cs" />
+    <Compile Include="Rendering\ElementRenderer.cs" />
+    <Compile Include="Rendering\IBeatElementRenderer.cs" />
+    <Compile Include="Rendering\IElementRendererWithContext.cs" />
+    <Compile Include="Rendering\IRootElementRenderer.cs" />
+    <Compile Include="Rendering\RenderingContext.cs" />
+    <Compile Include="Rendering\RenderingContextBase.cs" />
     <Compile Include="Rendering\RowRenderer.cs" />
     <Compile Include="Rendering\BarVoiceRenderer.cs" />
     <Compile Include="Rendering\BeatElementRenderer.cs" />
@@ -120,8 +126,9 @@
     <Compile Include="Rendering\NoteExtensions.cs" />
     <Compile Include="Rendering\NoteRenderer.cs" />
     <Compile Include="Rendering\OffBarDirection.cs" />
-    <Compile Include="Rendering\RowDrawingContext.cs" />
+    <Compile Include="Rendering\RowRenderingContext.cs" />
     <Compile Include="Rendering\TablatureRenderer.cs" />
+    <Compile Include="Rendering\TablatureRenderingContext.cs" />
     <Compile Include="Rendering\VoicePartExtensions.cs" />
     <Compile Include="TablatureStyle.cs" />
     <Compile Include="Tablature\ChordDiagram.xaml.cs">

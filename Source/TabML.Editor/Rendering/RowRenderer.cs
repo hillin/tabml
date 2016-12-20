@@ -9,30 +9,28 @@ using TabML.Core.Document;
 
 namespace TabML.Editor.Rendering
 {
-    class RowRenderer
+    class RowRenderer : ElementRenderer
     {
-        public PrimitiveRenderer PrimitiveRenderer { get; }
-        public TablatureStyle Style { get; }
         public List<BarRenderer> BarRenderers { get; }
         public bool IsFirstRow { get; set; }
 
-        private RowRenderer(PrimitiveRenderer primitiveRenderer, TablatureStyle style)
+        public RowRenderer(TablatureRenderer owner, bool isFirstRow)
+            : base(owner)
         {
-            this.PrimitiveRenderer = primitiveRenderer;
-            this.Style = style;
             this.BarRenderers = new List<BarRenderer>();
-        }
-
-        public RowRenderer(PrimitiveRenderer primitiveRenderer, TablatureStyle style, bool isFirstRow)
-            : this(primitiveRenderer, style)
-        {
             this.IsFirstRow = isFirstRow;
         }
 
 
         public void Render(Point location, Size availableSize)
         {
-            var drawingContext = new RowDrawingContext(location, availableSize, this.PrimitiveRenderer, this.Style);
+            var tablatureRc = this.Root.RenderingContext.GetRenderingContext<TablatureRenderingContext>(this);
+            var renderingContext = new RowRenderingContext(tablatureRc, location, availableSize);
+
+            foreach (var barRenderer in this.BarRenderers)
+            {
+                barRenderer.RenderingContext = renderingContext;
+            }
 
             var availableWidth = availableSize.Width;
             var count = this.BarRenderers.Count;
@@ -53,12 +51,14 @@ namespace TabML.Editor.Rendering
                 var minSize = bar.MeasureMinSize();
                 var width = Math.Min(availableSize.Width, Math.Max(minSize, averageWidth));
                 var size = new Size(width, availableSize.Height);
-                bar.Render(drawingContext, location, size);
+                
+                bar.Render(location, size);
+
                 location.X += size.Width;
             }
 
 
-            drawingContext.FinishHorizontalBarLines(availableSize.Width);
+            renderingContext.FinishHorizontalBarLines(availableSize.Width);
         }
     }
 }

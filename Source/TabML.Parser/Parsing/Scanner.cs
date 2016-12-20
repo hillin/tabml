@@ -76,7 +76,7 @@ namespace TabML.Parser.Parsing
         private TextPointer _textPointer;
         public TextPointer Pointer => _textPointer;
         public bool EndOfInput { get; private set; }
-        public bool EndOfLine => _textPointer.Column >= this.Source[_textPointer.Row].Length || this.Peek() == '\n';
+        public bool EndOfLine => this.EndOfInput || _textPointer.Column >= this.Source[_textPointer.Row].Length || this.Peek() == '\n';
         public TextRange LastReadRange { get; private set; }
 
         public string RemainingLine

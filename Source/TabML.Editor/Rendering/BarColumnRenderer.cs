@@ -7,9 +7,16 @@ using TabML.Core.Document;
 
 namespace TabML.Editor.Rendering
 {
-    class BarColumnRenderer
+    class BarColumnRenderer : ElementRenderer<BarColumn, BarRenderingContext>
     {
-        public void Render(BarDrawingContext drawingContext, BarColumnRenderingInfo renderingInfo)
+
+
+        public BarColumnRenderer(ElementRenderer owner, BarColumn element)
+            : base(owner, element)
+        {
+        }
+
+        public void Render(BarColumnRenderingInfo renderingInfo)
         {
             //todo: draw chord and lyrics
         }

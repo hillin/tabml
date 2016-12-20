@@ -10,7 +10,7 @@ namespace TabML.Core.Document
 {
     [DebuggerDisplay("{DebugString, nq}")]
     [DebuggerTypeProxy(typeof(DebugView))]
-    public class Beam : IBeatElement
+    public class Beam : VirtualElement, IBeatElement, IBeatElementContainer
     {
         private class DebugView
         {

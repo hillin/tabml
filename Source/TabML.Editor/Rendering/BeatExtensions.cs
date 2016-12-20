@@ -10,10 +10,10 @@ namespace TabML.Editor.Rendering
     static class BeatExtensions
     {
 
-        public static double GetStemTailPosition(this Beat beat, BarDrawingContext drawingContext)
+        public static double GetStemTailPosition(this Beat beat, BarRenderingContext rc)
         {
             double from, to;
-            drawingContext.GetStemOffsetRange(beat.GetNearestStringIndex(), beat.VoicePart, out from, out to);
+            rc.GetStemOffsetRange(beat.GetNearestStringIndex(), beat.VoicePart, out from, out to);
             return beat.VoicePart == VoicePart.Treble ? Math.Min(from, to) : Math.Max(from, to);
         }
 
@@ -56,13 +56,13 @@ namespace TabML.Editor.Rendering
                 return beat.Notes.Select(n => n.String).ToArray();
         }
 
-        public static double GetAlternationOffset(this Beat beat, BarDrawingContext drawingContext, int? stringIndex = null)
+        public static double GetAlternationOffset(this Beat beat, BarRenderingContext rc, int? stringIndex = null, Beat tieTarget = null)
         {
-            var column = drawingContext.ColumnRenderingInfos[beat.OwnerColumn.ColumnIndex];
+            var targetBeat = tieTarget ?? beat;
+            var column = rc.ColumnRenderingInfos[targetBeat.OwnerColumn.ColumnIndex];
             var ratio = column.GetNoteAlternationOffsetRatio(stringIndex ?? beat.GetNearestStringIndex());
-            return drawingContext.GetNoteAlternationOffset(ratio);
+            return rc.GetNoteAlternationOffset(ratio);
         }
-
-
+        
     }
 }

@@ -15,9 +15,14 @@ namespace TabML.Editor.Rendering
                             column.Lyrics == null ? 0.0 : style.MakeFormattedLyrics(column.Lyrics.Text).Width);
         }
 
-        public static double GetPosition(this BarColumn column, BarDrawingContext drawingContext)
+        public static double GetPosition(this BarColumn column, BarRenderingContext rc)
         {
-            return drawingContext.ColumnRenderingInfos[column.ColumnIndex].Position;
+            return rc.ColumnRenderingInfos[column.ColumnIndex].Position;
+        }
+
+        public static double GetPositionInRow(this BarColumn column, BarRenderingContext rc)
+        {
+            return rc.Owner.GetRelativePosition(rc.ColumnRenderingInfos[column.ColumnIndex].Position + rc.Location.X);
         }
     }
 }

@@ -59,6 +59,7 @@ namespace TabML.Parser.AST
                 Range = this.Range
             };
 
+            var previousBar = context.CurrentBar;
             context.CurrentBar = bar;
 
             if (this.Rhythm == null)
@@ -74,7 +75,7 @@ namespace TabML.Parser.AST
 
                 if (context.DocumentState.RhythmTemplate != null)
                     rhythm = context.DocumentState.RhythmTemplate.Apply(rhythm, logger);
-                
+
                 bar.Rhythm = rhythm;
             }
 
@@ -95,8 +96,25 @@ namespace TabML.Parser.AST
 
             new BarArranger(context, bar).Arrange();
 
+            if (previousBar != null)
+            {
+                this.ConnectBars(previousBar, bar, VoicePart.Treble);
+                this.ConnectBars(previousBar, bar, VoicePart.Bass);
+            }
+
             return true;
         }
 
+        private void ConnectBars(Bar previousBar, Bar bar, VoicePart voicePart)
+        {
+            var firstBeat = bar.GetVoice(voicePart)?.GetFirstBeat();
+            var lastBeat = previousBar.GetVoice(voicePart)?.GetLastBeat();
+
+            if (firstBeat == null || lastBeat == null)
+                return;
+
+            firstBeat.PreviousBeat = lastBeat;
+            lastBeat.NextBeat = firstBeat;
+        }
     }
 }

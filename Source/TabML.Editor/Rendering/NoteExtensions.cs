@@ -9,11 +9,11 @@ namespace TabML.Editor.Rendering
 {
     static class NoteExtensions
     {
-        public static double GetRenderPosition(this BeatNote note, BarDrawingContext drawingContext, Beat beat = null)
+        public static double GetRenderPosition(this BeatNote note, BarRenderingContext rc, Beat beat = null)
         {
             beat = beat ?? note.OwnerBeat;
-            return beat.OwnerColumn.GetPosition(drawingContext) +
-                   beat.GetAlternationOffset(drawingContext, note.String);
+            return beat.OwnerColumn.GetPosition(rc) +
+                   beat.GetAlternationOffset(rc, note.String);
         }
     }
 }
