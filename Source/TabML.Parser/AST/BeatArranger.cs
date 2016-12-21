@@ -59,14 +59,14 @@ namespace TabML.Parser.AST
                 _rootBeats.RemoveAt(_rootBeats.Count - 1);
                 _rootBeats.AddRange(rearrangedElements);
                 foreach (var beat in rearrangedElements.OfType<Beat>())
-                    beat.OwnerBeam = null;
+                    ((IInternalBeatElement)beat).SetOwnerBeam(null);
             }
             else
             {
                 _currentBeam.Elements.RemoveAt(_currentBeam.Elements.Count - 1);
                 _currentBeam.Elements.AddRange(rearrangedElements);
                 foreach (var beat in rearrangedElements.OfType<Beat>())
-                    beat.OwnerBeam = _currentBeam;
+                    ((IInternalBeatElement)beat).SetOwnerBeam(_currentBeam);
             }
         }
 
@@ -177,7 +177,7 @@ namespace TabML.Parser.AST
         private void AddToCurrentBeam(Beat beat)
         {
             _currentBeam.Elements.Add(beat);
-            beat.OwnerBeam = _currentBeam;
+            ((IInternalBeatElement)beat).SetOwnerBeam(_currentBeam);
             _duration += beat.GetDuration();
         }
 
@@ -190,7 +190,7 @@ namespace TabML.Parser.AST
 
         private void StartChildBeam(int? tuplet)
         {
-            var newBeam = new Beam(_currentBeam.BeatNoteValue.Half(), _currentBeam.VoicePart, false)
+            var newBeam = new Beam(_currentBeam, _currentBeam.BeatNoteValue.Half(), _currentBeam.VoicePart)
             {
                 Tuplet = tuplet
             };

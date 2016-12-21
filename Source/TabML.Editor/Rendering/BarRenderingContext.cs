@@ -20,13 +20,33 @@ namespace TabML.Editor.Rendering
         public Point Location { get; }
         public BarColumnRenderingInfo[] ColumnRenderingInfos { get; set; }
         public TablatureRenderingContext TablatureRenderingContext => this.Owner.TablatureRenderingContext;
-
+        private readonly Dictionary<Beam, BeamSlope> _beamSlopes;
 
         public BarRenderingContext(RowRenderingContext owner, Point location, Size availableSize)
             : base(owner)
         {
             this.Location = location;
             this.AvailableSize = availableSize;
+            _beamSlopes = new Dictionary<Beam, BeamSlope>();
+        }
+
+        public BeamSlope GetBeamSlope(IBeatElement beatElement)
+        {
+            var beam = beatElement?.OwnerBeam;
+
+            if (beam == null)
+                return null;
+
+            while (beam.OwnerBeam != null)
+                beam = beam.OwnerBeam;
+
+            BeamSlope slope;
+            return _beamSlopes.TryGetValue(beam, out slope) ? slope : null;
+        }
+
+        public void SetBeamSlope(Beam beam, BeamSlope slope)
+        {
+            _beamSlopes[beam] = slope;
         }
 
         public void DrawFretNumber(int stringIndex, string fretNumber, double position, bool isHalfOrLonger)

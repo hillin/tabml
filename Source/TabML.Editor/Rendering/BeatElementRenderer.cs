@@ -45,7 +45,7 @@ namespace TabML.Editor.Rendering
             : base(owner, element)
         {
         }
-        public abstract void Render(BeamSlope beamSlope);
+        public abstract void Render();
     }
     
 

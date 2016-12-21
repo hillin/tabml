@@ -10,7 +10,7 @@ namespace TabML.Core.Document
 {
     [DebuggerDisplay("{DebugString, nq}")]
     [DebuggerTypeProxy(typeof(DebugView))]
-    public class Beam : VirtualElement, IBeatElement, IBeatElementContainer
+    public class Beam : VirtualElement, IInternalBeatElement, IBeatElementContainer
     {
         private class DebugView
         {
@@ -32,6 +32,7 @@ namespace TabML.Core.Document
         public bool IsRoot { get; }
         public List<IBeatElement> Elements { get; }
         public int? Tuplet { get; set; }
+        public Beam OwnerBeam { get; private set; }
 
         public Beam(BaseNoteValue beatNoteValue, VoicePart voicePart, bool isRoot)
         {
@@ -39,6 +40,12 @@ namespace TabML.Core.Document
             this.VoicePart = voicePart;
             this.IsRoot = isRoot;
             this.Elements = new List<IBeatElement>();
+        }
+
+        public Beam(Beam owner, BaseNoteValue beatNoteValue, VoicePart voicePart)
+            : this(beatNoteValue, voicePart, false)
+        {
+            this.OwnerBeam = owner;
         }
 
         public PreciseDuration GetDuration() => this.Elements.Sum(b => b.GetDuration());
@@ -54,13 +61,17 @@ namespace TabML.Core.Document
             {
                 Tuplet = this.Tuplet
             };
-            foreach (var element in this.Elements)
-                clone.Elements.Add(element.Clone());
+            foreach (var element in this.Elements.Cast<IInternalBeatElement>())
+            {
+                var clonedElement = element.Clone();
+                clonedElement.SetOwnerBeam(clone);
+                clone.Elements.Add(clonedElement);
+            }
 
             return clone;
         }
 
-        IBeatElement IBeatElement.Clone() => this.Clone();
+        IInternalBeatElement IInternalBeatElement.Clone() => this.Clone();
 
         public bool GetIsTupletFull()
         {
@@ -75,6 +86,11 @@ namespace TabML.Core.Document
         {
             return this.BeatNoteValue > beat.NoteValue.Base    // if we are large enough to create a child beam for this beat
                 || this.Tuplet == beat.NoteValue.Tuplet;       // or our tuplet exactly matches
+        }
+
+        void IInternalBeatElement.SetOwnerBeam(Beam owner)
+        {
+            this.OwnerBeam = owner;
         }
 
 #if DEBUG

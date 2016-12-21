@@ -138,7 +138,7 @@
       <DependentUpon>ChordDiagramGridRow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Tablature\Layout\ArrangedBeatConnection.cs" />
-    <Compile Include="Tablature\Layout\BeamSlope.cs" />
+    <Compile Include="Rendering\BeamSlope.cs" />
     <Compile Include="Tablature\Test\ChordTest.xaml.cs">
       <DependentUpon>ChordTest.xaml</DependentUpon>
     </Compile>

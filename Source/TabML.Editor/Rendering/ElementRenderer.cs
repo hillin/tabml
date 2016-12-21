@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace TabML.Editor.Rendering
         public virtual void Initialize() { }
     }
 
+    [DebuggerDisplay("{GetType().Name, nq}: {DebuggerDisplay, nq}")]
     abstract class ElementRenderer<TElement> : ElementRenderer
         where TElement : ElementBase
     {
@@ -34,6 +36,10 @@ namespace TabML.Editor.Rendering
             this.Element = element;
             this.Root.RegisterRenderer(element, this);
         }
+
+        [DebuggerHidden]
+        private string DebuggerDisplay => (this.Element as Element)?.Range?.Content 
+            ?? this.Element.GetType().ToString();
     }
 
     abstract class ElementRenderer<TElement, TRenderingContext>

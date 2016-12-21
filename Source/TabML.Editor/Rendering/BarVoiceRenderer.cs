@@ -36,7 +36,7 @@ namespace TabML.Editor.Rendering
 
         public void Render()
         {
-            _beatElementRenderers.ForEach(r => r.Render(null));
+            _beatElementRenderers.ForEach(r => r.Render());
         }
 
     }

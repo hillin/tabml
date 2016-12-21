@@ -102,6 +102,7 @@
     <Compile Include="Document\IBeatElement.cs" />
     <Compile Include="Document\IBeatElementContainer.cs" />
     <Compile Include="Document\BeatElementContainerExtensions.cs" />
+    <Compile Include="Document\IInternalBeatElement.cs" />
     <Compile Include="Document\KeySignature.cs" />
     <Compile Include="Document\Lyrics.cs" />
     <Compile Include="Document\LyricsSegment.cs" />

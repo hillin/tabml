@@ -36,7 +36,7 @@ namespace TabML.Editor.Rendering
             _beatElementRenderers.AssignRenderingContexts(renderingContext);
         }
 
-        public override void Render(BeamSlope beamSlope)
+        public override void Render()
         {
             var firstBeat = this.Beam.GetFirstBeat();
             var lastBeat = this.Beam.GetLastBeat();
@@ -45,14 +45,17 @@ namespace TabML.Editor.Rendering
             var x1 = this.RenderingContext.ColumnRenderingInfos[lastBeat.OwnerColumn.ColumnIndex].Position
                 + lastBeat.GetAlternationOffset(this.RenderingContext);
 
+            var beamSlope = this.RenderingContext.GetBeamSlope(this.Element);
+
             if (beamSlope == null)
             {
                 var y0 = firstBeat.GetStemTailPosition(this.RenderingContext);
                 var y1 = lastBeat.GetStemTailPosition(this.RenderingContext);
                 beamSlope = new BeamSlope(x0, y0, (y1 - y0) / (x1 - x0));
+                this.RenderingContext.SetBeamSlope(this.Element, beamSlope);
             }
 
-            _beatElementRenderers.ForEach(r => r.Render(beamSlope));
+            _beatElementRenderers.ForEach(r => r.Render());
 
             this.RenderingContext.DrawBeam(this.Beam.BeatNoteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), this.Beam.VoicePart);
             if (this.Beam.Tuplet != null

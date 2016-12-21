@@ -5,7 +5,7 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
 {
-    public class Beat : Element, IBeatElement
+    public class Beat : Element, IInternalBeatElement
     {
         public NoteValue NoteValue
         {
@@ -24,7 +24,7 @@ namespace TabML.Core.Document
         public Beat NextBeat { get; set; }
         public PreciseDuration Position { get; set; }
         public BarColumn OwnerColumn { get; set; }
-        public Beam OwnerBeam { get; set; }
+        public Beam OwnerBeam { get; private set; }
         public VoicePart VoicePart { get; set; }
 
         public override IEnumerable<Element> Children => this.Notes;
@@ -60,6 +60,12 @@ namespace TabML.Core.Document
             };
         }
 
-        IBeatElement IBeatElement.Clone() => this.Clone();
+        void IInternalBeatElement.SetOwnerBeam(Beam owner)
+        {
+            this.OwnerBeam = owner;
+        }
+
+
+        IInternalBeatElement IInternalBeatElement.Clone() => this.Clone();
     }
 }

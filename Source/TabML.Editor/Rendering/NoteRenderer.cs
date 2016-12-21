@@ -20,41 +20,43 @@ namespace TabML.Editor.Rendering
         /// </remarks>
         public void Render(Beat beat, BeamSlope beamSlope)
         {
-            var x = this.Element.GetRenderPosition(this.RenderingContext, beat);
+            var renderingContext = this.Root.GetRenderer<Beat, BeatRenderer>(beat).RenderingContext;
+
+            var x = this.Element.GetRenderPosition(renderingContext, beat);
 
             var isHalfOrLonger = beat.NoteValue.Base >= BaseNoteValue.Half;
             if (this.Element.EffectTechnique == NoteEffectTechnique.DeadNote)
             {
-                this.RenderingContext.DrawDeadNote(this.Element.String, x, isHalfOrLonger);
+                renderingContext.DrawDeadNote(this.Element.String, x, isHalfOrLonger);
             }
             else if (this.Element.Fret == BeatNote.UnspecifiedFret)
             {
-                this.RenderingContext.DrawPlayAsChordMark(this.Element.String, x, isHalfOrLonger);
+                renderingContext.DrawPlayAsChordMark(this.Element.String, x, isHalfOrLonger);
             }
             else
             {
-                this.RenderingContext.DrawFretNumber(this.Element.String, this.Element.Fret.ToString(), x, isHalfOrLonger);
+                renderingContext.DrawFretNumber(this.Element.String, this.Element.Fret.ToString(), x, isHalfOrLonger);
             }
 
             if (beat == this.Element.OwnerBeat) // only draw connections if we are drawing for ourselves
             {
-                this.DrawPreConnection(beamSlope);
-                this.DrawPostConnection(beamSlope);
+                this.DrawPreConnection(renderingContext, beamSlope);
+                this.DrawPostConnection(renderingContext, beamSlope);
             }
         }
 
-        private void DrawPostConnection(BeamSlope beamSlope)
+        private void DrawPostConnection(BarRenderingContext renderingContext, BeamSlope beamSlope)
         {
             switch (this.Element.PostConnection)
             {
                 case PostNoteConnection.SlideOutToHigher:
-                    this.RenderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext),
+                    this.RenderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(renderingContext),
                                                     this.Element.String,
                                                     GlissDirection.ToHigher,
                                                     this.GetInstructionY(this.Element, beamSlope));
                     break;
                 case PostNoteConnection.SlideOutToLower:
-                    this.RenderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext),
+                    this.RenderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(renderingContext),
                                                     this.Element.String,
                                                     GlissDirection.ToLower,
                                                     this.GetInstructionY(this.Element, beamSlope));
@@ -82,17 +84,15 @@ namespace TabML.Editor.Rendering
             {
                 return note.OwnerBeat.GetStemTailPosition(this.RenderingContext);
             }
-            else
-            {
-                var instructionX = note.PreConnectedNote != null
-                    ? (note.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext) +
-                       note.PreConnectedNote.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext)) / 2
-                    : note.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext);
-                return beamSlope.GetY(instructionX);
-            }
+
+            var instructionX = note.PreConnectedNote != null
+                ? (note.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext) +
+                   note.PreConnectedNote.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext)) / 2
+                : note.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext);
+            return beamSlope.GetY(instructionX);
         }
 
-        private void DrawPreConnection(BeamSlope beamSlope)
+        private void DrawPreConnection(BarRenderingContext renderingContext, BeamSlope beamSlope)
         {
             switch (this.Element.PreConnection)
             {
@@ -103,16 +103,16 @@ namespace TabML.Editor.Rendering
                     this.DrawTie(this.Element, "sl.", beamSlope);
                     break;
                 case PreNoteConnection.SlideInFromHigher:
-                    this.RenderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext),
-                                                    this.Element.String,
-                                                    GlissDirection.FromHigher,
-                                                    this.GetInstructionY(this.Element, beamSlope));
+                    renderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(renderingContext),
+                                               this.Element.String,
+                                               GlissDirection.FromHigher,
+                                               this.GetInstructionY(this.Element, beamSlope));
                     break;
                 case PreNoteConnection.SlideInFromLower:
-                    this.RenderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext),
-                                                    this.Element.String,
-                                                    GlissDirection.FromLower,
-                                                    this.GetInstructionY(this.Element, beamSlope));
+                    renderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(renderingContext),
+                                               this.Element.String,
+                                               GlissDirection.FromLower,
+                                               this.GetInstructionY(this.Element, beamSlope));
                     break;
                 case PreNoteConnection.Hammer:
                     this.DrawTie(this.Element, "h.", beamSlope);
