@@ -3,11 +3,10 @@
     public enum PreNoteConnection
     {
         None = 0,
-        Tie = 1,
-        Slide = 2,
-        SlideInFromHigher = 3,
-        SlideInFromLower = 4,
-        Hammer = 7,
-        Pull = 8
+        Slide = 1,
+        SlideInFromHigher = 4,
+        SlideInFromLower = 5,
+        Hammer = 6,
+        Pull = 7
     }
 }

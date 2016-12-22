@@ -138,19 +138,8 @@ namespace TabML.Editor.Rendering
             this.DrawTuplet(value, position, y - this.Location.Y, voicePart);
         }
 
-        public void DrawTie(double from, double to, int stringIndex, VoicePart voicePart, string instruction, double instructionY)
-        {
-            var spaceIndex = voicePart == VoicePart.Bass ? stringIndex + 1 : stringIndex;
-            var y = this.Owner.GetStringSpacePosition(spaceIndex);
-            this.PrimitiveRenderer.DrawTie(from + this.Location.X + 10, to + this.Location.X - 10, y, instruction,
-                                           instructionY + this.Location.Y +
-                                           (voicePart == VoicePart.Treble
-                                               ? -this.Style.OuterNoteInstructionOffset
-                                               : this.Style.OuterNoteInstructionOffset), voicePart.ToOffBarDirection());
-            //todo: replace magic number
-        }
 
-        public void DrawGliss(double x, int stringIndex, GlissDirection direction, double instructionY)
+        public void DrawGliss(double x, int stringIndex, GlissDirection direction)
         {
             x = x + this.Location.X;
 
@@ -166,8 +155,7 @@ namespace TabML.Editor.Rendering
                     break;
             }
 
-
-            this.PrimitiveRenderer.DrawGliss(x, this.Owner.GetStringPosition(stringIndex), direction, instructionY);
+            this.PrimitiveRenderer.DrawGliss(x, this.Owner.GetStringPosition(stringIndex), direction);
         }
 
         public void DrawFlag(BaseNoteValue noteValue, double x, double y, VoicePart voicePart)

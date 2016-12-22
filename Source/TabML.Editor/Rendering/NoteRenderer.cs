@@ -40,86 +40,36 @@ namespace TabML.Editor.Rendering
 
             if (beat == this.Element.OwnerBeat) // only draw connections if we are drawing for ourselves
             {
-                this.DrawPreConnection(renderingContext, beamSlope);
-                this.DrawPostConnection(renderingContext, beamSlope);
-            }
-        }
+                // todo: handle tie chain
+                var tiePosition = this.Element.TiePosition ?? this.Element.OwnerBeat.VoicePart.GetDefaultTiePosition();
 
-        private void DrawPostConnection(BarRenderingContext renderingContext, BeamSlope beamSlope)
-        {
-            switch (this.Element.PostConnection)
-            {
-                case PostNoteConnection.SlideOutToHigher:
-                    this.RenderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(renderingContext),
-                                                    this.Element.String,
-                                                    GlissDirection.ToHigher,
-                                                    this.GetInstructionY(this.Element, beamSlope));
-                    break;
-                case PostNoteConnection.SlideOutToLower:
-                    this.RenderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(renderingContext),
-                                                    this.Element.String,
-                                                    GlissDirection.ToLower,
-                                                    this.GetInstructionY(this.Element, beamSlope));
-                    break;
-            }
-        }
+                if (this.Element.IsTied)
+                {
+                    NoteConnectionRenderer.DrawTie(this.Root, this.Element.PreConnectedNote?.OwnerBeat,
+                                                   this.Element.OwnerBeat, this.Element.String, tiePosition);
+                }
+                else
+                {
+                    var preConnection = this.Element.PreConnection == PreNoteConnection.None
+                        ? (NoteConnection) this.Element.OwnerBeat.PreConnection
+                        : (NoteConnection) this.Element.PreConnection;
 
-        private void DrawTie(BeatNote note, string instruction, BeamSlope beamSlope)
-        {
-            if (note.PreConnectedNote != null) // todo: handle cross-bar ties
-            {
-                var instructionY = string.IsNullOrEmpty(instruction)
-                    ? 0.0
-                    : this.GetInstructionY(note, beamSlope);
+                    if (preConnection != NoteConnection.None)
+                    {
+                        NoteConnectionRenderer.DrawConnection(this.Root, preConnection,
+                                                              this.Element.PreConnectedNote?.OwnerBeat,
+                                                              this.Element.OwnerBeat, this.Element.String,
+                                                              this.Element.TiePosition ??
+                                                              tiePosition);
+                    }
+                }
 
-                var tieFrom = note.PreConnectedNote.GetRenderPosition(this.RenderingContext);
-                var tieTo = note.GetRenderPosition(this.RenderingContext);
-                this.RenderingContext.DrawTie(tieFrom, tieTo, note.String, note.OwnerBeat.VoicePart, instruction, instructionY);
-            }
-        }
+                var postConnection = this.Element.PostConnection == PostNoteConnection.None
+                    ? (NoteConnection)this.Element.OwnerBeat.PostConnection
+                    : (NoteConnection)this.Element.PostConnection;
 
-        private double GetInstructionY(BeatNote note, BeamSlope beamSlope)
-        {
-            if (beamSlope == null)
-            {
-                return note.OwnerBeat.GetStemTailPosition(this.RenderingContext);
-            }
-
-            var instructionX = note.PreConnectedNote != null
-                ? (note.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext) +
-                   note.PreConnectedNote.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext)) / 2
-                : note.OwnerBeat.OwnerColumn.GetPosition(this.RenderingContext);
-            return beamSlope.GetY(instructionX);
-        }
-
-        private void DrawPreConnection(BarRenderingContext renderingContext, BeamSlope beamSlope)
-        {
-            switch (this.Element.PreConnection)
-            {
-                case PreNoteConnection.Tie:
-                    this.DrawTie(this.Element, null, beamSlope);
-                    break;
-                case PreNoteConnection.Slide:
-                    this.DrawTie(this.Element, "sl.", beamSlope);
-                    break;
-                case PreNoteConnection.SlideInFromHigher:
-                    renderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(renderingContext),
-                                               this.Element.String,
-                                               GlissDirection.FromHigher,
-                                               this.GetInstructionY(this.Element, beamSlope));
-                    break;
-                case PreNoteConnection.SlideInFromLower:
-                    renderingContext.DrawGliss(this.Element.OwnerBeat.OwnerColumn.GetPosition(renderingContext),
-                                               this.Element.String,
-                                               GlissDirection.FromLower,
-                                               this.GetInstructionY(this.Element, beamSlope));
-                    break;
-                case PreNoteConnection.Hammer:
-                    this.DrawTie(this.Element, "h.", beamSlope);
-                    break;
-                case PreNoteConnection.Pull:
-                    this.DrawTie(this.Element, "p.", beamSlope);
-                    break;
+                if (postConnection != NoteConnection.None)
+                    NoteConnectionRenderer.DrawConnection(this.Root, postConnection, beat, null, this.Element.String, tiePosition);
             }
         }
 

@@ -121,6 +121,7 @@
     <Compile Include="Document\VirtualElement.cs" />
     <Compile Include="Document\Voice.cs" />
     <Compile Include="Document\VoicePart.cs" />
+    <Compile Include="Document\VoicePartExtensions.cs" />
     <Compile Include="LeftHandFingerIndex.cs" />
     <Compile Include="LeftHandFingerIndexExtensions.cs" />
     <Compile Include="Logging\ILogger.cs" />
@@ -135,7 +136,9 @@
     <Compile Include="MusicTheory\GlissDirection.cs" />
     <Compile Include="MusicTheory\KnownTuningAttribute.cs" />
     <Compile Include="MusicTheory\NoteEffectTechnique.cs" />
+    <Compile Include="MusicTheory\PostBeatConnection.cs" />
     <Compile Include="MusicTheory\PostNoteConnection.cs" />
+    <Compile Include="MusicTheory\PreBeatConnection.cs" />
     <Compile Include="MusicTheory\PreciseDuration.cs" />
     <Compile Include="MusicTheory\PreciseDurationExtensions.cs" />
     <Compile Include="MusicTheory\PreNoteConnection.cs" />
@@ -168,6 +171,7 @@
     <Compile Include="MusicTheory\OpenBarLine.cs" />
     <Compile Include="MusicTheory\NoteConnection.cs" />
     <Compile Include="MusicTheory\StrumTechnique.cs" />
+    <Compile Include="MusicTheory\TiePosition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MusicTheory\Time.cs" />
     <Compile Include="MusicTheory\Times.cs" />

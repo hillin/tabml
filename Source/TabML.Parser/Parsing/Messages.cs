@@ -157,6 +157,12 @@ namespace TabML.Parser.Parsing
         public const string Error_BeatInvalidFretNumberInStringsSpecifier =
             "Unrecognizable fret number";
 
+        public const string Warning_EffectTechniqueInTiedNote =
+            "Specifying effect techniques in a tied note, these techniques will be ignored";
+
+        public const string Warning_PreConnectionInTiedNote =
+            "Specifying pre-connection in a tied note, the specifier will be ignored";
+
         public const string Error_ConnectionPredecessorNotExisted = "Cannot find a note as predecessor of the pre-connection of this note";
         public const string Warning_TiedNoteMismatch = "The tied note does not match its predecessor, the tie mark will be ignored";
 

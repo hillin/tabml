@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using TabML.Core.Document;
+using TabML.Core.MusicTheory;
 
 namespace TabML.Editor.Rendering
 {
@@ -65,17 +66,19 @@ namespace TabML.Editor.Rendering
         public double GetStringPosition(int stringIndex) => this.Location.Y + this.Style.BarTopMargin + (stringIndex + 0.5) * this.Style.BarLineHeight;
         public double GetStringSpacePosition(int stringIndex) => this.Location.Y + this.Style.BarTopMargin + stringIndex * this.Style.BarLineHeight;
 
-        public void DrawTie(double from, double to, int stringIndex, VoicePart voicePart, string instruction,
+        public void DrawTie(double from, double to, int stringIndex, TiePosition tiePosition, string instruction,
                             double instructionY)
         {
-            var spaceIndex = voicePart == VoicePart.Bass ? stringIndex + 1 : stringIndex;
+            var spaceIndex = tiePosition == TiePosition.Under ? stringIndex + 1 : stringIndex;
             var y = this.GetStringSpacePosition(spaceIndex);
-            this.PrimitiveRenderer.DrawTie(from + this.Location.X + 10, to + this.Location.X - 10, y, instruction,
-                                           instructionY + this.Location.Y +
-                                           (voicePart == VoicePart.Treble
-                                               ? -this.Style.OuterNoteInstructionOffset
-                                               : this.Style.OuterNoteInstructionOffset), voicePart.ToOffBarDirection());
+            this.PrimitiveRenderer.DrawTie(from + this.Location.X + 10, to + this.Location.X - 10, y, tiePosition.ToOffBarDirection());
             //todo: replace magic number
+        }
+
+
+        public void DrawTieInstruction(double x, double y, string instruction)
+        {
+            this.PrimitiveRenderer.DrawTieInstruction(x + this.Location.X, y + this.Location.Y, instruction);
         }
     }
 }

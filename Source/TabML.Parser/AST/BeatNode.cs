@@ -13,7 +13,10 @@ namespace TabML.Parser.AST
     {
         public NoteValueNode NoteValue { get; set; }
         public ExistencyNode Rest { get; set; }
-        public ExistencyNode Tied { get; set; }
+        public ExistencyNode Tie { get; set; }
+        public LiteralNode<TiePosition> TiePosition { get; set; }
+        public LiteralNode<PreBeatConnection> PreConnection { get; set; }
+        public LiteralNode<PostBeatConnection> PostConnection { get; set; }
         public LiteralNode<AllStringStrumTechniqueEnum> AllStringStrumTechnique { get; set; }
         public List<BeatNoteNode> Notes { get; }
         public LiteralNode<StrumTechniqueEnum> StrumTechnique { get; set; }
@@ -24,6 +27,9 @@ namespace TabML.Parser.AST
         public List<Node> Modifiers { get; }
 
         public bool HasRedunantSpecifierForRest => this.Notes.Count > 0
+                                                   || this.Tie != null
+                                                   || this.PreConnection != null
+                                                   || this.PostConnection != null
                                                    || this.AllStringStrumTechnique != null
                                                    || this.StrumTechnique != null
                                                    || this.EffectTechnique != null
@@ -32,6 +38,7 @@ namespace TabML.Parser.AST
                                                    || this.Accent != null;
 
         public bool HasRedunantSpecifierForTied => this.Rest != null
+                                                   || this.PreConnection != null
                                                    || this.AllStringStrumTechnique != null
                                                    || this.Notes.Count > 0
                                                    || this.StrumTechnique != null
@@ -44,8 +51,14 @@ namespace TabML.Parser.AST
         {
             get
             {
-                if (this.Tied != null)
-                    yield return this.Tied;
+                if (this.PreConnection != null)
+                {
+                    yield return this.PreConnection;
+
+                    if (this.TiePosition != null
+                        && this.TiePosition.Range != this.PreConnection.Range)
+                        yield return this.TiePosition;
+                }
 
                 yield return this.NoteValue;
 
@@ -60,6 +73,9 @@ namespace TabML.Parser.AST
 
                 foreach (var node in this.Modifiers)
                     yield return node;
+
+                if (this.PostConnection != null)
+                    yield return this.PostConnection;
             }
         }
 
@@ -74,13 +90,16 @@ namespace TabML.Parser.AST
             beat = new Beat
             {
                 Range = this.Range,
-                StrumTechnique = this.StrumTechnique?.Value ?? ((StrumTechniqueEnum?)this.AllStringStrumTechnique?.Value) ?? StrumTechniqueEnum.None,
+                StrumTechnique = this.StrumTechnique?.Value ?? (StrumTechniqueEnum?)this.AllStringStrumTechnique?.Value ?? StrumTechniqueEnum.None,
                 Accent = this.Accent?.Value ?? BeatAccent.Normal,
                 DurationEffect = this.DurationEffect?.Value ?? BeatDurationEffect.None,
                 EffectTechnique = this.EffectTechnique?.Value ?? BeatEffectTechnique.None,
                 EffectTechniqueParameter = this.EffectTechniqueParameter?.Value ?? default(double),
                 IsRest = this.Rest != null,
-                IsTied = this.Tied != null,
+                IsTied = this.Tie != null,
+                TiePosition = this.TiePosition?.Value,
+                PreConnection = this.PreConnection?.Value ?? PreBeatConnection.None,
+                PostConnection = this.PostConnection?.Value ?? PostBeatConnection.None,
                 NoteValue = this.NoteValue.ToNoteValue(),
                 VoicePart = ownerVoice.Part
             };
@@ -94,7 +113,7 @@ namespace TabML.Parser.AST
                 documentNote.OwnerBeat = beat;
 
                 notes.Add(documentNote);
-                
+
                 ownerVoice.LastNoteOnStrings[documentNote.String] = documentNote;
             }
 
@@ -128,7 +147,16 @@ namespace TabML.Parser.AST
             if ((this.Rest != null) != other.IsRest)
                 return false;
 
-            if ((this.Tied != null) != other.IsTied)
+            if ((this.Tie != null) != other.IsTied)
+                return false;
+
+            if (this.TiePosition?.Value != other.TiePosition)
+                return false;
+
+            if ((this.PreConnection?.Value ?? PreBeatConnection.None) != other.PreConnection)
+                return false;
+
+            if (this.PostConnection?.Value != other.PostConnection)
                 return false;
 
             if ((this.EffectTechnique?.Value ?? BeatEffectTechnique.None) != other.EffectTechnique)

@@ -75,12 +75,14 @@ namespace TabML.Editor
         public void DrawRest(BaseNoteValue noteValue, double x, double y) => this.InvokeRenderMethod("drawRest", (int)noteValue, x, y);
         public void DrawTuplet(string tuplet, double x, double y) => this.InvokeRenderMethod("drawTuplet", tuplet, x, y);
 
-        public void DrawTie(double x0, double x1, double y, string instruction, double instructionY,
-                            OffBarDirection offBarDirection)
-            => this.InvokeRenderMethod("drawTie", x0, x1, y, instruction, instructionY, (int)offBarDirection);
+        public void DrawTie(double x0, double x1, double y, OffBarDirection offBarDirection)
+            => this.InvokeRenderMethod("drawTie", x0, x1, y, (int)offBarDirection);
 
-        public void DrawGliss(double x, double y, GlissDirection direction, double instructionY)
-            => this.InvokeRenderMethod("drawGliss", x, y, direction, instructionY);
+        public void DrawGliss(double x, double y, GlissDirection direction)
+            => this.InvokeRenderMethod("drawGliss", x, y, direction);
+
+        public void DrawTieInstruction(double x, double y, string instruction)
+            => this.InvokeRenderMethod("drawTieInstruction", x, y, instruction);
 
         public void Clear() => this.InvokeRenderMethod("clear");
     }

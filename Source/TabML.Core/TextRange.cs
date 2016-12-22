@@ -1,12 +1,16 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace TabML.Core
 {
     [DebuggerDisplay("{From} - {To}")]
     [DebuggerTypeProxy(typeof(TextRange.DebugView))]
-    public struct TextRange
+    public struct TextRange : IEquatable<TextRange>
     {
+
+
+
         internal class DebugView
         {
             private readonly TextRange _textRange;
@@ -93,6 +97,44 @@ namespace TabML.Core
         {
             return new TextRange(this.From > range.From ? range.From : this.From,
                                  this.To > range.To ? this.To : range.To);
+        }
+
+        public bool Equals(TextRange other)
+        {
+            return this.From == other.From
+                   && this.To == other.To
+#if DEBUG
+                   && this.Source == other.Source
+#endif
+                ;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is TextRange && this.Equals((TextRange)obj);
+        }
+
+        public static bool operator ==(TextRange r1, TextRange r2)
+        {
+            return r1.Equals(r2);
+        }
+
+        public static bool operator !=(TextRange r1, TextRange r2)
+        {
+            return !r1.Equals(r2);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = this.From.GetHashCode();
+                hashCode = (hashCode * 397) ^ this.To.GetHashCode();
+#if DEBUG
+                hashCode = (hashCode * 397) ^ (this.Source?.GetHashCode() ?? 0);
+#endif
+                return hashCode;
+            }
         }
 
         public override string ToString()

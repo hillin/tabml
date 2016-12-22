@@ -115,6 +115,7 @@
     <Compile Include="Rendering\IBeatElementRenderer.cs" />
     <Compile Include="Rendering\IElementRendererWithContext.cs" />
     <Compile Include="Rendering\IRootElementRenderer.cs" />
+    <Compile Include="Rendering\NoteConnectionRenderer.cs" />
     <Compile Include="Rendering\RenderingContext.cs" />
     <Compile Include="Rendering\RenderingContextBase.cs" />
     <Compile Include="Rendering\BarVoiceRenderer.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="Rendering\RowRenderingContext.cs" />
     <Compile Include="Rendering\TablatureRenderer.cs" />
     <Compile Include="Rendering\TablatureRenderingContext.cs" />
+    <Compile Include="Rendering\TiePositionExtensions.cs" />
     <Compile Include="Rendering\VoicePartExtensions.cs" />
     <Compile Include="TablatureStyle.cs" />
     <Compile Include="Tablature\ChordDiagram.xaml.cs">

@@ -3,11 +3,12 @@
     public enum NoteConnection
     {
         None = 0,
-        Tie = 1,
-        Slide = 2,
-        SlideIn = 3,
-        SlideOut = 4,
-        Hammer = 5,
-        Pull = 6
+        Slide = 1,
+        SlideInFromHigher = 2,
+        SlideInFromLower = 3,
+        SlideOutToHigher = 4,
+        SlideOutToLower = 5,
+        Hammer = 6,
+        Pull = 7
     }
 }

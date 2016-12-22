@@ -53,19 +53,15 @@ namespace TabML.Parser.AST
                 }
 
                 logger.Report(LogLevel.Suggestion, this.Range, Messages.Suggestion_InconsistentVoiceDuration);
-
-                var isFirstFactor = true;
+                
                 foreach (var factor in factors)
                 {
                     var beat = new Beat
                     {
                         NoteValue = new NoteValue(factor),
                         IsRest = true,
-                        IsTied = !isFirstFactor
                     };
-
-                    isFirstFactor = false;
-
+                    
                     context.CurrentVoice.IsTerminatedWithRest = true;
 
                     voice.Beats.Add(beat);

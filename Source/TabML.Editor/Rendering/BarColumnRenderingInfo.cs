@@ -28,8 +28,15 @@ namespace TabML.Editor.Rendering
             if (_occupiedStrings == null)
             {
                 _occupiedStrings = new bool[Defaults.Strings];
-                foreach (var i in this.Column.VoiceBeats.SelectMany(b => b.Notes.Select(n => n.String)))
-                    _occupiedStrings[i] = true;
+                foreach (var beat in this.Column.VoiceBeats)
+                {
+                    var targetBeat = beat.IsTied ? beat.GetTieHead() : beat;
+                    if (targetBeat == null || targetBeat.IsRest)
+                        continue;
+
+                    foreach (var i in targetBeat.Notes.Select(n => n.String))
+                        _occupiedStrings[i] = true;
+                }
             }
 
             if (stringIndex == 0)

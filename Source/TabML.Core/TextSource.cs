@@ -46,7 +46,7 @@ namespace TabML.Core
                 return true;
 
             if (pointer.Row == _lines.Length - 1
-                && pointer.Column >= _lines[pointer.Row].Length - 1)
+                && pointer.Column >= _lines[pointer.Row].Length)
                 return true;
 
             return false;

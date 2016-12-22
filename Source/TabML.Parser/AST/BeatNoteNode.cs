@@ -12,17 +12,24 @@ namespace TabML.Parser.AST
     {
         public LiteralNode<int> String { get; set; }
         public LiteralNode<int> Fret { get; set; }
+        public ExistencyNode Tie { get; set; }
+        public LiteralNode<TiePosition> TiePosition { get; set; }
         public LiteralNode<PreNoteConnection> PreConnection { get; set; }
         public LiteralNode<PostNoteConnection> PostConnection { get; set; }
         public LiteralNode<NoteEffectTechnique> EffectTechnique { get; set; }
         public LiteralNode<double> EffectTechniqueParameter { get; set; }
-
+        
         public override IEnumerable<Node> Children
         {
             get
             {
                 if (this.PreConnection != null)
+                {
                     yield return this.PreConnection;
+                    if (this.TiePosition != null
+                        && this.TiePosition.Range != this.PreConnection.Range)
+                        yield return this.TiePosition;
+                }
 
                 yield return this.String;
 
@@ -41,6 +48,7 @@ namespace TabML.Parser.AST
             }
         }
 
+
         public bool ValueEquals(BeatNote other)
         {
             if (other == null)
@@ -57,6 +65,12 @@ namespace TabML.Parser.AST
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if ((this.EffectTechniqueParameter?.Value ?? default(double)) != other.EffectTechniqueParameter)
+                return false;
+
+            if ((this.Tie != null) != other.IsTied)
+                return false;
+
+            if (this.TiePosition?.Value != other.TiePosition)
                 return false;
 
             if ((this.PreConnection?.Value ?? PreNoteConnection.None) != other.PreConnection)
@@ -81,19 +95,60 @@ namespace TabML.Parser.AST
 
             element = new BeatNote
             {
+                Range = this.Range,
                 PreConnection = this.PreConnection?.Value ?? PreNoteConnection.None,
                 PostConnection = this.PostConnection?.Value ?? PostNoteConnection.None,
+                IsTied = this.Tie != null,
+                TiePosition = this.TiePosition?.Value,
                 String = this.String.Value - 1,
                 Fret = this.Fret?.Value ?? BeatNote.UnspecifiedFret,
                 EffectTechnique = this.EffectTechnique?.Value ?? NoteEffectTechnique.None,
-                EffectTechniqueParameter = this.EffectTechniqueParameter?.Value ?? default(double)
+                EffectTechniqueParameter = this.EffectTechniqueParameter?.Value ?? default(double),
             };
+
+            if (!this.ValidateTie(context, logger, element))
+                return false;
 
             if (!this.ValidatePreConnection(context, logger, voicePart, element))
                 return false;
 
             if (!this.ValidatePostConnection(context, logger, voicePart, element))
                 return false;
+
+            return true;
+        }
+
+        private bool ValidateTie(TablatureContext context, ILogger logger, BeatNote element)
+        {
+            if (this.Tie == null)
+                return true;
+
+            if (!this.RetrievePreConnectedNote(context, logger, element))
+                return false;
+
+            if (this.Fret == null)
+                element.Fret = element.PreConnectedNote.Fret;
+            else if (this.Fret.Value != element.PreConnectedNote.Fret)
+            {
+                logger.Report(LogLevel.Warning, this.Fret.Range,
+                              Messages.Warning_TiedNoteMismatch);
+                element.PreConnection = PreNoteConnection.None;
+            }
+            return true;
+        }
+
+        private bool RetrievePreConnectedNote(TablatureContext context, ILogger logger, BeatNote element)
+        {
+            var lastNote = context.GetLastNoteOnString(this.String.Value - 1);
+
+            if (lastNote == null)
+            {
+                logger.Report(LogLevel.Error, this.PreConnection.Range,
+                              Messages.Error_ConnectionPredecessorNotExisted);
+                return false;
+            }
+
+            element.PreConnectedNote = lastNote;
 
             return true;
         }
@@ -151,31 +206,11 @@ namespace TabML.Parser.AST
                 return true;
             }
 
-            var lastNote = context.GetLastNoteOnString(this.String.Value - 1);
-
-            if (lastNote == null)
-            {
-                logger.Report(LogLevel.Error, this.PreConnection.Range,
-                              Messages.Error_ConnectionPredecessorNotExisted);
+            if (!this.RetrievePreConnectedNote(context, logger, element))
                 return false;
-            }
-
-            element.PreConnectedNote = lastNote;
-            Debug.Assert(lastNote.PostConnectedNote == null);
-            lastNote.PostConnectedNote = element;
 
             switch (this.PreConnection.Value)
             {
-                case PreNoteConnection.Tie:
-                    if (this.Fret == null)
-                        element.Fret = lastNote.Fret;
-                    else if (this.Fret.Value != lastNote.Fret)
-                    {
-                        logger.Report(LogLevel.Warning, this.Fret.Range,
-                                      Messages.Warning_TiedNoteMismatch);
-                        element.PreConnection = PreNoteConnection.None;
-                    }
-                    return true;
                 case PreNoteConnection.Slide:
                     if (this.Fret == null)
                     {
@@ -183,7 +218,7 @@ namespace TabML.Parser.AST
                                       Messages.Error_FretMissingForSlideNote);
                         return false;
                     }
-                    if (this.Fret.Value == lastNote.Fret)
+                    if (this.Fret.Value == element.PreConnectedNote.Fret)
                     {
                         logger.Report(LogLevel.Warning, this.PreConnection.Range,
                                       Messages.Warning_SlidingToSameFret);
@@ -198,13 +233,13 @@ namespace TabML.Parser.AST
                         return false;
                     }
 
-                    if (this.Fret.Value == lastNote.Fret)
+                    if (this.Fret.Value == element.PreConnectedNote.Fret)
                     {
                         logger.Report(LogLevel.Warning, this.Fret.Range,
                                       Messages.Warning_HammeringToSameFret);
                         element.PreConnection = PreNoteConnection.None;
                     }
-                    else if (this.Fret.Value < lastNote.Fret)
+                    else if (this.Fret.Value < element.PreConnectedNote.Fret)
                     {
                         logger.Report(LogLevel.Warning, this.Fret.Range,
                                       Messages.Warning_HammeringFromHigherFret);
@@ -219,13 +254,13 @@ namespace TabML.Parser.AST
                         return false;
                     }
 
-                    if (this.Fret.Value == lastNote.Fret)
+                    if (this.Fret.Value == element.PreConnectedNote.Fret)
                     {
                         logger.Report(LogLevel.Warning, this.Fret.Range,
                                       Messages.Warning_PullingToSameFret);
                         element.PreConnection = PreNoteConnection.None;
                     }
-                    else if (this.Fret.Value > lastNote.Fret)
+                    else if (this.Fret.Value > element.PreConnectedNote.Fret)
                     {
                         logger.Report(LogLevel.Warning, this.Fret.Range,
                                       Messages.Warning_PullingFromLowerFret);

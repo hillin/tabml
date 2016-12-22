@@ -243,36 +243,37 @@ namespace TR {
             });
         }
 
-        drawTie(x0: number, x1: number, y: number, instruction: string, instructionY: number, direction: OffBarDirection) {
+        drawTieInstruction(x: number, y: number, instruction: string)
+        {
+            let text = new fabric.Text(instruction, this.style.tie.instructionText);
+            text.left = x;
+            text.top = y;
+            text.originX = "center";
+            text.originY = "center";
+            this.canvas.add(text);  
+        }
+
+        drawTie(x0: number, x1: number, y: number, direction: OffBarDirection) {
             let imageFile = ResourceManager.getTablatureResource("tie.svg");
             this.drawSVGFromURL(imageFile, x0, y, group => {
 
                 group.scaleToWidth(x1 - x0);
-                group.scaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                let standardScaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                group.scaleY = Math.max(standardScaleY/2, Math.min(Math.sqrt(group.scaleY), standardScaleY));
+                group.originX = "left";
 
                 if (direction == OffBarDirection.Bottom) {
                     group.originY = "top";
-                    group.originX = "right";
                     group.flipY = true;
                 }
                 else {
-                    group.originX = "left";
                     group.originY = "bottom";
                 }
 
             });
-
-            if (instruction != null) {
-                let text = new fabric.Text(instruction, this.style.tie.instructionText);
-                text.left = (x0 + x1) / 2;
-                text.top = instructionY;
-                text.originX = "center";
-                text.originY = "center";
-                this.canvas.add(text);
-            }
         }
 
-        drawGliss(x: number, y: number, direction: GlissDirection, instructionY: number) {
+        drawGliss(x: number, y: number, direction: GlissDirection) {
             let imageFile = ResourceManager.getTablatureResource("gliss.svg");
 
             this.drawSVGFromURL(imageFile, x, y, group => {
@@ -302,23 +303,23 @@ namespace TR {
 
                 group.scaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
 
-                let text = new fabric.Text("gl.", this.style.tie.instructionText);
-                let instructionX = x;
-                switch (direction) {
-                    case GlissDirection.FromHigher:
-                    case GlissDirection.FromLower:
-                        instructionX -= group.width / 2;
-                        break;
-                    case GlissDirection.ToHigher:
-                    case GlissDirection.ToLower:
-                        instructionX += group.width / 2;
-                        break;
-                }
-                text.left = instructionX;
-                text.top = instructionY;
-                text.originX = "center";
-                text.originY = "center";
-                this.canvas.add(text);
+                // let text = new fabric.Text("gl.", this.style.tie.instructionText);
+                // let instructionX = x;
+                // switch (direction) {
+                //     case GlissDirection.FromHigher:
+                //     case GlissDirection.FromLower:
+                //         instructionX -= group.width / 2;
+                //         break;
+                //     case GlissDirection.ToHigher:
+                //     case GlissDirection.ToLower:
+                //         instructionX += group.width / 2;
+                //         break;
+                // }
+                // text.left = instructionX;
+                // text.top = instructionY;
+                // text.originX = "center";
+                // text.originY = "center";
+                // this.canvas.add(text);
             });
 
         }

@@ -84,7 +84,7 @@ namespace TabML.Parser.Parsing
             get
             {
                 var row = this.Source[_textPointer.Row];
-                if (_textPointer.Column >= row.Length - 1)
+                if (_textPointer.Column >= row.Length)
                     return string.Empty;
 
                 var result = row.Substring(_textPointer.Column);

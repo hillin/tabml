@@ -2721,30 +2721,30 @@ var TR;
                 group.scale(_this.style.bar.lineHeight / ResourceManager.referenceBarSpacing);
             });
         };
-        PrimitiveRenderer.prototype.drawTie = function (x0, x1, y, instruction, instructionY, direction) {
+        PrimitiveRenderer.prototype.drawTieInstruction = function (x, y, instruction) {
+            var text = new fabric.Text(instruction, this.style.tie.instructionText);
+            text.left = x;
+            text.top = y;
+            text.originX = "center";
+            text.originY = "center";
+            this.canvas.add(text);
+        };
+        PrimitiveRenderer.prototype.drawTie = function (x0, x1, y, direction) {
             var _this = this;
             var imageFile = ResourceManager.getTablatureResource("tie.svg");
             this.drawSVGFromURL(imageFile, x0, y, function (group) {
                 group.scaleToWidth(x1 - x0);
-                group.scaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                var standardScaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                group.scaleY = Math.max(standardScaleY / 2, Math.min(Math.sqrt(group.scaleY), standardScaleY));
+                group.originX = "left";
                 if (direction == OffBarDirection.Bottom) {
                     group.originY = "top";
-                    group.originX = "right";
                     group.flipY = true;
                 }
                 else {
-                    group.originX = "left";
                     group.originY = "bottom";
                 }
             });
-            if (instruction != null) {
-                var text = new fabric.Text(instruction, this.style.tie.instructionText);
-                text.left = (x0 + x1) / 2;
-                text.top = instructionY;
-                text.originX = "center";
-                text.originY = "center";
-                this.canvas.add(text);
-            }
         };
         PrimitiveRenderer.prototype.drawGliss = function (x, y, direction, instructionY) {
             var _this = this;

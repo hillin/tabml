@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
@@ -183,16 +184,72 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
+        public static bool TryReadTie(Scanner scanner, ILogger logger, out ExistencyNode tie,
+                                      out LiteralNode<TiePosition> tiePosition)
+        {
+            switch (scanner.ReadAny(@"⁀", @"‿", @"~\^", @"~v", @"~"))
+            {
+                case @"~":
+                    tie = new ExistencyNode() { Range = scanner.LastReadRange };
+                    tiePosition = null;
+                    return true;
+                case @"⁀":
+                case @"~^":
+                    tie = new ExistencyNode() { Range = scanner.LastReadRange };
+                    tiePosition = new LiteralNode<TiePosition>(TiePosition.Above, scanner.LastReadRange);
+                    return true;
+                case @"‿":
+                case @"~v":
+                    tie = new ExistencyNode() { Range = scanner.LastReadRange };
+                    tiePosition = new LiteralNode<TiePosition>(TiePosition.Under, scanner.LastReadRange);
+                    return true;
+            }
 
+            tie = null;
+            tiePosition = null;
+            return false;
+        }
+        
+        public static bool TryReadPreBeatConnection(Scanner scanner, ILogger logger,
+                                                     out LiteralNode<PreBeatConnection> connection)
+        {
+            switch (scanner.ReadAny(@"\/", @"\\", @"\.\/", @"\`\\", "h", "p", "s"))
+            {
+                case @"./":
+                    connection = new LiteralNode<PreBeatConnection>(PreBeatConnection.SlideInFromLower, scanner.LastReadRange);
+                    return true;
+                case @"`\":
+                    connection = new LiteralNode<PreBeatConnection>(PreBeatConnection.SlideInFromHigher, scanner.LastReadRange);
+                    return true;
+            }
+
+            connection = null;
+            return false;
+        }
+
+
+        public static bool TryReadPostBeatConnection(Scanner scanner, ILogger logger,
+                                                      out LiteralNode<PostBeatConnection> connection)
+        {
+            switch (scanner.ReadAny(@"\/\`", @"\\\.").ToLowerInvariant())
+            {
+                case @"/`":
+                    connection = new LiteralNode<PostBeatConnection>(PostBeatConnection.SlideOutToHigher, scanner.LastReadRange);
+                    return true;
+                case @"\.":
+                    connection = new LiteralNode<PostBeatConnection>(PostBeatConnection.SlideOutToLower, scanner.LastReadRange);
+                    return true;
+            }
+
+            connection = null;
+            return false;
+        }
+        
         public static bool TryReadPreNoteConnection(Scanner scanner, ILogger logger,
                                                      out LiteralNode<PreNoteConnection> connection)
         {
-            switch (scanner.ReadAny("~", @"\/", @"\\", @"\.\/", @"\`\\", "h", "p", "s"))
-
+            switch (scanner.ReadAny(@"\/", @"\\", @"\.\/", @"\`\\", "h", "p", "s"))
             {
-                case @"~":
-                    connection = new LiteralNode<PreNoteConnection>(PreNoteConnection.Tie, scanner.LastReadRange);
-                    return true;
                 case @"/":
                 case @"\":
                 case "s":
@@ -216,6 +273,23 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
+        public static bool TryReadTiePosition(Scanner scanner, ILogger logger, out LiteralNode<TiePosition> tiePosition)
+        {
+            switch (scanner.ReadAny(@"⁀", @"‿", @"\^", @"v"))
+            {
+                case @"⁀":
+                case @"^":
+                    tiePosition = new LiteralNode<TiePosition>(TiePosition.Above, scanner.LastReadRange);
+                    return true;
+                case @"‿":
+                case @"v":
+                    tiePosition = new LiteralNode<TiePosition>(TiePosition.Under, scanner.LastReadRange);
+                    return true;
+            }
+
+            tiePosition = null;
+            return false;
+        }
 
         public static bool TryReadPostNoteConnection(Scanner scanner, ILogger logger,
                                                       out LiteralNode<PostNoteConnection> connection)

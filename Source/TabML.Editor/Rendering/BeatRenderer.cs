@@ -83,7 +83,7 @@ namespace TabML.Editor.Rendering
             // ensure we are at the end of the tie
             if (this.Element.NextBeat != null && this.Element.NextBeat.IsTied)
                 return;
-            
+
             // collect chained-tied beats
             var tiedBeats = new LinkedList<Beat>();
             var current = this.Element;
@@ -106,22 +106,48 @@ namespace TabML.Editor.Rendering
 
             var previousBeat = headBeat;
 
+            var defaultTiePosition = this.Element.GetTiePosition();
+
             foreach (var beat in tiedBeats)
             {
                 headBeatRenderer.Render(beat);
 
-                var currentRenderingContext = this.GetRenderingContext(beat);
-                var tieTo = beat.OwnerColumn.GetPositionInRow(currentRenderingContext)
-                            + beat.GetAlternationOffset(currentRenderingContext);
-
-                var previousRenderingContext = this.GetRenderingContext(previousBeat);
-                var tieFrom = previousBeat.OwnerColumn.GetPositionInRow(previousRenderingContext)
-                              + previousBeat.GetAlternationOffset(previousRenderingContext);
-                foreach (var note in headBeat.Notes)
+                if (!beat.IsRest && !previousBeat.IsRest)
                 {
-                    this.RenderingContext.Owner.DrawTie(tieFrom, tieTo,
-                                                        note.String,
-                                                        this.Element.VoicePart, null, 0);
+                    var currentRenderingContext = this.GetRenderingContext(beat);
+                    var tieTo = beat.OwnerColumn.GetPositionInRow(currentRenderingContext);
+
+                    var previousRenderingContext = this.GetRenderingContext(previousBeat);
+                    var tieFrom = previousBeat.OwnerColumn.GetPositionInRow(previousRenderingContext);
+
+                    var tiePosition = beat.TiePosition ?? defaultTiePosition;
+                    if (currentRenderingContext.Owner == previousRenderingContext.Owner)
+                    {
+                        foreach (var note in headBeat.Notes)
+                        {
+                            var beatAlternationOffset = beat.GetAlternationOffset(currentRenderingContext, note.String);
+                            var previousBeatAlternationOffset = previousBeat.GetAlternationOffset(previousRenderingContext, note.String);
+                            currentRenderingContext.Owner.DrawTie(tieFrom + beatAlternationOffset,
+                                                                  tieTo + previousBeatAlternationOffset,
+                                                                  note.String,
+                                                                  tiePosition, null, 0);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var note in headBeat.Notes)
+                        {
+                            var beatAlternationOffset = beat.GetAlternationOffset(currentRenderingContext, note.String);
+                            var previousBeatAlternationOffset = previousBeat.GetAlternationOffset(previousRenderingContext, note.String);
+                            currentRenderingContext.Owner.DrawTie(0, tieTo + previousBeatAlternationOffset,
+                                                                  note.String,
+                                                                  tiePosition, null, 0);
+                            previousRenderingContext.Owner.DrawTie(tieFrom + beatAlternationOffset,
+                                                                   previousRenderingContext.Owner.AvailableSize.Width,
+                                                                   note.String,
+                                                                   tiePosition, null, 0);
+                        }
+                    }
                 }
 
                 previousBeat = beat;
@@ -155,7 +181,7 @@ namespace TabML.Editor.Rendering
             var renderingContext = this.GetRenderingContext(targetBeat);
 
             var position = targetBeat.OwnerColumn.GetPosition(renderingContext)
-                           + this.Element.GetAlternationOffset(renderingContext, tieTarget: tieTarget);
+                           + targetBeat.GetAlternationOffset(renderingContext);
 
             if (targetBeat.NoteValue.Base <= BaseNoteValue.Half)
             {

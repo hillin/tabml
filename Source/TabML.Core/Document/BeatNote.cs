@@ -13,6 +13,8 @@ namespace TabML.Core.Document
         public double EffectTechniqueParameter { get; set; }
         public PreNoteConnection PreConnection { get; set; }
         public PostNoteConnection PostConnection { get; set; }
+        public bool IsTied { get; set; }
+        public TiePosition? TiePosition { get; set; }
         /// <summary>
         /// The note to which this note is pre-connected to, if this note has a valid PreConnection
         /// </summary>

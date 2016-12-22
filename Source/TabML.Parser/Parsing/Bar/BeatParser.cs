@@ -14,15 +14,21 @@ namespace TabML.Parser.Parsing.Bar
         {
             var anchor = scanner.MakeAnchor();
             result = new BeatNode();
+
+            ExistencyNode tieNode;
+            LiteralNode<TiePosition> tiePosition;
+
+            Parser.TryReadTie(scanner, this, out tieNode, out tiePosition);
+            result.Tie = tieNode;
+            result.TiePosition = tiePosition;
+
+            var isTied = tieNode != null;
+
+            LiteralNode<PreBeatConnection> preConnection;
             
-            // todo: support all pre- and post- connections
-
-            ExistencyNode tiedNode;
-            if (new CharExistencyParser('~').TryParse(scanner, out tiedNode))
-            {
-                result.Tied = tiedNode;
-            }
-
+            Parser.TryReadPreBeatConnection(scanner, this, out preConnection);
+            result.PreConnection = preConnection;
+            
             NoteValueNode noteValue;
             if (!new NoteValueParser().TryParse(scanner, out noteValue))
             {
@@ -86,16 +92,23 @@ namespace TabML.Parser.Parsing.Bar
                 } while (scanner.Expect(','));
             }
 
-            if (tiedNode != null && result.HasRedunantSpecifierForTied)
+            // post-connection is allowed for tied beat, so we check it here
+            if (isTied && result.HasRedunantSpecifierForTied)
             {
                 this.Report(LogLevel.Hint, postNoteValueAnchor.Range,
-                    Messages.Hint_RedundantModifiersInTiedBeat);
+                            Messages.Hint_RedundantModifiersInTiedBeat);
             }
 
+            scanner.SkipWhitespaces();
+            LiteralNode<PostBeatConnection> postConnection;
+            Parser.TryReadPostBeatConnection(scanner, this, out postConnection);
+            result.PostConnection = postConnection;
+
+            // post-connection is not allowed for rest beat
             if (restNode != null && result.HasRedunantSpecifierForRest)
             {
                 this.Report(LogLevel.Warning, postRestAnchor.Range,
-                    Messages.Warning_RedundantModifiersInRestBeat);
+                            Messages.Warning_RedundantModifiersInRestBeat);
             }
 
             result.Range = anchor.Range;

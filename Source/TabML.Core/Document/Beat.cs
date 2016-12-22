@@ -27,7 +27,20 @@ namespace TabML.Core.Document
         public Beam OwnerBeam { get; private set; }
         public VoicePart VoicePart { get; set; }
 
+        public PreBeatConnection PreConnection { get; set; }
+        public PostBeatConnection PostConnection { get; set; }
+        public TiePosition? TiePosition { get; set; }
+
         public override IEnumerable<Element> Children => this.Notes;
+
+        public Beat GetTieHead()
+        {
+            var beat = this;
+            while (beat.IsTied && beat.PreviousBeat != null)
+                beat = beat.PreviousBeat;
+
+            return beat;
+        }
 
         public PreciseDuration GetDuration()
         {
@@ -49,6 +62,9 @@ namespace TabML.Core.Document
                 NoteValue = this.NoteValue,
                 IsRest = this.IsRest,
                 IsTied = this.IsTied,
+                PreConnection = this.PreConnection,
+                TiePosition = this.TiePosition,
+                PostConnection = this.PostConnection,
                 StrumTechnique = this.StrumTechnique,
                 EffectTechnique = this.EffectTechnique,
                 EffectTechniqueParameter = this.EffectTechniqueParameter,

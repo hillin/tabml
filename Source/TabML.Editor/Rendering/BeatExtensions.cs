@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabML.Core.Document;
+using TabML.Core.MusicTheory;
 
 namespace TabML.Editor.Rendering
 {
@@ -63,6 +64,10 @@ namespace TabML.Editor.Rendering
             var ratio = column.GetNoteAlternationOffsetRatio(stringIndex ?? beat.GetNearestStringIndex());
             return rc.GetNoteAlternationOffset(ratio);
         }
-        
+
+        public static TiePosition GetTiePosition(this Beat beat)
+        {
+            return beat.TiePosition ?? beat.VoicePart.GetDefaultTiePosition();
+        }
     }
 }
