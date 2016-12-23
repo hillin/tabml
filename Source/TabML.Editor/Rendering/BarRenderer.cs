@@ -53,7 +53,7 @@ namespace TabML.Editor.Rendering
             return _minSize ?? (_minSize = this.Element.GetMinWidth(this.Style)).Value;
         }
 
-        public void Render(Point location, Size size)
+        public async Task Render(Point location, Size size)
         {
             this.Location = location;
             this.RenderSize = size;
@@ -85,7 +85,8 @@ namespace TabML.Editor.Rendering
                 position += columnWidth;
             }
 
-            _voiceRenderers.ForEach(r => r.Render());
+            foreach (var renderer in _voiceRenderers)
+                await renderer.Render();
 
             if (this.Element.CloseLine != null)
                 renderingContext.DrawBarLine(this.Element.CloseLine.Value, width);

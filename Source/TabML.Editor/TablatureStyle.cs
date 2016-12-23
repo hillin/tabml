@@ -30,9 +30,12 @@ namespace TabML.Editor
         public Brush LyricsForeground { get; set; } = Brushes.Black;
 
         public double NoteStemOffset { get; set; } = 2;
+        public double NoteStemHorizontalMargin { get; set; } = 10;
         public double MinimumNoteTailOffset { get; set; } = 16;
         public double NoteStemHeight { get; set; } = 24;
         public double NoteAlternationOffset { get; set; } = 10;
+        public double NoteMargin { get; set; } = 2;
+        public double PresumedNoteSize { get; set; } = 10;
 
 
         public double BeamThickness { get; set; } = 4;
@@ -42,6 +45,10 @@ namespace TabML.Editor
 
         public double OuterNoteInstructionOffset { get; set; } = 12;
         public double TieInstructionOffset { get; set; } = 24;
+
+        public double GlissWidth { get; set; } = 30;    // todo: draw gliss in this width too
+        public double TieInstructionTextHeight { get; set; } = 24;
+        public double TieInstructionTextMargin { get; set; } = 4;
 
         public FormattedText MakeFormattedLyrics(string lyricsText)
         {

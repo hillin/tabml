@@ -34,9 +34,10 @@ namespace TabML.Editor.Rendering
             _beatElementRenderers.AssignRenderingContexts(renderingContext);
         }
 
-        public void Render()
+        public async Task Render()
         {
-            _beatElementRenderers.ForEach(r => r.Render());
+            foreach (var renderer in _beatElementRenderers)
+                await renderer.Render();
         }
 
     }

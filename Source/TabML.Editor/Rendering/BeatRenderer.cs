@@ -40,19 +40,19 @@ namespace TabML.Editor.Rendering
             _noteRenderers.AssignRenderingContexts(renderingContext);
         }
 
-        public override void Render()
+        public override async Task Render()
         {
-            this.Render(null);
+            await this.Render(null);
         }
 
-        private void Render(Beat tieTarget)
+        private async Task Render(Beat tieTarget)
         {
             if (this.Element.IsTied)
             {
                 if (tieTarget == null        // don't draw tied beat if we are drawing for a tied target
                     && !this.Element.IsRest)
                 {
-                    this.RenderTiedBeat();
+                    await this.RenderTiedBeat();
                 }
                 return;
             }
@@ -62,7 +62,7 @@ namespace TabML.Editor.Rendering
 
             var beamSlope = targetBeatRenderer.RenderingContext.GetBeamSlope(targetBeat);
 
-            this.DrawHead(beamSlope, targetBeat);
+            await this.DrawHead(beamSlope, targetBeat);
 
             if (!this.Element.IsRest)
                 this.DrawStemAndFlag(beamSlope, targetBeat, tieTarget);
@@ -78,7 +78,7 @@ namespace TabML.Editor.Rendering
             }
         }
 
-        private void RenderTiedBeat()
+        private async Task RenderTiedBeat()
         {
             // ensure we are at the end of the tie
             if (this.Element.NextBeat != null && this.Element.NextBeat.IsTied)
@@ -110,7 +110,7 @@ namespace TabML.Editor.Rendering
 
             foreach (var beat in tiedBeats)
             {
-                headBeatRenderer.Render(beat);
+                await headBeatRenderer.Render(beat);
 
                 if (!beat.IsRest && !previousBeat.IsRest)
                 {
@@ -154,7 +154,7 @@ namespace TabML.Editor.Rendering
             }
         }
 
-        public void DrawHead(BeamSlope beamSlope, Beat targetBeat)
+        public async Task DrawHead(BeamSlope beamSlope, Beat targetBeat)
         {
             var renderingContext = this.GetRenderingContext(targetBeat);
 
@@ -170,7 +170,8 @@ namespace TabML.Editor.Rendering
             }
             else
             {
-                _noteRenderers.ForEach(n => n.Render(targetBeat, beamSlope));
+                foreach (var renderer in _noteRenderers)
+                    await renderer.Render(targetBeat, beamSlope);
             }
         }
 
@@ -194,7 +195,7 @@ namespace TabML.Editor.Rendering
                 if (beamSlope != null)
                     stemTailPosition = beamSlope.GetY(position);
 
-                renderingContext.DrawStem(position, from, stemTailPosition);
+                renderingContext.DrawStem(this.Element.VoicePart, position, from, stemTailPosition);
             }
 
             if (targetBeat.OwnerBeam == null)

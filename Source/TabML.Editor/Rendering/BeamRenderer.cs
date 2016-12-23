@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TabML.Core.Document;
 using TabML.Editor.Tablature.Layout;
 
@@ -36,7 +37,7 @@ namespace TabML.Editor.Rendering
             _beatElementRenderers.AssignRenderingContexts(renderingContext);
         }
 
-        public override void Render()
+        public override async Task Render()
         {
             var firstBeat = this.Beam.GetFirstBeat();
             var lastBeat = this.Beam.GetLastBeat();
@@ -55,7 +56,8 @@ namespace TabML.Editor.Rendering
                 this.RenderingContext.SetBeamSlope(this.Element, beamSlope);
             }
 
-            _beatElementRenderers.ForEach(r => r.Render());
+            foreach (var renderer in _beatElementRenderers)
+                await renderer.Render();
 
             this.RenderingContext.DrawBeam(this.Beam.BeatNoteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), this.Beam.VoicePart);
             if (this.Beam.Tuplet != null

@@ -4,9 +4,21 @@ import OffBarDirection = Core.MusicTheory.OffBarDirection;
 import NoteValueAugment = Core.MusicTheory.NoteValueAugment;
 import GlissDirection = Core.MusicTheory.GlissDirection;
 
+interface CallbackObject {
+    callback(result: any): void;
+}
+
+declare var __callbackObject: CallbackObject;
+
 namespace TR {
+
+    export interface BoundingBox {
+        left: number; top: number; width: number; height: number;
+    }
+
     export class PrimitiveRenderer {
 
+        
         private canvas: fabric.IStaticCanvas;
         private style: ITablatureStyle;
 
@@ -21,13 +33,24 @@ namespace TR {
             this.canvas.backgroundColor = "white";
         }
 
-        drawTitle(title: string, x: number, y: number) {
-            let text = new fabric.Text(title, this.style.title);
-            text.left = x;
-            text.top = y;
-            text.originX = "center";
-            text.originY = "top";
-            this.canvas.add(text);
+        private drawText(text: string, x:number, y: number, originX: string, originY: string, options?: fabric.IITextOptions) : BoundingBox
+        {
+            let textElement = new fabric.Text(text, options);
+            textElement.left = x;
+            textElement.top = y;
+            textElement.originX = originX;
+            textElement.originY = originY;
+            this.canvas.add(textElement);
+
+            return textElement.getBoundingRect();
+        }
+
+        drawTitle(title: string, x: number, y: number) : BoundingBox {
+             return this.drawText(title, x, y, "center", "top", this.style.title);
+        }
+
+        callbackWith(result: any) {
+            __callbackObject.callback(result);
         }
 
         private drawSpecialFretting(imageFile: string, x: number, y: number, isHalfOrLonger: boolean) {
@@ -36,27 +59,26 @@ namespace TR {
                 group.originX = "center";
                 group.originY = "center";
 
-                if (isHalfOrLonger && this.style.note.circleOnLongNotes) {
-                    this.drawCircleAroundLongNote(x, y, group.getBoundingRect());
-                }
+                let bounds = group.getBoundingRect();
+
+                if (isHalfOrLonger && this.style.note.circleOnLongNotes)
+                    this.callbackWith(this.drawCircleAroundLongNote(x, y, bounds));
+                else
+                    this.callbackWith(bounds);
             });
         }
 
-        drawFretNumber(fretNumber: string, x: number, y: number, isHalfOrLonger: boolean) {
-
-            let text = new fabric.Text(fretNumber, this.style.fretNumber);
-            text.left = x;
-            text.top = y;
-            text.originX = "center";
-            text.originY = "center";
-            this.canvas.add(text);
+        drawFretNumber(fretNumber: string, x: number, y: number, isHalfOrLonger: boolean) : BoundingBox {
+            let bounds = this.drawText(fretNumber, x, y, "center", "center", this.style.fretNumber);
 
             if (isHalfOrLonger && this.style.note.circleOnLongNotes) {
-                this.drawCircleAroundLongNote(x, y, text.getBoundingRect());
+                return this.drawCircleAroundLongNote(x, y, bounds);
             }
+
+            return bounds;
         }
 
-        private drawCircleAroundLongNote(x: number, y: number, bounds: { left: number; top: number; width: number; height: number }) {
+        private drawCircleAroundLongNote(x: number, y: number, bounds: { left: number; top: number; width: number; height: number }) : BoundingBox {
             let radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
             let circle = new fabric.Circle({
                 radius: radius,
@@ -68,35 +90,28 @@ namespace TR {
                 fill: ""
             });
             this.canvas.add(circle);
+
+            return circle.getBoundingRect();
         }
 
-        drawDeadNote(x: number, y: number, isHalfOrLonger: boolean) {
+        /*async*/ drawDeadNote(x: number, y: number, isHalfOrLonger: boolean) {
             this.drawSpecialFretting(ResourceManager.getTablatureResource("dead_note.svg"),
                 x, y, isHalfOrLonger);
         }
 
-        drawPlayToChordMark(x: number, y: number, isHalfOrLonger: boolean) {
+        /*async*/ drawPlayToChordMark(x: number, y: number, isHalfOrLonger: boolean) {
             this.drawSpecialFretting(ResourceManager.getTablatureResource("play_to_chord_mark.svg"),
                 x, y, isHalfOrLonger);
         }
 
-        drawLyrics(lyrics: string, x: number, y: number) {
-            let text = new fabric.Text(lyrics, this.style.lyrics);
-            text.left = x;
-            text.top = y;
-            text.originX = "left";
-            text.originY = "top";
-            this.canvas.add(text);
+        drawLyrics(lyrics: string, x: number, y: number): BoundingBox {
+            return this.drawText(lyrics, x, y, "left", "top", this.style.lyrics);
         }
 
-        drawTuplet(tuplet: string, x: number, y: number) {
-            let text = new fabric.Text(tuplet, this.style.note.tuplet);
-            text.left = x;
-            text.top = y;
-            text.originX = "center";
-            text.originY = "center";
-            this.canvas.add(text);
+        drawTuplet(tuplet: string, x: number, y: number) : BoundingBox {
+            return this.drawText(tuplet, x, y, "center", "center", this.style.note.tuplet);
         }
+
 
         private drawLine(x1: number, y1: number, x2: number, y2: number): fabric.ILine {
             let line = new fabric.Line([x1, y1, x2, y2]);
@@ -243,14 +258,8 @@ namespace TR {
             });
         }
 
-        drawTieInstruction(x: number, y: number, instruction: string)
-        {
-            let text = new fabric.Text(instruction, this.style.tie.instructionText);
-            text.left = x;
-            text.top = y;
-            text.originX = "center";
-            text.originY = "center";
-            this.canvas.add(text);  
+        drawTieInstruction(x: number, y: number, instruction: string) : BoundingBox {
+            return this.drawText(instruction, x, y, "center", "center", this.style.tie.instructionText);
         }
 
         drawTie(x0: number, x1: number, y: number, direction: OffBarDirection) {
@@ -273,7 +282,7 @@ namespace TR {
             });
         }
 
-        drawGliss(x: number, y: number, direction: GlissDirection) {
+        /*async*/ drawGliss(x: number, y: number, direction: GlissDirection) {
             let imageFile = ResourceManager.getTablatureResource("gliss.svg");
 
             this.drawSVGFromURL(imageFile, x, y, group => {
@@ -303,23 +312,7 @@ namespace TR {
 
                 group.scaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
 
-                // let text = new fabric.Text("gl.", this.style.tie.instructionText);
-                // let instructionX = x;
-                // switch (direction) {
-                //     case GlissDirection.FromHigher:
-                //     case GlissDirection.FromLower:
-                //         instructionX -= group.width / 2;
-                //         break;
-                //     case GlissDirection.ToHigher:
-                //     case GlissDirection.ToLower:
-                //         instructionX += group.width / 2;
-                //         break;
-                // }
-                // text.left = instructionX;
-                // text.top = instructionY;
-                // text.originX = "center";
-                // text.originY = "center";
-                // this.canvas.add(text);
+                this.callbackWith(group.getBoundingRect());
             });
 
         }

@@ -2369,6 +2369,7 @@ var tablatureStyle = {
         fontFamily: "Times New Roman"
     }
 };
+var callbackObjects;
 var renderer;
 window.onerror = function (errorMessage, url, lineNumber) {
     alert(errorMessage + "\n" + url + "#" + lineNumber);
@@ -2508,13 +2509,20 @@ var TR;
             this.canvas.clear();
             this.canvas.backgroundColor = "white";
         };
+        PrimitiveRenderer.prototype.drawText = function (text, x, y, originX, originY, options) {
+            var textElement = new fabric.Text(text, options);
+            textElement.left = x;
+            textElement.top = y;
+            textElement.originX = originX;
+            textElement.originY = originY;
+            this.canvas.add(textElement);
+            return textElement.getBoundingRect();
+        };
         PrimitiveRenderer.prototype.drawTitle = function (title, x, y) {
-            var text = new fabric.Text(title, this.style.title);
-            text.left = x;
-            text.top = y;
-            text.originX = "center";
-            text.originY = "top";
-            this.canvas.add(text);
+            return this.drawText(title, x, y, "center", "top", this.style.title);
+        };
+        PrimitiveRenderer.prototype.callbackWith = function (result) {
+            __callbackObject.callback(result);
         };
         PrimitiveRenderer.prototype.drawSpecialFretting = function (imageFile, x, y, isHalfOrLonger) {
             var _this = this;
@@ -2522,21 +2530,19 @@ var TR;
                 group.scaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
                 group.originX = "center";
                 group.originY = "center";
-                if (isHalfOrLonger && _this.style.note.circleOnLongNotes) {
-                    _this.drawCircleAroundLongNote(x, y, group.getBoundingRect());
-                }
+                var bounds = group.getBoundingRect();
+                if (isHalfOrLonger && _this.style.note.circleOnLongNotes)
+                    _this.callbackWith(_this.drawCircleAroundLongNote(x, y, bounds));
+                else
+                    _this.callbackWith(bounds);
             });
         };
         PrimitiveRenderer.prototype.drawFretNumber = function (fretNumber, x, y, isHalfOrLonger) {
-            var text = new fabric.Text(fretNumber, this.style.fretNumber);
-            text.left = x;
-            text.top = y;
-            text.originX = "center";
-            text.originY = "center";
-            this.canvas.add(text);
+            var bounds = this.drawText(fretNumber, x, y, "center", "center", this.style.fretNumber);
             if (isHalfOrLonger && this.style.note.circleOnLongNotes) {
-                this.drawCircleAroundLongNote(x, y, text.getBoundingRect());
+                return this.drawCircleAroundLongNote(x, y, bounds);
             }
+            return bounds;
         };
         PrimitiveRenderer.prototype.drawCircleAroundLongNote = function (x, y, bounds) {
             var radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
@@ -2550,28 +2556,19 @@ var TR;
                 fill: ""
             });
             this.canvas.add(circle);
+            return circle.getBoundingRect();
         };
-        PrimitiveRenderer.prototype.drawDeadNote = function (x, y, isHalfOrLonger) {
+        /*async*/ PrimitiveRenderer.prototype.drawDeadNote = function (x, y, isHalfOrLonger) {
             this.drawSpecialFretting(ResourceManager.getTablatureResource("dead_note.svg"), x, y, isHalfOrLonger);
         };
-        PrimitiveRenderer.prototype.drawPlayToChordMark = function (x, y, isHalfOrLonger) {
+        /*async*/ PrimitiveRenderer.prototype.drawPlayToChordMark = function (x, y, isHalfOrLonger) {
             this.drawSpecialFretting(ResourceManager.getTablatureResource("play_to_chord_mark.svg"), x, y, isHalfOrLonger);
         };
         PrimitiveRenderer.prototype.drawLyrics = function (lyrics, x, y) {
-            var text = new fabric.Text(lyrics, this.style.lyrics);
-            text.left = x;
-            text.top = y;
-            text.originX = "left";
-            text.originY = "top";
-            this.canvas.add(text);
+            return this.drawText(lyrics, x, y, "left", "top", this.style.lyrics);
         };
         PrimitiveRenderer.prototype.drawTuplet = function (tuplet, x, y) {
-            var text = new fabric.Text(tuplet, this.style.note.tuplet);
-            text.left = x;
-            text.top = y;
-            text.originX = "center";
-            text.originY = "center";
-            this.canvas.add(text);
+            return this.drawText(tuplet, x, y, "center", "center", this.style.note.tuplet);
         };
         PrimitiveRenderer.prototype.drawLine = function (x1, y1, x2, y2) {
             var line = new fabric.Line([x1, y1, x2, y2]);
@@ -2722,12 +2719,7 @@ var TR;
             });
         };
         PrimitiveRenderer.prototype.drawTieInstruction = function (x, y, instruction) {
-            var text = new fabric.Text(instruction, this.style.tie.instructionText);
-            text.left = x;
-            text.top = y;
-            text.originX = "center";
-            text.originY = "center";
-            this.canvas.add(text);
+            return this.drawText(instruction, x, y, "center", "center", this.style.tie.instructionText);
         };
         PrimitiveRenderer.prototype.drawTie = function (x0, x1, y, direction) {
             var _this = this;
@@ -2746,7 +2738,7 @@ var TR;
                 }
             });
         };
-        PrimitiveRenderer.prototype.drawGliss = function (x, y, direction, instructionY) {
+        /*async*/ PrimitiveRenderer.prototype.drawGliss = function (x, y, direction) {
             var _this = this;
             var imageFile = ResourceManager.getTablatureResource("gliss.svg");
             this.drawSVGFromURL(imageFile, x, y, function (group) {
@@ -2773,23 +2765,7 @@ var TR;
                         break;
                 }
                 group.scaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
-                var text = new fabric.Text("gl.", _this.style.tie.instructionText);
-                var instructionX = x;
-                switch (direction) {
-                    case GlissDirection.FromHigher:
-                    case GlissDirection.FromLower:
-                        instructionX -= group.width / 2;
-                        break;
-                    case GlissDirection.ToHigher:
-                    case GlissDirection.ToLower:
-                        instructionX += group.width / 2;
-                        break;
-                }
-                text.left = instructionX;
-                text.top = instructionY;
-                text.originX = "center";
-                text.originY = "center";
-                _this.canvas.add(text);
+                _this.callbackWith(group.getBoundingRect());
             });
         };
         return PrimitiveRenderer;

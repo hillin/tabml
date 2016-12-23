@@ -42,16 +42,16 @@ namespace TabML.Editor.Rendering
             _barRenderers.Initialize();
         }
 
-        public void Render(RenderingContext rootRc, Point location, Size size)
+        public async Task Render(RenderingContext rootRc, Point location, Size size)
         {
             this.RenderingContext = rootRc;
 
             this.PrimitiveRenderer.Clear();
             var tablatureRc = new TablatureRenderingContext(rootRc, this.PrimitiveRenderer, this.Style);
-            this.RenderBars(tablatureRc, location, size);
+            await this.RenderBars(tablatureRc, location, size);
         }
 
-        private void RenderBars(TablatureRenderingContext renderingContext, Point location, Size availableSize)
+        private async Task RenderBars(TablatureRenderingContext renderingContext, Point location, Size availableSize)
         {
             var startY = location.Y;
 
@@ -62,10 +62,6 @@ namespace TabML.Editor.Rendering
             var barRenders = new List<BarRenderer>();
 
             // ReSharper disable once AccessToModifiedClosure
-            Action renderRow = () => this.RenderRow(renderingContext, barRenders, location,
-                                                    new Size(availableSize.Width,
-                                                             availableSize.Height - location.Y + startY),
-                                                    isFirstRow);
 
             while (barIndex < this.Tablature.Bars.Length)
             {
@@ -82,7 +78,10 @@ namespace TabML.Editor.Rendering
                     }
                 }
 
-                renderRow();
+                await this.RenderRow(renderingContext, barRenders, location,
+                                     new Size(availableSize.Width,
+                                              availableSize.Height - location.Y + startY),
+                                     isFirstRow);
 
                 location.Y += 200;  //todo: replace magic number
                 // todo: handle new page
@@ -94,12 +93,15 @@ namespace TabML.Editor.Rendering
 
             if (barRenders.Count > 0)
             {
-                renderRow();
+                await this.RenderRow(renderingContext, barRenders, location,
+                                      new Size(availableSize.Width,
+                                               availableSize.Height - location.Y + startY),
+                                      isFirstRow);
             }
         }
 
 
-        public void RenderRow(TablatureRenderingContext renderingContext, List<BarRenderer> barRenderers, Point location, Size availableSize, bool isFirstRow)
+        public async Task RenderRow(TablatureRenderingContext renderingContext, List<BarRenderer> barRenderers, Point location, Size availableSize, bool isFirstRow)
         {
             var rowRenderingContext = new RowRenderingContext(renderingContext, location, availableSize);
 
@@ -125,7 +127,7 @@ namespace TabML.Editor.Rendering
                 var width = Math.Min(availableSize.Width, Math.Max(minSize, averageWidth));
                 var size = new Size(width, availableSize.Height);
 
-                bar.Render(location, size);
+                await bar.Render(location, size);
 
                 location.X += size.Width;
             }

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using TabML.Core;
 using TabML.Editor.Rendering;
@@ -17,11 +18,13 @@ namespace TabML.Editor
         public MainWindow()
         {
             this.InitializeComponent();
+
             this.Browser.BrowserSettings.FileAccessFromFileUrls = CefSharp.CefState.Enabled;
             this.Browser.Address = Path.GetFullPath("../../../../TabMLWebRenderer/index.html");
+            BrowserContext.RegisterCallbackObject(this.Browser);
         }
 
-        private void Browser_LoadingStateChanged(object sender, CefSharp.LoadingStateChangedEventArgs e)
+        private async void Browser_LoadingStateChanged(object sender, CefSharp.LoadingStateChangedEventArgs e)
         {
             if (e.IsLoading)
                 return;
@@ -34,11 +37,11 @@ namespace TabML.Editor
 
             if (!_rendered)
             {
-                this.RenderTablature();
+                await this.RenderTablature();
             }
         }
 
-        private void RenderTablature()
+        private async Task RenderTablature()
         {
             var primitiveRenderer = new PrimitiveRenderer(this.Browser);
             //var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\temptest.txt"));
@@ -54,7 +57,7 @@ namespace TabML.Editor
             var renderer = new TablatureRenderer(primitiveRenderer, style, tablature);
             renderer.Initialize();
             renderingContext.AssignRenderingContext(renderer, renderingContext);
-            renderer.Render(renderingContext, location, size);
+            await renderer.Render(renderingContext, location, size);
 
             _rendered = true;
         }
@@ -64,9 +67,9 @@ namespace TabML.Editor
 
         }
 
-        private void Refresh_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        private async void Refresh_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
         {
-            this.RenderTablature();
+            await this.RenderTablature();
         }
     }
 }

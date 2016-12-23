@@ -104,6 +104,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BrowserContext.cs" />
     <Compile Include="Rendering\BarRenderingContext.cs" />
     <Compile Include="Rendering\BarExtensions.cs" />
     <Compile Include="Rendering\BarRenderer.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Rendering\BarColumnRenderer.cs" />
     <Compile Include="Rendering\ElementRenderer.cs" />
     <Compile Include="Rendering\ElementRendererExtensions.cs" />
+    <Compile Include="Rendering\HeightMap.cs" />
     <Compile Include="Rendering\IBeatElementRenderer.cs" />
     <Compile Include="Rendering\IElementRendererWithContext.cs" />
     <Compile Include="Rendering\IRootElementRenderer.cs" />

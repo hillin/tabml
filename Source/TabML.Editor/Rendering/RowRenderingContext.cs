@@ -11,12 +11,15 @@ namespace TabML.Editor.Rendering
 {
     class RowRenderingContext : RenderingContextBase<TablatureRenderingContext>
     {
+        private const int HeightMapSampleRate = 1;
+
+        private readonly double[] _stringCarets;
+
+        private readonly Dictionary<VoicePart, HeightMap> _heightMaps;
         public Point Location { get; }
         public Size AvailableSize { get; }
         public PrimitiveRenderer PrimitiveRenderer => this.Owner.PrimitiveRenderer;
         public TablatureStyle Style => this.Owner.Style;
-
-        private double[] StringCarets { get; }
         public TablatureRenderingContext TablatureRenderingContext => this.Owner;
 
         public RowRenderingContext(TablatureRenderingContext owner, Point location, Size availableSize)
@@ -25,39 +28,51 @@ namespace TabML.Editor.Rendering
             this.Location = location;
             this.AvailableSize = availableSize;
 
-            this.StringCarets = new double[this.Style.StringCount];
+            _stringCarets = new double[this.Style.StringCount];
+            _heightMaps = new Dictionary<VoicePart, HeightMap>
+            {
+                {VoicePart.Bass, new HeightMap((int) Math.Ceiling(availableSize.Width), HeightMapSampleRate)},
+                {VoicePart.Treble, new HeightMap((int) Math.Ceiling(availableSize.Width), HeightMapSampleRate)},
+            };
+
+            _heightMaps[VoicePart.Bass].Fill(this.GetBodyFloor() + this.Style.MinimumNoteTailOffset);
+            _heightMaps[VoicePart.Treble].Fill(this.GetBodyCeiling() - this.Style.MinimumNoteTailOffset);
+
         }
 
+        public HeightMap GetHeightMap(VoicePart voicePart)
+        {
+            return _heightMaps[voicePart];
+        }
 
         public double GetRelativePosition(double position)
         {
             return position - this.Location.X;
         }
 
-        public void UpdateHorizontalBarLine(int stringIndex, double position)
+        public void UpdateHorizontalBarLine(int stringIndex, double left, double right)
         {
-            this.DrawHorizontalBarLineTo(stringIndex, position - 10); // todo: use measure string to handle spaces
-
-            this.StringCarets[stringIndex] = position + 10;
+            this.DrawHorizontalBarLineTo(stringIndex, left - this.Style.NoteMargin);
+            _stringCarets[stringIndex] = right + this.Style.NoteMargin;
         }
 
         public void FinishHorizontalBarLines(double width)
         {
-            for (var i = 0; i < this.StringCarets.Length; ++i)
+            for (var i = 0; i < _stringCarets.Length; ++i)
             {
-                if (this.StringCarets[i] < width)
+                if (_stringCarets[i] < width)
                 {
                     this.DrawHorizontalBarLineTo(i, width);
-                    this.StringCarets[i] = width;
+                    _stringCarets[i] = width;
                 }
             }
         }
 
         private void DrawHorizontalBarLineTo(int stringIndex, double position)
         {
-            this.PrimitiveRenderer.DrawHorizontalBarLine(this.Location.X + this.StringCarets[stringIndex],
+            this.PrimitiveRenderer.DrawHorizontalBarLine(this.Location.X + _stringCarets[stringIndex],
                                                          this.GetStringPosition(stringIndex),
-                                                         position - this.StringCarets[stringIndex]);
+                                                         position - _stringCarets[stringIndex]);
         }
 
         public double GetBodyCeiling() => this.Location.Y + this.Style.BarTopMargin;
@@ -80,5 +95,7 @@ namespace TabML.Editor.Rendering
         {
             this.PrimitiveRenderer.DrawTieInstruction(x + this.Location.X, y + this.Location.Y, instruction);
         }
+
+
     }
 }

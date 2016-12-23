@@ -59,6 +59,8 @@ let tablatureStyle: TR.ITablatureStyle =
 
     };
 
+let callbackObjects: Array<any>;
+
 let renderer: TR.PrimitiveRenderer;
 
 window.onerror = function (errorMessage, url, lineNumber) {

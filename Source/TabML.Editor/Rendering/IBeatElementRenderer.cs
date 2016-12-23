@@ -9,6 +9,6 @@ namespace TabML.Editor.Rendering
 {
     interface IBeatElementRenderer : IElementRendererWithContext<BarRenderingContext>
     {
-        void Render();
+        Task Render();
     }
 }

@@ -18,7 +18,7 @@ namespace TabML.Editor.Rendering
         /// <remarks>
         /// <para>beat</para> could be different than <c>this.OwnerBeat</c> because we may draw for tied beats
         /// </remarks>
-        public void Render(Beat beat, BeamSlope beamSlope)
+        public async Task Render(Beat beat, BeamSlope beamSlope)
         {
             var renderingContext = this.Root.GetRenderer<Beat, BeatRenderer>(beat).RenderingContext;
 
@@ -27,15 +27,15 @@ namespace TabML.Editor.Rendering
             var isHalfOrLonger = beat.NoteValue.Base >= BaseNoteValue.Half;
             if (this.Element.EffectTechnique == NoteEffectTechnique.DeadNote)
             {
-                renderingContext.DrawDeadNote(this.Element.String, x, isHalfOrLonger);
+                await renderingContext.DrawDeadNote(this.Element.String, x, isHalfOrLonger);
             }
             else if (this.Element.Fret == BeatNote.UnspecifiedFret)
             {
-                renderingContext.DrawPlayAsChordMark(this.Element.String, x, isHalfOrLonger);
+                await renderingContext.DrawPlayAsChordMark(this.Element.String, x, isHalfOrLonger);
             }
             else
             {
-                renderingContext.DrawFretNumber(this.Element.String, this.Element.Fret.ToString(), x, isHalfOrLonger);
+                await renderingContext.DrawFretNumber(this.Element.String, this.Element.Fret.ToString(), x, isHalfOrLonger);
             }
 
             if (beat == this.Element.OwnerBeat) // only draw connections if we are drawing for ourselves
