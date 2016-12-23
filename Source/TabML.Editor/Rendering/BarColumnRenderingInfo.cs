@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using TabML.Core;
 using TabML.Core.Document;
 
@@ -15,12 +16,14 @@ namespace TabML.Editor.Rendering
         public double Position { get; }
         public double Width { get; }
         
+        public Rect?[] NoteBoundingBoxes { get; }
 
         public BarColumnRenderingInfo(BarColumn column, double position, double width)
         {
             this.Column = column;
             this.Position = position;
             this.Width = width;
+            this.NoteBoundingBoxes = new Rect?[Defaults.Strings];
         }
 
         public double GetNoteAlternationOffsetRatio(int stringIndex)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
 using TabML.Editor.Tablature.Layout;
@@ -25,18 +26,22 @@ namespace TabML.Editor.Rendering
             var x = this.Element.GetRenderPosition(renderingContext, beat);
 
             var isHalfOrLonger = beat.NoteValue.Base >= BaseNoteValue.Half;
+
+            Rect bounds;
             if (this.Element.EffectTechnique == NoteEffectTechnique.DeadNote)
             {
-                await renderingContext.DrawDeadNote(this.Element.String, x, isHalfOrLonger);
+                bounds = await renderingContext.DrawDeadNote(this.Element.String, x, isHalfOrLonger);
             }
             else if (this.Element.Fret == BeatNote.UnspecifiedFret)
             {
-                await renderingContext.DrawPlayAsChordMark(this.Element.String, x, isHalfOrLonger);
+                bounds = await renderingContext.DrawPlayAsChordMark(this.Element.String, x, isHalfOrLonger);
             }
             else
             {
-                await renderingContext.DrawFretNumber(this.Element.String, this.Element.Fret.ToString(), x, isHalfOrLonger);
+                bounds = await renderingContext.DrawFretNumber(this.Element.String, this.Element.Fret.ToString(), x, isHalfOrLonger);
             }
+
+            renderingContext.SetNoteBoundingBox(beat.OwnerColumn, this.Element.String, bounds);
 
             if (beat == this.Element.OwnerBeat) // only draw connections if we are drawing for ourselves
             {

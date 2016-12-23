@@ -81,13 +81,13 @@ namespace TabML.Editor.Rendering
         public double GetStringPosition(int stringIndex) => this.Location.Y + this.Style.BarTopMargin + (stringIndex + 0.5) * this.Style.BarLineHeight;
         public double GetStringSpacePosition(int stringIndex) => this.Location.Y + this.Style.BarTopMargin + stringIndex * this.Style.BarLineHeight;
 
+        // from and to are absolute positions
         public void DrawTie(double from, double to, int stringIndex, TiePosition tiePosition, string instruction,
                             double instructionY)
         {
             var spaceIndex = tiePosition == TiePosition.Under ? stringIndex + 1 : stringIndex;
             var y = this.GetStringSpacePosition(spaceIndex);
-            this.PrimitiveRenderer.DrawTie(from + this.Location.X + 10, to + this.Location.X - 10, y, tiePosition.ToOffBarDirection());
-            //todo: replace magic number
+            this.PrimitiveRenderer.DrawTie(from, to, y, tiePosition.ToOffBarDirection());
         }
 
 

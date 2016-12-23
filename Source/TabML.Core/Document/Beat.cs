@@ -7,11 +7,7 @@ namespace TabML.Core.Document
 {
     public class Beat : Element, IInternalBeatElement
     {
-        public NoteValue NoteValue
-        {
-            get;
-            set;
-        }
+        public NoteValue NoteValue { get; set; }
         public BeatNote[] Notes { get; set; }
         public bool IsRest { get; set; }
         public bool IsTied { get; set; }
@@ -31,7 +27,22 @@ namespace TabML.Core.Document
         public PostBeatConnection PostConnection { get; set; }
         public TiePosition? TiePosition { get; set; }
 
-        public override IEnumerable<Element> Children => this.Notes;
+        public override IEnumerable<Element> Children
+        {
+            get
+            {
+                if (this.Notes == null)
+                    yield break;
+
+                foreach (var note in this.Notes)
+                    yield return note;
+            }
+        }
+
+        public Beat()
+        {
+            
+        }
 
         public Beat GetTieHead()
         {

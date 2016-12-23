@@ -16,44 +16,36 @@ namespace TabML.Editor.Rendering
             NoteConnectionRenderer.DrawTie(rootRenderer, from, to, new[] { stringIndex }, tiePosition);
         }
 
-        private static void DrawTie(IRootElementRenderer rootRenderer, Beat from, Beat to, IEnumerable<int> stringIndices, TiePosition tiePosition, string instruction = null)
+        public static void DrawTie(IRootElementRenderer rootRenderer, Beat from, Beat to, IEnumerable<int> stringIndices, TiePosition tiePosition, string instruction = null)
         {
-            if (!to.IsRest && !from.IsRest)
+            if (to.IsRest || from.IsRest)
+                return;
+
+            Debug.Assert(from.VoicePart == to.VoicePart);
+
+            var toContext = rootRenderer.GetRenderer<Beat, BeatRenderer>(to).RenderingContext;
+            var fromContext = rootRenderer.GetRenderer<Beat, BeatRenderer>(from).RenderingContext;
+
+            foreach (var stringIndex in stringIndices)
             {
-                Debug.Assert(from.VoicePart == to.VoicePart);
+                var currentBounds = toContext.GetNoteBoundingBox(to.OwnerColumn, stringIndex);
+                var previousBounds = fromContext.GetNoteBoundingBox(from.OwnerColumn, stringIndex); 
+                Debug.Assert(currentBounds != null, "currentBounds != null");
+                Debug.Assert(previousBounds != null, "previousBounds != null");
 
-                var toRenderingContext = rootRenderer.GetRenderer<Beat, BeatRenderer>(to).RenderingContext;
-                var tieTo = to.OwnerColumn.GetPositionInRow(toRenderingContext);
+                var fromX = previousBounds.Value.Right + toContext.Style.NoteMargin;
+                var toX = currentBounds.Value.Left - toContext.Style.NoteMargin;
 
-                var fromRenderingContext = rootRenderer.GetRenderer<Beat, BeatRenderer>(from).RenderingContext;
-                var tieFrom = @from.OwnerColumn.GetPositionInRow(fromRenderingContext);
-
-                if (toRenderingContext.Owner == fromRenderingContext.Owner)
+                if (toContext.Owner == fromContext.Owner)
                 {
-                    foreach (var stringIndex in stringIndices)
-                    {
-                        var beatAlternationOffset = to.GetAlternationOffset(toRenderingContext, stringIndex);
-                        var previousBeatAlternationOffset = @from.GetAlternationOffset(fromRenderingContext, stringIndex);
-                        toRenderingContext.Owner.DrawTie(tieFrom + beatAlternationOffset,
-                                                              tieTo + previousBeatAlternationOffset,
-                                                              stringIndex,
-                                                              tiePosition, instruction, 0);  //todo: fill instruction Y
-                    }
+                    toContext.Owner.DrawTie(fromX, toX, stringIndex, tiePosition, null, 0);
                 }
                 else
                 {
-                    foreach (var stringIndex in stringIndices)
-                    {
-                        var beatAlternationOffset = to.GetAlternationOffset(toRenderingContext, stringIndex);
-                        var previousBeatAlternationOffset = @from.GetAlternationOffset(fromRenderingContext, stringIndex);
-                        toRenderingContext.Owner.DrawTie(0, tieTo + previousBeatAlternationOffset,
-                                                              stringIndex,
-                                                              tiePosition, instruction, 0);  //todo: fill instruction Y
-                        fromRenderingContext.Owner.DrawTie(tieFrom + beatAlternationOffset,
-                                                               fromRenderingContext.Owner.AvailableSize.Width,
-                                                               stringIndex,
-                                                               tiePosition, instruction, 0);  //todo: fill instruction Y
-                    }
+                    toContext.Owner.DrawTie(0, toX, stringIndex, tiePosition, null, 0);
+                    fromContext.Owner.DrawTie(fromX,
+                                              fromContext.Owner.AvailableSize.Width,
+                                              stringIndex, tiePosition, null, 0);
                 }
             }
         }
@@ -65,16 +57,32 @@ namespace TabML.Editor.Rendering
 
             foreach (var stringIndex in stringIndices)
             {
-                renderingContext.DrawGliss(beat.OwnerColumn.GetPosition(renderingContext),
-                                           stringIndex,
-                                           direction);
+                var bounds = renderingContext.GetNoteBoundingBox(beat.OwnerColumn, stringIndex);
+                Debug.Assert(bounds != null);
+
+                double x;
+                switch (direction)
+                {
+                    case GlissDirection.FromHigher:
+                    case GlissDirection.FromLower:
+                        x = bounds.Value.Left - renderingContext.Style.NoteMargin;
+                        break;
+                    case GlissDirection.ToHigher:
+                    case GlissDirection.ToLower:
+                        x = bounds.Value.Right + renderingContext.Style.NoteMargin;
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
+
+                renderingContext.DrawGliss(x, stringIndex, direction);
             }
         }
 
         public static void DrawConnection(IRootElementRenderer rootRenderer, NoteConnection connection, Beat from,
                                              Beat to, int stringIndex, TiePosition tiePosition)
         {
-            NoteConnectionRenderer.DrawConnection(rootRenderer, connection, from, to, new[] {stringIndex}, tiePosition);
+            NoteConnectionRenderer.DrawConnection(rootRenderer, connection, from, to, new[] { stringIndex }, tiePosition);
         }
 
         public static void DrawConnection(IRootElementRenderer rootRenderer, NoteConnection connection, Beat from, Beat to, IEnumerable<int> stringIndices, TiePosition tiePosition)

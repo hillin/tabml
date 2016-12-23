@@ -30,6 +30,16 @@ namespace TabML.Editor.Rendering
             _beamSlopes = new Dictionary<Beam, BeamSlope>();
         }
 
+        public void SetNoteBoundingBox(BarColumn column, int stringIndex, Rect bounds)
+        {
+            this.ColumnRenderingInfos[column.ColumnIndex].NoteBoundingBoxes[stringIndex] = bounds;
+        }
+
+        public Rect? GetNoteBoundingBox(BarColumn column, int stringIndex)
+        {
+            return this.ColumnRenderingInfos[column.ColumnIndex].NoteBoundingBoxes[stringIndex];
+        }
+
         public BeamSlope GetBeamSlope(IBeatElement beatElement)
         {
             var beam = beatElement?.OwnerBeam;
@@ -49,12 +59,14 @@ namespace TabML.Editor.Rendering
             _beamSlopes[beam] = slope;
         }
 
-        public async Task DrawFretNumber(int stringIndex, string fretNumber, double position, bool isHalfOrLonger)
+        public async Task<Rect> DrawFretNumber(int stringIndex, string fretNumber, double position, bool isHalfOrLonger)
         {
             var bounds = await this.PrimitiveRenderer.DrawFretNumber(fretNumber, this.Location.X + position,
                                                                      this.Owner.GetStringPosition(stringIndex),
                                                                      isHalfOrLonger);
             this.UpdateHorizontalBarLine(stringIndex, bounds);
+
+            return bounds;
         }
 
         private void UpdateHorizontalBarLine(int stringIndex, Rect bounds)
@@ -64,22 +76,26 @@ namespace TabML.Editor.Rendering
                                                this.Owner.GetRelativePosition(bounds.Right));
         }
 
-        public async Task DrawDeadNote(int stringIndex, double position, bool isHalfOrLonger)
+        public async Task<Rect> DrawDeadNote(int stringIndex, double position, bool isHalfOrLonger)
         {
             var bounds = await this.PrimitiveRenderer.DrawDeadNote(this.Location.X + position,
                                                                    this.Owner.GetStringPosition(stringIndex),
                                                                    isHalfOrLonger);
 
             this.UpdateHorizontalBarLine(stringIndex, bounds);
+
+            return bounds;
         }
 
-        public async Task DrawPlayAsChordMark(int stringIndex, double position, bool isHalfOrLonger)
+        public async Task<Rect> DrawPlayAsChordMark(int stringIndex, double position, bool isHalfOrLonger)
         {
             var bounds = await this.PrimitiveRenderer.DrawPlayToChordMark(this.Location.X + position,
                                                                           this.Owner.GetStringPosition(stringIndex),
                                                                           isHalfOrLonger);
 
             this.UpdateHorizontalBarLine(stringIndex, bounds);
+
+            return bounds;
         }
 
         public void DrawBarLine(OpenBarLine line, double position)
@@ -142,23 +158,9 @@ namespace TabML.Editor.Rendering
             this.DrawTuplet(value, position, y - this.Location.Y, voicePart);
         }
 
-
+        // x is absolute position
         public void DrawGliss(double x, int stringIndex, GlissDirection direction)
         {
-            x = x + this.Location.X;
-
-            switch (direction)
-            {
-                case GlissDirection.FromHigher:
-                case GlissDirection.FromLower:
-                    x -= 10;    //todo: replace magic number
-                    break;
-                case GlissDirection.ToHigher:
-                case GlissDirection.ToLower:
-                    x += 10;    //todo: replace magic number
-                    break;
-            }
-
             this.PrimitiveRenderer.DrawGliss(x, this.Owner.GetStringPosition(stringIndex), direction);
             //this.PrimitiveRenderer.DrawTieInstruction()
         }

@@ -60,6 +60,7 @@ namespace TabML.Parser.AST
                     {
                         NoteValue = new NoteValue(factor),
                         IsRest = true,
+                        Notes = new BeatNote[0]
                     };
                     
                     context.CurrentVoice.IsTerminatedWithRest = true;
