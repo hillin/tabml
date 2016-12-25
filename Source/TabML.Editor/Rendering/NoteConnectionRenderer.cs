@@ -42,9 +42,9 @@ namespace TabML.Editor.Rendering
                 }
                 else
                 {
-                    toContext.Owner.DrawTie(0, toX, stringIndex, tiePosition, null, 0);
+                    toContext.Owner.DrawTie(toContext.Owner.Location.X, toX, stringIndex, tiePosition, null, 0);
                     fromContext.Owner.DrawTie(fromX,
-                                              fromContext.Owner.AvailableSize.Width,
+                                              fromContext.Owner.BottomRight.X,
                                               stringIndex, tiePosition, null, 0);
                 }
             }

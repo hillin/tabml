@@ -18,6 +18,8 @@ namespace TabML.Editor.Rendering
         private readonly Dictionary<VoicePart, HeightMap> _heightMaps;
         public Point Location { get; }
         public Size AvailableSize { get; }
+
+        public Point BottomRight => this.Location + new Vector(this.AvailableSize.Width, this.AvailableSize.Height);
         public PrimitiveRenderer PrimitiveRenderer => this.Owner.PrimitiveRenderer;
         public TablatureStyle Style => this.Owner.Style;
         public TablatureRenderingContext TablatureRenderingContext => this.Owner;
@@ -60,11 +62,11 @@ namespace TabML.Editor.Rendering
         {
             for (var i = 0; i < _stringCarets.Length; ++i)
             {
-                if (_stringCarets[i] < width)
-                {
-                    this.DrawHorizontalBarLineTo(i, width);
-                    _stringCarets[i] = width;
-                }
+                if (!(_stringCarets[i] < width))
+                    continue;
+
+                this.DrawHorizontalBarLineTo(i, width);
+                _stringCarets[i] = width;
             }
         }
 
