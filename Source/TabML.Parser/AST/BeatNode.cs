@@ -124,7 +124,6 @@ namespace TabML.Parser.AST
             return true;
         }
 
-
         public bool ValueEquals(Beat other)
         {
             if (other == null)

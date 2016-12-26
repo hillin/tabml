@@ -111,6 +111,7 @@
     <Compile Include="Rendering\BarColumnExtensions.cs" />
     <Compile Include="Rendering\BarColumnRenderingInfo.cs" />
     <Compile Include="Rendering\BarColumnRenderer.cs" />
+    <Compile Include="Rendering\BeatRenderingContext.cs" />
     <Compile Include="Rendering\ElementRenderer.cs" />
     <Compile Include="Rendering\ElementRendererExtensions.cs" />
     <Compile Include="Rendering\HeightMap.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Rendering\IElementRendererWithContext.cs" />
     <Compile Include="Rendering\IRootElementRenderer.cs" />
     <Compile Include="Rendering\NoteConnectionRenderer.cs" />
+    <Compile Include="Rendering\NoteRenderingFlags.cs" />
     <Compile Include="Rendering\RenderingContext.cs" />
     <Compile Include="Rendering\RenderingContextBase.cs" />
     <Compile Include="Rendering\BarVoiceRenderer.cs" />

@@ -34,7 +34,8 @@ namespace TabML.Editor
         public double NoteTailVerticalMargin { get; set; } = 10;
         public double MinimumNoteTailOffset { get; set; } = 16;
         public double NoteStemHeight { get; set; } = 24;
-        public double NoteAlternationOffset { get; set; } = 10;
+        public double NoteAlternationOffset { get; set; } = 12;
+        public double NoteAlternationOffsetWithHarmonics { get; set; } = 20;
         public double NoteMargin { get; set; } = 2;
         public double PresumedNoteSize { get; set; } = 10;
 
@@ -43,8 +44,8 @@ namespace TabML.Editor
         public double MaximumSemiBeamWidth { get; set; } = 12;
         public double NoteValueAugmentOffset { get; set; } = 8;
 
-        // decorator = tie instructions, accent marks etc.
-        public double BeatDecoratorMargin { get; set; } = 4;
+        // ornament = tie instructions, accent marks etc.
+        public double BeatOrnamentMargin { get; set; } = 4;
         
         public FormattedText MakeFormattedLyrics(string lyricsText)
         {

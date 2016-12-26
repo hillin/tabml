@@ -3,6 +3,8 @@ import BaseNoteValue = Core.MusicTheory.BaseNoteValue;
 import OffBarDirection = Core.MusicTheory.OffBarDirection;
 import NoteValueAugment = Core.MusicTheory.NoteValueAugment;
 import GlissDirection = Core.MusicTheory.GlissDirection;
+import NoteRenderingFlags = TR.NoteRenderingFlags;
+
 
 interface CallbackObject {
     callback(result: any): void;
@@ -12,13 +14,14 @@ declare var __callbackObject: CallbackObject;
 
 namespace TR {
 
-    export interface BoundingBox {
+    export interface IBoundingBox {
         left: number; top: number; width: number; height: number;
+
     }
 
     export class PrimitiveRenderer {
 
-        
+
         private canvas: fabric.IStaticCanvas;
         private style: ITablatureStyle;
 
@@ -33,12 +36,31 @@ namespace TR {
             this.canvas.backgroundColor = "white";
         }
 
-        private getScale() : number {
+        private getScale(): number {
             return this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
         }
 
-        private drawText(text: string, x:number, y: number, originX: string, originY: string, options?: fabric.IITextOptions) : BoundingBox
-        {
+        private static inflateBounds(bounds: IBoundingBox, extension: IBoundingBox): IBoundingBox {
+            if (bounds === undefined)
+                return extension;
+
+            let left = Math.min(bounds.left, extension.left);
+            let top = Math.min(bounds.top, extension.top);
+
+            bounds.width = Math.max(bounds.left + bounds.width, extension.left + extension.width) - left;
+            bounds.height = Math.max(bounds.top + bounds.height, extension.top + extension.height) - top;
+            bounds.left = left;
+            bounds.top = top;
+
+            return bounds;
+        }
+
+        private drawOrnamentText(x: number, y: number, text: string, style: ITablatureTextStyle, direction: OffBarDirection): fabric.IText {
+            let originY = direction == OffBarDirection.Top ? "bottom" : "top";
+            return this.drawText(text, x, y, "center", originY, style);
+        }
+
+        private drawText(text: string, x: number, y: number, originX: string, originY: string, options?: fabric.IITextOptions): fabric.IText {
             let textElement = new fabric.Text(text, options);
             textElement.originX = originX;
             textElement.originY = originY;
@@ -46,50 +68,115 @@ namespace TR {
             textElement.top = y;
             this.canvas.add(textElement);
 
-            return textElement.getBoundingRect();
+            return textElement;
         }
 
-        drawTitle(title: string, x: number, y: number) : BoundingBox {
-             return this.drawText(title, x, y, "center", "top", this.style.title);
+        drawTitle(title: string, x: number, y: number): IBoundingBox {
+            return this.drawText(title, x, y, "center", "top", this.style.title).getBoundingRect();
         }
 
         callbackWith(result: any) {
             __callbackObject.callback(result);
         }
 
-        private drawSpecialFretting(imageFile: string, x: number, y: number, isHalfOrLonger: boolean) {
-            this.drawSVGFromURL(imageFile, x, y, 
-            group => {
-                group.scaleY = this.getScale();
-                group.originX = "center";
-                group.originY = "center";
-            },
-            group => {
-                let bounds = group.getBoundingRect();
-
-                if (isHalfOrLonger && this.style.note.circleOnLongNotes)
-                    this.callbackWith(this.drawCircleAroundLongNote(x, y, bounds));
-                else
-                    this.callbackWith(bounds);
-            });
+        drawArtificialHarmonicText(x: number, y: number, text: string, direction: OffBarDirection): IBoundingBox {
+            return this.drawOrnamentText(x, y, text, this.style.note.artificialHarmonicsText, direction).getBoundingRect();
         }
 
-        drawFretNumber(fretNumber: string, x: number, y: number, isHalfOrLonger: boolean) : BoundingBox {
-            let bounds = this.drawText(fretNumber, x, y, "center", "center", this.style.fretNumber);
-
-            if (isHalfOrLonger && this.style.note.circleOnLongNotes) {
-                return this.drawCircleAroundLongNote(x, y, bounds);
-            }
+        private drawGhostNoteParenthese(bounds: IBoundingBox): IBoundingBox {
+            let y = bounds.top + bounds.height / 2;
+            let leftBounds = this.drawText("(", bounds.left - this.style.note.margin, y, "center", "center", this.style.fretNumber).getBoundingRect();
+            let rightBounds = this.drawText(")", bounds.left + bounds.width + this.style.note.margin, y, "center", "center", this.style.fretNumber).getBoundingRect();
+            bounds = PrimitiveRenderer.inflateBounds(bounds, leftBounds);
+            bounds = PrimitiveRenderer.inflateBounds(bounds, rightBounds);
 
             return bounds;
         }
 
-        private drawCircleAroundLongNote(x: number, y: number, bounds: BoundingBox) : BoundingBox {
+        async drawNoteFretting(fretting: string, x: number, y: number, flags: NoteRenderingFlags) {
+
+            let drawArtificialHarmonic = (flags & NoteRenderingFlags.ArtificialHarmonic) === NoteRenderingFlags.ArtificialHarmonic;
+            let drawNaturalHarmonic = (flags & NoteRenderingFlags.NaturalHarmonic) === NoteRenderingFlags.NaturalHarmonic;
+
+            let bounds: IBoundingBox;
+
+            if (drawNaturalHarmonic)
+                bounds = PrimitiveRenderer.inflateBounds(bounds, (await this.drawNaturalHarmonicAsync(x, y)).getBoundingRect());
+
+            if (drawArtificialHarmonic)
+                bounds = PrimitiveRenderer.inflateBounds(bounds, (await this.drawArtificialHarmonicAsync(x, y)).getBoundingRect());
+
+            let drawSpecialNote = async function (this: PrimitiveRenderer, imageFile: string): Promise<IBoundingBox> {
+                let group = await this.drawSVGFromURLAsync(imageFile, x, y,
+                    group => {
+                        group.scaleY = this.getScale();
+                        group.originX = "center";
+                        group.originY = "center";
+                    });
+
+                return group.getBoundingRect();
+            }
+
+            switch (fretting) {
+                case "dead":
+                    bounds = PrimitiveRenderer.inflateBounds(bounds, (await drawSpecialNote.call(this, ResourceManager.getTablatureResource("dead_note.svg"))));
+                    break;
+                case "asChord":
+                    bounds = PrimitiveRenderer.inflateBounds(bounds, (await drawSpecialNote.call(this, ResourceManager.getTablatureResource("play_to_chord_mark.svg"))));
+                    break;
+                default:
+
+                    let text = this.drawText(fretting, x, y, "center", "center", this.style.fretNumber);
+
+                    if ((drawArtificialHarmonic || drawNaturalHarmonic) && fretting.length > 1)
+                        text.scale(0.8);
+
+                    if (drawArtificialHarmonic)
+                        text.setColor("#FFFFFF");
+
+                    bounds = PrimitiveRenderer.inflateBounds(bounds, text.getBoundingRect());
+
+                    break;
+            }
+
+            bounds = this.drawAdditionalForNote(bounds, flags);
+            this.callbackWith(bounds);
+        }
+
+        private drawAdditionalForNote(bounds: IBoundingBox, flags: NoteRenderingFlags): IBoundingBox {
+
+            if ((flags & NoteRenderingFlags.HalfOrLonger) === NoteRenderingFlags.HalfOrLonger && this.style.note.circleOnLongNotes)
+                bounds = this.drawCircleAroundLongNote(bounds);
+
+            if ((flags & NoteRenderingFlags.Ghost) === NoteRenderingFlags.Ghost)
+                bounds = this.drawGhostNoteParenthese(bounds);
+
+            return bounds;
+        }
+
+        private drawNaturalHarmonicAsync(x: number, y: number): Promise<fabric.IPathGroup> {
+            let imageFile = ResourceManager.getTablatureResource("natural_harmonic.svg");
+            return this.drawSVGFromURLAsync(imageFile, x, y, group => {
+                group.originX = "center";
+                group.originY = "center";
+            });
+        }
+
+
+        private drawArtificialHarmonicAsync(x: number, y: number): Promise<fabric.IPathGroup> {
+            let imageFile = ResourceManager.getTablatureResource("artificial_harmonic.svg");
+            return this.drawSVGFromURLAsync(imageFile, x, y, group => {
+                group.originX = "center";
+                group.originY = "center";
+            });
+        }
+
+        private drawCircleAroundLongNote(bounds: IBoundingBox): IBoundingBox {
             let radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
             let circle = new fabric.Circle({
                 radius: radius,
-                left: x,
-                top: y,
+                left: bounds.left + bounds.width / 2,
+                top: bounds.top + bounds.height / 2,
                 originX: "center",
                 originY: "center",
                 stroke: "black",
@@ -97,25 +184,15 @@ namespace TR {
             });
             this.canvas.add(circle);
 
-            return circle.getBoundingRect();
+            return PrimitiveRenderer.inflateBounds(bounds, circle.getBoundingRect());
         }
 
-        /*async*/ drawDeadNote(x: number, y: number, isHalfOrLonger: boolean) {
-            this.drawSpecialFretting(ResourceManager.getTablatureResource("dead_note.svg"),
-                x, y, isHalfOrLonger);
+        drawLyrics(lyrics: string, x: number, y: number): IBoundingBox {
+            return this.drawText(lyrics, x, y, "left", "top", this.style.lyrics).getBoundingRect();
         }
 
-        /*async*/ drawPlayToChordMark(x: number, y: number, isHalfOrLonger: boolean) {
-            this.drawSpecialFretting(ResourceManager.getTablatureResource("play_to_chord_mark.svg"),
-                x, y, isHalfOrLonger);
-        }
-
-        drawLyrics(lyrics: string, x: number, y: number): BoundingBox {
-            return this.drawText(lyrics, x, y, "left", "top", this.style.lyrics);
-        }
-
-        drawTuplet(tuplet: string, x: number, y: number) : BoundingBox {
-            return this.drawText(tuplet, x, y, "center", "center", this.style.note.tuplet);
+        drawTuplet(tuplet: string, x: number, y: number): IBoundingBox {
+            return this.drawText(tuplet, x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
         }
 
 
@@ -130,7 +207,7 @@ namespace TR {
             this.drawLine(x, y, x + length, y);
         }
 
-        drawBarLine(barLine: BarLine, x: number, y: number) {
+        async drawBarLine(barLine: BarLine, x: number, y: number) {
             let imageFile: string;
             switch (barLine) {
                 case BarLine.Standard:
@@ -149,7 +226,7 @@ namespace TR {
                     imageFile = ResourceManager.getTablatureResource("barline_end_repeat.svg"); break;
             }
 
-            this.drawSVGFromURL(imageFile, x, y, group => {
+            await this.drawSVGFromURLAsync(imageFile, x, y, group => {
                 group.scaleToHeight(this.style.bar.lineHeight * 5);
             });
         }
@@ -158,29 +235,54 @@ namespace TR {
             this.drawLine(x, yFrom, x, yTo);
         }
 
-        private drawSVGFromURL(url: string, x: number, y: number, postProcessing?: (group: fabric.IPathGroup) => void, callback? : (group: fabric.IPathGroup) => void) {
-            fabric.loadSVGFromURL(url, (results, options) => {
-                let group = fabric.util.groupSVGElements(results, options);
-                group.left = x;
-                group.top = y;
-                if (postProcessing != null)
-                    postProcessing(group);
-
-                this.canvas.add(group);
-
-                if(callback!=null)
-                    callback(group);
+        private loadSVGFromURLAsync(url: string): Promise<fabric.IPathGroup> {
+            return new Promise<fabric.IPathGroup>((resolve, reject) => {
+                fabric.loadSVGFromURL(url, (results, options) => {
+                    let group = fabric.util.groupSVGElements(results, options);
+                    resolve(group);
+                });
             });
         }
 
-        /*async*/ drawFlag(noteValue: BaseNoteValue, x: number, y: number, direction: OffBarDirection) {
+        private async drawSVGFromURLAsync(url: string, x: number, y: number, postProcessing?: (group: fabric.IPathGroup) => void): Promise<fabric.IPathGroup> {
+
+            let group = await this.loadSVGFromURLAsync(url);
+            group.left = x;
+            group.top = y;
+
+            if (postProcessing != null)
+                postProcessing(group);
+
+            this.canvas.add(group);
+
+            return group;
+        }
+
+        private async drawFlagHead(x: number, y: number, direction: OffBarDirection): Promise<fabric.IPathGroup> {
+            let flagFile = ResourceManager.getTablatureResource("note_flag_head.svg");
+
+            let group = await this.drawSVGFromURLAsync(flagFile, x, y, group => {
+                group.originX = "left";
+                group.originY = "center";
+                group.scale(this.getScale());
+                if (direction == OffBarDirection.Bottom)
+                    group.flipY = true;
+            });
+
+            return group;
+        }
+
+        async drawFlag(noteValue: BaseNoteValue, x: number, y: number, direction: OffBarDirection) {
             if (noteValue > BaseNoteValue.Eighth)
                 return;
 
-            let flagFile = ResourceManager.getTablatureResource("note_flag.svg");
+            // draw flag bodies
+            if (noteValue < BaseNoteValue.Eighth) {
 
-            fabric.loadSVGFromURL(flagFile, (results, options) => {
-                let group = fabric.util.groupSVGElements(results, options);
+                let flagFile = ResourceManager.getTablatureResource("note_flag_body.svg");
+
+                let group = await this.loadSVGFromURLAsync(flagFile);
+
                 group.left = x;
                 group.originX = "left";
                 group.originY = "center";
@@ -191,7 +293,7 @@ namespace TR {
                 if (direction == OffBarDirection.Bottom)
                     group.flipY = true;
 
-                for (let i = noteValue; i < BaseNoteValue.Quater; ++i) {
+                for (let i = noteValue; i < BaseNoteValue.Eighth; ++i) {
                     if (i === noteValue) {
                         group.top = y;
                         this.canvas.add(group);
@@ -204,19 +306,27 @@ namespace TR {
                     }
 
                     if (direction == OffBarDirection.Bottom)
-                    {
                         y -= 6;
-                        bounds.top -= 6;
-                    }
                     else
-                    {
                         y += 6;
-                        bounds.top += 6;
-                    }
-
-                    this.callbackWith(bounds);
                 }
-            });
+
+            }
+
+            // draw flag head
+            {
+                let flagFile = ResourceManager.getTablatureResource("note_flag_head.svg");
+
+                let group = await this.drawSVGFromURLAsync(flagFile, x, y, group => {
+                    group.originX = "left";
+                    group.originY = "center";
+                    group.scale(this.getScale());
+                    if (direction == OffBarDirection.Bottom)
+                        group.flipY = true;
+                });
+
+                this.callbackWith(group.getBoundingRect());
+            }
         }
 
         drawBeam(x1: number, y1: number, x2: number, y2: number) {
@@ -250,63 +360,61 @@ namespace TR {
             }
         }
 
-        private getRestImage(noteValue: BaseNoteValue) : string {
+        private getRestImage(noteValue: BaseNoteValue): string {
             switch (noteValue) {
                 case BaseNoteValue.Large:
                 case BaseNoteValue.Long:
                 case BaseNoteValue.Double:
                 case BaseNoteValue.Whole:
                 case BaseNoteValue.Half:
-                    return ResourceManager.getTablatureResource("rest_2.svg"); 
+                    return ResourceManager.getTablatureResource("rest_2.svg");
                 case BaseNoteValue.Quater:
-                    return ResourceManager.getTablatureResource("rest_4.svg"); 
+                    return ResourceManager.getTablatureResource("rest_4.svg");
                 case BaseNoteValue.Eighth:
-                    return ResourceManager.getTablatureResource("rest_8.svg"); 
+                    return ResourceManager.getTablatureResource("rest_8.svg");
                 case BaseNoteValue.Sixteenth:
-                    return ResourceManager.getTablatureResource("rest_16.svg"); 
+                    return ResourceManager.getTablatureResource("rest_16.svg");
                 case BaseNoteValue.ThirtySecond:
-                    return ResourceManager.getTablatureResource("rest_32.svg"); 
+                    return ResourceManager.getTablatureResource("rest_32.svg");
                 case BaseNoteValue.SixtyFourth:
-                    return ResourceManager.getTablatureResource("rest_64.svg"); 
+                    return ResourceManager.getTablatureResource("rest_64.svg");
                 case BaseNoteValue.HundredTwentyEighth:
-                    return ResourceManager.getTablatureResource("rest_128.svg"); 
+                    return ResourceManager.getTablatureResource("rest_128.svg");
                 case BaseNoteValue.TwoHundredFiftySixth:
-                    return ResourceManager.getTablatureResource("rest_256.svg"); 
+                    return ResourceManager.getTablatureResource("rest_256.svg");
                 default:
                     return null;
             }
         }
 
-        /*async*/ measureRest(noteValue: BaseNoteValue) {
-            fabric.loadSVGFromURL(this.getRestImage(noteValue), (results, options) => {
-                let group = fabric.util.groupSVGElements(results, options);
+        async measureRest(noteValue: BaseNoteValue) {
+            let group = await this.loadSVGFromURLAsync(this.getRestImage(noteValue));
+
+            group.originX = "center";
+            group.originY = "center";
+            group.scale(this.getScale());
+            this.callbackWith(group.getBoundingRect());
+        }
+
+        async drawRest(noteValue: BaseNoteValue, x: number, y: number) {
+            await this.drawSVGFromURLAsync(this.getRestImage(noteValue), x, y, group => {
                 group.originX = "center";
                 group.originY = "center";
                 group.scale(this.getScale());
-                this.callbackWith(group.getBoundingRect());
             });
         }
 
-        drawRest(noteValue: BaseNoteValue, x: number, y: number) {
-            this.drawSVGFromURL(this.getRestImage(noteValue), x, y, group => {
-                group.originX = "center";
-                group.originY = "center";
-                group.scale(this.getScale());
-            });
+        drawConnectionInstruction(x: number, y: number, instruction: string, direction: OffBarDirection): IBoundingBox {
+            return this.drawOrnamentText(x, y, instruction, this.style.connection.instructionText, direction).getBoundingRect();
         }
 
-        drawTieInstruction(x: number, y: number, instruction: string, direction: OffBarDirection) : BoundingBox {
-            let originY = direction == OffBarDirection.Top ? "bottom" : "top";
-            return this.drawText(instruction, x, y, "center", originY, this.style.tie.instructionText);
-        }
-
-        drawTie(x0: number, x1: number, y: number, direction: OffBarDirection) {
+        async drawTie(x0: number, x1: number, y: number, direction: OffBarDirection) {
             let imageFile = ResourceManager.getTablatureResource("tie.svg");
-            this.drawSVGFromURL(imageFile, x0, y, group => {
+            await this.drawSVGFromURLAsync(imageFile, x0, y, group => {
 
                 group.scaleToWidth(x1 - x0);
                 let standardScaleY = this.getScale();
-                group.scaleY = Math.max(standardScaleY/2, Math.min(Math.sqrt(group.scaleY), standardScaleY));
+                group.scaleY = Math.max(standardScaleY / 2, Math.min(Math.sqrt(group.scaleY), standardScaleY));
                 group.originX = "left";
 
                 if (direction == OffBarDirection.Bottom) {
@@ -320,41 +428,39 @@ namespace TR {
             });
         }
 
-        /*async*/ drawGliss(x: number, y: number, direction: GlissDirection) {
+        async drawGliss(x: number, y: number, direction: GlissDirection) {
             let imageFile = ResourceManager.getTablatureResource("gliss.svg");
 
-            this.drawSVGFromURL(imageFile, x, y, 
-            group => {
+            let group = await this.drawSVGFromURLAsync(imageFile, x, y,
+                group => {
 
-                switch (direction) {
-                    case GlissDirection.FromHigher:
-                        group.flipX = true;
-                        group.flipY = true;
-                        group.originX = "right";
-                        group.originY = "bottom";
-                        break;
-                    case GlissDirection.FromLower:
-                        group.flipX = true;
-                        group.originX = "right";
-                        group.originY = "top";
-                        break;
-                    case GlissDirection.ToHigher:
-                        group.flipY = true;
-                        group.originX = "left";
-                        group.originY = "bottom";
-                        break;
-                    case GlissDirection.ToLower:
-                        group.originX = "left";
-                        group.originY = "top";
-                        break;
-                }
+                    switch (direction) {
+                        case GlissDirection.FromHigher:
+                            group.flipX = true;
+                            group.flipY = true;
+                            group.originX = "right";
+                            group.originY = "bottom";
+                            break;
+                        case GlissDirection.FromLower:
+                            group.flipX = true;
+                            group.originX = "right";
+                            group.originY = "top";
+                            break;
+                        case GlissDirection.ToHigher:
+                            group.flipY = true;
+                            group.originX = "left";
+                            group.originY = "bottom";
+                            break;
+                        case GlissDirection.ToLower:
+                            group.originX = "left";
+                            group.originY = "top";
+                            break;
+                    }
 
-                group.scaleY = this.getScale();
-            },
-            group => {
-                this.callbackWith(group.getBoundingRect());
-            });
+                    group.scaleY = this.getScale();
+                });
 
+            this.callbackWith(group.getBoundingRect());
         }
 
     }

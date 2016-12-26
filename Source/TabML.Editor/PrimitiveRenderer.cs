@@ -25,7 +25,7 @@ namespace TabML.Editor
             _browser = browser;
         }
 
-        private string CreateJavascriptCall(string method, params object[] args)
+        private static string CreateJavascriptCall(string method, params object[] args)
         {
             var builder = new StringBuilder();
             builder.Append("renderer.")
@@ -34,18 +34,20 @@ namespace TabML.Editor
                    .Append(string.Join(", ", args.Select(PrimitiveRenderer.FormatArg)))
                    .Append(")");
 
+            Debug.WriteLine(builder.ToString());
+
             return builder.ToString();
         }
 
         private void InvokeRenderMethod(string method, params object[] args)
         {
-            this.BrowserMainFrame.ExecuteJavaScriptAsync(this.CreateJavascriptCall(method, args));
+            this.BrowserMainFrame.ExecuteJavaScriptAsync(PrimitiveRenderer.CreateJavascriptCall(method, args));
         }
 
 
         private async Task<Rect> InvokeRenderMethodReturnBoundingBox(string method, params object[] args)
         {
-            var task = await this.BrowserMainFrame.EvaluateScriptAsync(this.CreateJavascriptCall(method, args));
+            var task = await this.BrowserMainFrame.EvaluateScriptAsync(PrimitiveRenderer.CreateJavascriptCall(method, args));
             var result = (Dictionary<string, object>)task.Result;
             return PrimitiveRenderer.CreateBoundingBox(result);
         }
@@ -54,7 +56,7 @@ namespace TabML.Editor
         {
             await BrowserContext.CallbackObject.Acquire();
 
-            await this.BrowserMainFrame.EvaluateScriptAsync(this.CreateJavascriptCall(method, args));
+            await this.BrowserMainFrame.EvaluateScriptAsync(PrimitiveRenderer.CreateJavascriptCall(method, args));
 
             SpinWait.SpinUntil(() => BrowserContext.CallbackObject.IsCalledBack);
 
@@ -99,12 +101,8 @@ namespace TabML.Editor
             => this.InvokeRenderMethodReturnBoundingBox("drawTitle", title, x, y);
         public Task<Rect> DrawLyrics(string lyrics, double x, double y) 
             => this.InvokeRenderMethodReturnBoundingBox("drawLyrics", lyrics, x, y);
-        public Task<Rect> DrawFretNumber(string fretNumber, double x, double y, bool isHalfOrLonger) 
-            => this.InvokeRenderMethodReturnBoundingBox("drawFretNumber", fretNumber, x, y, isHalfOrLonger);
-        public Task<Rect> DrawDeadNote(double x, double y, bool isHalfOrLonger)
-            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawDeadNote", x, y, isHalfOrLonger);
-        public Task<Rect> DrawPlayToChordMark(double x, double y, bool isHalfOrLonger) 
-            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawPlayToChordMark", x, y, isHalfOrLonger);
+        public Task<Rect> DrawNoteFretting(string fretting, double x, double y, NoteRenderingFlags flags) 
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawNoteFretting", fretting, x, y, flags);
         public void DrawHorizontalBarLine(double x, double y, double length) 
             => this.InvokeRenderMethod("drawHorizontalBarLine", x, y, length);
         public void DrawBarLine(BarLine line, double x, double y) 
@@ -127,9 +125,10 @@ namespace TabML.Editor
             => this.InvokeRenderMethod("drawTie", x0, x1, y, (int)offBarDirection);
         public Task<Rect> DrawGliss(double x, double y, GlissDirection direction)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawGliss", x, y, direction);
-        public Task<Rect> DrawTieInstruction(double x, double y, string instruction, OffBarDirection offBarDirection)
-            => this.InvokeRenderMethodReturnBoundingBox("drawTieInstruction", x, y, instruction, offBarDirection);
-
+        public Task<Rect> DrawConnectionInstruction(double x, double y, string instruction, OffBarDirection offBarDirection)
+            => this.InvokeRenderMethodReturnBoundingBox("drawConnectionInstruction", x, y, instruction, offBarDirection);
+        public Task<Rect> DrawArtificialHarmonicText(double x, double y, string text, OffBarDirection offBarDirection)
+            => this.InvokeRenderMethodReturnBoundingBox("drawArtificialHarmonicText", x, y, text, offBarDirection);
         public void Clear() => this.InvokeRenderMethod("clear");
     }
 }

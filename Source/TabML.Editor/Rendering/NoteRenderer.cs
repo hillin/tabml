@@ -25,20 +25,20 @@ namespace TabML.Editor.Rendering
 
             var x = this.Element.GetRenderPosition(renderingContext, beat);
 
-            var isHalfOrLonger = beat.NoteValue.Base >= BaseNoteValue.Half;
+            var flags = this.GetNoteRenderingFlags(beat);
 
             Rect bounds;
             if (this.Element.EffectTechnique == NoteEffectTechnique.DeadNote)
             {
-                bounds = await renderingContext.DrawDeadNote(this.Element.String, x, isHalfOrLonger);
+                bounds = await renderingContext.DrawNoteFretting(this.Element.String, "dead", x, flags);
             }
             else if (this.Element.Fret == BeatNote.UnspecifiedFret)
             {
-                bounds = await renderingContext.DrawPlayAsChordMark(this.Element.String, x, isHalfOrLonger);
+                bounds = await renderingContext.DrawNoteFretting(this.Element.String, "asChord", x, flags);
             }
             else
             {
-                bounds = await renderingContext.DrawFretNumber(this.Element.String, this.Element.Fret.ToString(), x, isHalfOrLonger);
+                bounds = await renderingContext.DrawNoteFretting(this.Element.String, this.Element.Fret.ToString(), x, flags);
             }
 
             renderingContext.SetNoteBoundingBox(beat.OwnerColumn, this.Element.String, bounds);
@@ -56,8 +56,8 @@ namespace TabML.Editor.Rendering
                 else
                 {
                     var preConnection = this.Element.PreConnection == PreNoteConnection.None
-                        ? (NoteConnection) this.Element.OwnerBeat.PreConnection
-                        : (NoteConnection) this.Element.PreConnection;
+                        ? (NoteConnection)this.Element.OwnerBeat.PreConnection
+                        : (NoteConnection)this.Element.PreConnection;
 
                     if (preConnection != NoteConnection.None)
                     {
@@ -78,5 +78,22 @@ namespace TabML.Editor.Rendering
             }
         }
 
+        private NoteRenderingFlags GetNoteRenderingFlags(Beat beat)
+        {
+            var flags = NoteRenderingFlags.None;
+
+            if (beat.NoteValue.Base >= BaseNoteValue.Half)
+                flags |= NoteRenderingFlags.HalfOrLonger;
+
+            if (this.Element.Accent == NoteAccent.Ghost)
+                flags |= NoteRenderingFlags.Ghost;
+
+            if (this.Element.EffectTechnique == NoteEffectTechnique.ArtificialHarmonic)
+                flags |= NoteRenderingFlags.ArtificialHarmonic;
+
+            if (this.Element.EffectTechnique == NoteEffectTechnique.NaturalHarmonic)
+                flags |= NoteRenderingFlags.NaturalHarmonic;
+            return flags;
+        }
     }
 }

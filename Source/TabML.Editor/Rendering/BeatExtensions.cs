@@ -60,9 +60,11 @@ namespace TabML.Editor.Rendering
         public static double GetAlternationOffset(this Beat beat, BarRenderingContext rc, int? stringIndex = null, Beat tieTarget = null)
         {
             var targetBeat = tieTarget ?? beat;
+            var hasHarmonics = beat.Notes.Any(n => n.IsHarmonics);
+
             var column = rc.ColumnRenderingInfos[targetBeat.OwnerColumn.ColumnIndex];
             var ratio = column.GetNoteAlternationOffsetRatio(stringIndex ?? beat.GetNearestStringIndex());
-            return rc.GetNoteAlternationOffset(ratio);
+            return rc.GetNoteAlternationOffset(ratio, hasHarmonics);
         }
 
         public static TiePosition GetTiePosition(this Beat beat)

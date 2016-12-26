@@ -18,6 +18,7 @@ namespace TabML.Parser.AST
         public LiteralNode<PostNoteConnection> PostConnection { get; set; }
         public LiteralNode<NoteEffectTechnique> EffectTechnique { get; set; }
         public LiteralNode<double> EffectTechniqueParameter { get; set; }
+        public LiteralNode<NoteAccent> Accent { get; set; }
         
         public override IEnumerable<Node> Children
         {
@@ -62,9 +63,11 @@ namespace TabML.Parser.AST
 
             if ((this.EffectTechnique?.Value ?? NoteEffectTechnique.None) != other.EffectTechnique)
                 return false;
+            
+            if (this.EffectTechniqueParameter?.Value != other.EffectTechniqueParameter)
+                return false;
 
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if ((this.EffectTechniqueParameter?.Value ?? default(double)) != other.EffectTechniqueParameter)
+            if ((this.Accent?.Value ?? NoteAccent.Normal) != other.Accent)
                 return false;
 
             if ((this.Tie != null) != other.IsTied)
@@ -103,7 +106,8 @@ namespace TabML.Parser.AST
                 String = this.String.Value - 1,
                 Fret = this.Fret?.Value ?? BeatNote.UnspecifiedFret,
                 EffectTechnique = this.EffectTechnique?.Value ?? NoteEffectTechnique.None,
-                EffectTechniqueParameter = this.EffectTechniqueParameter?.Value ?? default(double),
+                EffectTechniqueParameter = this.EffectTechniqueParameter?.Value,
+                Accent = this.Accent?.Value ?? NoteAccent.Normal
             };
 
             if (!this.ValidateTie(context, logger, element))
@@ -117,6 +121,7 @@ namespace TabML.Parser.AST
 
             return true;
         }
+
 
         private bool ValidateTie(TablatureContext context, ILogger logger, BeatNote element)
         {

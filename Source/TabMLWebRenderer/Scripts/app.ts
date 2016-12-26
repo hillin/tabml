@@ -18,6 +18,7 @@ let tablatureStyle: TR.ITablatureStyle =
         },
 
         note: {
+            margin: 2,
             circleOnLongNotes: true,
             longNoteCirclePadding: 1,
             dot: {
@@ -30,11 +31,15 @@ let tablatureStyle: TR.ITablatureStyle =
                 fontSize: 12,
                 fontFamily: "Times New Roman",
                 fontStyle: "italic"
+            },
+            artificialHarmonicsText : {
+                fontSize: 12,
+                fontFamily: "Times New Roman",
+                fontStyle: "bold"
             }
         },
 
-        tie: {
-            instructionOffset: 24,
+        connection: {
             instructionText: {
                 fontSize: 12,
                 fontFamily: "Times New Roman",

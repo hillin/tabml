@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "es6-promise": "registry:common/es6-promise#4.0.0+20161003185919"
+  }
+}

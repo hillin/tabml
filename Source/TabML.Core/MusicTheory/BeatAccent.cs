@@ -3,7 +3,6 @@
     public enum BeatAccent
     {
         Normal,
-        Ghost,
         Accented,
         HeavilyAccented
     }

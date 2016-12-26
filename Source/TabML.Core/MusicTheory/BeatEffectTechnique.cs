@@ -3,7 +3,7 @@
     public enum BeatEffectTechnique
     {
         None,
-        Tremolo,
-        Vibrato
+        Trill,
+        Tremolo
     }
 }

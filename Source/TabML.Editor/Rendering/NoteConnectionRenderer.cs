@@ -40,7 +40,7 @@ namespace TabML.Editor.Rendering
                 {
                     toContext.Owner.DrawTie(fromX, toX, stringIndex, tiePosition, null, 0);
                     if (!string.IsNullOrEmpty(instruction))
-                        await toContext.DrawTieInstruction(to.VoicePart, (toX + fromX)/2, instruction);
+                        await toContext.DrawConnectionInstruction(to.VoicePart, (toX + fromX)/2, instruction);
                 }
                 else
                 {
@@ -51,8 +51,8 @@ namespace TabML.Editor.Rendering
 
                     if (!string.IsNullOrEmpty(instruction))
                     {
-                        await toContext.DrawTieInstruction(to.VoicePart, (toX + toContext.Owner.Location.X) / 2, $"({instruction})");
-                        await fromContext.DrawTieInstruction(to.VoicePart, (fromX + fromContext.Owner.BottomRight.X) / 2, instruction);
+                        await toContext.DrawConnectionInstruction(to.VoicePart, (toX + toContext.Owner.Location.X) / 2, $"({instruction})");
+                        await fromContext.DrawConnectionInstruction(to.VoicePart, (fromX + fromContext.Owner.BottomRight.X) / 2, instruction);
                     }
                 }
             }
@@ -61,7 +61,8 @@ namespace TabML.Editor.Rendering
         public static async Task DrawGliss(IRootElementRenderer rootRenderer, Beat beat, IEnumerable<int> stringIndices,
                                            GlissDirection direction)
         {
-            var renderingContext = rootRenderer.GetRenderer<Beat, BeatRenderer>(beat).RenderingContext;
+            var beatRenderer = rootRenderer.GetRenderer<Beat, BeatRenderer>(beat);
+            var renderingContext = beatRenderer.RenderingContext;
 
             foreach (var stringIndex in stringIndices)
             {
@@ -84,6 +85,7 @@ namespace TabML.Editor.Rendering
                 }
 
                 await renderingContext.DrawGliss(x, stringIndex, direction, beat.VoicePart);
+                
             }
         }
 
@@ -98,7 +100,7 @@ namespace TabML.Editor.Rendering
             switch (connection)
             {
                 case NoteConnection.Slide:
-                    NoteConnectionRenderer.DrawTie(rootRenderer, from, to, stringIndices, tiePosition, "sl.");
+                    await NoteConnectionRenderer.DrawTie(rootRenderer, @from, to, stringIndices, tiePosition, "sl.");
                     break;
                 case NoteConnection.SlideInFromHigher:
                     await NoteConnectionRenderer.DrawGliss(rootRenderer, to, stringIndices, GlissDirection.FromHigher);
@@ -113,10 +115,10 @@ namespace TabML.Editor.Rendering
                     await NoteConnectionRenderer.DrawGliss(rootRenderer, from, stringIndices, GlissDirection.ToLower);
                     break;
                 case NoteConnection.Hammer:
-                    NoteConnectionRenderer.DrawTie(rootRenderer, from, to, stringIndices, tiePosition, "h.");
+                    await NoteConnectionRenderer.DrawTie(rootRenderer, @from, to, stringIndices, tiePosition, "h.");
                     break;
                 case NoteConnection.Pull:
-                    NoteConnectionRenderer.DrawTie(rootRenderer, from, to, stringIndices, tiePosition, "p.");
+                    await NoteConnectionRenderer.DrawTie(rootRenderer, @from, to, stringIndices, tiePosition, "p.");
                     break;
             }
         }

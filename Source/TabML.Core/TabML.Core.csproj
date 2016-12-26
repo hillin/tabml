@@ -144,6 +144,7 @@
     <Compile Include="MusicTheory\AllStringStrumTechnique.cs" />
     <Compile Include="MusicTheory\GlissDirection.cs" />
     <Compile Include="MusicTheory\KnownTuningAttribute.cs" />
+    <Compile Include="MusicTheory\NoteAccent.cs" />
     <Compile Include="MusicTheory\NoteEffectTechnique.cs" />
     <Compile Include="MusicTheory\PreciseDuration.cs" />
     <Compile Include="MusicTheory\PreciseDurationExtensions.cs">
@@ -210,8 +211,8 @@
       <DependentUpon>Tuning.cs</DependentUpon>
     </Compile>
     <Compile Include="RightHandFingerIndex.cs" />
-    <Compile Include="RightHandFingerIndexExtensions.cs" >
-      <DependentUpon>RightHandFingerIndex.xaml</DependentUpon>
+    <Compile Include="RightHandFingerIndexExtensions.cs">
+      <DependentUpon>RightHandFingerIndex.cs</DependentUpon>
     </Compile>
     <Compile Include="TextPointer.cs" />
     <Compile Include="TextRange.cs" />

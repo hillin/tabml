@@ -8,10 +8,7 @@ using TabML.Parser;
 using TabML.Parser.Document;
 namespace TabML.Editor
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private bool _rendered = false;
         private bool _fakeLoaded = true;
@@ -45,8 +42,8 @@ namespace TabML.Editor
         {
             var primitiveRenderer = new PrimitiveRenderer(this.Browser);
             //var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\temptest.txt"));
-            //var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\my home town.txt"));
-            var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\bartest.txt"));
+            var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\my home town.txt"));
+            //var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\bartest.txt"));
             var style = new TablatureStyle();
             var location = new Point(style.Padding.Left, style.Padding.Top);
             var size = new Size(

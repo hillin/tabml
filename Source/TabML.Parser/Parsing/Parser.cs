@@ -313,15 +313,14 @@ namespace TabML.Parser.Parsing
         {
             argument = null;
 
-            switch (scanner.ReadAny("tremolo", "vibrato", "tr", "vib"))
+            switch (scanner.ReadAny("tremolo", "trill", "tr"))
             {
-                case "tr":
                 case "tremolo":
                     technique = new LiteralNode<BeatEffectTechnique>(BeatEffectTechnique.Tremolo, scanner.LastReadRange);
                     return true;
-                case "vib":
-                case "vibrato":
-                    technique = new LiteralNode<BeatEffectTechnique>(BeatEffectTechnique.Vibrato, scanner.LastReadRange);
+                case "tr":
+                case "trill":
+                    technique = new LiteralNode<BeatEffectTechnique>(BeatEffectTechnique.Trill, scanner.LastReadRange);
                     return true;
             }
 
@@ -335,41 +334,11 @@ namespace TabML.Parser.Parsing
         {
             argument = null;
 
-            switch (scanner.ReadAny("dead", "bend", "ah", "nh", "◆", "◇", "x", "b"))
+            switch (scanner.ReadAny("dead", "bend", "x", "b"))
             {
                 case "dead":
                 case "x":
                     technique = new LiteralNode<NoteEffectTechnique>(NoteEffectTechnique.DeadNote, scanner.LastReadRange);
-                    return true;
-                case "ah":
-                case "◆":
-                    technique = new LiteralNode<NoteEffectTechnique>(NoteEffectTechnique.ArtificialHarmonic, scanner.LastReadRange);
-                    string argumentString;
-                    switch (scanner.TryReadParenthesis(out argumentString, '<', '>', allowNesting: false))
-                    {
-                        case Scanner.ParenthesisReadResult.Success:
-                            int ahArgument;
-                            if (int.TryParse(argumentString, out ahArgument))
-                            {
-                                argument = new LiteralNode<double>(ahArgument, scanner.LastReadRange);
-                                return true;
-                            }
-
-                            technique = null;
-                            return false;
-                        case Scanner.ParenthesisReadResult.MissingOpen:
-                            return true;
-                        case Scanner.ParenthesisReadResult.MissingClose:
-                            logger.Report(LogLevel.Error, scanner.LastReadRange,
-                                            Messages.Error_ArtificialHarmonicFretSpecifierNotEnclosed);
-                            technique = null;
-                            return false;
-                    }
-
-                    return true;
-                case "nh":
-                case "◇":
-                    technique = new LiteralNode<NoteEffectTechnique>(NoteEffectTechnique.NaturalHarmonic, scanner.LastReadRange);
                     return true;
                 case "bend":
                 case "b":
@@ -401,16 +370,13 @@ namespace TabML.Parser.Parsing
 
         public static bool TryReadNoteAccent(Scanner scanner, ILogger logger, out LiteralNode<BeatAccent> accent)
         {
-            switch (scanner.ReadAny("accented", "heavy", "ghost"))
+            switch (scanner.ReadAny("accented", "heavy"))
             {
                 case "accented":
                     accent = new LiteralNode<BeatAccent>(BeatAccent.Accented, scanner.LastReadRange);
                     return true;
                 case "heavy":
                     accent = new LiteralNode<BeatAccent>(BeatAccent.HeavilyAccented, scanner.LastReadRange);
-                    return true;
-                case "ghost":
-                    accent = new LiteralNode<BeatAccent>(BeatAccent.Ghost, scanner.LastReadRange);
                     return true;
             }
 

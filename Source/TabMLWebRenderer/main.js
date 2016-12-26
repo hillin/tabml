@@ -1,3 +1,11 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments)).next());
+    });
+};
 /*
  * SystemJS v0.19.40
  */
@@ -2036,7 +2044,8 @@ else {
     var e = t.fabric || (t.fabric = {}), i = e.util.object.extend, r = e.Image.filters, n = e.util.createClass;
     r.Saturate = n(r.BaseFilter, {
         type: "Saturate", initialize: function (t) { t = t || {}, this.saturate = t.saturate || 0, this.loadProgram(); }, applyTo: function (t) { for (var e, i = t.getContext("2d"), r = i.getImageData(0, 0, t.width, t.height), n = r.data, s = .01 * -this.saturate, o = 0, a = n.length; o < a; o += 4)
-            e = Math.max(n[o], n[o + 1], n[o + 2]), n[o] += e !== n[o] ? (e - n[o]) * s : 0, n[o + 1] += e !== n[o + 1] ? (e - n[o + 1]) * s : 0, n[o + 2] += e !== n[o + 2] ? (e - n[o + 2]) * s : 0; i.putImageData(r, 0, 0); }, toObject: function () { return i(this.callSuper("toObject"), { saturate: this.saturate }); } }), e.Image.filters.Saturate.fromObject = function (t) { return new e.Image.filters.Saturate(t); };
+            e = Math.max(n[o], n[o + 1], n[o + 2]), n[o] += e !== n[o] ? (e - n[o]) * s : 0, n[o + 1] += e !== n[o + 1] ? (e - n[o + 1]) * s : 0, n[o + 2] += e !== n[o + 2] ? (e - n[o + 2]) * s : 0; i.putImageData(r, 0, 0); }, toObject: function () { return i(this.callSuper("toObject"), { saturate: this.saturate }); }
+    }), e.Image.filters.Saturate.fromObject = function (t) { return new e.Image.filters.Saturate(t); };
 }("undefined" != typeof exports ? exports : this), function (t) {
     "use strict";
     var e = t.fabric || (t.fabric = {}), i = e.util.object.extend, r = e.util.object.clone, n = e.util.toFixed, s = e.Object.NUM_FRACTION_DIGITS, o = 2;
@@ -2320,9 +2329,9 @@ else {
     var origSetBackstoreDimension = fabric.StaticCanvas.prototype._setBackstoreDimension;
     fabric.StaticCanvas.prototype._setBackstoreDimension = function (t, e) { return origSetBackstoreDimension.call(this, t, e), this.nodeCanvas[t] = e, this; }, fabric.Canvas && (fabric.Canvas.prototype._setBackstoreDimension = fabric.StaticCanvas.prototype._setBackstoreDimension);
 } }();
-var tablatureStyle = {
+let tablatureStyle = {
     fallback: {
-        fontFamily: "Segoe UI"
+        fontFamily: "Segoe UI",
     },
     page: {
         width: 1200,
@@ -2334,6 +2343,7 @@ var tablatureStyle = {
         beamSpacing: 4
     },
     note: {
+        margin: 2,
         circleOnLongNotes: true,
         longNoteCirclePadding: 1,
         dot: {
@@ -2346,10 +2356,14 @@ var tablatureStyle = {
             fontSize: 12,
             fontFamily: "Times New Roman",
             fontStyle: "italic"
+        },
+        artificialHarmonicsText: {
+            fontSize: 12,
+            fontFamily: "Times New Roman",
+            fontStyle: "bold"
         }
     },
-    tie: {
-        instructionOffset: 24,
+    connection: {
         instructionText: {
             fontSize: 12,
             fontFamily: "Times New Roman",
@@ -2369,15 +2383,15 @@ var tablatureStyle = {
         fontFamily: "Times New Roman"
     }
 };
-var callbackObjects;
-var renderer;
+let callbackObjects;
+let renderer;
 window.onerror = function (errorMessage, url, lineNumber) {
     alert(errorMessage + "\n" + url + "#" + lineNumber);
 };
-window.onload = function () {
-    var canvas = document.getElementById("staff");
+window.onload = () => {
+    let canvas = document.getElementById("staff");
     //let fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
-    var fabricCanvas = new fabric.Canvas(canvas, tablatureStyle.page);
+    let fabricCanvas = new fabric.Canvas(canvas, tablatureStyle.page);
     renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
     //renderer.drawFretNumber("2", 100, 100, true);
     //renderer.drawTitle("test!!!", 400, 100);
@@ -2390,6 +2404,7 @@ var Core;
 (function (Core) {
     var MusicTheory;
     (function (MusicTheory) {
+        var BarLine;
         (function (BarLine) {
             BarLine[BarLine["Standard"] = 0] = "Standard";
             BarLine[BarLine["Double"] = 1] = "Double";
@@ -2398,14 +2413,14 @@ var Core;
             BarLine[BarLine["EndRepeat"] = 4] = "EndRepeat";
             BarLine[BarLine["BeginAndEndRepeat"] = 5] = "BeginAndEndRepeat";
             BarLine[BarLine["BeginRepeatAndEnd"] = 6] = "BeginRepeatAndEnd";
-        })(MusicTheory.BarLine || (MusicTheory.BarLine = {}));
-        var BarLine = MusicTheory.BarLine;
+        })(BarLine = MusicTheory.BarLine || (MusicTheory.BarLine = {}));
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
 var Core;
 (function (Core) {
     var MusicTheory;
     (function (MusicTheory) {
+        var BaseNoteValue;
         (function (BaseNoteValue) {
             BaseNoteValue[BaseNoteValue["Large"] = 3] = "Large";
             BaseNoteValue[BaseNoteValue["Long"] = 2] = "Long";
@@ -2419,45 +2434,44 @@ var Core;
             BaseNoteValue[BaseNoteValue["SixtyFourth"] = -6] = "SixtyFourth";
             BaseNoteValue[BaseNoteValue["HundredTwentyEighth"] = -7] = "HundredTwentyEighth";
             BaseNoteValue[BaseNoteValue["TwoHundredFiftySixth"] = -8] = "TwoHundredFiftySixth";
-        })(MusicTheory.BaseNoteValue || (MusicTheory.BaseNoteValue = {}));
-        var BaseNoteValue = MusicTheory.BaseNoteValue;
+        })(BaseNoteValue = MusicTheory.BaseNoteValue || (MusicTheory.BaseNoteValue = {}));
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
 var Core;
 (function (Core) {
     var MusicTheory;
     (function (MusicTheory) {
+        var GlissDirection;
         (function (GlissDirection) {
             GlissDirection[GlissDirection["FromHigher"] = 0] = "FromHigher";
             GlissDirection[GlissDirection["FromLower"] = 1] = "FromLower";
             GlissDirection[GlissDirection["ToHigher"] = 2] = "ToHigher";
             GlissDirection[GlissDirection["ToLower"] = 3] = "ToLower";
-        })(MusicTheory.GlissDirection || (MusicTheory.GlissDirection = {}));
-        var GlissDirection = MusicTheory.GlissDirection;
+        })(GlissDirection = MusicTheory.GlissDirection || (MusicTheory.GlissDirection = {}));
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
 var Core;
 (function (Core) {
     var MusicTheory;
     (function (MusicTheory) {
+        var NoteValueAugment;
         (function (NoteValueAugment) {
             NoteValueAugment[NoteValueAugment["None"] = 0] = "None";
             NoteValueAugment[NoteValueAugment["Dot"] = 1] = "Dot";
             NoteValueAugment[NoteValueAugment["TwoDots"] = 2] = "TwoDots";
             NoteValueAugment[NoteValueAugment["ThreeDots"] = 3] = "ThreeDots";
-        })(MusicTheory.NoteValueAugment || (MusicTheory.NoteValueAugment = {}));
-        var NoteValueAugment = MusicTheory.NoteValueAugment;
+        })(NoteValueAugment = MusicTheory.NoteValueAugment || (MusicTheory.NoteValueAugment = {}));
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
 var Core;
 (function (Core) {
     var MusicTheory;
     (function (MusicTheory) {
+        var OffBarDirection;
         (function (OffBarDirection) {
             OffBarDirection[OffBarDirection["Top"] = 0] = "Top";
             OffBarDirection[OffBarDirection["Bottom"] = 1] = "Bottom";
-        })(MusicTheory.OffBarDirection || (MusicTheory.OffBarDirection = {}));
-        var OffBarDirection = MusicTheory.OffBarDirection;
+        })(OffBarDirection = MusicTheory.OffBarDirection || (MusicTheory.OffBarDirection = {}));
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
 // object.Assign implementation
@@ -2483,205 +2497,301 @@ if (typeof Object.assign != 'function') {
         };
     })();
 }
-var ResourceManager = (function () {
-    function ResourceManager() {
-    }
-    ResourceManager.getTablatureResource = function (name) {
+class ResourceManager {
+    static getTablatureResource(name) {
         return "resources/tablature/" + name;
-    };
-    ResourceManager.referenceBarSpacing = 12;
-    return ResourceManager;
-}());
+    }
+}
+ResourceManager.referenceBarSpacing = 12;
+var TR;
+(function (TR) {
+    var NoteRenderingFlags;
+    (function (NoteRenderingFlags) {
+        NoteRenderingFlags[NoteRenderingFlags["HalfOrLonger"] = 1] = "HalfOrLonger";
+        NoteRenderingFlags[NoteRenderingFlags["Ghost"] = 2] = "Ghost";
+        NoteRenderingFlags[NoteRenderingFlags["NaturalHarmonic"] = 4] = "NaturalHarmonic";
+        NoteRenderingFlags[NoteRenderingFlags["ArtificialHarmonic"] = 8] = "ArtificialHarmonic";
+    })(NoteRenderingFlags = TR.NoteRenderingFlags || (TR.NoteRenderingFlags = {}));
+})(TR || (TR = {}));
 var BarLine = Core.MusicTheory.BarLine;
 var BaseNoteValue = Core.MusicTheory.BaseNoteValue;
 var OffBarDirection = Core.MusicTheory.OffBarDirection;
 var NoteValueAugment = Core.MusicTheory.NoteValueAugment;
 var GlissDirection = Core.MusicTheory.GlissDirection;
+var NoteRenderingFlags = TR.NoteRenderingFlags;
 var TR;
 (function (TR) {
-    var PrimitiveRenderer = (function () {
-        function PrimitiveRenderer(canvas, style) {
+    class PrimitiveRenderer {
+        constructor(canvas, style) {
             this.canvas = canvas;
             this.style = style;
             this.clear();
         }
-        PrimitiveRenderer.prototype.clear = function () {
+        clear() {
             this.canvas.clear();
             this.canvas.backgroundColor = "white";
-        };
-        PrimitiveRenderer.prototype.getScale = function () {
+        }
+        getScale() {
             return this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
-        };
-        PrimitiveRenderer.prototype.drawText = function (text, x, y, originX, originY, options) {
-            var textElement = new fabric.Text(text, options);
+        }
+        static inflateBounds(bounds, extension) {
+            if (bounds === undefined)
+                return extension;
+            let left = Math.min(bounds.left, extension.left);
+            let top = Math.min(bounds.top, extension.top);
+            bounds.width = Math.max(bounds.left + bounds.width, extension.left + extension.width) - left;
+            bounds.height = Math.max(bounds.top + bounds.height, extension.top + extension.height) - top;
+            bounds.left = left;
+            bounds.top = top;
+            return bounds;
+        }
+        drawOrnamentText(x, y, text, style, direction) {
+            let originY = direction == OffBarDirection.Top ? "bottom" : "top";
+            return this.drawText(text, x, y, "center", originY, style);
+        }
+        drawText(text, x, y, originX, originY, options) {
+            let textElement = new fabric.Text(text, options);
             textElement.originX = originX;
             textElement.originY = originY;
             textElement.left = x;
             textElement.top = y;
             this.canvas.add(textElement);
-            return textElement.getBoundingRect();
-        };
-        PrimitiveRenderer.prototype.drawTitle = function (title, x, y) {
-            return this.drawText(title, x, y, "center", "top", this.style.title);
-        };
-        PrimitiveRenderer.prototype.callbackWith = function (result) {
+            return textElement;
+        }
+        drawTitle(title, x, y) {
+            return this.drawText(title, x, y, "center", "top", this.style.title).getBoundingRect();
+        }
+        callbackWith(result) {
             __callbackObject.callback(result);
-        };
-        PrimitiveRenderer.prototype.drawSpecialFretting = function (imageFile, x, y, isHalfOrLonger) {
-            var _this = this;
-            this.drawSVGFromURL(imageFile, x, y, function (group) {
-                group.scaleY = _this.getScale();
+        }
+        drawArtificialHarmonicText(x, y, text, direction) {
+            return this.drawOrnamentText(x, y, text, this.style.note.artificialHarmonicsText, direction).getBoundingRect();
+        }
+        drawGhostNoteParenthese(bounds) {
+            let y = bounds.top + bounds.height / 2;
+            let leftBounds = this.drawText("(", bounds.left - this.style.note.margin, y, "center", "center", this.style.fretNumber).getBoundingRect();
+            let rightBounds = this.drawText(")", bounds.left + bounds.width + this.style.note.margin, y, "center", "center", this.style.fretNumber).getBoundingRect();
+            bounds = PrimitiveRenderer.inflateBounds(bounds, leftBounds);
+            bounds = PrimitiveRenderer.inflateBounds(bounds, rightBounds);
+            return bounds;
+        }
+        drawNoteFretting(fretting, x, y, flags) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let drawArtificialHarmonic = (flags & TR.NoteRenderingFlags.ArtificialHarmonic) === TR.NoteRenderingFlags.ArtificialHarmonic;
+                let drawNaturalHarmonic = (flags & TR.NoteRenderingFlags.NaturalHarmonic) === TR.NoteRenderingFlags.NaturalHarmonic;
+                let bounds;
+                if (drawNaturalHarmonic)
+                    bounds = PrimitiveRenderer.inflateBounds(bounds, (yield this.drawNaturalHarmonicAsync(x, y)).getBoundingRect());
+                if (drawArtificialHarmonic)
+                    bounds = PrimitiveRenderer.inflateBounds(bounds, (yield this.drawArtificialHarmonicAsync(x, y)).getBoundingRect());
+                let drawSpecialNote = function (imageFile) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        let group = yield this.drawSVGFromURLAsync(imageFile, x, y, group => {
+                            group.scaleY = this.getScale();
+                            group.originX = "center";
+                            group.originY = "center";
+                        });
+                        return group.getBoundingRect();
+                    });
+                };
+                switch (fretting) {
+                    case "dead":
+                        bounds = PrimitiveRenderer.inflateBounds(bounds, (yield drawSpecialNote.call(this, ResourceManager.getTablatureResource("dead_note.svg"))));
+                        break;
+                    case "asChord":
+                        bounds = PrimitiveRenderer.inflateBounds(bounds, (yield drawSpecialNote.call(this, ResourceManager.getTablatureResource("play_to_chord_mark.svg"))));
+                        break;
+                    default:
+                        let text = this.drawText(fretting, x, y, "center", "center", this.style.fretNumber);
+                        if ((drawArtificialHarmonic || drawNaturalHarmonic) && fretting.length > 1)
+                            text.scale(0.8);
+                        if (drawArtificialHarmonic)
+                            text.setColor("#FFFFFF");
+                        bounds = PrimitiveRenderer.inflateBounds(bounds, text.getBoundingRect());
+                        break;
+                }
+                bounds = this.drawAdditionalForNote(bounds, flags);
+                this.callbackWith(bounds);
+            });
+        }
+        drawAdditionalForNote(bounds, flags) {
+            if ((flags & TR.NoteRenderingFlags.HalfOrLonger) === TR.NoteRenderingFlags.HalfOrLonger && this.style.note.circleOnLongNotes)
+                bounds = this.drawCircleAroundLongNote(bounds);
+            if ((flags & TR.NoteRenderingFlags.Ghost) === TR.NoteRenderingFlags.Ghost)
+                bounds = this.drawGhostNoteParenthese(bounds);
+            return bounds;
+        }
+        drawNaturalHarmonicAsync(x, y) {
+            let imageFile = ResourceManager.getTablatureResource("natural_harmonic.svg");
+            return this.drawSVGFromURLAsync(imageFile, x, y, group => {
                 group.originX = "center";
                 group.originY = "center";
-            }, function (group) {
-                var bounds = group.getBoundingRect();
-                if (isHalfOrLonger && _this.style.note.circleOnLongNotes)
-                    _this.callbackWith(_this.drawCircleAroundLongNote(x, y, bounds));
-                else
-                    _this.callbackWith(bounds);
             });
-        };
-        PrimitiveRenderer.prototype.drawFretNumber = function (fretNumber, x, y, isHalfOrLonger) {
-            var bounds = this.drawText(fretNumber, x, y, "center", "center", this.style.fretNumber);
-            if (isHalfOrLonger && this.style.note.circleOnLongNotes) {
-                return this.drawCircleAroundLongNote(x, y, bounds);
-            }
-            return bounds;
-        };
-        PrimitiveRenderer.prototype.drawCircleAroundLongNote = function (x, y, bounds) {
-            var radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
-            var circle = new fabric.Circle({
+        }
+        drawArtificialHarmonicAsync(x, y) {
+            let imageFile = ResourceManager.getTablatureResource("artificial_harmonic.svg");
+            return this.drawSVGFromURLAsync(imageFile, x, y, group => {
+                group.originX = "center";
+                group.originY = "center";
+            });
+        }
+        drawCircleAroundLongNote(bounds) {
+            let radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
+            let circle = new fabric.Circle({
                 radius: radius,
-                left: x,
-                top: y,
+                left: bounds.left + bounds.width / 2,
+                top: bounds.top + bounds.height / 2,
                 originX: "center",
                 originY: "center",
                 stroke: "black",
                 fill: ""
             });
             this.canvas.add(circle);
-            return circle.getBoundingRect();
-        };
-        /*async*/ PrimitiveRenderer.prototype.drawDeadNote = function (x, y, isHalfOrLonger) {
-            this.drawSpecialFretting(ResourceManager.getTablatureResource("dead_note.svg"), x, y, isHalfOrLonger);
-        };
-        /*async*/ PrimitiveRenderer.prototype.drawPlayToChordMark = function (x, y, isHalfOrLonger) {
-            this.drawSpecialFretting(ResourceManager.getTablatureResource("play_to_chord_mark.svg"), x, y, isHalfOrLonger);
-        };
-        PrimitiveRenderer.prototype.drawLyrics = function (lyrics, x, y) {
-            return this.drawText(lyrics, x, y, "left", "top", this.style.lyrics);
-        };
-        PrimitiveRenderer.prototype.drawTuplet = function (tuplet, x, y) {
-            return this.drawText(tuplet, x, y, "center", "center", this.style.note.tuplet);
-        };
-        PrimitiveRenderer.prototype.drawLine = function (x1, y1, x2, y2) {
-            var line = new fabric.Line([x1, y1, x2, y2]);
+            return PrimitiveRenderer.inflateBounds(bounds, circle.getBoundingRect());
+        }
+        drawLyrics(lyrics, x, y) {
+            return this.drawText(lyrics, x, y, "left", "top", this.style.lyrics).getBoundingRect();
+        }
+        drawTuplet(tuplet, x, y) {
+            return this.drawText(tuplet, x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
+        }
+        drawLine(x1, y1, x2, y2) {
+            let line = new fabric.Line([x1, y1, x2, y2]);
             line.stroke = "black";
             this.canvas.add(line);
             return line;
-        };
-        PrimitiveRenderer.prototype.drawHorizontalBarLine = function (x, y, length) {
+        }
+        drawHorizontalBarLine(x, y, length) {
             this.drawLine(x, y, x + length, y);
-        };
-        PrimitiveRenderer.prototype.drawBarLine = function (barLine, x, y) {
-            var _this = this;
-            var imageFile;
-            switch (barLine) {
-                case BarLine.Standard:
-                    imageFile = ResourceManager.getTablatureResource("barline_standard.svg");
-                    break;
-                case BarLine.BeginAndEndRepeat:
-                    imageFile = ResourceManager.getTablatureResource("barline_begin_and_end_repeat.svg");
-                    break;
-                case BarLine.BeginRepeat:
-                    imageFile = ResourceManager.getTablatureResource("barline_begin_repeat.svg");
-                    break;
-                case BarLine.BeginRepeatAndEnd:
-                    imageFile = ResourceManager.getTablatureResource("barline_begin_repeat_and_end.svg");
-                    break;
-                case BarLine.Double:
-                    imageFile = ResourceManager.getTablatureResource("barline_double.svg");
-                    break;
-                case BarLine.End:
-                    imageFile = ResourceManager.getTablatureResource("barline_end.svg");
-                    break;
-                case BarLine.EndRepeat:
-                    imageFile = ResourceManager.getTablatureResource("barline_end_repeat.svg");
-                    break;
-            }
-            this.drawSVGFromURL(imageFile, x, y, function (group) {
-                group.scaleToHeight(_this.style.bar.lineHeight * 5);
+        }
+        drawBarLine(barLine, x, y) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let imageFile;
+                switch (barLine) {
+                    case BarLine.Standard:
+                        imageFile = ResourceManager.getTablatureResource("barline_standard.svg");
+                        break;
+                    case BarLine.BeginAndEndRepeat:
+                        imageFile = ResourceManager.getTablatureResource("barline_begin_and_end_repeat.svg");
+                        break;
+                    case BarLine.BeginRepeat:
+                        imageFile = ResourceManager.getTablatureResource("barline_begin_repeat.svg");
+                        break;
+                    case BarLine.BeginRepeatAndEnd:
+                        imageFile = ResourceManager.getTablatureResource("barline_begin_repeat_and_end.svg");
+                        break;
+                    case BarLine.Double:
+                        imageFile = ResourceManager.getTablatureResource("barline_double.svg");
+                        break;
+                    case BarLine.End:
+                        imageFile = ResourceManager.getTablatureResource("barline_end.svg");
+                        break;
+                    case BarLine.EndRepeat:
+                        imageFile = ResourceManager.getTablatureResource("barline_end_repeat.svg");
+                        break;
+                }
+                yield this.drawSVGFromURLAsync(imageFile, x, y, group => {
+                    group.scaleToHeight(this.style.bar.lineHeight * 5);
+                });
             });
-        };
-        PrimitiveRenderer.prototype.drawStem = function (x, yFrom, yTo) {
+        }
+        drawStem(x, yFrom, yTo) {
             this.drawLine(x, yFrom, x, yTo);
-        };
-        PrimitiveRenderer.prototype.drawSVGFromURL = function (url, x, y, postProcessing, callback) {
-            var _this = this;
-            fabric.loadSVGFromURL(url, function (results, options) {
-                var group = fabric.util.groupSVGElements(results, options);
+        }
+        loadSVGFromURLAsync(url) {
+            return new Promise((resolve, reject) => {
+                fabric.loadSVGFromURL(url, (results, options) => {
+                    let group = fabric.util.groupSVGElements(results, options);
+                    resolve(group);
+                });
+            });
+        }
+        drawSVGFromURLAsync(url, x, y, postProcessing) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let group = yield this.loadSVGFromURLAsync(url);
                 group.left = x;
                 group.top = y;
                 if (postProcessing != null)
                     postProcessing(group);
-                _this.canvas.add(group);
-                if (callback != null)
-                    callback(group);
+                this.canvas.add(group);
+                return group;
             });
-        };
-        /*async*/ PrimitiveRenderer.prototype.drawFlag = function (noteValue, x, y, direction) {
-            var _this = this;
-            if (noteValue > BaseNoteValue.Eighth)
-                return;
-            var flagFile = ResourceManager.getTablatureResource("note_flag.svg");
-            fabric.loadSVGFromURL(flagFile, function (results, options) {
-                var group = fabric.util.groupSVGElements(results, options);
-                group.left = x;
-                group.originX = "left";
-                group.originY = "center";
-                group.scale(_this.getScale());
-                var bounds = group.getBoundingRect();
-                if (direction == OffBarDirection.Bottom)
-                    group.flipY = true;
-                for (var i = noteValue; i < BaseNoteValue.Quater; ++i) {
-                    if (i === noteValue) {
-                        group.top = y;
-                        _this.canvas.add(group);
+        }
+        drawFlagHead(x, y, direction) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let flagFile = ResourceManager.getTablatureResource("note_flag_head.svg");
+                let group = yield this.drawSVGFromURLAsync(flagFile, x, y, group => {
+                    group.originX = "left";
+                    group.originY = "center";
+                    group.scale(this.getScale());
+                    if (direction == OffBarDirection.Bottom)
+                        group.flipY = true;
+                });
+                return group;
+            });
+        }
+        drawFlag(noteValue, x, y, direction) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (noteValue > BaseNoteValue.Eighth)
+                    return;
+                // draw flag bodies
+                if (noteValue < BaseNoteValue.Eighth) {
+                    let flagFile = ResourceManager.getTablatureResource("note_flag_body.svg");
+                    let group = yield this.loadSVGFromURLAsync(flagFile);
+                    group.left = x;
+                    group.originX = "left";
+                    group.originY = "center";
+                    group.scale(this.getScale());
+                    let bounds = group.getBoundingRect();
+                    if (direction == OffBarDirection.Bottom)
+                        group.flipY = true;
+                    for (let i = noteValue; i < BaseNoteValue.Eighth; ++i) {
+                        if (i === noteValue) {
+                            group.top = y;
+                            this.canvas.add(group);
+                        }
+                        else {
+                            group.clone((result) => {
+                                result.top = y;
+                                this.canvas.add(result);
+                            });
+                        }
+                        if (direction == OffBarDirection.Bottom)
+                            y -= 6;
+                        else
+                            y += 6;
                     }
-                    else {
-                        group.clone(function (result) {
-                            result.top = y;
-                            _this.canvas.add(result);
-                        });
-                    }
-                    if (direction == OffBarDirection.Bottom) {
-                        y -= 6;
-                        bounds.top -= 6;
-                    }
-                    else {
-                        y += 6;
-                        bounds.top += 6;
-                    }
-                    _this.callbackWith(bounds);
+                }
+                // draw flag head
+                {
+                    let flagFile = ResourceManager.getTablatureResource("note_flag_head.svg");
+                    let group = yield this.drawSVGFromURLAsync(flagFile, x, y, group => {
+                        group.originX = "left";
+                        group.originY = "center";
+                        group.scale(this.getScale());
+                        if (direction == OffBarDirection.Bottom)
+                            group.flipY = true;
+                    });
+                    this.callbackWith(group.getBoundingRect());
                 }
             });
-        };
-        PrimitiveRenderer.prototype.drawBeam = function (x1, y1, x2, y2) {
-            var halfThickness = this.style.bar.beamThickness / 2;
-            var points = [
+        }
+        drawBeam(x1, y1, x2, y2) {
+            let halfThickness = this.style.bar.beamThickness / 2;
+            let points = [
                 { x: x1, y: y1 - halfThickness },
                 { x: x2, y: y2 - halfThickness },
                 { x: x2, y: y2 + halfThickness },
                 { x: x1, y: y1 + halfThickness }
             ];
-            var polygon = new fabric.Polygon(points);
+            let polygon = new fabric.Polygon(points);
             polygon.fill = "black";
             polygon.stroke = "black";
             this.canvas.add(polygon);
-        };
-        PrimitiveRenderer.prototype.drawNoteValueAugment = function (augment, x, y) {
-            for (var i = 0; i < augment; ++i) {
-                var dot = new fabric.Circle({
+        }
+        drawNoteValueAugment(augment, x, y) {
+            for (let i = 0; i < augment; ++i) {
+                let dot = new fabric.Circle({
                     radius: this.style.note.dot.radius,
                     left: x,
                     top: y,
@@ -2693,8 +2803,8 @@ var TR;
                 this.canvas.add(dot);
                 x += this.style.note.dot.radius * 2 + this.style.note.dot.spacing;
             }
-        };
-        PrimitiveRenderer.prototype.getRestImage = function (noteValue) {
+        }
+        getRestImage(noteValue) {
             switch (noteValue) {
                 case BaseNoteValue.Large:
                 case BaseNoteValue.Long:
@@ -2719,91 +2829,89 @@ var TR;
                 default:
                     return null;
             }
-        };
-        /*async*/ PrimitiveRenderer.prototype.measureRest = function (noteValue) {
-            var _this = this;
-            fabric.loadSVGFromURL(this.getRestImage(noteValue), function (results, options) {
-                var group = fabric.util.groupSVGElements(results, options);
+        }
+        measureRest(noteValue) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let group = yield this.loadSVGFromURLAsync(this.getRestImage(noteValue));
                 group.originX = "center";
                 group.originY = "center";
-                group.scale(_this.getScale());
-                _this.callbackWith(group.getBoundingRect());
+                group.scale(this.getScale());
+                this.callbackWith(group.getBoundingRect());
             });
-        };
-        PrimitiveRenderer.prototype.drawRest = function (noteValue, x, y) {
-            var _this = this;
-            this.drawSVGFromURL(this.getRestImage(noteValue), x, y, function (group) {
-                group.originX = "center";
-                group.originY = "center";
-                group.scale(_this.getScale());
+        }
+        drawRest(noteValue, x, y) {
+            return __awaiter(this, void 0, void 0, function* () {
+                yield this.drawSVGFromURLAsync(this.getRestImage(noteValue), x, y, group => {
+                    group.originX = "center";
+                    group.originY = "center";
+                    group.scale(this.getScale());
+                });
             });
-        };
-        PrimitiveRenderer.prototype.drawTieInstruction = function (x, y, instruction, direction) {
-            var originY = direction == OffBarDirection.Top ? "bottom" : "top";
-            return this.drawText(instruction, x, y, "center", originY, this.style.tie.instructionText);
-        };
-        PrimitiveRenderer.prototype.drawTie = function (x0, x1, y, direction) {
-            var _this = this;
-            var imageFile = ResourceManager.getTablatureResource("tie.svg");
-            this.drawSVGFromURL(imageFile, x0, y, function (group) {
-                group.scaleToWidth(x1 - x0);
-                var standardScaleY = _this.getScale();
-                group.scaleY = Math.max(standardScaleY / 2, Math.min(Math.sqrt(group.scaleY), standardScaleY));
-                group.originX = "left";
-                if (direction == OffBarDirection.Bottom) {
-                    group.originY = "top";
-                    group.flipY = true;
-                }
-                else {
-                    group.originY = "bottom";
-                }
-            });
-        };
-        /*async*/ PrimitiveRenderer.prototype.drawGliss = function (x, y, direction) {
-            var _this = this;
-            var imageFile = ResourceManager.getTablatureResource("gliss.svg");
-            this.drawSVGFromURL(imageFile, x, y, function (group) {
-                switch (direction) {
-                    case GlissDirection.FromHigher:
-                        group.flipX = true;
-                        group.flipY = true;
-                        group.originX = "right";
-                        group.originY = "bottom";
-                        break;
-                    case GlissDirection.FromLower:
-                        group.flipX = true;
-                        group.originX = "right";
+        }
+        drawConnectionInstruction(x, y, instruction, direction) {
+            return this.drawOrnamentText(x, y, instruction, this.style.connection.instructionText, direction).getBoundingRect();
+        }
+        drawTie(x0, x1, y, direction) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let imageFile = ResourceManager.getTablatureResource("tie.svg");
+                yield this.drawSVGFromURLAsync(imageFile, x0, y, group => {
+                    group.scaleToWidth(x1 - x0);
+                    let standardScaleY = this.getScale();
+                    group.scaleY = Math.max(standardScaleY / 2, Math.min(Math.sqrt(group.scaleY), standardScaleY));
+                    group.originX = "left";
+                    if (direction == OffBarDirection.Bottom) {
                         group.originY = "top";
-                        break;
-                    case GlissDirection.ToHigher:
                         group.flipY = true;
-                        group.originX = "left";
+                    }
+                    else {
                         group.originY = "bottom";
-                        break;
-                    case GlissDirection.ToLower:
-                        group.originX = "left";
-                        group.originY = "top";
-                        break;
-                }
-                group.scaleY = _this.getScale();
-            }, function (group) {
-                _this.callbackWith(group.getBoundingRect());
+                    }
+                });
             });
-        };
-        return PrimitiveRenderer;
-    }());
+        }
+        drawGliss(x, y, direction) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let imageFile = ResourceManager.getTablatureResource("gliss.svg");
+                let group = yield this.drawSVGFromURLAsync(imageFile, x, y, group => {
+                    switch (direction) {
+                        case GlissDirection.FromHigher:
+                            group.flipX = true;
+                            group.flipY = true;
+                            group.originX = "right";
+                            group.originY = "bottom";
+                            break;
+                        case GlissDirection.FromLower:
+                            group.flipX = true;
+                            group.originX = "right";
+                            group.originY = "top";
+                            break;
+                        case GlissDirection.ToHigher:
+                            group.flipY = true;
+                            group.originX = "left";
+                            group.originY = "bottom";
+                            break;
+                        case GlissDirection.ToLower:
+                            group.originX = "left";
+                            group.originY = "top";
+                            break;
+                    }
+                    group.scaleY = this.getScale();
+                });
+                this.callbackWith(group.getBoundingRect());
+            });
+        }
+    }
     TR.PrimitiveRenderer = PrimitiveRenderer;
 })(TR || (TR = {}));
 var TR;
 (function (TR) {
-    var TabRenderer = (function () {
-        function TabRenderer(canvas, ITablatureStyle) {
+    class TabRenderer {
+        constructor(canvas, ITablatureStyle) {
             this.ITablatureStyle = ITablatureStyle;
             this.canvas = new fabric.StaticCanvas(canvas);
             this.canvas.setDimensions(this.ITablatureStyle.page);
         }
-        return TabRenderer;
-    }());
+    }
     TR.TabRenderer = TabRenderer;
 })(TR || (TR = {}));
 //# sourceMappingURL=main.js.map

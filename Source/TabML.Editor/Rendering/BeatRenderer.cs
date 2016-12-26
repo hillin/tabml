@@ -115,7 +115,7 @@ namespace TabML.Editor.Rendering
                 await headBeatRenderer.Render(to);
 
                 var tiePosition = to.TiePosition ?? defaultTiePosition;
-                NoteConnectionRenderer.DrawTie(this.Root, from, to, stringIndices, tiePosition);
+                await NoteConnectionRenderer.DrawTie(this.Root, @from, to, stringIndices, tiePosition);
 
                 from = to;
             }
@@ -139,6 +139,30 @@ namespace TabML.Editor.Rendering
             {
                 foreach (var renderer in _noteRenderers)
                     await renderer.Render(targetBeat, beamSlope);
+
+                if (targetBeat == this.Element) // only draw A.H. text for self
+                {
+                    if (_noteRenderers.Any(n => n.Element.EffectTechnique == NoteEffectTechnique.ArtificialHarmonic))
+                    {
+                        var artificialHarmonicFrets =
+                            _noteRenderers.Select(n => n.Element)
+                                          .Where(n => n.EffectTechnique == NoteEffectTechnique.ArtificialHarmonic)
+                                          .ToArray();
+
+                        if (artificialHarmonicFrets.Length > 0)
+                        {
+                            var detailed = artificialHarmonicFrets.All(
+                                n => n.EffectTechniqueParameter == null ||
+                                     n.EffectTechniqueParameter == n.Fret + 12);
+                            var text = detailed
+                                ? "A.H."
+                                : $"A.H. {string.Join("/", artificialHarmonicFrets.Select(n => n.EffectTechniqueParameter ?? n.Fret + 12))}";
+
+                            var position = this.Element.OwnerColumn.GetPosition(this.RenderingContext);
+                            await renderingContext.DrawArtificialHarmonicText(this.Element.VoicePart, position, text);
+                        }
+                    }
+                }
             }
         }
 

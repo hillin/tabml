@@ -10,7 +10,13 @@ namespace TabML.Core.Document
         public int String { get; set; }
         public int Fret { get; set; }
         public NoteEffectTechnique EffectTechnique { get; set; }
-        public double EffectTechniqueParameter { get; set; }
+
+        public bool IsHarmonics
+            =>
+            this.EffectTechnique == NoteEffectTechnique.ArtificialHarmonic ||
+            this.EffectTechnique == NoteEffectTechnique.NaturalHarmonic;
+        public NoteAccent Accent { get; set; }
+        public double? EffectTechniqueParameter { get; set; }
         public PreNoteConnection PreConnection { get; set; }
         public PostNoteConnection PostConnection { get; set; }
         public bool IsTied { get; set; }

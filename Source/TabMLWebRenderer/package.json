@@ -4,8 +4,9 @@
   "description": "",
   "main": "main.js",
   "dependencies": {
+    "es6-promise": "^4.0.5",
     "systemjs": "^0.19.40",
-    "typescript": "^2.0.7",
+    "typescript": "^2.1.4",
     "typings": "^1.5.0"
   },
   "devDependencies": {},

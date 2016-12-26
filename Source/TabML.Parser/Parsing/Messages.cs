@@ -151,11 +151,29 @@ namespace TabML.Parser.Parsing
         public const string Error_RhythmInstructionMissingCloseParenthesisInStringsSpecifier =
             "Missing close parenthesis in strings specifier";
 
-        public const string Error_BeatInvalidStringNumberInStringsSpecifier =
+        public const string Error_InvalidStringNumberInStringsSpecifier =
             "Unrecognizable string number";
 
-        public const string Error_BeatInvalidFretNumberInStringsSpecifier =
+        public const string Error_InvalidFretNumberInStringsSpecifier =
             "Unrecognizable fret number";
+
+        public const string Error_GhostNoteNotEnclosed =
+            "Ghost note not enclosed with ')'";
+
+        public const string Error_NaturalHarmonicNoteNotEnclosed =
+            "Natural harmonic note not enclosed with '>'";
+
+        public const string Error_ArtificialHarmonicFretSpecifierNotEnclosed =
+            "Artificial harmonic fret specifier is not enclosed with '>'";
+
+        public const string Warning_BothNaturalAndArtificialHarmonicDeclared =
+            "Both natural and artificial harmonics are defined for this note, the natural harmonic will be ignored";
+
+        public const string Warning_ArtificialHarmonicFretTooSmall =
+            "Dominant hand fretting of artificial harmonic cannot be lower than the pressed fret";
+        
+        public const string Error_InvalidFretNumberInArtificialHarmonicSpecifier =
+            "Unrecognizable fret number for artificial harmonic";
 
         public const string Warning_EffectTechniqueInTiedNote =
             "Specifying effect techniques in a tied note, these techniques will be ignored";
@@ -191,8 +209,7 @@ namespace TabML.Parser.Parsing
 
         public const string Warning_BeatsNotMatchingTimeSignature = "Beats in this bar does not match time signature";
 
-        public const string Error_ArtificialHarmonicFretSpecifierNotEnclosed =
-            "Artificial harmonic fret specifier is not enclosed with '>'";
+
 
         public const string Warning_SectionNameMissingCloseQuoteMark = "Missing close quote mark";
         public const string Warning_EmptySectionName = "Empty section name, ignored";

@@ -16,6 +16,7 @@ namespace TR {
         }
 
         note: {
+            margin: number,
             circleOnLongNotes: boolean,
             longNoteCirclePadding: number,
             dot: {
@@ -25,12 +26,14 @@ namespace TR {
             },
             flagSpacing : number,
             tuplet : ITablatureTextStyle,
+            artificialHarmonicsText: ITablatureTextStyle
         }
 
-        tie: {
-            instructionOffset: number,
+        connection: {
             instructionText: ITablatureTextStyle
         }
+
+
 
         title: ITablatureTextStyle;
         fretNumber: ITablatureTextStyle;
