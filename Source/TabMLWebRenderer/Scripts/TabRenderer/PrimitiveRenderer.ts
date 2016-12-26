@@ -33,13 +33,17 @@ namespace TR {
             this.canvas.backgroundColor = "white";
         }
 
+        private getScale() : number {
+            return this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+        }
+
         private drawText(text: string, x:number, y: number, originX: string, originY: string, options?: fabric.IITextOptions) : BoundingBox
         {
             let textElement = new fabric.Text(text, options);
-            textElement.left = x;
-            textElement.top = y;
             textElement.originX = originX;
             textElement.originY = originY;
+            textElement.left = x;
+            textElement.top = y;
             this.canvas.add(textElement);
 
             return textElement.getBoundingRect();
@@ -54,11 +58,13 @@ namespace TR {
         }
 
         private drawSpecialFretting(imageFile: string, x: number, y: number, isHalfOrLonger: boolean) {
-            this.drawSVGFromURL(imageFile, x, y, group => {
-                group.scaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+            this.drawSVGFromURL(imageFile, x, y, 
+            group => {
+                group.scaleY = this.getScale();
                 group.originX = "center";
                 group.originY = "center";
-
+            },
+            group => {
                 let bounds = group.getBoundingRect();
 
                 if (isHalfOrLonger && this.style.note.circleOnLongNotes)
@@ -78,7 +84,7 @@ namespace TR {
             return bounds;
         }
 
-        private drawCircleAroundLongNote(x: number, y: number, bounds: { left: number; top: number; width: number; height: number }) : BoundingBox {
+        private drawCircleAroundLongNote(x: number, y: number, bounds: BoundingBox) : BoundingBox {
             let radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
             let circle = new fabric.Circle({
                 radius: radius,
@@ -152,18 +158,22 @@ namespace TR {
             this.drawLine(x, yFrom, x, yTo);
         }
 
-        private drawSVGFromURL(url: string, x: number, y: number, callback?: (group: fabric.IPathGroup) => void) {
+        private drawSVGFromURL(url: string, x: number, y: number, postProcessing?: (group: fabric.IPathGroup) => void, callback? : (group: fabric.IPathGroup) => void) {
             fabric.loadSVGFromURL(url, (results, options) => {
                 let group = fabric.util.groupSVGElements(results, options);
                 group.left = x;
                 group.top = y;
-                if (callback != null)
-                    callback(group);
+                if (postProcessing != null)
+                    postProcessing(group);
+
                 this.canvas.add(group);
+
+                if(callback!=null)
+                    callback(group);
             });
         }
 
-        drawFlag(noteValue: BaseNoteValue, x: number, y: number, direction: OffBarDirection) {
+        /*async*/ drawFlag(noteValue: BaseNoteValue, x: number, y: number, direction: OffBarDirection) {
             if (noteValue > BaseNoteValue.Eighth)
                 return;
 
@@ -174,9 +184,13 @@ namespace TR {
                 group.left = x;
                 group.originX = "left";
                 group.originY = "center";
-                group.scale(this.style.bar.lineHeight / ResourceManager.referenceBarSpacing);
+                group.scale(this.getScale());
+
+                let bounds = group.getBoundingRect();
+
                 if (direction == OffBarDirection.Bottom)
                     group.flipY = true;
+
                 for (let i = noteValue; i < BaseNoteValue.Quater; ++i) {
                     if (i === noteValue) {
                         group.top = y;
@@ -189,7 +203,18 @@ namespace TR {
                         });
                     }
 
-                    y += 6;
+                    if (direction == OffBarDirection.Bottom)
+                    {
+                        y -= 6;
+                        bounds.top -= 6;
+                    }
+                    else
+                    {
+                        y += 6;
+                        bounds.top += 6;
+                    }
+
+                    this.callbackWith(bounds);
                 }
             });
         }
@@ -225,41 +250,54 @@ namespace TR {
             }
         }
 
-        drawRest(noteValue: BaseNoteValue, x: number, y: number) {
-            let imageFile: string;
-
+        private getRestImage(noteValue: BaseNoteValue) : string {
             switch (noteValue) {
                 case BaseNoteValue.Large:
                 case BaseNoteValue.Long:
                 case BaseNoteValue.Double:
                 case BaseNoteValue.Whole:
                 case BaseNoteValue.Half:
-                    imageFile = ResourceManager.getTablatureResource("rest_2.svg"); break;
+                    return ResourceManager.getTablatureResource("rest_2.svg"); 
                 case BaseNoteValue.Quater:
-                    imageFile = ResourceManager.getTablatureResource("rest_4.svg"); break;
+                    return ResourceManager.getTablatureResource("rest_4.svg"); 
                 case BaseNoteValue.Eighth:
-                    imageFile = ResourceManager.getTablatureResource("rest_8.svg"); break;
+                    return ResourceManager.getTablatureResource("rest_8.svg"); 
                 case BaseNoteValue.Sixteenth:
-                    imageFile = ResourceManager.getTablatureResource("rest_16.svg"); break;
+                    return ResourceManager.getTablatureResource("rest_16.svg"); 
                 case BaseNoteValue.ThirtySecond:
-                    imageFile = ResourceManager.getTablatureResource("rest_32.svg"); break;
+                    return ResourceManager.getTablatureResource("rest_32.svg"); 
                 case BaseNoteValue.SixtyFourth:
-                    imageFile = ResourceManager.getTablatureResource("rest_64.svg"); break;
+                    return ResourceManager.getTablatureResource("rest_64.svg"); 
                 case BaseNoteValue.HundredTwentyEighth:
-                    imageFile = ResourceManager.getTablatureResource("rest_128.svg"); break;
+                    return ResourceManager.getTablatureResource("rest_128.svg"); 
                 case BaseNoteValue.TwoHundredFiftySixth:
-                    imageFile = ResourceManager.getTablatureResource("rest_256.svg"); break;
+                    return ResourceManager.getTablatureResource("rest_256.svg"); 
+                default:
+                    return null;
             }
+        }
 
-            this.drawSVGFromURL(imageFile, x, y, group => {
+        /*async*/ measureRest(noteValue: BaseNoteValue) {
+            fabric.loadSVGFromURL(this.getRestImage(noteValue), (results, options) => {
+                let group = fabric.util.groupSVGElements(results, options);
                 group.originX = "center";
                 group.originY = "center";
-                group.scale(this.style.bar.lineHeight / ResourceManager.referenceBarSpacing);
+                group.scale(this.getScale());
+                this.callbackWith(group.getBoundingRect());
             });
         }
 
-        drawTieInstruction(x: number, y: number, instruction: string) : BoundingBox {
-            return this.drawText(instruction, x, y, "center", "center", this.style.tie.instructionText);
+        drawRest(noteValue: BaseNoteValue, x: number, y: number) {
+            this.drawSVGFromURL(this.getRestImage(noteValue), x, y, group => {
+                group.originX = "center";
+                group.originY = "center";
+                group.scale(this.getScale());
+            });
+        }
+
+        drawTieInstruction(x: number, y: number, instruction: string, direction: OffBarDirection) : BoundingBox {
+            let originY = direction == OffBarDirection.Top ? "bottom" : "top";
+            return this.drawText(instruction, x, y, "center", originY, this.style.tie.instructionText);
         }
 
         drawTie(x0: number, x1: number, y: number, direction: OffBarDirection) {
@@ -267,7 +305,7 @@ namespace TR {
             this.drawSVGFromURL(imageFile, x0, y, group => {
 
                 group.scaleToWidth(x1 - x0);
-                let standardScaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                let standardScaleY = this.getScale();
                 group.scaleY = Math.max(standardScaleY/2, Math.min(Math.sqrt(group.scaleY), standardScaleY));
                 group.originX = "left";
 
@@ -285,7 +323,8 @@ namespace TR {
         /*async*/ drawGliss(x: number, y: number, direction: GlissDirection) {
             let imageFile = ResourceManager.getTablatureResource("gliss.svg");
 
-            this.drawSVGFromURL(imageFile, x, y, group => {
+            this.drawSVGFromURL(imageFile, x, y, 
+            group => {
 
                 switch (direction) {
                     case GlissDirection.FromHigher:
@@ -310,8 +349,9 @@ namespace TR {
                         break;
                 }
 
-                group.scaleY = this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
-
+                group.scaleY = this.getScale();
+            },
+            group => {
                 this.callbackWith(group.getBoundingRect());
             });
 

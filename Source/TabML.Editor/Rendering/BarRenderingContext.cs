@@ -72,8 +72,8 @@ namespace TabML.Editor.Rendering
         private void UpdateHorizontalBarLine(int stringIndex, Rect bounds)
         {
             this.Owner.UpdateHorizontalBarLine(stringIndex,
-                                               this.Owner.GetRelativePosition(bounds.Left),
-                                               this.Owner.GetRelativePosition(bounds.Right));
+                                               this.Owner.GetRelativeX(bounds.Left),
+                                               this.Owner.GetRelativeX(bounds.Right));
         }
 
         public async Task<Rect> DrawDeadNote(int stringIndex, double position, bool isHalfOrLonger)
@@ -114,6 +114,11 @@ namespace TabML.Editor.Rendering
             var yFrom = this.Location.Y + Math.Min(y0, y1);
             var yTo = this.Location.Y + Math.Max(y0, y1);
             this.PrimitiveRenderer.DrawStem(x, yFrom, yTo);
+
+            this.Owner.EnsureHeight(voicePart,
+                                    x - this.Style.NoteStemHorizontalMargin,
+                                    x + this.Style.NoteStemHorizontalMargin,
+                                    y0, y1);
         }
 
         public double GetNoteAlternationOffset(double offsetRatio)
@@ -139,40 +144,43 @@ namespace TabML.Editor.Rendering
             to -= this.Location.Y;
         }
 
-        public void DrawTuplet(int tuplet, double x, double y, VoicePart voicePart)
+        public async Task DrawTuplet(int tuplet, double x, VoicePart voicePart)
         {
-            y = this.Location.Y + y +
-                    (voicePart == VoicePart.Treble ? -this.Style.OuterNoteInstructionOffset : this.Style.OuterNoteInstructionOffset);
+            var y = this.Owner.GetHeight(voicePart, x + this.Location.X);
 
-            this.PrimitiveRenderer.DrawTuplet(tuplet.ToString(), x + this.Location.X, y);
-        }
+            var bounds = await this.PrimitiveRenderer.DrawTuplet(tuplet.ToString(), x + this.Location.X, y);
 
-        public void DrawTupletForRest(int value, double position, VoicePart voicePart)
-        {
-            double y;
-            if (voicePart == VoicePart.Treble)
-                y = this.Owner.GetBodyCeiling() - this.Style.OuterNoteInstructionOffset;
-            else
-                y = this.Owner.GetBodyFloor() + this.Style.OuterNoteInstructionOffset;
-
-            this.DrawTuplet(value, position, y - this.Location.Y, voicePart);
+            this.Owner.EnsureHeight(voicePart, bounds);
         }
 
         // x is absolute position
-        public void DrawGliss(double x, int stringIndex, GlissDirection direction)
+        public async Task DrawGliss(double x, int stringIndex, GlissDirection direction, VoicePart voicePart)
         {
-            this.PrimitiveRenderer.DrawGliss(x, this.Owner.GetStringPosition(stringIndex), direction);
-            //this.PrimitiveRenderer.DrawTieInstruction()
+            var bounds = await this.PrimitiveRenderer.DrawGliss(x, this.Owner.GetStringPosition(stringIndex), direction);
+            var instructionX = (bounds.Right + bounds.Left) / 2;
+            await this.DrawTieInstruction(voicePart, instructionX, "gl.");
         }
 
-        public void DrawFlag(BaseNoteValue noteValue, double x, double y, VoicePart voicePart)
+        public async Task DrawTieInstruction(VoicePart voicePart, double x, string instruction)
+        {
+            var y = this.Owner.GetHeight(voicePart, x);
+            var bounds = await this.PrimitiveRenderer.DrawTieInstruction(x, y, instruction, voicePart.ToOffBarDirection());
+            bounds.Inflate(this.Style.BeatDecoratorMargin, this.Style.BeatDecoratorMargin);
+            this.Owner.EnsureHeight(voicePart, bounds);
+        }
+
+        public async Task DrawFlag(BaseNoteValue noteValue, double x, double y, VoicePart voicePart)
         {
             if (noteValue > BaseNoteValue.Eighth)
                 return;
 
-            this.PrimitiveRenderer.DrawFlag(noteValue, this.Location.X + x, this.Location.Y + y, voicePart.ToOffBarDirection());
+            var bounds = await this.PrimitiveRenderer.DrawFlag(noteValue,
+                                                               this.Location.X + x,
+                                                               this.Location.Y + y,
+                                                               voicePart.ToOffBarDirection());
+            this.Owner.EnsureHeight(voicePart, bounds.Left - this.Style.NoteStemHorizontalMargin, bounds.Right,
+                                    bounds.Top, bounds.Bottom);
         }
-
 
         private double GetBeamOffset(BaseNoteValue noteValue, VoicePart voicePart)
         {
@@ -184,10 +192,7 @@ namespace TabML.Editor.Rendering
                           * (this.Style.BeamThickness + this.Style.BeamSpacing)
                           + 0.5 * this.Style.BeamThickness;
 
-            if (voicePart == VoicePart.Treble)
-                return offset;
-            else
-                return -offset;
+            return voicePart == VoicePart.Treble ? offset : -offset;
         }
 
         public void DrawNoteValueAugment(NoteValueAugment noteValueAugment, BaseNoteValue noteValue, double position,
@@ -206,10 +211,12 @@ namespace TabML.Editor.Rendering
         public void DrawBeam(BaseNoteValue noteValue, double x0, double y0, double x1, double y1, VoicePart voicePart)
         {
             var offset = this.GetBeamOffset(noteValue, voicePart);
-            this.PrimitiveRenderer.DrawBeam(x0 + this.Location.X,
-                                            y0 + this.Location.Y + offset,
-                                            x1 + this.Location.X,
-                                            y1 + this.Location.Y + offset);
+            x0 = x0 + this.Location.X;
+            y0 = y0 + this.Location.Y + offset;
+            x1 = x1 + this.Location.X;
+            y1 = y1 + this.Location.Y + offset;
+            this.PrimitiveRenderer.DrawBeam(x0, y0, x1, y1);
+            this.Owner.EnsureHeightSloped(voicePart, x0, x1, y0, y1, this.Style.NoteTailVerticalMargin);
         }
 
         public void DrawRest(BaseNoteValue noteValue, double position, VoicePart voicePart)
@@ -221,5 +228,9 @@ namespace TabML.Editor.Rendering
         }
 
 
+        public Task<Rect> MeasureRest(BaseNoteValue noteValue)
+        {
+            return this.PrimitiveRenderer.MeasureRest(noteValue);
+        }
     }
 }

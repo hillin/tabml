@@ -66,7 +66,8 @@ namespace TabML.Editor
 
         private static Rect CreateBoundingBox(Dictionary<string, object> result)
         {
-            return new Rect((double)result["left"], (double)result["top"], (double)result["width"], (double)result["height"]);
+            return new Rect(Convert.ToDouble(result["left"]), Convert.ToDouble(result["top"]),
+                            Convert.ToDouble(result["width"]), Convert.ToDouble(result["height"]));
         }
 
         private static string FormatArg(object arg)
@@ -94,28 +95,40 @@ namespace TabML.Editor
 
 
 
-        public Task<Rect> DrawTitle(string title, double x, double y) => this.InvokeRenderMethodReturnBoundingBox("drawTitle", title, x, y);
-        public Task<Rect> DrawLyrics(string lyrics, double x, double y) => this.InvokeRenderMethodReturnBoundingBox("drawLyrics", lyrics, x, y);
-        public Task<Rect> DrawFretNumber(string fretNumber, double x, double y, bool isHalfOrLonger) => this.InvokeRenderMethodReturnBoundingBox("drawFretNumber", fretNumber, x, y, isHalfOrLonger);
-        public Task<Rect> DrawDeadNote(double x, double y, bool isHalfOrLonger) => this.InvokeAsyncRenderMethodReturnBoundingBox("drawDeadNote", x, y, isHalfOrLonger);
-        public Task<Rect> DrawPlayToChordMark(double x, double y, bool isHalfOrLonger) => this.InvokeAsyncRenderMethodReturnBoundingBox("drawPlayToChordMark", x, y, isHalfOrLonger);
-        public void DrawHorizontalBarLine(double x, double y, double length) => this.InvokeRenderMethod("drawHorizontalBarLine", x, y, length);
-        public void DrawBarLine(BarLine line, double x, double y) => this.InvokeRenderMethod("drawBarLine", (int)line, x, y);
-        public void DrawStem(double x, double yFrom, double yTo) => this.InvokeRenderMethod("drawStem", x, yFrom, yTo);
-        public void DrawFlag(BaseNoteValue noteValue, double x, double y, OffBarDirection offBarDirection) => this.InvokeRenderMethod("drawFlag", (int)noteValue, x, y, (int)offBarDirection);
-        public void DrawBeam(double x1, double y1, double x2, double y2) => this.InvokeRenderMethod("drawBeam", x1, y1, x2, y2);
-        public void DrawNoteValueAugment(NoteValueAugment augment, double x, double y) => this.InvokeRenderMethod("drawNoteValueAugment", (int)augment, x, y);
-        public void DrawRest(BaseNoteValue noteValue, double x, double y) => this.InvokeRenderMethod("drawRest", (int)noteValue, x, y);
-        public Task<Rect> DrawTuplet(string tuplet, double x, double y) => this.InvokeRenderMethodReturnBoundingBox("drawTuplet", tuplet, x, y);
-
+        public Task<Rect> DrawTitle(string title, double x, double y) 
+            => this.InvokeRenderMethodReturnBoundingBox("drawTitle", title, x, y);
+        public Task<Rect> DrawLyrics(string lyrics, double x, double y) 
+            => this.InvokeRenderMethodReturnBoundingBox("drawLyrics", lyrics, x, y);
+        public Task<Rect> DrawFretNumber(string fretNumber, double x, double y, bool isHalfOrLonger) 
+            => this.InvokeRenderMethodReturnBoundingBox("drawFretNumber", fretNumber, x, y, isHalfOrLonger);
+        public Task<Rect> DrawDeadNote(double x, double y, bool isHalfOrLonger)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawDeadNote", x, y, isHalfOrLonger);
+        public Task<Rect> DrawPlayToChordMark(double x, double y, bool isHalfOrLonger) 
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawPlayToChordMark", x, y, isHalfOrLonger);
+        public void DrawHorizontalBarLine(double x, double y, double length) 
+            => this.InvokeRenderMethod("drawHorizontalBarLine", x, y, length);
+        public void DrawBarLine(BarLine line, double x, double y) 
+            => this.InvokeRenderMethod("drawBarLine", (int)line, x, y);
+        public void DrawStem(double x, double yFrom, double yTo) 
+            => this.InvokeRenderMethod("drawStem", x, yFrom, yTo);
+        public Task<Rect> DrawFlag(BaseNoteValue noteValue, double x, double y, OffBarDirection offBarDirection) 
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawFlag", (int)noteValue, x, y, (int)offBarDirection);
+        public void DrawBeam(double x1, double y1, double x2, double y2)
+            => this.InvokeRenderMethod("drawBeam", x1, y1, x2, y2);
+        public void DrawNoteValueAugment(NoteValueAugment augment, double x, double y) 
+            => this.InvokeRenderMethod("drawNoteValueAugment", (int)augment, x, y);
+        public void DrawRest(BaseNoteValue noteValue, double x, double y) 
+            => this.InvokeRenderMethod("drawRest", (int)noteValue, x, y);
+        public Task<Rect> MeasureRest(BaseNoteValue noteValue)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("measureRest", noteValue);
+        public Task<Rect> DrawTuplet(string tuplet, double x, double y) 
+            => this.InvokeRenderMethodReturnBoundingBox("drawTuplet", tuplet, x, y);
         public void DrawTie(double x0, double x1, double y, OffBarDirection offBarDirection)
             => this.InvokeRenderMethod("drawTie", x0, x1, y, (int)offBarDirection);
-
         public Task<Rect> DrawGliss(double x, double y, GlissDirection direction)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawGliss", x, y, direction);
-
-        public Task<Rect> DrawTieInstruction(double x, double y, string instruction)
-            => this.InvokeRenderMethodReturnBoundingBox("drawTieInstruction", x, y, instruction);
+        public Task<Rect> DrawTieInstruction(double x, double y, string instruction, OffBarDirection offBarDirection)
+            => this.InvokeRenderMethodReturnBoundingBox("drawTieInstruction", x, y, instruction, offBarDirection);
 
         public void Clear() => this.InvokeRenderMethod("clear");
     }

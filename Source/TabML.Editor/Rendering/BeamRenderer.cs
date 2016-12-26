@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using TabML.Core.Document;
+using TabML.Core.MusicTheory;
 using TabML.Editor.Tablature.Layout;
 
 namespace TabML.Editor.Rendering
@@ -50,8 +51,10 @@ namespace TabML.Editor.Rendering
 
             if (beamSlope == null)
             {
-                var y0 = firstBeat.GetStemTailPosition(this.RenderingContext);
-                var y1 = lastBeat.GetStemTailPosition(this.RenderingContext);
+                var beamOffset = await this.CalculateBeamOffset();
+
+                var y0 = firstBeat.GetStemTailPosition(this.RenderingContext) + beamOffset;
+                var y1 = lastBeat.GetStemTailPosition(this.RenderingContext) + beamOffset;
                 beamSlope = new BeamSlope(x0, y0, (y1 - y0) / (x1 - x0));
                 this.RenderingContext.SetBeamSlope(this.Element, beamSlope);
             }
@@ -60,13 +63,36 @@ namespace TabML.Editor.Rendering
                 await renderer.Render();
 
             this.RenderingContext.DrawBeam(this.Beam.BeatNoteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), this.Beam.VoicePart);
-            if (this.Beam.Tuplet != null
-                && this.Beam.Elements.Any(e => (e as Beam)?.Tuplet != this.Beam.Tuplet))
+
+            if (this.Beam.Tuplet != null)
             {
-                var tupletX = (x1 + x0) / 2;
-                this.RenderingContext.DrawTuplet(this.Beam.Tuplet.Value, tupletX, beamSlope.GetY(tupletX), this.Beam.VoicePart);
+                if (this.Beam.IsRoot || this.Beam.RootBeam.Tuplet != this.Beam.Tuplet)
+                {
+                    var tupletX = (x1 + x0) / 2;
+                    await this.RenderingContext.DrawTuplet(this.Beam.Tuplet.Value, tupletX, this.Beam.VoicePart);
+                }
             }
         }
 
+        private async Task<double> CalculateBeamOffset()
+        {
+            var shortestRest = (Beat)null;
+            foreach (var restBeat in _beatElementRenderers.OfType<BeatRenderer>().Select(b => b.Element).Where(b => b.IsRest))
+            {
+                if (shortestRest == null || shortestRest.NoteValue.Base > restBeat.NoteValue.Base)
+                    shortestRest = restBeat;
+            }
+
+            var beamOffset = 0.0;
+            if (shortestRest != null)
+            {
+                var restBounds = await this.RenderingContext.MeasureRest(shortestRest.NoteValue.Base);
+                var halfBarSpaceHeight = this.RenderingContext.Style.BarLineHeight / 2;
+                beamOffset = this.Element.VoicePart == VoicePart.Treble
+                    ? restBounds.Top - halfBarSpaceHeight
+                    : restBounds.Bottom + halfBarSpaceHeight;
+            }
+            return beamOffset;
+        }
     }
 }

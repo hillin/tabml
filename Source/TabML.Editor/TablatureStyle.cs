@@ -31,25 +31,21 @@ namespace TabML.Editor
 
         public double NoteStemOffset { get; set; } = 2;
         public double NoteStemHorizontalMargin { get; set; } = 10;
+        public double NoteTailVerticalMargin { get; set; } = 10;
         public double MinimumNoteTailOffset { get; set; } = 16;
         public double NoteStemHeight { get; set; } = 24;
         public double NoteAlternationOffset { get; set; } = 10;
         public double NoteMargin { get; set; } = 2;
         public double PresumedNoteSize { get; set; } = 10;
 
-
         public double BeamThickness { get; set; } = 4;
         public double BeamSpacing { get; set; } = 4;
-        public double SemiBeamWidth { get; set; } = 12;
+        public double MaximumSemiBeamWidth { get; set; } = 12;
         public double NoteValueAugmentOffset { get; set; } = 8;
 
-        public double OuterNoteInstructionOffset { get; set; } = 12;
-        public double TieInstructionOffset { get; set; } = 24;
-
-        public double GlissWidth { get; set; } = 30;    // todo: draw gliss in this width too
-        public double TieInstructionTextHeight { get; set; } = 24;
-        public double TieInstructionTextMargin { get; set; } = 4;
-
+        // decorator = tie instructions, accent marks etc.
+        public double BeatDecoratorMargin { get; set; } = 4;
+        
         public FormattedText MakeFormattedLyrics(string lyricsText)
         {
             return new FormattedText(lyricsText, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,

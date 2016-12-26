@@ -62,7 +62,6 @@ namespace TabML.Editor.Rendering
             var barRenders = new List<BarRenderer>();
 
             // ReSharper disable once AccessToModifiedClosure
-
             while (barIndex < this.Tablature.Bars.Length)
             {
                 if (barRenders.Count < this.Style.RegularBarsPerRow)

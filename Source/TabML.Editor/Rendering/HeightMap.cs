@@ -11,10 +11,11 @@ namespace TabML.Editor.Rendering
         private readonly double[] _heights;
         private readonly double _sampleRateInversed;
 
-        public HeightMap(int width, int sampleRate)
+        public HeightMap(int width, int sampleRate, double filledHeight = 0)
         {
-            _sampleRateInversed = (double)width / sampleRate;
-            _heights = new double[(int)Math.Ceiling(_sampleRateInversed)];
+            _sampleRateInversed = 1.0 / sampleRate;
+            _heights = new double[(int)Math.Ceiling((double)width / sampleRate)];
+            this.Fill(filledHeight);
         }
 
         private int GetIndex(double position) => (int)(position * _sampleRateInversed);
@@ -22,16 +23,15 @@ namespace TabML.Editor.Rendering
             => Enumerable.Range(this.GetIndex(position), (int)Math.Ceiling(size * _sampleRateInversed));
         public double GetHeight(double position) => _heights[this.GetIndex(position)];
         public double GetHeight(double from, double size) => this.GetIndices(from, size).Select(i => _heights[i]).Max();
-        public void SetHeight(double position, double height) => _heights[this.GetIndex(position)] = height;
         public void AddHeight(double position, double height) => _heights[this.GetIndex(position)] += height;
+        public void AddHeight(double from, double size, double height)
+            => this.SetHeight(from, size, this.GetHeight(from, size) + height);
+        public void SetHeight(double position, double height) => _heights[this.GetIndex(position)] = height;
         public void SetHeight(double from, double size, double height)
         {
             foreach (var index in this.GetIndices(from, size))
                 _heights[index] = height;
         }
-
-        public void AddHeight(double from, double size, double height)
-            => this.SetHeight(from, size, this.GetHeight(from, size) + height);
 
         public void SetHeight(double from, double size, double fromHeight, double toHeight)
         {
@@ -39,6 +39,28 @@ namespace TabML.Editor.Rendering
             foreach (var index in this.GetIndices(from, size))
             {
                 _heights[index] = fromHeight + slope * index / _sampleRateInversed;
+            }
+        }
+
+        public void EnsureHeight(double position, double height)
+        {
+            var index = this.GetIndex(position);
+            var oldHeight = _heights[index];
+            _heights[index] = Math.Max(oldHeight, height);
+        }
+
+        public void EnsureHeight(double from, double size, double height)
+        {
+            foreach (var index in this.GetIndices(from, size))
+                _heights[index] = Math.Max(_heights[index], height);
+        }
+
+        public void EnsureHeight(double from, double size, double fromHeight, double toHeight)
+        {
+            var slope = (toHeight - fromHeight) / size;
+            foreach (var index in this.GetIndices(from, size))
+            {
+                _heights[index] = Math.Max(_heights[index], fromHeight + slope * index / _sampleRateInversed);
             }
         }
 

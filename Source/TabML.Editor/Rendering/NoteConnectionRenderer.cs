@@ -11,12 +11,12 @@ namespace TabML.Editor.Rendering
 {
     static class NoteConnectionRenderer
     {
-        public static void DrawTie(IRootElementRenderer rootRenderer, Beat from, Beat to, int stringIndex, TiePosition tiePosition)
+        public static async Task DrawTie(IRootElementRenderer rootRenderer, Beat from, Beat to, int stringIndex, TiePosition tiePosition)
         {
-            NoteConnectionRenderer.DrawTie(rootRenderer, from, to, new[] { stringIndex }, tiePosition);
+            await NoteConnectionRenderer.DrawTie(rootRenderer, from, to, new[] { stringIndex }, tiePosition);
         }
 
-        public static void DrawTie(IRootElementRenderer rootRenderer, Beat from, Beat to, IEnumerable<int> stringIndices, TiePosition tiePosition, string instruction = null)
+        public static async Task DrawTie(IRootElementRenderer rootRenderer, Beat from, Beat to, IEnumerable<int> stringIndices, TiePosition tiePosition, string instruction = null)
         {
             if (to.IsRest || from.IsRest)
                 return;
@@ -39,6 +39,8 @@ namespace TabML.Editor.Rendering
                 if (toContext.Owner == fromContext.Owner)
                 {
                     toContext.Owner.DrawTie(fromX, toX, stringIndex, tiePosition, null, 0);
+                    if (!string.IsNullOrEmpty(instruction))
+                        await toContext.DrawTieInstruction(to.VoicePart, (toX + fromX)/2, instruction);
                 }
                 else
                 {
@@ -46,12 +48,18 @@ namespace TabML.Editor.Rendering
                     fromContext.Owner.DrawTie(fromX,
                                               fromContext.Owner.BottomRight.X,
                                               stringIndex, tiePosition, null, 0);
+
+                    if (!string.IsNullOrEmpty(instruction))
+                    {
+                        await toContext.DrawTieInstruction(to.VoicePart, (toX + toContext.Owner.Location.X) / 2, $"({instruction})");
+                        await fromContext.DrawTieInstruction(to.VoicePart, (fromX + fromContext.Owner.BottomRight.X) / 2, instruction);
+                    }
                 }
             }
         }
 
-        public static void DrawGliss(IRootElementRenderer rootRenderer, Beat beat, IEnumerable<int> stringIndices,
-                                     GlissDirection direction)
+        public static async Task DrawGliss(IRootElementRenderer rootRenderer, Beat beat, IEnumerable<int> stringIndices,
+                                           GlissDirection direction)
         {
             var renderingContext = rootRenderer.GetRenderer<Beat, BeatRenderer>(beat).RenderingContext;
 
@@ -75,17 +83,17 @@ namespace TabML.Editor.Rendering
                         throw new InvalidOperationException();
                 }
 
-                renderingContext.DrawGliss(x, stringIndex, direction);
+                await renderingContext.DrawGliss(x, stringIndex, direction, beat.VoicePart);
             }
         }
 
-        public static void DrawConnection(IRootElementRenderer rootRenderer, NoteConnection connection, Beat from,
+        public static async Task DrawConnection(IRootElementRenderer rootRenderer, NoteConnection connection, Beat from,
                                              Beat to, int stringIndex, TiePosition tiePosition)
         {
-            NoteConnectionRenderer.DrawConnection(rootRenderer, connection, from, to, new[] { stringIndex }, tiePosition);
+            await NoteConnectionRenderer.DrawConnection(rootRenderer, connection, from, to, new[] { stringIndex }, tiePosition);
         }
 
-        public static void DrawConnection(IRootElementRenderer rootRenderer, NoteConnection connection, Beat from, Beat to, IEnumerable<int> stringIndices, TiePosition tiePosition)
+        public static async Task DrawConnection(IRootElementRenderer rootRenderer, NoteConnection connection, Beat from, Beat to, IEnumerable<int> stringIndices, TiePosition tiePosition)
         {
             switch (connection)
             {
@@ -93,16 +101,16 @@ namespace TabML.Editor.Rendering
                     NoteConnectionRenderer.DrawTie(rootRenderer, from, to, stringIndices, tiePosition, "sl.");
                     break;
                 case NoteConnection.SlideInFromHigher:
-                    NoteConnectionRenderer.DrawGliss(rootRenderer, to, stringIndices, GlissDirection.FromHigher);
+                    await NoteConnectionRenderer.DrawGliss(rootRenderer, to, stringIndices, GlissDirection.FromHigher);
                     break;
                 case NoteConnection.SlideInFromLower:
-                    NoteConnectionRenderer.DrawGliss(rootRenderer, to, stringIndices, GlissDirection.FromLower);
+                    await NoteConnectionRenderer.DrawGliss(rootRenderer, to, stringIndices, GlissDirection.FromLower);
                     break;
                 case NoteConnection.SlideOutToHigher:
-                    NoteConnectionRenderer.DrawGliss(rootRenderer, from, stringIndices, GlissDirection.ToHigher);
+                    await NoteConnectionRenderer.DrawGliss(rootRenderer, from, stringIndices, GlissDirection.ToHigher);
                     break;
                 case NoteConnection.SlideOutToLower:
-                    NoteConnectionRenderer.DrawGliss(rootRenderer, from, stringIndices, GlissDirection.ToLower);
+                    await NoteConnectionRenderer.DrawGliss(rootRenderer, from, stringIndices, GlissDirection.ToLower);
                     break;
                 case NoteConnection.Hammer:
                     NoteConnectionRenderer.DrawTie(rootRenderer, from, to, stringIndices, tiePosition, "h.");
@@ -113,22 +121,22 @@ namespace TabML.Editor.Rendering
             }
         }
 
-        public static void DrawPostConnection(IRootElementRenderer rootRenderer, PostNoteConnection postConnection,
+        public static async Task DrawPostConnection(IRootElementRenderer rootRenderer, PostNoteConnection postConnection,
                                               Beat beat, int stringIndex)
         {
-            NoteConnectionRenderer.DrawPostConnection(rootRenderer, postConnection, beat, new[] { stringIndex });
+            await NoteConnectionRenderer.DrawPostConnection(rootRenderer, postConnection, beat, new[] { stringIndex });
         }
 
-        public static void DrawPostConnection(IRootElementRenderer rootRenderer, PostNoteConnection postConnection,
+        public static async Task DrawPostConnection(IRootElementRenderer rootRenderer, PostNoteConnection postConnection,
                                               Beat beat, IEnumerable<int> stringIndices)
         {
             switch (postConnection)
             {
                 case PostNoteConnection.SlideOutToHigher:
-                    NoteConnectionRenderer.DrawGliss(rootRenderer, beat, stringIndices, GlissDirection.ToHigher);
+                    await NoteConnectionRenderer.DrawGliss(rootRenderer, beat, stringIndices, GlissDirection.ToHigher);
                     break;
                 case PostNoteConnection.SlideOutToLower:
-                    NoteConnectionRenderer.DrawGliss(rootRenderer, beat, stringIndices, GlissDirection.ToLower);
+                    await NoteConnectionRenderer.DrawGliss(rootRenderer, beat, stringIndices, GlissDirection.ToLower);
                     break;
             }
         }

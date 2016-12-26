@@ -32,6 +32,7 @@ namespace TabML.Core.Document
         public bool IsRoot { get; }
         public List<IBeatElement> Elements { get; }
         public int? Tuplet { get; set; }
+        public Beam RootBeam => this.IsRoot ? this : this.OwnerBeam?.RootBeam;
         public Beam OwnerBeam { get; private set; }
 
         public Beam(BaseNoteValue beatNoteValue, VoicePart voicePart, bool isRoot)
@@ -53,7 +54,6 @@ namespace TabML.Core.Document
         {
             this.Elements.ForEach(e => e.ClearRange());
         }
-
 
         public Beam Clone()
         {

@@ -22,7 +22,7 @@ namespace TabML.Editor.Rendering
 
         public static double GetPositionInRow(this BarColumn column, BarRenderingContext rc)
         {
-            return rc.Owner.GetRelativePosition(rc.ColumnRenderingInfos[column.ColumnIndex].Position + rc.Location.X);
+            return rc.Owner.GetRelativeX(rc.ColumnRenderingInfos[column.ColumnIndex].Position + rc.Location.X);
         }
     }
 }

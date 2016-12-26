@@ -50,8 +50,8 @@ namespace TabML.Editor.Rendering
 
                 if (this.Element.IsTied)
                 {
-                    NoteConnectionRenderer.DrawTie(this.Root, this.Element.PreConnectedNote?.OwnerBeat,
-                                                   this.Element.OwnerBeat, this.Element.String, tiePosition);
+                    await NoteConnectionRenderer.DrawTie(this.Root, this.Element.PreConnectedNote?.OwnerBeat,
+                                                         this.Element.OwnerBeat, this.Element.String, tiePosition);
                 }
                 else
                 {
@@ -61,11 +61,11 @@ namespace TabML.Editor.Rendering
 
                     if (preConnection != NoteConnection.None)
                     {
-                        NoteConnectionRenderer.DrawConnection(this.Root, preConnection,
-                                                              this.Element.PreConnectedNote?.OwnerBeat,
-                                                              this.Element.OwnerBeat, this.Element.String,
-                                                              this.Element.TiePosition ??
-                                                              tiePosition);
+                        await NoteConnectionRenderer.DrawConnection(this.Root, preConnection,
+                                                                    this.Element.PreConnectedNote?.OwnerBeat,
+                                                                    this.Element.OwnerBeat, this.Element.String,
+                                                                    this.Element.TiePosition ??
+                                                                    tiePosition);
                     }
                 }
 
@@ -74,7 +74,7 @@ namespace TabML.Editor.Rendering
                     : (NoteConnection)this.Element.PostConnection;
 
                 if (postConnection != NoteConnection.None)
-                    NoteConnectionRenderer.DrawConnection(this.Root, postConnection, beat, null, this.Element.String, tiePosition);
+                    await NoteConnectionRenderer.DrawConnection(this.Root, postConnection, beat, null, this.Element.String, tiePosition);
             }
         }
 

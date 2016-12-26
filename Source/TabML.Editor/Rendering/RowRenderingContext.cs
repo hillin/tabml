@@ -33,13 +33,14 @@ namespace TabML.Editor.Rendering
             _stringCarets = new double[this.Style.StringCount];
             _heightMaps = new Dictionary<VoicePart, HeightMap>
             {
-                {VoicePart.Bass, new HeightMap((int) Math.Ceiling(availableSize.Width), HeightMapSampleRate)},
-                {VoicePart.Treble, new HeightMap((int) Math.Ceiling(availableSize.Width), HeightMapSampleRate)},
+                {VoicePart.Bass, this.CreatehHeightMap(availableSize)},
+                {VoicePart.Treble, this.CreatehHeightMap(availableSize)},
             };
+        }
 
-            _heightMaps[VoicePart.Bass].Fill(this.GetBodyFloor() + this.Style.MinimumNoteTailOffset);
-            _heightMaps[VoicePart.Treble].Fill(this.GetBodyCeiling() - this.Style.MinimumNoteTailOffset);
-
+        private HeightMap CreatehHeightMap(Size availableSize)
+        {
+            return new HeightMap((int)Math.Ceiling(availableSize.Width), HeightMapSampleRate, this.Style.MinimumNoteTailOffset + this.Style.NoteTailVerticalMargin);
         }
 
         public HeightMap GetHeightMap(VoicePart voicePart)
@@ -47,9 +48,14 @@ namespace TabML.Editor.Rendering
             return _heightMaps[voicePart];
         }
 
-        public double GetRelativePosition(double position)
+        public double GetRelativeX(double position)
         {
             return position - this.Location.X;
+        }
+
+        public double GetRelativeY(double position)
+        {
+            return position - this.Location.Y;
         }
 
         public void UpdateHorizontalBarLine(int stringIndex, double left, double right)
@@ -77,7 +83,14 @@ namespace TabML.Editor.Rendering
                                                          position - _stringCarets[stringIndex]);
         }
 
+        /// <summary>
+        /// Gets the absolute location of the top-most bar line
+        /// </summary>
         public double GetBodyCeiling() => this.Location.Y + this.Style.BarTopMargin;
+
+        /// <summary>
+        /// Gets the absolute location of the bottom-most bar line
+        /// </summary>
         public double GetBodyFloor() => this.GetBodyCeiling() + this.Style.BarLineHeight * this.Style.StringCount;
 
         public double GetStringPosition(int stringIndex) => this.Location.Y + this.Style.BarTopMargin + (stringIndex + 0.5) * this.Style.BarLineHeight;
@@ -92,12 +105,71 @@ namespace TabML.Editor.Rendering
             this.PrimitiveRenderer.DrawTie(from, to, y, tiePosition.ToOffBarDirection());
         }
 
-
-        public void DrawTieInstruction(double x, double y, string instruction)
+        /// <summary>
+        /// Ensure height spanned between <paramref name="x0" /> and <paramref name="x1" /> in the 
+        /// height map by selecting between <paramref name="y0" /> and <paramref name="y1" /> according to 
+        /// the specified <paramref name="voicePart"/>
+        /// </summary>
+        /// <remarks>All coordinates are absolute</remarks>
+        public void EnsureHeight(VoicePart voicePart, double x0, double x1, double y0, double y1)
         {
-            this.PrimitiveRenderer.DrawTieInstruction(x + this.Location.X, y + this.Location.Y, instruction);
+            double height;
+            switch (voicePart)
+            {
+                case VoicePart.Treble:
+                    height = this.GetBodyCeiling() - Math.Min(y0, y1);
+                    break;
+                case VoicePart.Bass:
+                    height = Math.Max(y0, y1) - this.GetBodyFloor();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(voicePart), voicePart, null);
+            }
+
+            _heightMaps[voicePart].EnsureHeight(this.GetRelativeX(x0), x1 - x0, height);
         }
 
+        public void EnsureHeight(VoicePart voicePart, Rect bounds)
+        {
+            this.EnsureHeight(voicePart, bounds.Left, bounds.Right, bounds.Top, bounds.Bottom);
+        }
+
+        /// <summary>
+        /// Ensure height spanned between <paramref name="x0" /> and <paramref name="x1" /> in the 
+        /// height map by lerping between <paramref name="y0" /> and <paramref name="y1" />.
+        /// </summary>
+        /// <remarks>All coordinates are absolute</remarks>
+        public void EnsureHeightSloped(VoicePart voicePart, double x0, double x1, double y0, double y1, double offset)
+        {
+            switch (voicePart)
+            {
+                case VoicePart.Treble:
+                    y0 = this.GetBodyCeiling() - y0;
+                    y1 = this.GetBodyCeiling() - y1;
+                    break;
+                case VoicePart.Bass:
+                    y0 = y0 - this.GetBodyFloor();
+                    y1 = y1 - this.GetBodyFloor();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(voicePart), voicePart, null);
+            }
+
+            _heightMaps[voicePart].EnsureHeight(this.GetRelativeX(x0), x1 - x0, y0 + offset, y1 + offset);
+        }
+
+        public double GetHeight(VoicePart voicePart, double x)
+        {
+            switch (voicePart)
+            {
+                case VoicePart.Treble:
+                    return this.GetBodyCeiling() - _heightMaps[voicePart].GetHeight(this.GetRelativeX(x));
+                case VoicePart.Bass:
+                    return this.GetBodyFloor() + _heightMaps[voicePart].GetHeight(this.GetRelativeX(x));
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(voicePart), voicePart, null);
+            }
+        }
 
     }
 }

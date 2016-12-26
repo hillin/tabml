@@ -129,27 +129,38 @@
     <Compile Include="MusicTheory\AlternationText.cs" />
     <Compile Include="MusicTheory\AlternationTextType.cs" />
     <Compile Include="MusicTheory\Accidentals.cs" />
-    <Compile Include="MusicTheory\BaseNoteNames.cs" />
-    <Compile Include="MusicTheory\BaseNoteValues.cs" />
+    <Compile Include="MusicTheory\BaseNoteName.cs" />
+    <Compile Include="MusicTheory\BaseNoteNames.cs">
+      <DependentUpon>BaseNoteName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MusicTheory\BaseNoteValue.cs" />
+    <Compile Include="MusicTheory\BaseNoteValues.cs">
+      <DependentUpon>BaseNoteValue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MusicTheory\BaseNoteValueExtensions.cs">
+      <DependentUpon>BaseNoteValue.cs</DependentUpon>
+    </Compile>
     <Compile Include="MusicTheory\CapoInfo.cs" />
     <Compile Include="MusicTheory\AllStringStrumTechnique.cs" />
     <Compile Include="MusicTheory\GlissDirection.cs" />
     <Compile Include="MusicTheory\KnownTuningAttribute.cs" />
     <Compile Include="MusicTheory\NoteEffectTechnique.cs" />
-    <Compile Include="MusicTheory\PostBeatConnection.cs" />
-    <Compile Include="MusicTheory\PostNoteConnection.cs" />
-    <Compile Include="MusicTheory\PreBeatConnection.cs" />
     <Compile Include="MusicTheory\PreciseDuration.cs" />
-    <Compile Include="MusicTheory\PreciseDurationExtensions.cs" />
-    <Compile Include="MusicTheory\PreNoteConnection.cs" />
+    <Compile Include="MusicTheory\PreciseDurationExtensions.cs">
+      <DependentUpon>PreciseDuration.cs</DependentUpon>
+    </Compile>
     <Compile Include="MusicTheory\StaffType.cs" />
     <Compile Include="MusicTheory\Tempo.cs" />
     <Compile Include="MusicTheory\Accidental.cs" />
-    <Compile Include="MusicTheory\AccidentalExtensions.cs" />
+    <Compile Include="MusicTheory\AccidentalExtensions.cs">
+      <DependentUpon>Accidental.cs</DependentUpon>
+    </Compile>
     <Compile Include="MusicTheory\BarLine.cs" />
     <Compile Include="MusicTheory\BaseNoteNameExtensions.cs" />
     <Compile Include="MusicTheory\Chord.cs" />
-    <Compile Include="MusicTheory\Chord.static.cs" />
+    <Compile Include="MusicTheory\Chord.static.cs">
+      <DependentUpon>Chord.cs</DependentUpon>
+    </Compile>
     <Compile Include="MusicTheory\Interval.cs" />
     <Compile Include="MusicTheory\IntervalQuality.cs" />
     <Compile Include="MusicTheory\Intervals.cs" />
@@ -157,28 +168,51 @@
     <Compile Include="MusicTheory\BeatDurationEffect.cs" />
     <Compile Include="MusicTheory\BeatEffectTechnique.cs" />
     <Compile Include="MusicTheory\NoteName.cs" />
-    <Compile Include="MusicTheory\NoteNames.cs" />
-    <Compile Include="MusicTheory\Pitches.cs" />
+    <Compile Include="MusicTheory\NoteNames.cs">
+      <DependentUpon>NoteName.cs</DependentUpon>
+    </Compile>
     <Compile Include="MusicTheory\Pitch.cs" />
-    <Compile Include="MusicTheory\BaseNoteValueExtensions.cs" />
+    <Compile Include="MusicTheory\Pitches.cs">
+      <DependentUpon>Pitch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MusicTheory\Pitch.static.cs">
+      <DependentUpon>Pitch.cs</DependentUpon>
+    </Compile>
     <Compile Include="MusicTheory\CloseBarLine.cs" />
-    <Compile Include="MusicTheory\BaseNoteName.cs" />
-    <Compile Include="MusicTheory\Pitch.static.cs" />
-    <Compile Include="MusicTheory\BaseNoteValue.cs" />
     <Compile Include="MusicTheory\NoteValue.cs" />
     <Compile Include="MusicTheory\NoteValueAugment.cs" />
-    <Compile Include="MusicTheory\NoteValueAugmentExtensions.cs" />
+    <Compile Include="MusicTheory\NoteValueAugmentExtensions.cs">
+      <DependentUpon>NoteValueAugment.cs</DependentUpon>
+    </Compile>
     <Compile Include="MusicTheory\OpenBarLine.cs" />
     <Compile Include="MusicTheory\NoteConnection.cs" />
+    <Compile Include="MusicTheory\PreBeatConnection.cs">
+      <DependentUpon>NoteConnection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MusicTheory\PostBeatConnection.cs">
+      <DependentUpon>NoteConnection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MusicTheory\PostNoteConnection.cs">
+      <DependentUpon>NoteConnection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MusicTheory\PreNoteConnection.cs">
+      <DependentUpon>NoteConnection.cs</DependentUpon>
+    </Compile>
     <Compile Include="MusicTheory\StrumTechnique.cs" />
     <Compile Include="MusicTheory\TiePosition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MusicTheory\Time.cs" />
-    <Compile Include="MusicTheory\Times.cs" />
+    <Compile Include="MusicTheory\Times.cs">
+      <DependentUpon>Time.cs</DependentUpon>
+    </Compile>
     <Compile Include="MusicTheory\Tuning.cs" />
-    <Compile Include="MusicTheory\Tunings.cs" />
+    <Compile Include="MusicTheory\Tunings.cs">
+      <DependentUpon>Tuning.cs</DependentUpon>
+    </Compile>
     <Compile Include="RightHandFingerIndex.cs" />
-    <Compile Include="RightHandFingerIndexExtensions.cs" />
+    <Compile Include="RightHandFingerIndexExtensions.cs" >
+      <DependentUpon>RightHandFingerIndex.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TextPointer.cs" />
     <Compile Include="TextRange.cs" />
     <Compile Include="TextSource.cs" />

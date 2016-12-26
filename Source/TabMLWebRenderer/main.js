@@ -2509,12 +2509,15 @@ var TR;
             this.canvas.clear();
             this.canvas.backgroundColor = "white";
         };
+        PrimitiveRenderer.prototype.getScale = function () {
+            return this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+        };
         PrimitiveRenderer.prototype.drawText = function (text, x, y, originX, originY, options) {
             var textElement = new fabric.Text(text, options);
-            textElement.left = x;
-            textElement.top = y;
             textElement.originX = originX;
             textElement.originY = originY;
+            textElement.left = x;
+            textElement.top = y;
             this.canvas.add(textElement);
             return textElement.getBoundingRect();
         };
@@ -2527,9 +2530,10 @@ var TR;
         PrimitiveRenderer.prototype.drawSpecialFretting = function (imageFile, x, y, isHalfOrLonger) {
             var _this = this;
             this.drawSVGFromURL(imageFile, x, y, function (group) {
-                group.scaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                group.scaleY = _this.getScale();
                 group.originX = "center";
                 group.originY = "center";
+            }, function (group) {
                 var bounds = group.getBoundingRect();
                 if (isHalfOrLonger && _this.style.note.circleOnLongNotes)
                     _this.callbackWith(_this.drawCircleAroundLongNote(x, y, bounds));
@@ -2612,18 +2616,20 @@ var TR;
         PrimitiveRenderer.prototype.drawStem = function (x, yFrom, yTo) {
             this.drawLine(x, yFrom, x, yTo);
         };
-        PrimitiveRenderer.prototype.drawSVGFromURL = function (url, x, y, callback) {
+        PrimitiveRenderer.prototype.drawSVGFromURL = function (url, x, y, postProcessing, callback) {
             var _this = this;
             fabric.loadSVGFromURL(url, function (results, options) {
                 var group = fabric.util.groupSVGElements(results, options);
                 group.left = x;
                 group.top = y;
+                if (postProcessing != null)
+                    postProcessing(group);
+                _this.canvas.add(group);
                 if (callback != null)
                     callback(group);
-                _this.canvas.add(group);
             });
         };
-        PrimitiveRenderer.prototype.drawFlag = function (noteValue, x, y, direction) {
+        /*async*/ PrimitiveRenderer.prototype.drawFlag = function (noteValue, x, y, direction) {
             var _this = this;
             if (noteValue > BaseNoteValue.Eighth)
                 return;
@@ -2633,7 +2639,8 @@ var TR;
                 group.left = x;
                 group.originX = "left";
                 group.originY = "center";
-                group.scale(_this.style.bar.lineHeight / ResourceManager.referenceBarSpacing);
+                group.scale(_this.getScale());
+                var bounds = group.getBoundingRect();
                 if (direction == OffBarDirection.Bottom)
                     group.flipY = true;
                 for (var i = noteValue; i < BaseNoteValue.Quater; ++i) {
@@ -2647,7 +2654,15 @@ var TR;
                             _this.canvas.add(result);
                         });
                     }
-                    y += 6;
+                    if (direction == OffBarDirection.Bottom) {
+                        y -= 6;
+                        bounds.top -= 6;
+                    }
+                    else {
+                        y += 6;
+                        bounds.top += 6;
+                    }
+                    _this.callbackWith(bounds);
                 }
             });
         };
@@ -2679,54 +2694,60 @@ var TR;
                 x += this.style.note.dot.radius * 2 + this.style.note.dot.spacing;
             }
         };
-        PrimitiveRenderer.prototype.drawRest = function (noteValue, x, y) {
-            var _this = this;
-            var imageFile;
+        PrimitiveRenderer.prototype.getRestImage = function (noteValue) {
             switch (noteValue) {
                 case BaseNoteValue.Large:
                 case BaseNoteValue.Long:
                 case BaseNoteValue.Double:
                 case BaseNoteValue.Whole:
                 case BaseNoteValue.Half:
-                    imageFile = ResourceManager.getTablatureResource("rest_2.svg");
-                    break;
+                    return ResourceManager.getTablatureResource("rest_2.svg");
                 case BaseNoteValue.Quater:
-                    imageFile = ResourceManager.getTablatureResource("rest_4.svg");
-                    break;
+                    return ResourceManager.getTablatureResource("rest_4.svg");
                 case BaseNoteValue.Eighth:
-                    imageFile = ResourceManager.getTablatureResource("rest_8.svg");
-                    break;
+                    return ResourceManager.getTablatureResource("rest_8.svg");
                 case BaseNoteValue.Sixteenth:
-                    imageFile = ResourceManager.getTablatureResource("rest_16.svg");
-                    break;
+                    return ResourceManager.getTablatureResource("rest_16.svg");
                 case BaseNoteValue.ThirtySecond:
-                    imageFile = ResourceManager.getTablatureResource("rest_32.svg");
-                    break;
+                    return ResourceManager.getTablatureResource("rest_32.svg");
                 case BaseNoteValue.SixtyFourth:
-                    imageFile = ResourceManager.getTablatureResource("rest_64.svg");
-                    break;
+                    return ResourceManager.getTablatureResource("rest_64.svg");
                 case BaseNoteValue.HundredTwentyEighth:
-                    imageFile = ResourceManager.getTablatureResource("rest_128.svg");
-                    break;
+                    return ResourceManager.getTablatureResource("rest_128.svg");
                 case BaseNoteValue.TwoHundredFiftySixth:
-                    imageFile = ResourceManager.getTablatureResource("rest_256.svg");
-                    break;
+                    return ResourceManager.getTablatureResource("rest_256.svg");
+                default:
+                    return null;
             }
-            this.drawSVGFromURL(imageFile, x, y, function (group) {
+        };
+        /*async*/ PrimitiveRenderer.prototype.measureRest = function (noteValue) {
+            var _this = this;
+            fabric.loadSVGFromURL(this.getRestImage(noteValue), function (results, options) {
+                var group = fabric.util.groupSVGElements(results, options);
                 group.originX = "center";
                 group.originY = "center";
-                group.scale(_this.style.bar.lineHeight / ResourceManager.referenceBarSpacing);
+                group.scale(_this.getScale());
+                _this.callbackWith(group.getBoundingRect());
             });
         };
-        PrimitiveRenderer.prototype.drawTieInstruction = function (x, y, instruction) {
-            return this.drawText(instruction, x, y, "center", "center", this.style.tie.instructionText);
+        PrimitiveRenderer.prototype.drawRest = function (noteValue, x, y) {
+            var _this = this;
+            this.drawSVGFromURL(this.getRestImage(noteValue), x, y, function (group) {
+                group.originX = "center";
+                group.originY = "center";
+                group.scale(_this.getScale());
+            });
+        };
+        PrimitiveRenderer.prototype.drawTieInstruction = function (x, y, instruction, direction) {
+            var originY = direction == OffBarDirection.Top ? "bottom" : "top";
+            return this.drawText(instruction, x, y, "center", originY, this.style.tie.instructionText);
         };
         PrimitiveRenderer.prototype.drawTie = function (x0, x1, y, direction) {
             var _this = this;
             var imageFile = ResourceManager.getTablatureResource("tie.svg");
             this.drawSVGFromURL(imageFile, x0, y, function (group) {
                 group.scaleToWidth(x1 - x0);
-                var standardScaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                var standardScaleY = _this.getScale();
                 group.scaleY = Math.max(standardScaleY / 2, Math.min(Math.sqrt(group.scaleY), standardScaleY));
                 group.originX = "left";
                 if (direction == OffBarDirection.Bottom) {
@@ -2764,7 +2785,8 @@ var TR;
                         group.originY = "top";
                         break;
                 }
-                group.scaleY = _this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+                group.scaleY = _this.getScale();
+            }, function (group) {
                 _this.callbackWith(group.getBoundingRect());
             });
         };
