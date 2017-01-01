@@ -97,12 +97,12 @@ namespace TabML.Editor.Rendering
         public double GetStringSpacePosition(int stringIndex) => this.Location.Y + this.Style.BarTopMargin + stringIndex * this.Style.BarLineHeight;
 
         // from and to are absolute positions
-        public void DrawTie(double from, double to, int stringIndex, TiePosition tiePosition, string instruction,
+        public Task<Rect> DrawTie(double from, double to, int stringIndex, TiePosition tiePosition, string instruction,
                             double instructionY)
         {
             var spaceIndex = tiePosition == TiePosition.Under ? stringIndex + 1 : stringIndex;
             var y = this.GetStringSpacePosition(spaceIndex);
-            this.PrimitiveRenderer.DrawTie(from, to, y, tiePosition.ToOffBarDirection());
+            return this.PrimitiveRenderer.DrawTie(from, to, y, tiePosition.ToOffBarDirection());
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace TabML.Editor.Rendering
         /// the specified <paramref name="voicePart"/>
         /// </summary>
         /// <remarks>All coordinates are absolute</remarks>
-        public void EnsureHeight(VoicePart voicePart, double x0, double x1, double y0, double y1)
+        public void EnsureHeight(VoicePart voicePart, double x0, double x1, double y0, double y1, double vMargin = 0)
         {
             double height;
             switch (voicePart)
@@ -126,7 +126,7 @@ namespace TabML.Editor.Rendering
                     throw new ArgumentOutOfRangeException(nameof(voicePart), voicePart, null);
             }
 
-            _heightMaps[voicePart].EnsureHeight(this.GetRelativeX(x0), x1 - x0, height);
+            _heightMaps[voicePart].EnsureHeight(this.GetRelativeX(x0), x1 - x0, height + vMargin);
         }
 
         public void EnsureHeight(VoicePart voicePart, Rect bounds)
@@ -139,7 +139,7 @@ namespace TabML.Editor.Rendering
         /// height map by lerping between <paramref name="y0" /> and <paramref name="y1" />.
         /// </summary>
         /// <remarks>All coordinates are absolute</remarks>
-        public void EnsureHeightSloped(VoicePart voicePart, double x0, double x1, double y0, double y1, double offset)
+        public void EnsureHeightSloped(VoicePart voicePart, double x0, double x1, double y0, double y1, double vMargin, double hMargin)
         {
             switch (voicePart)
             {
@@ -155,7 +155,7 @@ namespace TabML.Editor.Rendering
                     throw new ArgumentOutOfRangeException(nameof(voicePart), voicePart, null);
             }
 
-            _heightMaps[voicePart].EnsureHeight(this.GetRelativeX(x0), x1 - x0, y0 + offset, y1 + offset);
+            _heightMaps[voicePart].EnsureHeight(this.GetRelativeX(x0), x1 - x0, y0 + vMargin, y1 + vMargin, hMargin);
         }
 
         public double GetHeight(VoicePart voicePart, double x)
@@ -171,5 +171,18 @@ namespace TabML.Editor.Rendering
             }
         }
 
+        public void DebugDrawHeightMaps()
+        {
+            var ceiling = this.GetBodyCeiling();
+            this.DebugDrawHeightMap(_heightMaps[VoicePart.Treble], h => ceiling - h);
+
+            var floor = this.GetBodyFloor();
+            this.DebugDrawHeightMap(_heightMaps[VoicePart.Bass], h => floor + h);
+        }
+
+        private void DebugDrawHeightMap(HeightMap heightMap, Func<double, double> heightConverter)
+        {
+            this.PrimitiveRenderer.DebugDrawHeightMap(heightMap.DebugGetVertices().Select(p => new Point(p.X + this.Location.X, heightConverter(p.Y))));
+        }
     }
 }

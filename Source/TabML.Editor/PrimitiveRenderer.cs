@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using CefSharp;
 using CefSharp.Wpf;
 using TabML.Core.Document;
@@ -97,32 +98,32 @@ namespace TabML.Editor
 
 
 
-        public Task<Rect> DrawTitle(string title, double x, double y) 
+        public Task<Rect> DrawTitle(string title, double x, double y)
             => this.InvokeRenderMethodReturnBoundingBox("drawTitle", title, x, y);
-        public Task<Rect> DrawLyrics(string lyrics, double x, double y) 
+        public Task<Rect> DrawLyrics(string lyrics, double x, double y)
             => this.InvokeRenderMethodReturnBoundingBox("drawLyrics", lyrics, x, y);
-        public Task<Rect> DrawNoteFretting(string fretting, double x, double y, NoteRenderingFlags flags) 
+        public Task<Rect> DrawNoteFretting(string fretting, double x, double y, NoteRenderingFlags flags)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawNoteFretting", fretting, x, y, flags);
-        public void DrawHorizontalBarLine(double x, double y, double length) 
+        public void DrawHorizontalBarLine(double x, double y, double length)
             => this.InvokeRenderMethod("drawHorizontalBarLine", x, y, length);
-        public void DrawBarLine(BarLine line, double x, double y) 
+        public void DrawBarLine(BarLine line, double x, double y)
             => this.InvokeRenderMethod("drawBarLine", (int)line, x, y);
-        public void DrawStem(double x, double yFrom, double yTo) 
+        public void DrawStem(double x, double yFrom, double yTo)
             => this.InvokeRenderMethod("drawStem", x, yFrom, yTo);
-        public Task<Rect> DrawFlag(BaseNoteValue noteValue, double x, double y, OffBarDirection offBarDirection) 
+        public Task<Rect> DrawFlag(BaseNoteValue noteValue, double x, double y, OffBarDirection offBarDirection)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawFlag", (int)noteValue, x, y, (int)offBarDirection);
-        public void DrawBeam(double x1, double y1, double x2, double y2)
-            => this.InvokeRenderMethod("drawBeam", x1, y1, x2, y2);
-        public void DrawNoteValueAugment(NoteValueAugment augment, double x, double y) 
+        public Task<Rect> DrawBeam(double x1, double y1, double x2, double y2)
+            => this.InvokeRenderMethodReturnBoundingBox("drawBeam", x1, y1, x2, y2);
+        public void DrawNoteValueAugment(NoteValueAugment augment, double x, double y)
             => this.InvokeRenderMethod("drawNoteValueAugment", (int)augment, x, y);
-        public void DrawRest(BaseNoteValue noteValue, double x, double y) 
+        public void DrawRest(BaseNoteValue noteValue, double x, double y)
             => this.InvokeRenderMethod("drawRest", (int)noteValue, x, y);
         public Task<Rect> MeasureRest(BaseNoteValue noteValue)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("measureRest", noteValue);
-        public Task<Rect> DrawTuplet(string tuplet, double x, double y) 
+        public Task<Rect> DrawTuplet(string tuplet, double x, double y)
             => this.InvokeRenderMethodReturnBoundingBox("drawTuplet", tuplet, x, y);
-        public void DrawTie(double x0, double x1, double y, OffBarDirection offBarDirection)
-            => this.InvokeRenderMethod("drawTie", x0, x1, y, (int)offBarDirection);
+        public Task<Rect> DrawTie(double x0, double x1, double y, OffBarDirection offBarDirection)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawTie", x0, x1, y, (int)offBarDirection);
         public Task<Rect> DrawGliss(double x, double y, GlissDirection direction)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawGliss", x, y, direction);
         public Task<Rect> DrawConnectionInstruction(double x, double y, string instruction, OffBarDirection offBarDirection)
@@ -130,5 +131,24 @@ namespace TabML.Editor
         public Task<Rect> DrawArtificialHarmonicText(double x, double y, string text, OffBarDirection offBarDirection)
             => this.InvokeRenderMethodReturnBoundingBox("drawArtificialHarmonicText", x, y, text, offBarDirection);
         public void Clear() => this.InvokeRenderMethod("clear");
+
+        public void DebugDrawHeightMap(IEnumerable<Point> points)
+        {
+            var builder = new StringBuilder();
+            builder.Append("renderer.debugDrawHeightMap( [ ");
+
+            foreach (var point in points)
+            {
+                builder.Append($"{{ x: {point.X}, y: {point.Y} }},");
+            }
+
+            builder.Remove(builder.Length - 1, 1);  // remove last comma
+
+            builder.Append(" ] )");
+
+            Debug.WriteLine(builder.ToString());
+
+            this.BrowserMainFrame.ExecuteJavaScriptAsync(builder.ToString());
+        }
     }
 }

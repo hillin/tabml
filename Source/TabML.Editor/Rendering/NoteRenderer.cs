@@ -10,7 +10,7 @@ using TabML.Editor.Tablature.Layout;
 
 namespace TabML.Editor.Rendering
 {
-    class NoteRenderer : ElementRenderer<BeatNote, BarRenderingContext>
+    class NoteRenderer : ElementRenderer<BeatNote, BeatRenderingContext>
     {
         public NoteRenderer(ElementRenderer owner, BeatNote element) : base(owner, element)
         {
@@ -21,31 +21,38 @@ namespace TabML.Editor.Rendering
         /// </remarks>
         public async Task Render(Beat beat, BeamSlope beamSlope)
         {
-            var renderingContext = this.Root.GetRenderer<Beat, BeatRenderer>(beat).RenderingContext;
 
-            var x = this.Element.GetRenderPosition(renderingContext, beat);
+            var x = this.Element.GetRenderPosition(this.RenderingContext.Owner, beat);
 
             var flags = this.GetNoteRenderingFlags(beat);
 
             Rect bounds;
             if (this.Element.EffectTechnique == NoteEffectTechnique.DeadNote)
             {
-                bounds = await renderingContext.DrawNoteFretting(this.Element.String, "dead", x, flags);
+                bounds = await this.RenderingContext.Owner.DrawNoteFretting(this.Element.String, "dead", x, flags);
             }
             else if (this.Element.Fret == BeatNote.UnspecifiedFret)
             {
-                bounds = await renderingContext.DrawNoteFretting(this.Element.String, "asChord", x, flags);
+                bounds = await this.RenderingContext.Owner.DrawNoteFretting(this.Element.String, "asChord", x, flags);
             }
             else
             {
-                bounds = await renderingContext.DrawNoteFretting(this.Element.String, this.Element.Fret.ToString(), x, flags);
+                bounds = await this.RenderingContext.Owner.DrawNoteFretting(this.Element.String, this.Element.Fret.ToString(), x, flags);
             }
 
-            renderingContext.SetNoteBoundingBox(beat.OwnerColumn, this.Element.String, bounds);
+            if (this.Element.EffectTechnique == NoteEffectTechnique.ArtificialHarmonic)
+            {
+                this.RenderingContext.AddArtificialHarmonic(this.Element.String,
+                                                            this.Element.Fret,
+                                                            this.Element.EffectTechniqueParameter == null
+                                                                ? this.Element.Fret + 12
+                                                                : (int) this.Element.EffectTechniqueParameter);
+            }
+
+            this.RenderingContext.Owner.SetNoteBoundingBox(beat.OwnerColumn, this.Element.String, bounds);
 
             if (beat == this.Element.OwnerBeat) // only draw connections if we are drawing for ourselves
             {
-                // todo: handle tie chain
                 var tiePosition = this.Element.TiePosition ?? this.Element.OwnerBeat.VoicePart.GetDefaultTiePosition();
 
                 if (this.Element.IsTied)
@@ -61,11 +68,10 @@ namespace TabML.Editor.Rendering
 
                     if (preConnection != NoteConnection.None)
                     {
-                        await NoteConnectionRenderer.DrawConnection(this.Root, preConnection,
-                                                                    this.Element.PreConnectedNote?.OwnerBeat,
-                                                                    this.Element.OwnerBeat, this.Element.String,
-                                                                    this.Element.TiePosition ??
-                                                                    tiePosition);
+                        await this.RenderingContext.DrawConnection(this.Root, preConnection,
+                                                                   this.Element.PreConnectedNote?.OwnerBeat,
+                                                                   this.Element.OwnerBeat, this.Element.String,
+                                                                   this.Element.TiePosition ?? tiePosition);
                     }
                 }
 
@@ -74,7 +80,7 @@ namespace TabML.Editor.Rendering
                     : (NoteConnection)this.Element.PostConnection;
 
                 if (postConnection != NoteConnection.None)
-                    await NoteConnectionRenderer.DrawConnection(this.Root, postConnection, beat, null, this.Element.String, tiePosition);
+                    await this.RenderingContext.DrawConnection(this.Root, postConnection, beat, null, this.Element.String, tiePosition);
             }
         }
 

@@ -98,7 +98,9 @@ namespace TabML.Editor.Rendering
             this.Owner.EnsureHeight(voicePart,
                                     x - this.Style.NoteStemHorizontalMargin,
                                     x + this.Style.NoteStemHorizontalMargin,
-                                    y0, y1);
+                                    this.Owner.Location.Y + y0,
+                                    this.Owner.Location.Y + y1,
+                                    this.Style.NoteTailVerticalMargin);
         }
 
         public double GetNoteAlternationOffset(double offsetRatio, bool hasHarmonics)
@@ -134,13 +136,11 @@ namespace TabML.Editor.Rendering
         }
 
         // x is absolute position
-        public async Task DrawGliss(double x, int stringIndex, GlissDirection direction, VoicePart voicePart)
+        public Task<Rect> DrawGliss(double x, int stringIndex, GlissDirection direction, VoicePart voicePart)
         {
-            var bounds = await this.PrimitiveRenderer.DrawGliss(x, this.Owner.GetStringPosition(stringIndex), direction);
-            var instructionX = (bounds.Right + bounds.Left) / 2;
-            await this.DrawConnectionInstruction(voicePart, instructionX, "gl.");
+            return this.PrimitiveRenderer.DrawGliss(x, this.Owner.GetStringPosition(stringIndex), direction);
         }
-        
+
         /// <remarks><paramref name="x"/> must be an absolute position</remarks>
         public async Task DrawConnectionInstruction(VoicePart voicePart, double x, string instruction)
         {
@@ -189,7 +189,7 @@ namespace TabML.Editor.Rendering
 
             return voicePart == VoicePart.Treble ? offset : -offset;
         }
-        
+
         public void DrawNoteValueAugment(NoteValueAugment noteValueAugment, BaseNoteValue noteValue, double position,
                                          int[] strings, VoicePart voicePart)
         {
@@ -203,15 +203,20 @@ namespace TabML.Editor.Rendering
             }
         }
 
-        public void DrawBeam(BaseNoteValue noteValue, double x0, double y0, double x1, double y1, VoicePart voicePart)
+        public async Task DrawBeam(BaseNoteValue noteValue, double x0, double y0, double x1, double y1, VoicePart voicePart)
         {
             var offset = this.GetBeamOffset(noteValue, voicePart);
             x0 = x0 + this.Location.X;
             y0 = y0 + this.Location.Y + offset;
             x1 = x1 + this.Location.X;
             y1 = y1 + this.Location.Y + offset;
-            this.PrimitiveRenderer.DrawBeam(x0, y0, x1, y1);
-            this.Owner.EnsureHeightSloped(voicePart, x0, x1, y0, y1, this.Style.NoteTailVerticalMargin);
+            var bounds = await this.PrimitiveRenderer.DrawBeam(x0, y0, x1, y1);
+
+            var beamHalfThickness = voicePart == VoicePart.Treble
+                ? Math.Min(y0, y1) - bounds.Top
+                : bounds.Bottom - Math.Max(y0, y1);
+
+            this.Owner.EnsureHeightSloped(voicePart, x0, x1, y0, y1, this.Style.NoteTailVerticalMargin + beamHalfThickness, this.Style.NoteStemHorizontalMargin);
         }
 
         public void DrawRest(BaseNoteValue noteValue, double position, VoicePart voicePart)

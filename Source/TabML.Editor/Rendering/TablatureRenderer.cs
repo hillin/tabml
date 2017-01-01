@@ -133,6 +133,7 @@ namespace TabML.Editor.Rendering
 
 
             rowRenderingContext.FinishHorizontalBarLines(availableSize.Width);
+            rowRenderingContext.DebugDrawHeightMaps();
         }
 
         TRenderer IRootElementRenderer.GetRenderer<TElement, TRenderer>(TElement element)

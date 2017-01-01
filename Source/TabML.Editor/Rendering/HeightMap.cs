@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace TabML.Editor.Rendering
 {
@@ -21,6 +22,14 @@ namespace TabML.Editor.Rendering
         private int GetIndex(double position) => (int)(position * _sampleRateInversed);
         private IEnumerable<int> GetIndices(double position, double size)
             => Enumerable.Range(this.GetIndex(position), (int)Math.Ceiling(size * _sampleRateInversed));
+
+        private IEnumerable<int> GetIndicesGuarded(double position, double size)
+        {
+            var fromIndex = Math.Max(0, this.GetIndex(position));
+            var toIndex = Math.Min(_heights.Length - 1, this.GetIndex(position + size));
+            return Enumerable.Range(fromIndex, toIndex - fromIndex + 1);
+        }
+
         public double GetHeight(double position) => _heights[this.GetIndex(position)];
         public double GetHeight(double from, double size) => this.GetIndices(from, size).Select(i => _heights[i]).Max();
         public void AddHeight(double position, double height) => _heights[this.GetIndex(position)] += height;
@@ -55,12 +64,23 @@ namespace TabML.Editor.Rendering
                 _heights[index] = Math.Max(_heights[index], height);
         }
 
-        public void EnsureHeight(double from, double size, double fromHeight, double toHeight)
+        public void EnsureHeight(double from, double size, double fromHeight, double toHeight, double hMargin)
         {
             var slope = (toHeight - fromHeight) / size;
+
+            foreach (var index in this.GetIndicesGuarded(from - hMargin, hMargin))
+            {
+                _heights[index] = Math.Max(_heights[index], fromHeight);
+            }
+
             foreach (var index in this.GetIndices(from, size))
             {
-                _heights[index] = Math.Max(_heights[index], fromHeight + slope * index / _sampleRateInversed);
+                _heights[index] = Math.Max(_heights[index], fromHeight + slope * (index / _sampleRateInversed - from));
+            }
+
+            foreach (var index in this.GetIndicesGuarded(from + size , hMargin))
+            {
+                _heights[index] = Math.Max(_heights[index], toHeight);
             }
         }
 
@@ -80,6 +100,34 @@ namespace TabML.Editor.Rendering
         {
             for (var i = 0; i < _heights.Length; ++i)
                 _heights[i] = height;
+        }
+
+        public List<Point> DebugGetVertices()
+        {
+            var vertices = new List<Point>();
+
+            if (_heights.Length == 0)
+                return vertices;
+
+            var previousHeight = _heights[0];
+            vertices.Add(new Point(0, previousHeight));
+
+            var lastIndex = _heights.Length - 1;
+            for (var i = 1; i < lastIndex; i++)
+            {
+                var height = _heights[i];
+                if (Math.Abs(height - previousHeight) > 1e-3)
+                {
+                    var x = i / _sampleRateInversed;
+                    vertices.Add(new Point(x, previousHeight));
+                    vertices.Add(new Point(x, height));
+                    previousHeight = height;
+                }
+            }
+
+            vertices.Add(new Point(lastIndex /_sampleRateInversed, _heights[lastIndex]));
+
+            return vertices;
         }
     }
 }

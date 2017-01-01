@@ -329,7 +329,7 @@ namespace TR {
             }
         }
 
-        drawBeam(x1: number, y1: number, x2: number, y2: number) {
+        drawBeam(x1: number, y1: number, x2: number, y2: number): IBoundingBox {
             let halfThickness = this.style.bar.beamThickness / 2;
             let points = [
                 { x: x1, y: y1 - halfThickness },
@@ -341,6 +341,8 @@ namespace TR {
             polygon.fill = "black";
             polygon.stroke = "black";
             this.canvas.add(polygon);
+
+            return polygon.getBoundingRect(); 
         }
 
         drawNoteValueAugment(augment: NoteValueAugment, x: number, y: number) {
@@ -410,7 +412,7 @@ namespace TR {
 
         async drawTie(x0: number, x1: number, y: number, direction: OffBarDirection) {
             let imageFile = ResourceManager.getTablatureResource("tie.svg");
-            await this.drawSVGFromURLAsync(imageFile, x0, y, group => {
+            let group = await this.drawSVGFromURLAsync(imageFile, x0, y, group => {
 
                 group.scaleToWidth(x1 - x0);
                 let standardScaleY = this.getScale();
@@ -426,6 +428,8 @@ namespace TR {
                 }
 
             });
+
+            this.callbackWith(group.getBoundingRect());
         }
 
         async drawGliss(x: number, y: number, direction: GlissDirection) {
@@ -461,6 +465,15 @@ namespace TR {
                 });
 
             this.callbackWith(group.getBoundingRect());
+        }
+
+        debugDrawHeightMap(points: { x:number, y:number }[]) {
+            let polyline = new fabric.Polyline(points, {
+                stroke: "green",
+                fill: ""
+            });
+
+            this.canvas.add(polyline);
         }
 
     }

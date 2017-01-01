@@ -11,7 +11,7 @@ namespace TabML.Editor.Rendering
     {
         private readonly Dictionary<ElementRenderer, RenderingContextBase> _renderingContextLookup;
 
-        public RenderingContext() 
+        public RenderingContext()
             : base(null)
         {
             _renderingContextLookup = new Dictionary<ElementRenderer, RenderingContextBase>();
@@ -29,7 +29,7 @@ namespace TabML.Editor.Rendering
 
         public virtual void AssignRenderingContext(ElementRenderer renderer, RenderingContextBase renderingContext)
         {
-            _renderingContextLookup.Add(renderer, renderingContext);
+            _renderingContextLookup[renderer] = renderingContext;
         }
     }
 }

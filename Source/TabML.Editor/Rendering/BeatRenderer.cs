@@ -35,12 +35,6 @@ namespace TabML.Editor.Rendering
             _noteRenderers.Initialize();
         }
 
-        protected override void OnAssignRenderingContext(BarRenderingContext renderingContext)
-        {
-            base.OnAssignRenderingContext(renderingContext);
-            _noteRenderers.AssignRenderingContexts(renderingContext);
-        }
-
         public override async Task Render()
         {
             await this.Render(null);
@@ -137,34 +131,72 @@ namespace TabML.Editor.Rendering
             }
             else
             {
-                foreach (var renderer in _noteRenderers)
-                    await renderer.Render(targetBeat, beamSlope);
-
-                if (targetBeat == this.Element) // only draw A.H. text for self
+                var beatRenderingContext = new BeatRenderingContext(renderingContext);
+                foreach (var renderer in _noteRenderers.OrderBy(n => n.Element.Fret))
                 {
-                    if (_noteRenderers.Any(n => n.Element.EffectTechnique == NoteEffectTechnique.ArtificialHarmonic))
+                    _noteRenderers.AssignRenderingContexts(beatRenderingContext);
+                    await renderer.Render(targetBeat, beamSlope);
+                }
+
+                // only draw A.H. text and connection instructions for self
+                if (targetBeat == this.Element)
+                {
+                    if (beatRenderingContext.ArtificialHarmonicFrets.Count > 0)
                     {
-                        var artificialHarmonicFrets =
-                            _noteRenderers.Select(n => n.Element)
-                                          .Where(n => n.EffectTechnique == NoteEffectTechnique.ArtificialHarmonic)
-                                          .ToArray();
+                        var position = this.Element.OwnerColumn.GetPosition(this.RenderingContext);
 
-                        if (artificialHarmonicFrets.Length > 0)
+                        if (beatRenderingContext.ArtificialHarmonicFrets.All(n => n.IsOn12thFret))
+                            await renderingContext.DrawArtificialHarmonicText(this.Element.VoicePart, position, "A.H.");
+                        else
                         {
-                            var detailed = artificialHarmonicFrets.All(
-                                n => n.EffectTechniqueParameter == null ||
-                                     n.EffectTechniqueParameter == n.Fret + 12);
-                            var text = detailed
-                                ? "A.H."
-                                : $"A.H. {string.Join("/", artificialHarmonicFrets.Select(n => n.EffectTechniqueParameter ?? n.Fret + 12))}";
+                            var orderedFrets = this.Element.VoicePart == VoicePart.Treble
+                                ? beatRenderingContext.ArtificialHarmonicFrets.OrderByDescending(f => f.StringIndex)
+                                : beatRenderingContext.ArtificialHarmonicFrets.OrderBy(f => f.StringIndex);
 
-                            var position = this.Element.OwnerColumn.GetPosition(this.RenderingContext);
-                            await renderingContext.DrawArtificialHarmonicText(this.Element.VoicePart, position, text);
+                            foreach (var fretInfo in orderedFrets)
+                            {
+                                var text = fretInfo.IsOn12thFret
+                                    ? "A.H."
+                                    : $"A.H. ({fretInfo.ArtificialHarmonicFret})";
+                                await renderingContext.DrawArtificialHarmonicText(this.Element.VoicePart, position, text);
+                            }
+                        }
+                    }
+
+                    // todo: replace magic number
+                    const double tolerance = 15;
+                    var instructionGroups =
+                        beatRenderingContext.ConnectionInstructions.GroupBy(
+                            c => Math.Round(c.Position / tolerance) * tolerance);
+                    foreach (var group in instructionGroups)
+                    {
+                        var instructions = group.ToArray();
+                        var position = instructions.Average(i => i.Position);
+                        var firstInstruction = instructions[0].Instruction;
+
+                        if (instructions.All(i => i.Instruction == firstInstruction))
+                        {
+                            await
+                                renderingContext.DrawConnectionInstruction(this.Element.VoicePart, position,
+                                                                           firstInstruction);
+                        }
+                        else
+                        {
+                            var orderedInstructions = this.Element.VoicePart == VoicePart.Treble
+                                ? instructions.OrderByDescending(i => i.StringIndex)
+                                : instructions.OrderBy(i => i.StringIndex);
+                            foreach (var instructionInfo in orderedInstructions)
+                            {
+                                await
+                                renderingContext.DrawConnectionInstruction(this.Element.VoicePart, position,
+                                                                           instructionInfo.Instruction);
+                            }
                         }
                     }
                 }
             }
         }
+
 
         private async Task DrawStemAndFlag(BeamSlope beamSlope, Beat targetBeat, Beat tieTarget)
         {
@@ -202,7 +234,7 @@ namespace TabML.Editor.Rendering
                 var isLastOfBeam = targetBeat == targetBeat.OwnerBeam.Elements[targetBeat.OwnerBeam.Elements.Count - 1];
                 while (baseNoteValue != targetBeat.OwnerBeam.BeatNoteValue)
                 {
-                    this.DrawSemiBeam(targetBeat, baseNoteValue, this.Element.VoicePart, beamSlope, isLastOfBeam);
+                    await this.DrawSemiBeam(targetBeat, baseNoteValue, this.Element.VoicePart, beamSlope, isLastOfBeam);
                     baseNoteValue = baseNoteValue.Double();
                 }
             }
@@ -220,7 +252,7 @@ namespace TabML.Editor.Rendering
             return this.Root.GetRenderer<Beat, BeatRenderer>(beat).RenderingContext;
         }
 
-        private void DrawSemiBeam(Beat targetBeat, BaseNoteValue noteValue, VoicePart voicePart, BeamSlope beamSlope, bool isLastOfBeam)
+        private async Task DrawSemiBeam(Beat targetBeat, BaseNoteValue noteValue, VoicePart voicePart, BeamSlope beamSlope, bool isLastOfBeam)
         {
             Beat beat1, beat2;
             if (isLastOfBeam)
@@ -251,7 +283,7 @@ namespace TabML.Editor.Rendering
                 x1 = position1 + beamWidth;
             }
 
-            this.RenderingContext.DrawBeam(noteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), voicePart);
+            await this.RenderingContext.DrawBeam(noteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), voicePart);
         }
     }
 }

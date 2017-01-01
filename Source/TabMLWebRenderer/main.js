@@ -1,7 +1,7 @@
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments)).next());
     });
@@ -2044,8 +2044,7 @@ else {
     var e = t.fabric || (t.fabric = {}), i = e.util.object.extend, r = e.Image.filters, n = e.util.createClass;
     r.Saturate = n(r.BaseFilter, {
         type: "Saturate", initialize: function (t) { t = t || {}, this.saturate = t.saturate || 0, this.loadProgram(); }, applyTo: function (t) { for (var e, i = t.getContext("2d"), r = i.getImageData(0, 0, t.width, t.height), n = r.data, s = .01 * -this.saturate, o = 0, a = n.length; o < a; o += 4)
-            e = Math.max(n[o], n[o + 1], n[o + 2]), n[o] += e !== n[o] ? (e - n[o]) * s : 0, n[o + 1] += e !== n[o + 1] ? (e - n[o + 1]) * s : 0, n[o + 2] += e !== n[o + 2] ? (e - n[o + 2]) * s : 0; i.putImageData(r, 0, 0); }, toObject: function () { return i(this.callSuper("toObject"), { saturate: this.saturate }); }
-    }), e.Image.filters.Saturate.fromObject = function (t) { return new e.Image.filters.Saturate(t); };
+            e = Math.max(n[o], n[o + 1], n[o + 2]), n[o] += e !== n[o] ? (e - n[o]) * s : 0, n[o + 1] += e !== n[o + 1] ? (e - n[o + 1]) * s : 0, n[o + 2] += e !== n[o + 2] ? (e - n[o + 2]) * s : 0; i.putImageData(r, 0, 0); }, toObject: function () { return i(this.callSuper("toObject"), { saturate: this.saturate }); } }), e.Image.filters.Saturate.fromObject = function (t) { return new e.Image.filters.Saturate(t); };
 }("undefined" != typeof exports ? exports : this), function (t) {
     "use strict";
     var e = t.fabric || (t.fabric = {}), i = e.util.object.extend, r = e.util.object.clone, n = e.util.toFixed, s = e.Object.NUM_FRACTION_DIGITS, o = 2;
@@ -2404,7 +2403,6 @@ var Core;
 (function (Core) {
     var MusicTheory;
     (function (MusicTheory) {
-        var BarLine;
         (function (BarLine) {
             BarLine[BarLine["Standard"] = 0] = "Standard";
             BarLine[BarLine["Double"] = 1] = "Double";
@@ -2413,14 +2411,14 @@ var Core;
             BarLine[BarLine["EndRepeat"] = 4] = "EndRepeat";
             BarLine[BarLine["BeginAndEndRepeat"] = 5] = "BeginAndEndRepeat";
             BarLine[BarLine["BeginRepeatAndEnd"] = 6] = "BeginRepeatAndEnd";
-        })(BarLine = MusicTheory.BarLine || (MusicTheory.BarLine = {}));
+        })(MusicTheory.BarLine || (MusicTheory.BarLine = {}));
+        var BarLine = MusicTheory.BarLine;
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
 var Core;
 (function (Core) {
     var MusicTheory;
     (function (MusicTheory) {
-        var BaseNoteValue;
         (function (BaseNoteValue) {
             BaseNoteValue[BaseNoteValue["Large"] = 3] = "Large";
             BaseNoteValue[BaseNoteValue["Long"] = 2] = "Long";
@@ -2434,44 +2432,46 @@ var Core;
             BaseNoteValue[BaseNoteValue["SixtyFourth"] = -6] = "SixtyFourth";
             BaseNoteValue[BaseNoteValue["HundredTwentyEighth"] = -7] = "HundredTwentyEighth";
             BaseNoteValue[BaseNoteValue["TwoHundredFiftySixth"] = -8] = "TwoHundredFiftySixth";
-        })(BaseNoteValue = MusicTheory.BaseNoteValue || (MusicTheory.BaseNoteValue = {}));
+        })(MusicTheory.BaseNoteValue || (MusicTheory.BaseNoteValue = {}));
+        var BaseNoteValue = MusicTheory.BaseNoteValue;
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
 var Core;
 (function (Core) {
     var MusicTheory;
     (function (MusicTheory) {
-        var GlissDirection;
+        // This enum is convertible from NoteConnection
         (function (GlissDirection) {
-            GlissDirection[GlissDirection["FromHigher"] = 0] = "FromHigher";
-            GlissDirection[GlissDirection["FromLower"] = 1] = "FromLower";
-            GlissDirection[GlissDirection["ToHigher"] = 2] = "ToHigher";
-            GlissDirection[GlissDirection["ToLower"] = 3] = "ToLower";
-        })(GlissDirection = MusicTheory.GlissDirection || (MusicTheory.GlissDirection = {}));
+            GlissDirection[GlissDirection["FromHigher"] = 2] = "FromHigher";
+            GlissDirection[GlissDirection["FromLower"] = 3] = "FromLower";
+            GlissDirection[GlissDirection["ToHigher"] = 4] = "ToHigher";
+            GlissDirection[GlissDirection["ToLower"] = 5] = "ToLower";
+        })(MusicTheory.GlissDirection || (MusicTheory.GlissDirection = {}));
+        var GlissDirection = MusicTheory.GlissDirection;
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
 var Core;
 (function (Core) {
     var MusicTheory;
     (function (MusicTheory) {
-        var NoteValueAugment;
         (function (NoteValueAugment) {
             NoteValueAugment[NoteValueAugment["None"] = 0] = "None";
             NoteValueAugment[NoteValueAugment["Dot"] = 1] = "Dot";
             NoteValueAugment[NoteValueAugment["TwoDots"] = 2] = "TwoDots";
             NoteValueAugment[NoteValueAugment["ThreeDots"] = 3] = "ThreeDots";
-        })(NoteValueAugment = MusicTheory.NoteValueAugment || (MusicTheory.NoteValueAugment = {}));
+        })(MusicTheory.NoteValueAugment || (MusicTheory.NoteValueAugment = {}));
+        var NoteValueAugment = MusicTheory.NoteValueAugment;
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
 var Core;
 (function (Core) {
     var MusicTheory;
     (function (MusicTheory) {
-        var OffBarDirection;
         (function (OffBarDirection) {
             OffBarDirection[OffBarDirection["Top"] = 0] = "Top";
             OffBarDirection[OffBarDirection["Bottom"] = 1] = "Bottom";
-        })(OffBarDirection = MusicTheory.OffBarDirection || (MusicTheory.OffBarDirection = {}));
+        })(MusicTheory.OffBarDirection || (MusicTheory.OffBarDirection = {}));
+        var OffBarDirection = MusicTheory.OffBarDirection;
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
 // object.Assign implementation
@@ -2505,13 +2505,13 @@ class ResourceManager {
 ResourceManager.referenceBarSpacing = 12;
 var TR;
 (function (TR) {
-    var NoteRenderingFlags;
     (function (NoteRenderingFlags) {
         NoteRenderingFlags[NoteRenderingFlags["HalfOrLonger"] = 1] = "HalfOrLonger";
         NoteRenderingFlags[NoteRenderingFlags["Ghost"] = 2] = "Ghost";
         NoteRenderingFlags[NoteRenderingFlags["NaturalHarmonic"] = 4] = "NaturalHarmonic";
         NoteRenderingFlags[NoteRenderingFlags["ArtificialHarmonic"] = 8] = "ArtificialHarmonic";
-    })(NoteRenderingFlags = TR.NoteRenderingFlags || (TR.NoteRenderingFlags = {}));
+    })(TR.NoteRenderingFlags || (TR.NoteRenderingFlags = {}));
+    var NoteRenderingFlags = TR.NoteRenderingFlags;
 })(TR || (TR = {}));
 var BarLine = Core.MusicTheory.BarLine;
 var BaseNoteValue = Core.MusicTheory.BaseNoteValue;
@@ -2788,6 +2788,7 @@ var TR;
             polygon.fill = "black";
             polygon.stroke = "black";
             this.canvas.add(polygon);
+            return polygon.getBoundingRect();
         }
         drawNoteValueAugment(augment, x, y) {
             for (let i = 0; i < augment; ++i) {
@@ -2854,7 +2855,7 @@ var TR;
         drawTie(x0, x1, y, direction) {
             return __awaiter(this, void 0, void 0, function* () {
                 let imageFile = ResourceManager.getTablatureResource("tie.svg");
-                yield this.drawSVGFromURLAsync(imageFile, x0, y, group => {
+                let group = yield this.drawSVGFromURLAsync(imageFile, x0, y, group => {
                     group.scaleToWidth(x1 - x0);
                     let standardScaleY = this.getScale();
                     group.scaleY = Math.max(standardScaleY / 2, Math.min(Math.sqrt(group.scaleY), standardScaleY));
@@ -2867,6 +2868,7 @@ var TR;
                         group.originY = "bottom";
                     }
                 });
+                this.callbackWith(group.getBoundingRect());
             });
         }
         drawGliss(x, y, direction) {
@@ -2899,6 +2901,13 @@ var TR;
                 });
                 this.callbackWith(group.getBoundingRect());
             });
+        }
+        debugDrawHeightMap(points) {
+            let polyline = new fabric.Polyline(points, {
+                stroke: "green",
+                fill: ""
+            });
+            this.canvas.add(polyline);
         }
     }
     TR.PrimitiveRenderer = PrimitiveRenderer;

@@ -60,7 +60,7 @@ namespace TabML.Editor.Rendering
             }
 
             // beam must be rendered first, so the height map will be updated correctly
-            this.RenderingContext.DrawBeam(this.Beam.BeatNoteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), this.Beam.VoicePart);
+            await this.RenderingContext.DrawBeam(this.Beam.BeatNoteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), this.Beam.VoicePart);
 
             foreach (var renderer in _beatElementRenderers)
                 await renderer.Render();
