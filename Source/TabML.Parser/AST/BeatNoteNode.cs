@@ -174,7 +174,7 @@ namespace TabML.Parser.AST
                 }
 
                 if (this.PostConnection.Value == PostNoteConnection.SlideOutToLower
-                    && this.Fret.Value <= context.DocumentState.CapoFretOffsets[this.String.Value - 1])
+                    && this.Fret.Value <= context.DocumentState.GetCapoFretOffset(this.String.Value - 1))
                 {
                     logger.Report(LogLevel.Warning, this.Fret.Range,
                                   Messages.Warning_FretTooLowForSlideOutNote);

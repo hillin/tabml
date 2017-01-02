@@ -110,8 +110,8 @@ namespace TabML.Editor
             => this.InvokeRenderMethod("drawBarLine", (int)line, x, y);
         public void DrawStem(double x, double yFrom, double yTo)
             => this.InvokeRenderMethod("drawStem", x, yFrom, yTo);
-        public Task<Rect> DrawFlag(BaseNoteValue noteValue, double x, double y, OffBarDirection offBarDirection)
-            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawFlag", (int)noteValue, x, y, (int)offBarDirection);
+        public Task<Rect> DrawFlag(BaseNoteValue noteValue, double x, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawFlag", (int)noteValue, x, y, (int)direction);
         public Task<Rect> DrawBeam(double x1, double y1, double x2, double y2)
             => this.InvokeRenderMethodReturnBoundingBox("drawBeam", x1, y1, x2, y2);
         public void DrawNoteValueAugment(NoteValueAugment augment, double x, double y)
@@ -122,14 +122,50 @@ namespace TabML.Editor
             => this.InvokeAsyncRenderMethodReturnBoundingBox("measureRest", noteValue);
         public Task<Rect> DrawTuplet(string tuplet, double x, double y)
             => this.InvokeRenderMethodReturnBoundingBox("drawTuplet", tuplet, x, y);
-        public Task<Rect> DrawTie(double x0, double x1, double y, OffBarDirection offBarDirection)
-            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawTie", x0, x1, y, (int)offBarDirection);
+        public Task<Rect> DrawTie(double x0, double x1, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawTie", x0, x1, y, (int)direction);
         public Task<Rect> DrawGliss(double x, double y, GlissDirection direction)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawGliss", x, y, direction);
-        public Task<Rect> DrawConnectionInstruction(double x, double y, string instruction, OffBarDirection offBarDirection)
-            => this.InvokeRenderMethodReturnBoundingBox("drawConnectionInstruction", x, y, instruction, offBarDirection);
-        public Task<Rect> DrawArtificialHarmonicText(double x, double y, string text, OffBarDirection offBarDirection)
-            => this.InvokeRenderMethodReturnBoundingBox("drawArtificialHarmonicText", x, y, text, offBarDirection);
+        public Task<Rect> DrawConnectionInstruction(double x, double y, string instruction, OffBarDirection direction)
+            => this.InvokeRenderMethodReturnBoundingBox("drawConnectionInstruction", x, y, instruction, direction);
+        public Task<Rect> DrawArtificialHarmonicText(double x, double y, string text, OffBarDirection direction)
+            => this.InvokeRenderMethodReturnBoundingBox("drawArtificialHarmonicText", x, y, text, direction);
+
+
+        public Task<Rect> DrawRasgueadoText(double x, double y, OffBarDirection direction)
+            => this.InvokeRenderMethodReturnBoundingBox("drawRasgueadoText", x, y, direction);
+
+        public Task<Rect> DrawPickstrokeDown(double x, double y, OffBarDirection direction) 
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawPickstrokeDown", x, y, direction);
+
+        public Task<Rect> DrawPickstrokeUp(double x, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawPickstrokeUp", x, y, direction);
+
+
+        public Task<Rect> DrawAccented(double x, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawAccented", x, y, direction);
+
+
+        public Task<Rect> DrawHeavilyAccented(double x, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawHeavilyAccented", x, y, direction);
+
+
+        public Task<Rect> DrawFermata(double x, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawFermata", x, y, direction);
+
+
+        public Task<Rect> DrawStaccato(double x, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawStaccato", x, y, direction);
+
+
+        public Task<Rect> DrawTrill(double x, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawTrill", x, y, direction);
+
+
+        public Task<Rect> DrawTremolo(double x, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawTremolo", x, y, direction);
+
+
         public void Clear() => this.InvokeRenderMethod("clear");
 
         public void DebugDrawHeightMap(IEnumerable<Point> points)
@@ -150,5 +186,6 @@ namespace TabML.Editor
 
             this.BrowserMainFrame.ExecuteJavaScriptAsync(builder.ToString());
         }
+
     }
 }

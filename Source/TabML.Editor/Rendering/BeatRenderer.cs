@@ -62,14 +62,66 @@ namespace TabML.Editor.Rendering
             if (!this.Element.IsRest)
                 await this.DrawStemAndFlag(beamSlope, targetBeat, tieTarget);
 
+            this.DrawNoteValueAugment(tieTarget);
+            this.DrawBeatOrnaments(tieTarget);
+        }
+
+        private void DrawBeatOrnaments(Beat tieTarget)
+        {
+            var targetBeat = tieTarget ?? this.Element;
+            var renderingContext = this.Root.GetRenderer<Beat, BeatRenderer>(targetBeat).RenderingContext;
+            var beatPosition = targetBeat.OwnerColumn.GetPosition(renderingContext);
+
+            switch (targetBeat.StrumTechnique)
+            {
+                case StrumTechnique.Rasgueado:
+                    renderingContext.DrawRasgueadoText(targetBeat.VoicePart, beatPosition);
+                    break;
+                case StrumTechnique.PickstrokeDown:
+                    renderingContext.DrawPickstrokeDown(targetBeat.VoicePart, beatPosition);
+                    break;
+                case StrumTechnique.PickstrokeUp:
+                    renderingContext.DrawPickstrokeUp(targetBeat.VoicePart, beatPosition);
+                    break;
+            }
+
+            switch (targetBeat.Accent)
+            {
+                case BeatAccent.Accented:
+                    renderingContext.DrawAccented(targetBeat.VoicePart, beatPosition);
+                    break;
+                case BeatAccent.HeavilyAccented:
+                    renderingContext.DrawHeavilyAccented(targetBeat.VoicePart, beatPosition);
+                    break;
+            }
+
+            switch (targetBeat.DurationEffect)
+            {
+                case BeatDurationEffect.Fermata:
+                    renderingContext.DrawFermata(targetBeat.VoicePart, beatPosition);
+                    break;
+                case BeatDurationEffect.Staccato:
+                    renderingContext.DrawStaccato(targetBeat.VoicePart, beatPosition);
+                    break;
+            }
+
+            switch (targetBeat.EffectTechnique)
+            {
+                case BeatEffectTechnique.Trill:
+                    renderingContext.DrawTrill(targetBeat.VoicePart, beatPosition);
+                    break;
+                case BeatEffectTechnique.Tremolo:
+                    renderingContext.DrawTremolo(targetBeat.VoicePart, beatPosition);
+                    break;
+            }
+        }
+
+        private void DrawNoteValueAugment(Beat tieTarget)
+        {
             var noteValue = tieTarget?.NoteValue ?? this.Element.NoteValue;
             if (noteValue.Augment != NoteValueAugment.None)
             {
-                this.RenderingContext.DrawNoteValueAugment(noteValue.Augment,
-                                                           noteValue.Base,
-                                                           this.Element.OwnerColumn.GetPosition(this.RenderingContext),
-                                                           this.Element.GetNoteStrings(),
-                                                           this.Element.VoicePart);
+                this.RenderingContext.DrawNoteValueAugment(noteValue.Augment, noteValue.Base, this.Element.OwnerColumn.GetPosition(this.RenderingContext), this.Element.GetNoteStrings(), this.Element.VoicePart);
             }
         }
 
@@ -149,15 +201,11 @@ namespace TabML.Editor.Rendering
                             await renderingContext.DrawArtificialHarmonicText(this.Element.VoicePart, position, "A.H.");
                         else
                         {
-                            var orderedFrets = this.Element.VoicePart == VoicePart.Treble
-                                ? beatRenderingContext.ArtificialHarmonicFrets.OrderByDescending(f => f.StringIndex)
-                                : beatRenderingContext.ArtificialHarmonicFrets.OrderBy(f => f.StringIndex);
+                            var orderedFrets = this.Element.VoicePart == VoicePart.Treble ? beatRenderingContext.ArtificialHarmonicFrets.OrderByDescending(f => f.StringIndex) : beatRenderingContext.ArtificialHarmonicFrets.OrderBy(f => f.StringIndex);
 
                             foreach (var fretInfo in orderedFrets)
                             {
-                                var text = fretInfo.IsOn12thFret
-                                    ? "A.H."
-                                    : $"A.H. ({fretInfo.ArtificialHarmonicFret})";
+                                var text = fretInfo.IsOn12thFret ? "A.H." : $"A.H. ({fretInfo.ArtificialHarmonicFret})";
                                 await renderingContext.DrawArtificialHarmonicText(this.Element.VoicePart, position, text);
                             }
                         }
@@ -165,9 +213,7 @@ namespace TabML.Editor.Rendering
 
                     // todo: replace magic number
                     const double tolerance = 15;
-                    var instructionGroups =
-                        beatRenderingContext.ConnectionInstructions.GroupBy(
-                            c => Math.Round(c.Position / tolerance) * tolerance);
+                    var instructionGroups = beatRenderingContext.ConnectionInstructions.GroupBy(c => Math.Round(c.Position/tolerance)*tolerance);
                     foreach (var group in instructionGroups)
                     {
                         var instructions = group.ToArray();
@@ -176,20 +222,14 @@ namespace TabML.Editor.Rendering
 
                         if (instructions.All(i => i.Instruction == firstInstruction))
                         {
-                            await
-                                renderingContext.DrawConnectionInstruction(this.Element.VoicePart, position,
-                                                                           firstInstruction);
+                            await renderingContext.DrawConnectionInstruction(this.Element.VoicePart, position, firstInstruction);
                         }
                         else
                         {
-                            var orderedInstructions = this.Element.VoicePart == VoicePart.Treble
-                                ? instructions.OrderByDescending(i => i.StringIndex)
-                                : instructions.OrderBy(i => i.StringIndex);
+                            var orderedInstructions = this.Element.VoicePart == VoicePart.Treble ? instructions.OrderByDescending(i => i.StringIndex) : instructions.OrderBy(i => i.StringIndex);
                             foreach (var instructionInfo in orderedInstructions)
                             {
-                                await
-                                renderingContext.DrawConnectionInstruction(this.Element.VoicePart, position,
-                                                                           instructionInfo.Instruction);
+                                await renderingContext.DrawConnectionInstruction(this.Element.VoicePart, position, instructionInfo.Instruction);
                             }
                         }
                     }
@@ -209,10 +249,7 @@ namespace TabML.Editor.Rendering
             if (targetBeat.NoteValue.Base <= BaseNoteValue.Half)
             {
                 double from;
-                renderingContext.GetStemOffsetRange(this.Element.GetNearestStringIndex(),
-                                                    this.Element.VoicePart,
-                                                    out from,
-                                                    out stemTailPosition);
+                renderingContext.GetStemOffsetRange(this.Element.GetNearestStringIndex(), this.Element.VoicePart, out from, out stemTailPosition);
 
                 if (beamSlope != null)
                     stemTailPosition = beamSlope.GetY(position);
@@ -222,8 +259,7 @@ namespace TabML.Editor.Rendering
 
             if (targetBeat.OwnerBeam == null)
             {
-                await renderingContext.DrawFlag(targetBeat.NoteValue.Base, position, stemTailPosition,
-                                                this.Element.VoicePart);
+                await renderingContext.DrawFlag(targetBeat.NoteValue.Base, position, stemTailPosition, this.Element.VoicePart);
 
                 if (targetBeat.NoteValue.Tuplet != null)
                     await renderingContext.DrawTuplet(targetBeat.NoteValue.Tuplet.Value, position, this.Element.VoicePart);
@@ -243,8 +279,7 @@ namespace TabML.Editor.Rendering
         private double GetStemPosition(Beat beat)
         {
             var renderingContext = this.GetRenderingContext(beat);
-            return beat.OwnerColumn.GetPosition(renderingContext)
-                   + beat.GetAlternationOffset(renderingContext);
+            return beat.OwnerColumn.GetPosition(renderingContext) + beat.GetAlternationOffset(renderingContext);
         }
 
         private BarRenderingContext GetRenderingContext(Beat beat)
@@ -269,7 +304,7 @@ namespace TabML.Editor.Rendering
             var position1 = this.GetStemPosition(beat1);
             var position2 = this.GetStemPosition(beat2);
 
-            var beamWidth = Math.Min(this.RenderingContext.Style.MaximumSemiBeamWidth, (position2 - position1) / 2);
+            var beamWidth = Math.Min(this.RenderingContext.Style.MaximumSemiBeamWidth, (position2 - position1)/2);
 
             double x0, x1;
             if (isLastOfBeam)

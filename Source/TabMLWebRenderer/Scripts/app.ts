@@ -32,19 +32,25 @@ let tablatureStyle: TR.ITablatureStyle =
                 fontFamily: "Times New Roman",
                 fontStyle: "italic"
             },
+
+        },
+
+        ornaments: {
             artificialHarmonicsText : {
                 fontSize: 12,
                 fontFamily: "Times New Roman",
                 fontStyle: "bold"
-            }
-        },
-
-        connection: {
-            instructionText: {
+            },
+            connectionInstructionText: {
                 fontSize: 12,
                 fontFamily: "Times New Roman",
                 fontStyle: "italic"
-            }
+            },
+            rasgueadoText: {
+                fontSize: 12,
+                fontFamily: "Times New Roman",
+                fontStyle: "bold italic"
+            },
         },
 
         title: {

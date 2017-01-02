@@ -44,7 +44,8 @@ namespace TabML.Parser.AST
 
         public bool ToDocumentElement(TablatureContext context, ILogger logger, out TimeSignature element)
         {
-            if (context.DocumentState.RhythmTemplate != null || context.DocumentState.BarAppeared)
+            if ((context.DocumentState.RhythmTemplate != null || context.DocumentState.BarAppeared) 
+                && context.DocumentState.TimeSignature == null)
             {
                 logger.Report(LogLevel.Error, this.Range, Messages.Error_TimeInstructionAfterBarAppearedOrRhythmInstruction);
                 element = null;

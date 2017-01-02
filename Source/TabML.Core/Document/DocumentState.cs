@@ -182,6 +182,10 @@ namespace TabML.Core.Document
         public ICollection<Section> DefinedSections => _definedSections;
         public bool IsSealed { get; private set; }
 
+        public int GetCapoFretOffset(int stringIndex)
+        {
+            return _capoFretOffsets?[stringIndex] ?? 0;
+        }
 
         protected void Seal()
         {

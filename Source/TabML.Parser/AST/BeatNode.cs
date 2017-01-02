@@ -12,6 +12,8 @@ namespace TabML.Parser.AST
     class BeatNode : Node
     {
         public NoteValueNode NoteValue { get; set; }
+        public ExistencyNode ForceBeamStart { get; set; } // todo: handle force beam
+        public ExistencyNode ForceBeamEnd { get; set; }
         public ExistencyNode Rest { get; set; }
         public ExistencyNode Tie { get; set; }
         public LiteralNode<TiePosition> TiePosition { get; set; }
@@ -51,6 +53,9 @@ namespace TabML.Parser.AST
         {
             get
             {
+                if (this.ForceBeamStart != null)
+                    yield return this.ForceBeamStart;
+
                 if (this.PreConnection != null)
                 {
                     yield return this.PreConnection;
@@ -76,6 +81,9 @@ namespace TabML.Parser.AST
 
                 if (this.PostConnection != null)
                     yield return this.PostConnection;
+
+                if (this.ForceBeamEnd != null)
+                    yield return this.ForceBeamEnd;
             }
         }
 
@@ -101,7 +109,9 @@ namespace TabML.Parser.AST
                 PreConnection = this.PreConnection?.Value ?? PreBeatConnection.None,
                 PostConnection = this.PostConnection?.Value ?? PostBeatConnection.None,
                 NoteValue = this.NoteValue.ToNoteValue(),
-                VoicePart = ownerVoice.Part
+                VoicePart = ownerVoice.Part,
+                IsForceBeamStart = this.ForceBeamStart != null,
+                IsForceBeamEnd = this.ForceBeamEnd != null
             };
 
             var notes = new List<BeatNote>();

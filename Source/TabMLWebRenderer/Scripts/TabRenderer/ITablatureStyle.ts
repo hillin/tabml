@@ -26,14 +26,14 @@ namespace TR {
             },
             flagSpacing : number,
             tuplet : ITablatureTextStyle,
-            artificialHarmonicsText: ITablatureTextStyle
+            
         }
 
-        connection: {
-            instructionText: ITablatureTextStyle
+        ornaments : {
+            connectionInstructionText: ITablatureTextStyle,
+            artificialHarmonicsText: ITablatureTextStyle,
+            rasgueadoText: ITablatureTextStyle
         }
-
-
 
         title: ITablatureTextStyle;
         fretNumber: ITablatureTextStyle;

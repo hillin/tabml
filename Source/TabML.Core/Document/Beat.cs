@@ -39,6 +39,9 @@ namespace TabML.Core.Document
             }
         }
 
+        public bool IsForceBeamStart { get; set; }
+        public bool IsForceBeamEnd { get; set; }
+
         public Beat()
         {
             

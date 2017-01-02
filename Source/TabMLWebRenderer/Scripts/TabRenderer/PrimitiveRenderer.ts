@@ -80,7 +80,7 @@ namespace TR {
         }
 
         drawArtificialHarmonicText(x: number, y: number, text: string, direction: OffBarDirection): IBoundingBox {
-            return this.drawOrnamentText(x, y, text, this.style.note.artificialHarmonicsText, direction).getBoundingRect();
+            return this.drawOrnamentText(x, y, text, this.style.ornaments.artificialHarmonicsText, direction).getBoundingRect();
         }
 
         private drawGhostNoteParenthese(bounds: IBoundingBox): IBoundingBox {
@@ -407,7 +407,7 @@ namespace TR {
         }
 
         drawConnectionInstruction(x: number, y: number, instruction: string, direction: OffBarDirection): IBoundingBox {
-            return this.drawOrnamentText(x, y, instruction, this.style.connection.instructionText, direction).getBoundingRect();
+            return this.drawOrnamentText(x, y, instruction, this.style.ornaments.connectionInstructionText, direction).getBoundingRect();
         }
 
         async drawTie(x0: number, x1: number, y: number, direction: OffBarDirection) {
@@ -466,6 +466,56 @@ namespace TR {
 
             this.callbackWith(group.getBoundingRect());
         }
+
+        drawRasgueadoText(x: number, y: number, direction: OffBarDirection): IBoundingBox {
+            return this.drawOrnamentText(x, y, "rasg.", this.style.ornaments.rasgueadoText, direction).getBoundingRect();
+        }
+
+        private async drawOrnamentImageFromURL(urlResourceName: string, x: number, y: number, direction: OffBarDirection, postProcessing?: (group: fabric.IPathGroup) => void) {
+            let imageFile = ResourceManager.getTablatureResource(urlResourceName);
+            let group = await this.drawSVGFromURLAsync(imageFile, x, y, group => {
+                group.originX = "center";
+                group.originY = direction == OffBarDirection.Top ? "bottom" : "top";
+
+                if(postProcessing!=null)
+                    postProcessing(group);
+            });
+
+            this.callbackWith(group.getBoundingRect());
+        }
+
+        drawPickstrokeDown(x: number, y: number, direction: OffBarDirection) {
+            // todo
+        }
+
+        drawPickstrokeUp(x: number, y: number, direction: OffBarDirection) {
+            // todo
+        }
+
+        drawAccented(x: number, y: number, direction: OffBarDirection) {
+            this.drawOrnamentImageFromURL("accented.svg", x, y, direction);
+        }
+
+        drawHeavilyAccented(x: number, y: number, direction: OffBarDirection) {
+            this.drawOrnamentImageFromURL("heavily_accented.svg", x, y, direction);
+        }
+
+        drawFermata(x: number, y: number, direction: OffBarDirection) {
+            this.drawOrnamentImageFromURL("fermata.svg", x, y, direction);
+        }
+
+        drawStaccato(x: number, y: number, direction: OffBarDirection) {
+            this.drawOrnamentImageFromURL("staccato.svg", x, y, direction);
+        }
+
+        drawTrill(x: number, y: number, direction: OffBarDirection) {
+            this.drawOrnamentImageFromURL("trill.svg", x, y, direction);
+        }
+
+        drawTremolo(x: number, y: number, direction: OffBarDirection) {
+            this.drawOrnamentImageFromURL("tremolo.svg", x, y, direction);
+        }
+
 
         debugDrawHeightMap(points: { x:number, y:number }[]) {
             let polyline = new fabric.Polyline(points, {

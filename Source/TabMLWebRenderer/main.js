@@ -2356,18 +2356,23 @@ let tablatureStyle = {
             fontFamily: "Times New Roman",
             fontStyle: "italic"
         },
+    },
+    ornaments: {
         artificialHarmonicsText: {
             fontSize: 12,
             fontFamily: "Times New Roman",
             fontStyle: "bold"
-        }
-    },
-    connection: {
-        instructionText: {
+        },
+        connectionInstructionText: {
             fontSize: 12,
             fontFamily: "Times New Roman",
             fontStyle: "italic"
-        }
+        },
+        rasgueadoText: {
+            fontSize: 12,
+            fontFamily: "Times New Roman",
+            fontStyle: "bold italic"
+        },
     },
     title: {
         fontSize: 32,
@@ -2565,7 +2570,7 @@ var TR;
             __callbackObject.callback(result);
         }
         drawArtificialHarmonicText(x, y, text, direction) {
-            return this.drawOrnamentText(x, y, text, this.style.note.artificialHarmonicsText, direction).getBoundingRect();
+            return this.drawOrnamentText(x, y, text, this.style.ornaments.artificialHarmonicsText, direction).getBoundingRect();
         }
         drawGhostNoteParenthese(bounds) {
             let y = bounds.top + bounds.height / 2;
@@ -2850,7 +2855,7 @@ var TR;
             });
         }
         drawConnectionInstruction(x, y, instruction, direction) {
-            return this.drawOrnamentText(x, y, instruction, this.style.connection.instructionText, direction).getBoundingRect();
+            return this.drawOrnamentText(x, y, instruction, this.style.ornaments.connectionInstructionText, direction).getBoundingRect();
         }
         drawTie(x0, x1, y, direction) {
             return __awaiter(this, void 0, void 0, function* () {
@@ -2901,6 +2906,45 @@ var TR;
                 });
                 this.callbackWith(group.getBoundingRect());
             });
+        }
+        drawRasgueadoText(x, y, direction) {
+            return this.drawOrnamentText(x, y, "rasg.", this.style.ornaments.rasgueadoText, direction).getBoundingRect();
+        }
+        drawOrnamentImageFromURL(urlResourceName, x, y, direction, postProcessing) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let imageFile = ResourceManager.getTablatureResource(urlResourceName);
+                let group = yield this.drawSVGFromURLAsync(imageFile, x, y, group => {
+                    group.originX = "center";
+                    group.originY = direction == OffBarDirection.Top ? "bottom" : "top";
+                    if (postProcessing != null)
+                        postProcessing(group);
+                });
+                this.callbackWith(group.getBoundingRect());
+            });
+        }
+        drawPickstrokeDown(x, y, direction) {
+            // todo
+        }
+        drawPickstrokeUp(x, y, direction) {
+            // todo
+        }
+        drawAccented(x, y, direction) {
+            this.drawOrnamentImageFromURL("accented.svg", x, y, direction);
+        }
+        drawHeavilyAccented(x, y, direction) {
+            this.drawOrnamentImageFromURL("heavily_accented.svg", x, y, direction);
+        }
+        drawFermata(x, y, direction) {
+            this.drawOrnamentImageFromURL("fermata.svg", x, y, direction);
+        }
+        drawStaccato(x, y, direction) {
+            this.drawOrnamentImageFromURL("staccato.svg", x, y, direction);
+        }
+        drawTrill(x, y, direction) {
+            this.drawOrnamentImageFromURL("trill.svg", x, y, direction);
+        }
+        drawTremolo(x, y, direction) {
+            this.drawOrnamentImageFromURL("tremolo.svg", x, y, direction);
         }
         debugDrawHeightMap(points) {
             let polyline = new fabric.Polyline(points, {

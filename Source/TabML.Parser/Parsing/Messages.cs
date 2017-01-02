@@ -98,7 +98,8 @@ namespace TabML.Parser.Parsing
         public const string Suggestion_UselessTimeInstruction =
             "Redundant time instruction, the score is already in this time";
 
-        public const string Error_TimeInstructionAfterBarAppearedOrRhythmInstruction = "Time signature instruction must appear before all bars and rhythm instructions";
+        public const string Error_TimeInstructionAfterBarAppearedOrRhythmInstruction 
+            = "The first time signature instruction must appear before all bars and rhythm instructions";
 
         public const string Error_InvalidKeySignature = "Unrecognizable key signature, key signature ignored";
 
