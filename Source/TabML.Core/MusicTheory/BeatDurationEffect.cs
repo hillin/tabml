@@ -4,6 +4,7 @@
     {
         None,
         Fermata,
-        Staccato
+        Staccato,
+        Tenuto
     }
 }

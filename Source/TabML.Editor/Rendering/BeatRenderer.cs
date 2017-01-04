@@ -63,55 +63,58 @@ namespace TabML.Editor.Rendering
                 await this.DrawStemAndFlag(beamSlope, targetBeat, tieTarget);
 
             this.DrawNoteValueAugment(tieTarget);
-            this.DrawBeatOrnaments(tieTarget);
+            await this.DrawBeatOrnaments(tieTarget);
         }
 
-        private void DrawBeatOrnaments(Beat tieTarget)
+        private async Task DrawBeatOrnaments(Beat tieTarget)
         {
             var targetBeat = tieTarget ?? this.Element;
             var renderingContext = this.Root.GetRenderer<Beat, BeatRenderer>(targetBeat).RenderingContext;
-            var beatPosition = targetBeat.OwnerColumn.GetPosition(renderingContext);
-
+            var beatPosition = this.GetStemPosition(targetBeat);
+            
             switch (targetBeat.StrumTechnique)
             {
                 case StrumTechnique.Rasgueado:
-                    renderingContext.DrawRasgueadoText(targetBeat.VoicePart, beatPosition);
+                    await renderingContext.DrawRasgueadoText(targetBeat.VoicePart, beatPosition);
                     break;
                 case StrumTechnique.PickstrokeDown:
-                    renderingContext.DrawPickstrokeDown(targetBeat.VoicePart, beatPosition);
+                    await renderingContext.DrawPickstrokeDown(targetBeat.VoicePart, beatPosition);
                     break;
                 case StrumTechnique.PickstrokeUp:
-                    renderingContext.DrawPickstrokeUp(targetBeat.VoicePart, beatPosition);
+                    await renderingContext.DrawPickstrokeUp(targetBeat.VoicePart, beatPosition);
                     break;
             }
 
             switch (targetBeat.Accent)
             {
                 case BeatAccent.Accented:
-                    renderingContext.DrawAccented(targetBeat.VoicePart, beatPosition);
+                    await renderingContext.DrawAccented(targetBeat.VoicePart, beatPosition);
                     break;
                 case BeatAccent.HeavilyAccented:
-                    renderingContext.DrawHeavilyAccented(targetBeat.VoicePart, beatPosition);
+                    await renderingContext.DrawHeavilyAccented(targetBeat.VoicePart, beatPosition);
                     break;
             }
 
             switch (targetBeat.DurationEffect)
             {
                 case BeatDurationEffect.Fermata:
-                    renderingContext.DrawFermata(targetBeat.VoicePart, beatPosition);
+                    await renderingContext.DrawFermata(targetBeat.VoicePart, beatPosition);
                     break;
                 case BeatDurationEffect.Staccato:
-                    renderingContext.DrawStaccato(targetBeat.VoicePart, beatPosition);
+                    await renderingContext.DrawStaccato(targetBeat.VoicePart, beatPosition);
+                    break;
+                case BeatDurationEffect.Tenuto:
+                    await renderingContext.DrawTenuto(targetBeat.VoicePart, beatPosition);
                     break;
             }
 
             switch (targetBeat.EffectTechnique)
             {
                 case BeatEffectTechnique.Trill:
-                    renderingContext.DrawTrill(targetBeat.VoicePart, beatPosition);
+                    await renderingContext.DrawTrill(targetBeat.VoicePart, beatPosition);
                     break;
                 case BeatEffectTechnique.Tremolo:
-                    renderingContext.DrawTremolo(targetBeat.VoicePart, beatPosition);
+                    await renderingContext.DrawTremolo(targetBeat.VoicePart, beatPosition);
                     break;
             }
         }

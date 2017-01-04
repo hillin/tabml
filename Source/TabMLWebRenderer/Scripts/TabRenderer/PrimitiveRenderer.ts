@@ -477,6 +477,9 @@ namespace TR {
                 group.originX = "center";
                 group.originY = direction == OffBarDirection.Top ? "bottom" : "top";
 
+                if(direction == OffBarDirection.Bottom)
+                    group.flipY = true;
+
                 if(postProcessing!=null)
                     postProcessing(group);
             });
@@ -485,11 +488,11 @@ namespace TR {
         }
 
         drawPickstrokeDown(x: number, y: number, direction: OffBarDirection) {
-            // todo
+            this.drawOrnamentImageFromURL("downbow.svg", x, y, direction);
         }
 
         drawPickstrokeUp(x: number, y: number, direction: OffBarDirection) {
-            // todo
+            this.drawOrnamentImageFromURL("upbow.svg", x, y, direction);
         }
 
         drawAccented(x: number, y: number, direction: OffBarDirection) {
@@ -506,6 +509,10 @@ namespace TR {
 
         drawStaccato(x: number, y: number, direction: OffBarDirection) {
             this.drawOrnamentImageFromURL("staccato.svg", x, y, direction);
+        }
+
+        drawTenuto(x: number, y: number, direction: OffBarDirection) {
+            this.drawOrnamentImageFromURL("tenuto.svg", x, y, direction);
         }
 
         drawTrill(x: number, y: number, direction: OffBarDirection) {

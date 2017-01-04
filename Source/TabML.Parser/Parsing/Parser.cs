@@ -354,13 +354,16 @@ namespace TabML.Parser.Parsing
         public static bool TryReadNoteDurationEffect(Scanner scanner, ILogger logger,
                                                       out LiteralNode<BeatDurationEffect> technique)
         {
-            switch (scanner.ReadAny("fermata", "staccato"))
+            switch (scanner.ReadAny("fermata", "staccato", "tenuto"))
             {
                 case "fermata":
                     technique = new LiteralNode<BeatDurationEffect>(BeatDurationEffect.Fermata, scanner.LastReadRange);
                     return true;
                 case "staccato":
                     technique = new LiteralNode<BeatDurationEffect>(BeatDurationEffect.Staccato, scanner.LastReadRange);
+                    return true;
+                case "tenuto":
+                    technique = new LiteralNode<BeatDurationEffect>(BeatDurationEffect.Tenuto, scanner.LastReadRange);
                     return true;
             }
 

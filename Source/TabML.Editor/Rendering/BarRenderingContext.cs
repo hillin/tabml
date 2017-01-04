@@ -103,6 +103,7 @@ namespace TabML.Editor.Rendering
                                     this.Style.NoteTailVerticalMargin);
         }
 
+
         public double GetNoteAlternationOffset(double offsetRatio, bool hasHarmonics)
         {
             return (hasHarmonics ? this.Style.NoteAlternationOffsetWithHarmonics : this.Style.NoteAlternationOffset) * offsetRatio;
@@ -287,6 +288,15 @@ namespace TabML.Editor.Rendering
             var bounds = await this.PrimitiveRenderer.DrawStaccato(x, y, voicePart.ToOffBarDirection());
             this.EnsureHeightForOrnament(voicePart, bounds);
         }
+
+        public async Task DrawTenuto(VoicePart voicePart, double x)
+        {
+            x += this.Location.X;
+            var y = this.Owner.GetHeight(voicePart, x);
+            var bounds = await this.PrimitiveRenderer.DrawTenuto(x, y, voicePart.ToOffBarDirection());
+            this.EnsureHeightForOrnament(voicePart, bounds);
+        }
+
 
         public async Task DrawTrill(VoicePart voicePart, double x)
         {
