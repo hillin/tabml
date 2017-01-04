@@ -48,9 +48,39 @@ namespace TabML.Editor.Rendering
             _voiceRenderers.Initialize();
         }
 
-        public double MeasureMinSize()
+        public async Task<double> MeasureMinSize(PrimitiveRenderer primitiveRenderer)
         {
-            return _minSize ?? (_minSize = this.Element.GetMinWidth(this.Style)).Value;
+            if (_minSize != null)
+                return _minSize.Value;
+
+            var minDuration = this.Element.Columns.Min(c => c.GetDuration());
+            var size = 0.0;
+
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var column in this.Element.Columns)
+                size += await this.GetColumnMinWidthInBar(primitiveRenderer, column, minDuration);
+
+            _minSize = size;
+
+            return _minSize.Value;
+        }
+
+        private async Task<double> GetColumnMinWidthInBar(PrimitiveRenderer primitiveRenderer, BarColumn column, PreciseDuration minDurationInBar)
+        {
+            var columnRegularWidth = Math.Min(this.Style.MaximumBeatSizeWithoutLyrics,
+                                              this.Style.MinimumBeatSize * column.GetDuration() / minDurationInBar);
+
+            double columnMinWidth;
+            if (column.Lyrics == null)
+                columnMinWidth = this.Style.MinimumBeatSize;
+            else
+            {
+                
+                var lyricsBounds = await primitiveRenderer.MeasureLyrics(column.Lyrics.Text);
+                columnMinWidth = Math.Max(this.Style.MinimumBeatSize, lyricsBounds.Width);
+            }
+
+            return Math.Max(columnRegularWidth, columnMinWidth);
         }
 
         public async Task Render(Point location, Size size)
@@ -67,7 +97,7 @@ namespace TabML.Editor.Rendering
                 renderingContext.DrawBarLine(this.Element.OpenLine.Value, 0.0);
 
             var minDuration = this.Element.Columns.Min(c => c.GetDuration());
-            var widthRatio = (width - renderingContext.Style.BarHorizontalPadding * 2) / this.Element.GetMinWidth(this.Style);
+            var widthRatio = (width - renderingContext.Style.BarHorizontalPadding * 2) /  await this.MeasureMinSize(this.RenderingContext.PrimitiveRenderer);
 
             var position = renderingContext.Style.BarHorizontalPadding;
 
@@ -77,11 +107,11 @@ namespace TabML.Editor.Rendering
             {
                 var column = this.Element.Columns[i];
 
-                var columnWidth = this.Element.GetColumnMinWidthInBar(column, this.Style, minDuration) * widthRatio;
+                var columnWidth = await this.GetColumnMinWidthInBar(this.RenderingContext.PrimitiveRenderer, column, minDuration) * widthRatio;
                 renderingContext.ColumnRenderingInfos[i] = new BarColumnRenderingInfo(column, position, columnWidth);
 
                 var barColumnRenderer = _columnRenderers[i];
-                barColumnRenderer.Render(renderingContext.ColumnRenderingInfos[i]);
+                barColumnRenderer.PreRender();
                 position += columnWidth;
             }
 
@@ -90,7 +120,13 @@ namespace TabML.Editor.Rendering
 
             if (this.Element.CloseLine != null)
                 renderingContext.DrawBarLine(this.Element.CloseLine.Value, width);
+
         }
 
+        public async Task PostRender()
+        {
+            foreach (var barColumnRenderer in _columnRenderers)
+                await barColumnRenderer.PostRender();
+        }
     }
 }

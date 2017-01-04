@@ -131,9 +131,11 @@ namespace TabML.Parser.AST
                         column.VoiceBeats.Add(beat);
                     }
 
-                    if (isFirstBeat)
-                        column.Chord = segment.Chord;
+                    column.Chord = segment.Chord;
 
+                    if (isFirstBeat)
+                        column.IsFirstColumnOfSegment = true;
+                    
                     isFirstBeat = false;
 
                     _bar.Columns.Add(column);

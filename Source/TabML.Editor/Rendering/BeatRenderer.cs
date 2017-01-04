@@ -83,6 +83,18 @@ namespace TabML.Editor.Rendering
                 case StrumTechnique.PickstrokeUp:
                     await renderingContext.DrawPickstrokeUp(targetBeat.VoicePart, beatPosition);
                     break;
+                case StrumTechnique.BrushDown:
+                    await renderingContext.DrawBrushDown(targetBeat.VoicePart, beatPosition);
+                    break;
+                case StrumTechnique.BrushUp:
+                    await renderingContext.DrawBrushUp(targetBeat.VoicePart, beatPosition);
+                    break;
+                case StrumTechnique.ArpeggioDown:
+                    await renderingContext.DrawArpeggioDown(targetBeat.VoicePart, beatPosition);
+                    break;
+                case StrumTechnique.ArpeggioUp:
+                    await renderingContext.DrawArpeggioUp(targetBeat.VoicePart, beatPosition);
+                    break;
             }
 
             switch (targetBeat.Accent)

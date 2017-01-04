@@ -184,5 +184,11 @@ namespace TabML.Editor.Rendering
         {
             this.PrimitiveRenderer.DebugDrawHeightMap(heightMap.DebugGetVertices().Select(p => new Point(p.X + this.Location.X, heightConverter(p.Y))));
         }
+
+        public void SealHeightMaps()
+        {
+            foreach (var heightMap in  _heightMaps)
+                heightMap.Value.Seal();
+        }
     }
 }

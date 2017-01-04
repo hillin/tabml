@@ -16,9 +16,18 @@ namespace TabML.Editor.Rendering
         {
         }
 
-        public void Render(BarColumnRenderingInfo renderingInfo)
+        public void PreRender()
         {
             //todo: draw chord and lyrics
+        }
+
+        public async Task PostRender()
+        {
+            if (this.Element.Lyrics != null)
+            {
+                var columnPosition = this.RenderingContext.ColumnRenderingInfos[this.Element.ColumnIndex].Position;
+                await this.RenderingContext.DrawLyrics(columnPosition, this.Element.Lyrics.Text);
+            }
         }
     }
 }

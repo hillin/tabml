@@ -21,6 +21,9 @@ namespace TabML.Parser.Parsing
         private void ParseNode(Scanner scanner, TablatureNode tablature)
         {
             scanner.SkipWhitespaces(false);
+            if (scanner.EndOfInput)
+                return;
+
             if (scanner.Peek() == '+')
             {
                 CommandletParserBase commandletParser; ;

@@ -102,6 +102,8 @@ namespace TabML.Editor
             => this.InvokeRenderMethodReturnBoundingBox("drawTitle", title, x, y);
         public Task<Rect> DrawLyrics(string lyrics, double x, double y)
             => this.InvokeRenderMethodReturnBoundingBox("drawLyrics", lyrics, x, y);
+        public Task<Rect> MeasureLyrics(string lyrics)
+            => this.InvokeRenderMethodReturnBoundingBox("measureLyrics", lyrics);
         public Task<Rect> DrawNoteFretting(string fretting, double x, double y, NoteRenderingFlags flags)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawNoteFretting", fretting, x, y, flags);
         public void DrawHorizontalBarLine(double x, double y, double length)
@@ -159,7 +161,21 @@ namespace TabML.Editor
 
         public Task<Rect> DrawTremolo(double x, double y, OffBarDirection direction)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawTremolo", x, y, direction);
-        
+
+        public Task<Rect> DrawBrushUp(double x, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawBrushUp", x, y, direction);
+
+        public Task<Rect> DrawBrushDown(double x, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawBrushDown", x, y, direction);
+
+        public Task<Rect> DrawArpeggioUp(double x, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawArpeggioUp", x, y, direction);
+
+        public Task<Rect> DrawArpeggioDown(double x, double y, OffBarDirection direction)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawArpeggioDown", x, y, direction);
+
+
+
         public void Clear() => this.InvokeRenderMethod("clear");
 
         public void DebugDrawHeightMap(IEnumerable<Point> points)

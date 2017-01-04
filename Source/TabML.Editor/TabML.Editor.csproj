@@ -106,7 +106,6 @@
     </ApplicationDefinition>
     <Compile Include="BrowserContext.cs" />
     <Compile Include="Rendering\BarRenderingContext.cs" />
-    <Compile Include="Rendering\BarExtensions.cs" />
     <Compile Include="Rendering\BarRenderer.cs" />
     <Compile Include="Rendering\BarColumnExtensions.cs" />
     <Compile Include="Rendering\BarColumnRenderingInfo.cs" />

@@ -78,7 +78,7 @@ namespace TabML.Editor.Rendering
                 _heights[index] = Math.Max(_heights[index], fromHeight + slope * (index / _sampleRateInversed - from));
             }
 
-            foreach (var index in this.GetIndicesGuarded(from + size , hMargin))
+            foreach (var index in this.GetIndicesGuarded(from + size, hMargin))
             {
                 _heights[index] = Math.Max(_heights[index], toHeight);
             }
@@ -125,9 +125,14 @@ namespace TabML.Editor.Rendering
                 }
             }
 
-            vertices.Add(new Point(lastIndex /_sampleRateInversed, _heights[lastIndex]));
+            vertices.Add(new Point(lastIndex / _sampleRateInversed, _heights[lastIndex]));
 
             return vertices;
+        }
+
+        public void Seal()
+        {
+            this.Fill(_heights.Max());
         }
     }
 }

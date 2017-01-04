@@ -67,7 +67,7 @@ namespace TabML.Editor.Rendering
                 if (barRenders.Count < this.Style.RegularBarsPerRow)
                 {
                     var barRenderer = _barRenderers[barIndex];
-                    var minWidth = barRenderer.MeasureMinSize();
+                    var minWidth = await barRenderer.MeasureMinSize(renderingContext.PrimitiveRenderer);
                     if (caret + minWidth <= availableSize.Width || barRenders.Count == 0)
                     {
                         barRenders.Add(barRenderer);
@@ -109,9 +109,9 @@ namespace TabML.Editor.Rendering
             var availableWidth = availableSize.Width;
             var count = barRenderers.Count;
             var averageWidth = availableWidth / count;
-            foreach (var bar in barRenderers.OrderByDescending(b => b.MeasureMinSize()))
+            foreach (var bar in barRenderers.OrderByDescending(b => b.MeasureMinSize(renderingContext.PrimitiveRenderer)))
             {
-                var minSize = bar.MeasureMinSize();
+                var minSize = await bar.MeasureMinSize(renderingContext.PrimitiveRenderer);
                 if (minSize < averageWidth)
                     break;
 
@@ -122,7 +122,7 @@ namespace TabML.Editor.Rendering
 
             foreach (var bar in barRenderers)
             {
-                var minSize = bar.MeasureMinSize();
+                var minSize = await bar.MeasureMinSize(renderingContext.PrimitiveRenderer);
                 var width = Math.Min(availableSize.Width, Math.Max(minSize, averageWidth));
                 var size = new Size(width, availableSize.Height);
 
@@ -133,7 +133,14 @@ namespace TabML.Editor.Rendering
 
 
             rowRenderingContext.FinishHorizontalBarLines(availableSize.Width);
-            rowRenderingContext.DebugDrawHeightMaps();
+            //rowRenderingContext.DebugDrawHeightMaps();
+            rowRenderingContext.SealHeightMaps();
+
+            foreach (var bar in barRenderers)
+            {
+                await bar.PostRender();
+            }
+
         }
 
         TRenderer IRootElementRenderer.GetRenderer<TElement, TRenderer>(TElement element)

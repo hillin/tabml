@@ -2659,6 +2659,10 @@ var TR;
         drawLyrics(lyrics, x, y) {
             return this.drawText(lyrics, x, y, "left", "top", this.style.lyrics).getBoundingRect();
         }
+        measureLyrics(lyrics) {
+            let textElement = new fabric.Text(lyrics, this.style.lyrics);
+            return textElement.getBoundingRect();
+        }
         drawTuplet(tuplet, x, y) {
             return this.drawText(tuplet, x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
         }
@@ -2952,6 +2956,18 @@ var TR;
         }
         drawTremolo(x, y, direction) {
             this.drawOrnamentImageFromURL("tremolo.svg", x, y, direction);
+        }
+        drawBrushUp(x, y, direction) {
+            this.drawOrnamentImageFromURL("brush_up.svg", x, y, direction);
+        }
+        drawBrushDown(x, y, direction) {
+            this.drawOrnamentImageFromURL("brush_down.svg", x, y, direction);
+        }
+        drawArpeggioUp(x, y, direction) {
+            this.drawOrnamentImageFromURL("arpeggio_up.svg", x, y, direction);
+        }
+        drawArpeggioDown(x, y, direction) {
+            this.drawOrnamentImageFromURL("arpeggio_down.svg", x, y, direction);
         }
         debugDrawHeightMap(points) {
             let polyline = new fabric.Polyline(points, {

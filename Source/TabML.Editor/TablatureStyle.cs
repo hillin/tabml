@@ -46,6 +46,7 @@ namespace TabML.Editor
 
         // ornament = tie instructions, accent marks etc.
         public double BeatOrnamentMargin { get; set; } = 4;
+        public double BrushlikeTechniqueWidth { get; set; } = 10;
         
         public FormattedText MakeFormattedLyrics(string lyricsText)
         {

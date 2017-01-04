@@ -191,6 +191,12 @@ namespace TR {
             return this.drawText(lyrics, x, y, "left", "top", this.style.lyrics).getBoundingRect();
         }
 
+        measureLyrics(lyrics: string): IBoundingBox {
+            let textElement = new fabric.Text(lyrics, this.style.lyrics);
+
+            return textElement.getBoundingRect();
+        }
+
         drawTuplet(tuplet: string, x: number, y: number): IBoundingBox {
             return this.drawText(tuplet, x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
         }
@@ -523,6 +529,21 @@ namespace TR {
             this.drawOrnamentImageFromURL("tremolo.svg", x, y, direction);
         }
 
+        drawBrushUp(x: number, y: number, direction: OffBarDirection) {
+            this.drawOrnamentImageFromURL("brush_up.svg", x, y, direction);
+        }
+
+        drawBrushDown(x: number, y: number, direction: OffBarDirection) {
+            this.drawOrnamentImageFromURL("brush_down.svg", x, y, direction);
+        }
+
+        drawArpeggioUp(x: number, y: number, direction: OffBarDirection) {
+            this.drawOrnamentImageFromURL("arpeggio_up.svg", x, y, direction);
+        }
+
+        drawArpeggioDown(x: number, y: number, direction: OffBarDirection) {
+            this.drawOrnamentImageFromURL("arpeggio_down.svg", x, y, direction);
+        }
 
         debugDrawHeightMap(points: { x:number, y:number }[]) {
             let polyline = new fabric.Polyline(points, {

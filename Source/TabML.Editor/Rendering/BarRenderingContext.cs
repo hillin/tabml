@@ -313,5 +313,45 @@ namespace TabML.Editor.Rendering
             var bounds = await this.PrimitiveRenderer.DrawTremolo(x, y, voicePart.ToOffBarDirection());
             this.EnsureHeightForOrnament(voicePart, bounds);
         }
+
+        public async Task DrawBrushUp(VoicePart voicePart, double x)
+        {
+            x += this.Location.X;
+            var y = this.Owner.GetHeight(voicePart, x);
+            var bounds = await this.PrimitiveRenderer.DrawBrushUp(x, y, voicePart.ToOffBarDirection());
+            this.EnsureHeightForOrnament(voicePart, bounds);
+        }
+
+        public async Task DrawBrushDown(VoicePart voicePart, double x)
+        {
+            x += this.Location.X;
+            var y = this.Owner.GetHeight(voicePart, x);
+            var bounds = await this.PrimitiveRenderer.DrawBrushDown(x, y, voicePart.ToOffBarDirection());
+            this.EnsureHeightForOrnament(voicePart, bounds);
+        }
+
+        public async Task DrawArpeggioUp(VoicePart voicePart, double x)
+        {
+            x += this.Location.X;
+            var y = this.Owner.GetHeight(voicePart, x);
+            var bounds = await this.PrimitiveRenderer.DrawArpeggioUp(x, y, voicePart.ToOffBarDirection());
+            this.EnsureHeightForOrnament(voicePart, bounds);
+        }
+
+        public async Task DrawArpeggioDown(VoicePart voicePart, double x)
+        {
+            x += this.Location.X;
+            var y = this.Owner.GetHeight(voicePart, x);
+            var bounds = await this.PrimitiveRenderer.DrawArpeggioDown(x, y, voicePart.ToOffBarDirection());
+            this.EnsureHeightForOrnament(voicePart, bounds);
+        }
+
+        public async Task DrawLyrics(double x, string lyrics)
+        {
+            x += this.Location.X;
+            var y = this.Owner.GetHeight(VoicePart.Bass, x);
+
+            await this.PrimitiveRenderer.DrawLyrics(lyrics, x, y);
+        }
     }
 }
