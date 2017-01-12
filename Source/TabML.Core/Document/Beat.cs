@@ -12,6 +12,14 @@ namespace TabML.Core.Document
         public bool IsRest { get; set; }
         public bool IsTied { get; set; }
         public StrumTechnique StrumTechnique { get; set; } = StrumTechnique.None;
+
+        public bool HasBrushLikeStrumTechnique =>
+            this.StrumTechnique == StrumTechnique.ArpeggioDown
+            || this.StrumTechnique == StrumTechnique.ArpeggioUp
+            || this.StrumTechnique == StrumTechnique.BrushDown
+            || this.StrumTechnique == StrumTechnique.BrushUp
+            || this.StrumTechnique == StrumTechnique.Rasgueado;
+
         public BeatEffectTechnique EffectTechnique { get; set; } = BeatEffectTechnique.None;
         public double EffectTechniqueParameter { get; set; }
         public BeatDurationEffect DurationEffect { get; set; } = BeatDurationEffect.None;

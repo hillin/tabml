@@ -96,10 +96,31 @@ namespace TabML.Parser.AST
 
             new BarArranger(context, bar).Arrange();
 
+            foreach (var column in bar.Columns)
+            {
+                if (!this.ValidateColumn(context, logger, column))
+                    return false;
+            }
+
             if (previousBar != null)
             {
                 this.ConnectBars(previousBar, bar, VoicePart.Treble);
                 this.ConnectBars(previousBar, bar, VoicePart.Bass);
+            }
+
+            return true;
+        }
+
+        public bool ValidateColumn(TablatureContext context, ILogger logger, BarColumn column)
+        {
+            if (column.VoiceBeats.Count == 2 && column.VoiceBeats.All(b => b.StrumTechnique != StrumTechnique.None))
+            {
+                if (column.VoiceBeats[0].StrumTechnique != column.VoiceBeats[1].StrumTechnique)
+                {
+                    logger.Report(LogLevel.Warning, column.VoiceBeats[1].Range, Messages.Warning_ConflictedStrumTechniques);
+
+                    column.VoiceBeats[1].StrumTechnique = StrumTechnique.None;
+                }
             }
 
             return true;

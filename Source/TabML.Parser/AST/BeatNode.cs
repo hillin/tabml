@@ -114,6 +114,11 @@ namespace TabML.Parser.AST
                 IsForceBeamEnd = this.ForceBeamEnd != null
             };
 
+            if (!this.Validate(context, logger, beat))
+            {
+                return false;
+            }
+
             var notes = new List<BeatNote>();
             foreach (var note in this.Notes)
             {
@@ -130,6 +135,29 @@ namespace TabML.Parser.AST
             beat.Notes = notes.ToArray();
 
             ownerVoice.IsTerminatedWithRest = beat.IsRest;
+
+            return true;
+        }
+
+        private bool Validate(TablatureContext context, ILogger logger, Beat beat)
+        {
+            if (beat.StrumTechnique != StrumTechniqueEnum.None)
+            {
+                if (beat.IsTied)
+                {
+                    logger.Report(LogLevel.Warning, this.StrumTechnique.Range,
+                                  Messages.Warning_StrumTechniqueForTiedBeat);
+
+                    beat.StrumTechnique = StrumTechniqueEnum.None;
+                }
+                else if (beat.IsRest)
+                {
+                    logger.Report(LogLevel.Warning, this.StrumTechnique.Range,
+                                  Messages.Warning_StrumTechniqueForRestBeat);
+
+                    beat.StrumTechnique = StrumTechniqueEnum.None;
+                }
+            }
 
             return true;
         }

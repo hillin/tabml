@@ -61,9 +61,9 @@ namespace TabML.Editor
 
             SpinWait.SpinUntil(() => BrowserContext.CallbackObject.IsCalledBack);
 
+            var result = BrowserContext.CallbackObject.Result;
             BrowserContext.CallbackObject.Release();
 
-            var result = BrowserContext.CallbackObject.Result;
             return PrimitiveRenderer.CreateBoundingBox(result);
         }
 
@@ -174,7 +174,20 @@ namespace TabML.Editor
         public Task<Rect> DrawArpeggioDown(double x, double y, OffBarDirection direction)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawArpeggioDown", x, y, direction);
 
+        public Task<Rect> DrawInlineBrushDown(double x, double y, int stringSpan) 
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawInlineBrushDown", x, y, stringSpan);
 
+        public Task<Rect> DrawInlineBrushUp(double x, double y, int stringSpan) 
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawInlineBrushUp", x, y, stringSpan);
+
+        public Task<Rect> DrawInlineArpeggioDown(double x, double y, int stringSpan) 
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawInlineArpeggioDown", x, y, stringSpan);
+
+        public Task<Rect> DrawInlineArpeggioUp(double x, double y, int stringSpan) 
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawInlineArpeggioUp", x, y, stringSpan);
+
+        public Task<Rect> DrawInlineRasgueado(double x, double y, int stringSpan) 
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawInlineRasgueado", x, y, stringSpan);
 
         public void Clear() => this.InvokeRenderMethod("clear");
 

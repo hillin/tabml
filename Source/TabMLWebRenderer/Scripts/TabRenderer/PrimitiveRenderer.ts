@@ -193,8 +193,11 @@ namespace TR {
 
         measureLyrics(lyrics: string): IBoundingBox {
             let textElement = new fabric.Text(lyrics, this.style.lyrics);
-
-            return textElement.getBoundingRect();
+            this.canvas.add(textElement);       // for now we'll just add and remove it
+                                                // later we should refactor it so all elements are created at once, and re-arranged later
+            let bounds = textElement.getBoundingRect();
+            this.canvas.remove(textElement);
+            return bounds;
         }
 
         drawTuplet(tuplet: string, x: number, y: number): IBoundingBox {
@@ -475,6 +478,41 @@ namespace TR {
 
         drawRasgueadoText(x: number, y: number, direction: OffBarDirection): IBoundingBox {
             return this.drawOrnamentText(x, y, "rasg.", this.style.ornaments.rasgueadoText, direction).getBoundingRect();
+        }
+
+        
+        private async drawInlineBrushlikeTechnique(x:number, y:number, stringSpan: number, technique:string, isUp: Boolean) {
+            let imageFile = ResourceManager.getTablatureResource(`${technique}_up_inline_${stringSpan}.svg`);
+
+            let group = await this.drawSVGFromURLAsync(imageFile, x, y, group => {
+                group.originX = "center";
+                group.originY = "center";
+
+                if(!isUp)
+                    group.flipY = true;
+            });
+
+            this.callbackWith(group.getBoundingRect());
+        }
+
+        async drawInlineBrushDown(x:number, y:number, stringSpan:number) {
+            await this.drawInlineBrushlikeTechnique(x,y,stringSpan, "brush", false);
+        }
+
+        async drawInlineBrushUp(x:number, y:number, stringSpan:number) {
+            await this.drawInlineBrushlikeTechnique(x,y,stringSpan, "brush", true);
+        }
+
+        async drawInlineArpeggioDown(x:number, y:number, stringSpan:number) {
+            await this.drawInlineBrushlikeTechnique(x,y,stringSpan, "arpeggio", false);
+        }
+
+        async drawInlineArpeggioUp(x:number, y:number, stringSpan:number) {
+            await this.drawInlineBrushlikeTechnique(x,y,stringSpan, "arpeggio", true);
+        }
+
+        async drawInlineRasgueado(x:number, y:number, stringSpan:number) {
+            await this.drawInlineBrushlikeTechnique(x,y,stringSpan, "arpeggio", false);
         }
 
         private async drawOrnamentImageFromURL(urlResourceName: string, x: number, y: number, direction: OffBarDirection, postProcessing?: (group: fabric.IPathGroup) => void) {

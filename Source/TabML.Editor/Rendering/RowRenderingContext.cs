@@ -93,8 +93,8 @@ namespace TabML.Editor.Rendering
         /// </summary>
         public double GetBodyFloor() => this.GetBodyCeiling() + this.Style.BarLineHeight * this.Style.StringCount;
 
-        public double GetStringPosition(int stringIndex) => this.Location.Y + this.Style.BarTopMargin + (stringIndex + 0.5) * this.Style.BarLineHeight;
-        public double GetStringSpacePosition(int stringIndex) => this.Location.Y + this.Style.BarTopMargin + stringIndex * this.Style.BarLineHeight;
+        public double GetStringPosition(double stringIndex) => this.Location.Y + this.Style.BarTopMargin + (stringIndex + 0.5) * this.Style.BarLineHeight;
+        public double GetStringSpacePosition(double stringIndex) => this.Location.Y + this.Style.BarTopMargin + stringIndex * this.Style.BarLineHeight;
 
         // from and to are absolute positions
         public Task<Rect> DrawTie(double from, double to, int stringIndex, TiePosition tiePosition, string instruction,

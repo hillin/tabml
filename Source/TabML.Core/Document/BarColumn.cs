@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
@@ -22,5 +23,6 @@ namespace TabML.Core.Document
         }
 
         public PreciseDuration GetDuration() => this.VoiceBeats.Min(v => v.GetDuration());
+
     }
 }

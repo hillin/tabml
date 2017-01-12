@@ -109,9 +109,13 @@ namespace TabML.Editor.Rendering
             var availableWidth = availableSize.Width;
             var count = barRenderers.Count;
             var averageWidth = availableWidth / count;
-            foreach (var bar in barRenderers.OrderByDescending(b => b.MeasureMinSize(renderingContext.PrimitiveRenderer)))
+
+            foreach (var bar in barRenderers)
+                await bar.MeasureMinSize(renderingContext.PrimitiveRenderer);
+
+            foreach (var bar in barRenderers.OrderByDescending(b => b.GetMinSize()))
             {
-                var minSize = await bar.MeasureMinSize(renderingContext.PrimitiveRenderer);
+                var minSize = bar.GetMinSize();
                 if (minSize < averageWidth)
                     break;
 
@@ -122,7 +126,7 @@ namespace TabML.Editor.Rendering
 
             foreach (var bar in barRenderers)
             {
-                var minSize = await bar.MeasureMinSize(renderingContext.PrimitiveRenderer);
+                var minSize = bar.GetMinSize();
                 var width = Math.Min(availableSize.Width, Math.Max(minSize, averageWidth));
                 var size = new Size(width, availableSize.Height);
 

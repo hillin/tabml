@@ -68,7 +68,7 @@ namespace TabML.Editor.Rendering
 
             var hasHarmonics = beat.Notes.Any(n => n.IsHarmonics);
             var ratio = column.GetNoteAlternationOffsetRatio(stringIndex ?? beat.GetNearestStringIndex());
-            return rc.GetNoteAlternationOffset(ratio, hasHarmonics);
+            return rc.GetNoteAlternationOffset(ratio, hasHarmonics) + column.BrushlikeTechniqueSize + rc.Style.BrushlikeTechniqueMargin;
         }
 
         public static TiePosition GetTiePosition(this Beat beat)

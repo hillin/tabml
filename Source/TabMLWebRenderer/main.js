@@ -2661,7 +2661,11 @@ var TR;
         }
         measureLyrics(lyrics) {
             let textElement = new fabric.Text(lyrics, this.style.lyrics);
-            return textElement.getBoundingRect();
+            this.canvas.add(textElement); // for now we'll just add and remove it
+            // later we should refactor it so all elements are created at once, and re-arranged later
+            let bounds = textElement.getBoundingRect();
+            this.canvas.remove(textElement);
+            return bounds;
         }
         drawTuplet(tuplet, x, y) {
             return this.drawText(tuplet, x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
@@ -2915,6 +2919,43 @@ var TR;
         }
         drawRasgueadoText(x, y, direction) {
             return this.drawOrnamentText(x, y, "rasg.", this.style.ornaments.rasgueadoText, direction).getBoundingRect();
+        }
+        drawInlineBrushlikeTechnique(x, y, stringSpan, technique, isUp) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let imageFile = ResourceManager.getTablatureResource(`${technique}_up_inline_${stringSpan}.svg`);
+                let group = yield this.drawSVGFromURLAsync(imageFile, x, y, group => {
+                    group.originX = "center";
+                    group.originY = "center";
+                    if (!isUp)
+                        group.flipY = true;
+                });
+                this.callbackWith(group.getBoundingRect());
+            });
+        }
+        drawInlineBrushDown(x, y, stringSpan) {
+            return __awaiter(this, void 0, void 0, function* () {
+                yield this.drawInlineBrushlikeTechnique(x, y, stringSpan, "brush", false);
+            });
+        }
+        drawInlineBrushUp(x, y, stringSpan) {
+            return __awaiter(this, void 0, void 0, function* () {
+                yield this.drawInlineBrushlikeTechnique(x, y, stringSpan, "brush", true);
+            });
+        }
+        drawInlineArpeggioDown(x, y, stringSpan) {
+            return __awaiter(this, void 0, void 0, function* () {
+                yield this.drawInlineBrushlikeTechnique(x, y, stringSpan, "arpeggio", false);
+            });
+        }
+        drawInlineArpeggioUp(x, y, stringSpan) {
+            return __awaiter(this, void 0, void 0, function* () {
+                yield this.drawInlineBrushlikeTechnique(x, y, stringSpan, "arpeggio", true);
+            });
+        }
+        drawInlineRasgueado(x, y, stringSpan) {
+            return __awaiter(this, void 0, void 0, function* () {
+                yield this.drawInlineBrushlikeTechnique(x, y, stringSpan, "arpeggio", false);
+            });
         }
         drawOrnamentImageFromURL(urlResourceName, x, y, direction, postProcessing) {
             return __awaiter(this, void 0, void 0, function* () {

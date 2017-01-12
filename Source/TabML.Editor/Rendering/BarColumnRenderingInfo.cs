@@ -44,13 +44,11 @@ namespace TabML.Editor.Rendering
             {
                 if (this.Column.VoiceBeats.Count == 0)
                     return false;
-                return this.Column.VoiceBeats.Any(b => b.StrumTechnique == StrumTechnique.ArpeggioDown
-                                                       || b.StrumTechnique == StrumTechnique.ArpeggioUp
-                                                       || b.StrumTechnique == StrumTechnique.BrushDown
-                                                       || b.StrumTechnique == StrumTechnique.BrushUp
-                                                       || b.StrumTechnique == StrumTechnique.Rasgueado);
+                return this.Column.VoiceBeats.Any(b=>b.HasBrushLikeStrumTechnique);
             }
         }
+
+        public double BrushlikeTechniqueSize { get; set; }
 
         public double GetNoteAlternationOffsetRatio(int stringIndex)
         {

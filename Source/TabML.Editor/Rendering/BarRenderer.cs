@@ -48,6 +48,15 @@ namespace TabML.Editor.Rendering
             _voiceRenderers.Initialize();
         }
 
+        public double GetMinSize()
+        {
+            if (_minSize == null)
+                throw new InvalidOperationException("min size is not measured yet, call MeasureMinSize first");
+
+            return _minSize.Value;
+        }
+
+
         public async Task<double> MeasureMinSize(PrimitiveRenderer primitiveRenderer)
         {
             if (_minSize != null)
@@ -75,7 +84,6 @@ namespace TabML.Editor.Rendering
                 columnMinWidth = this.Style.MinimumBeatSize;
             else
             {
-                
                 var lyricsBounds = await primitiveRenderer.MeasureLyrics(column.Lyrics.Text);
                 columnMinWidth = Math.Max(this.Style.MinimumBeatSize, lyricsBounds.Width);
             }
@@ -117,6 +125,9 @@ namespace TabML.Editor.Rendering
 
             foreach (var renderer in _voiceRenderers)
                 await renderer.Render();
+
+            foreach (var barColumnRenderer in _columnRenderers)
+                await barColumnRenderer.Render();
 
             if (this.Element.CloseLine != null)
                 renderingContext.DrawBarLine(this.Element.CloseLine.Value, width);

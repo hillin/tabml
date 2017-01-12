@@ -346,6 +346,35 @@ namespace TabML.Editor.Rendering
             this.EnsureHeightForOrnament(voicePart, bounds);
         }
 
+        public async Task<double> DrawInlineBrushDown(double x, int minString, int maxString)
+        {
+            var y = this.Owner.GetStringPosition(((double)minString + maxString) / 2.0);
+            return (await this.PrimitiveRenderer.DrawInlineBrushDown(x + this.Location.X, y, maxString - minString + 1)).Width;
+        }
+
+        public async Task<double> DrawInlineBrushUp(double x, int minString, int maxString)
+        {
+            var y = this.Owner.GetStringPosition(((double)minString + maxString) / 2.0);
+            return (await this.PrimitiveRenderer.DrawInlineBrushUp(x + this.Location.X, y, maxString - minString + 1)).Width;
+        }
+
+        public async Task<double> DrawInlineArpeggioDown(double x, int minString, int maxString)
+        {
+            var y = this.Owner.GetStringPosition(((double)minString + maxString) / 2.0);
+            return (await this.PrimitiveRenderer.DrawInlineArpeggioDown(x + this.Location.X, y, maxString - minString + 1)).Width;
+        }
+
+        public async Task<double> DrawInlineArpeggioUp(double x, int minString, int maxString)
+        {
+            var y = this.Owner.GetStringPosition(((double)minString + maxString) / 2.0);
+            return (await this.PrimitiveRenderer.DrawInlineArpeggioUp(x + this.Location.X, y, maxString - minString + 1)).Width;
+        }
+
+        public async Task<double> DrawInlineRasgueado(double x, int minString, int maxString)
+        {
+            var y = this.Owner.GetStringPosition(((double)minString + maxString) / 2.0);
+            return (await this.PrimitiveRenderer.DrawInlineRasgueado(x + this.Location.X, y, maxString - minString + 1)).Width;
+        }
         public async Task DrawLyrics(double x, string lyrics)
         {
             x += this.Location.X;
@@ -353,5 +382,6 @@ namespace TabML.Editor.Rendering
 
             await this.PrimitiveRenderer.DrawLyrics(lyrics, x, y);
         }
+
     }
 }
