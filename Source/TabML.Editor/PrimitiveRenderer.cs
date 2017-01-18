@@ -189,6 +189,33 @@ namespace TabML.Editor
         public Task<Rect> DrawInlineRasgueado(double x, double y, int stringSpan) 
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawInlineRasgueado", x, y, stringSpan);
 
+        public Task<Rect> DrawTimeSignature(double x, double y, int beats, int timeValue)
+            => this.InvokeRenderMethodReturnBoundingBox("drawTimeSignature", x, y, beats, timeValue);
+
+        public Task<Rect> DrawTranspositionText(double x, double y, string key)
+            => this.InvokeRenderMethodReturnBoundingBox("drawTranspositionText", x, y, key);
+        
+        public Task<Rect> DrawTempoSignature(double x, double y, BaseNoteValue noteValue, int beats)
+            => this.InvokeRenderMethodReturnBoundingBox("drawTempoSignature", x, y, noteValue, beats);
+
+        public Task<Rect> DrawTabHeader(double x, double y)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawTabHeader", x, y);
+
+        public Task<Rect> DrawSection(double x, double y, string sectionName)
+            => this.InvokeRenderMethodReturnBoundingBox("drawSection", x, y, sectionName);
+        
+        public Task<Rect> DrawStartAlternation(double x0, double x1, double y0, double y1, string text)
+            => this.InvokeRenderMethodReturnBoundingBox("drawStartAlternation", x0, x1, y0, y1, text);
+
+        public Task<Rect> DrawStartAndEndAlternation(double x0, double x1, double y0, double y1, string text)
+            => this.InvokeRenderMethodReturnBoundingBox("drawStartAndEndAlternation", x0, x1, y0, y1, text);
+
+        public Task<Rect> DrawAlternationLine(double x0, double x1, double y1)
+            => this.InvokeRenderMethodReturnBoundingBox("drawAlternationLine", x0, x1, y1);
+
+        public Task<Rect> DrawEndAlternation(double x0, double x1, double y0, double y1)
+            => this.InvokeRenderMethodReturnBoundingBox("drawEndAlternation", x0, x1, y0, y1);
+
         public void Clear() => this.InvokeRenderMethod("clear");
 
         public void DebugDrawHeightMap(IEnumerable<Point> points)
@@ -209,7 +236,6 @@ namespace TabML.Editor
 
             this.BrowserMainFrame.ExecuteJavaScriptAsync(builder.ToString());
         }
-
 
     }
 }

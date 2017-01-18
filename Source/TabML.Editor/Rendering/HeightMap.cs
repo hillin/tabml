@@ -60,6 +60,17 @@ namespace TabML.Editor.Rendering
 
         public void EnsureHeight(double from, double size, double height)
         {
+            if (from < 0)
+            {
+                size += from;
+                from = 0;
+            }
+
+            if (from + size >= _heights.Length)
+            {
+                size = _heights.Length - from;
+            }
+
             foreach (var index in this.GetIndices(from, size))
                 _heights[index] = Math.Max(_heights[index], height);
         }

@@ -82,7 +82,7 @@ namespace TabML.Editor.Rendering
                                               availableSize.Height - location.Y + startY),
                                      isFirstRow);
 
-                location.Y += 200;  //todo: replace magic number
+                location.Y +=  this.Style.BarTopMargin + this.Style.BarLineHeight * this.Style.StringCount + this.Style.BarBottomMargin;
                 // todo: handle new page
 
                 isFirstRow = false;
@@ -105,7 +105,7 @@ namespace TabML.Editor.Rendering
             var rowRenderingContext = new RowRenderingContext(renderingContext, location, availableSize);
 
             barRenderers.AssignRenderingContexts(rowRenderingContext);
-
+            
             var availableWidth = availableSize.Width;
             var count = barRenderers.Count;
             var averageWidth = availableWidth / count;
@@ -124,13 +124,17 @@ namespace TabML.Editor.Rendering
                 averageWidth = availableWidth / count;
             }
 
+            var isFirstBarInRow = true;
+
             foreach (var bar in barRenderers)
             {
                 var minSize = bar.GetMinSize();
                 var width = Math.Min(availableSize.Width, Math.Max(minSize, averageWidth));
                 var size = new Size(width, availableSize.Height);
 
-                await bar.Render(location, size);
+                await bar.Render(location, size, isFirstBarInRow);
+
+                isFirstBarInRow = false;
 
                 location.X += size.Width;
             }
@@ -138,13 +142,14 @@ namespace TabML.Editor.Rendering
 
             rowRenderingContext.FinishHorizontalBarLines(availableSize.Width);
             //rowRenderingContext.DebugDrawHeightMaps();
-            rowRenderingContext.SealHeightMaps();
+            rowRenderingContext.BeginPostRender();
 
             foreach (var bar in barRenderers)
             {
                 await bar.PostRender();
             }
 
+            renderingContext.PreviousDocumentState = rowRenderingContext.PreviousDocumentState;
         }
 
         TRenderer IRootElementRenderer.GetRenderer<TElement, TRenderer>(TElement element)

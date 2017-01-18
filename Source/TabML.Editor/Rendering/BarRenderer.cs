@@ -14,13 +14,13 @@ namespace TabML.Editor.Rendering
     class BarRenderer : ElementRenderer<Bar, RowRenderingContext>
     {
         public TablatureStyle Style { get; }
-        public Point Location { get; private set; }
-        public Size RenderSize { get; private set; }
 
         private double? _minSize;
 
         private readonly List<BarColumnRenderer> _columnRenderers;
         private readonly List<BarVoiceRenderer> _voiceRenderers;
+
+        private BarRenderingContext _barRenderingContext;
 
         public BarRenderer(TablatureRenderer owner, TablatureStyle style, Bar bar)
             : base(owner, bar)
@@ -91,35 +91,40 @@ namespace TabML.Editor.Rendering
             return Math.Max(columnRegularWidth, columnMinWidth);
         }
 
-        public async Task Render(Point location, Size size)
+        public async Task Render(Point location, Size size, bool isFirstBarInRow)
         {
-            this.Location = location;
-            this.RenderSize = size;
 
-            var renderingContext = new BarRenderingContext(this.RenderingContext, location, size);
-            _columnRenderers.AssignRenderingContexts(renderingContext);
-            _voiceRenderers.AssignRenderingContexts(renderingContext);
+            _barRenderingContext = new BarRenderingContext(this.RenderingContext, location, size, isFirstBarInRow);
+            _columnRenderers.AssignRenderingContexts(_barRenderingContext);
+            _voiceRenderers.AssignRenderingContexts(_barRenderingContext);
 
             var width = size.Width;
             if (this.Element.OpenLine != null)
-                renderingContext.DrawBarLine(this.Element.OpenLine.Value, 0.0);
+                _barRenderingContext.DrawOpenBarLine(this.Element.OpenLine.Value, 0.0);
+
+            var position = 0.0;
+            if (isFirstBarInRow)
+                position += await _barRenderingContext.DrawTabHeader();
+
+            position += _barRenderingContext.Style.BarHorizontalPadding;
+
+            position += await this.RenderTimeSignature(_barRenderingContext, position);
 
             var minDuration = this.Element.Columns.Min(c => c.GetDuration());
-            var widthRatio = (width - renderingContext.Style.BarHorizontalPadding * 2) /  await this.MeasureMinSize(this.RenderingContext.PrimitiveRenderer);
+            var minSize = await this.MeasureMinSize(this.RenderingContext.PrimitiveRenderer);
+            var widthRatio = (width - position) / minSize;
 
-            var position = renderingContext.Style.BarHorizontalPadding;
-
-            renderingContext.ColumnRenderingInfos = new BarColumnRenderingInfo[this.Element.Columns.Count];
+            _barRenderingContext.ColumnRenderingInfos = new BarColumnRenderingInfo[this.Element.Columns.Count];
 
             for (var i = 0; i < this.Element.Columns.Count; i++)
             {
                 var column = this.Element.Columns[i];
 
                 var columnWidth = await this.GetColumnMinWidthInBar(this.RenderingContext.PrimitiveRenderer, column, minDuration) * widthRatio;
-                renderingContext.ColumnRenderingInfos[i] = new BarColumnRenderingInfo(column, position, columnWidth);
+                _barRenderingContext.ColumnRenderingInfos[i] = new BarColumnRenderingInfo(column, position, columnWidth);
 
                 var barColumnRenderer = _columnRenderers[i];
-                barColumnRenderer.PreRender();
+                await barColumnRenderer.PreRender();
                 position += columnWidth;
             }
 
@@ -130,14 +135,95 @@ namespace TabML.Editor.Rendering
                 await barColumnRenderer.Render();
 
             if (this.Element.CloseLine != null)
-                renderingContext.DrawBarLine(this.Element.CloseLine.Value, width);
+                _barRenderingContext.DrawCloseBarLine(this.Element.CloseLine.Value, width);
 
+            if (this.Element.AlternativeEndingPosition == AlternativeEndingPosition.Start)
+                _barRenderingContext.IsSectionRenderingPostponed = true;
+            else
+                await this.RenderSection();
+
+            await this.RenderTranspositionSignature();
+            await this.RenderTempoSignature();
+
+            this.RenderingContext.PreviousDocumentState = this.Element.DocumentState;
+        }
+
+        private async Task RenderTempoSignature()
+        {
+            var previousDocumentState = this.RenderingContext.PreviousDocumentState;
+            if (previousDocumentState == null ||
+                previousDocumentState.TempoSignature != this.Element.DocumentState.TempoSignature)
+            {
+                await _barRenderingContext.DrawTempoSignature(this.Element.DocumentState.TempoSignature.Tempo, 0);
+            }
+        }
+
+        private async Task RenderTranspositionSignature()
+        {
+            var previousDocumentState = this.RenderingContext.PreviousDocumentState;
+            if (previousDocumentState != null &&
+                previousDocumentState.KeySignature != this.Element.DocumentState.KeySignature)
+            {
+                await _barRenderingContext.DrawTransposition(this.Element.DocumentState.KeySignature.Key, 0);
+            }
+        }
+
+        private async Task<double> RenderTimeSignature(BarRenderingContext renderingContext, double position)
+        {
+            var previousDocumentState = this.RenderingContext.PreviousDocumentState;
+            if (previousDocumentState == null || previousDocumentState.Time != this.Element.DocumentState.Time)
+            {
+                return await renderingContext.DrawTimeSignature(this.Element.DocumentState.Time, position);
+            }
+
+            return 0.0;
         }
 
         public async Task PostRender()
         {
+            await this.RenderAlternation();
+
+            if (_barRenderingContext.IsSectionRenderingPostponed)
+                await this.RenderSection();
+
             foreach (var barColumnRenderer in _columnRenderers)
                 await barColumnRenderer.PostRender();
+
+            this.RenderingContext.PreviousDocumentState = this.Element.DocumentState;
         }
+
+        private async Task RenderAlternation()
+        {
+            switch (this.Element.AlternativeEndingPosition)
+            {
+                case AlternativeEndingPosition.Start:
+                    await _barRenderingContext.DrawStartAlternation(this.Element.DocumentState.CurrentAlternation.GetFormattedIndices());
+                    break;
+                case AlternativeEndingPosition.Inside:
+                    await _barRenderingContext.DrawAlternationLine();
+                    break;
+                case AlternativeEndingPosition.End:
+                    await _barRenderingContext.DrawEndAlternation();
+                    break;
+                case AlternativeEndingPosition.StartAndEnd:
+                    await
+                        _barRenderingContext.DrawStartAndEndAlternation(this.Element.DocumentState.CurrentAlternation.GetFormattedIndices());
+                    break;
+            }
+        }
+
+        private async Task RenderSection()
+        {
+            var previousDocumentState = this.RenderingContext.PreviousDocumentState;
+            if (this.Element.DocumentState.CurrentSection != null)
+            {
+                if (previousDocumentState == null ||
+                    this.Element.DocumentState.CurrentSection != previousDocumentState.CurrentSection)
+                {
+                    await _barRenderingContext.DrawSection(this.Element.DocumentState.CurrentSection.Name);
+                }
+            }
+        }
+
     }
 }

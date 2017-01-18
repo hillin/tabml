@@ -83,6 +83,7 @@
     <Compile Include="ChordBarreStyle.cs" />
     <Compile Include="Defaults.cs" />
     <Compile Include="Document\Alternation.cs" />
+    <Compile Include="Document\AlternativeEndingPosition.cs" />
     <Compile Include="Document\Bar.cs" />
     <Compile Include="Document\BarColumn.cs" />
     <Compile Include="Document\BarElement.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Document\RhythmSegmentVoice.cs" />
     <Compile Include="Document\RhythmTemplate.cs" />
     <Compile Include="Document\RhythmTemplateSegment.cs" />
+    <Compile Include="Document\RomanNumerals.cs" />
     <Compile Include="Document\SealableCollection.cs" />
     <Compile Include="Document\Section.cs" />
     <Compile Include="Document\Tablature.cs" />

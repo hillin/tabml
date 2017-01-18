@@ -32,7 +32,7 @@ namespace TabML.Parser.AST
                 alternation.Explicity != context.DocumentState.AlternationTextExplicity)
             {
                 logger.Report(LogLevel.Warning, this.Range.To.AsRange(),
-                                    Messages.Warning_InconsistentAlternationTextExplicity);
+                              Messages.Warning_InconsistentAlternationTextExplicity);
             }
 
             using (var state = context.AlterDocumentState())

@@ -23,12 +23,15 @@ namespace TabML.Editor.Rendering
         public PrimitiveRenderer PrimitiveRenderer => this.Owner.PrimitiveRenderer;
         public TablatureStyle Style => this.Owner.Style;
         public TablatureRenderingContext TablatureRenderingContext => this.Owner;
+        public DocumentState PreviousDocumentState { get; set; }    // used for bar rendering to determine if the document state is changed
 
         public RowRenderingContext(TablatureRenderingContext owner, Point location, Size availableSize)
             : base(owner)
         {
             this.Location = location;
             this.AvailableSize = availableSize;
+
+            this.PreviousDocumentState = owner.PreviousDocumentState;
 
             _stringCarets = new double[this.Style.StringCount];
             _heightMaps = new Dictionary<VoicePart, HeightMap>
@@ -93,12 +96,15 @@ namespace TabML.Editor.Rendering
         /// </summary>
         public double GetBodyFloor() => this.GetBodyCeiling() + this.Style.BarLineHeight * this.Style.StringCount;
 
+        public double GetBodyCenter() => this.GetStringSpacePosition(this.Style.StringCount/2.0);
+
         public double GetStringPosition(double stringIndex) => this.Location.Y + this.Style.BarTopMargin + (stringIndex + 0.5) * this.Style.BarLineHeight;
         public double GetStringSpacePosition(double stringIndex) => this.Location.Y + this.Style.BarTopMargin + stringIndex * this.Style.BarLineHeight;
 
+
         // from and to are absolute positions
         public Task<Rect> DrawTie(double from, double to, int stringIndex, TiePosition tiePosition, string instruction,
-                            double instructionY)
+                                  double instructionY)
         {
             var spaceIndex = tiePosition == TiePosition.Under ? stringIndex + 1 : stringIndex;
             var y = this.GetStringSpacePosition(spaceIndex);
@@ -190,5 +196,12 @@ namespace TabML.Editor.Rendering
             foreach (var heightMap in  _heightMaps)
                 heightMap.Value.Seal();
         }
+
+        public void BeginPostRender()
+        {
+            this.SealHeightMaps();
+            this.PreviousDocumentState = this.Owner.PreviousDocumentState;
+        }
+
     }
 }

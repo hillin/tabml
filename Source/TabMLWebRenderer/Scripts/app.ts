@@ -11,10 +11,43 @@ let tablatureStyle: TR.ITablatureStyle =
             height: 1600
         },
 
+        documentState: {
+            transposition: {
+                fontSize: 12,
+                fontFamily: "Times New Roman",
+                fontStyle: "bold"
+            },
+            tempo: {
+                fontSize: 12,
+                fontFamily: "Bravura",
+                fontStyle: "bold"
+            },
+            section: {
+                fontSize: 14,
+                fontFamily: "Times New Roman",
+                fontStyle: "bold"
+            },
+            sectionTextPadding: 2,
+            alternativeEndingText: {
+                fontSize: 12,
+                fontFamily: "Times New Roman",
+                fontStyle: "bold"
+            },
+            alternativeEndingHeight: 16,
+            alternativeEndingTextPadding: 2,
+            endAlternativeEndingRightMargin: 4
+        },
+
         bar: {
             lineHeight: 12,
             beamThickness: 4,
-            beamSpacing: 4
+            beamSpacing: 4,
+            timeSignature: {
+                fontSize: 42,
+                fontFamily: "Bravura",
+                lineHeight: 0.5
+            },
+            timeSignatureOffset: -12,
         },
 
         note: {
@@ -28,9 +61,8 @@ let tablatureStyle: TR.ITablatureStyle =
             },
             flagSpacing: 4,
             tuplet: {
-                fontSize: 12,
-                fontFamily: "Times New Roman",
-                fontStyle: "italic"
+                fontSize: 20,
+                fontFamily: "Bravura",
             },
 
         },

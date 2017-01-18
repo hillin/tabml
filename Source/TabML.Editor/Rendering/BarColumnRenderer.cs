@@ -25,11 +25,17 @@ namespace TabML.Editor.Rendering
                 int minString = int.MaxValue, maxString = int.MinValue;
                 foreach (var note in this.Element.VoiceBeats.SelectMany(b => b.Notes))
                 {
+                    if (note.IsTied)
+                        continue;
+
                     if (note.String < minString)
                         minString = note.String;
                     if (note.String > maxString)
                         maxString = note.String;
                 }
+
+                if (minString == int.MaxValue || maxString == int.MinValue)
+                    return;
 
                 double size;
 

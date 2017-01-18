@@ -2337,10 +2337,42 @@ let tablatureStyle = {
         width: 1200,
         height: 1600
     },
+    documentState: {
+        transposition: {
+            fontSize: 12,
+            fontFamily: "Times New Roman",
+            fontStyle: "bold"
+        },
+        tempo: {
+            fontSize: 12,
+            fontFamily: "Bravura",
+            fontStyle: "bold"
+        },
+        section: {
+            fontSize: 14,
+            fontFamily: "Times New Roman",
+            fontStyle: "bold"
+        },
+        sectionTextPadding: 2,
+        alternativeEndingText: {
+            fontSize: 12,
+            fontFamily: "Times New Roman",
+            fontStyle: "bold"
+        },
+        alternativeEndingHeight: 16,
+        alternativeEndingTextPadding: 2,
+        endAlternativeEndingRightMargin: 4
+    },
     bar: {
         lineHeight: 12,
         beamThickness: 4,
-        beamSpacing: 4
+        beamSpacing: 4,
+        timeSignature: {
+            fontSize: 42,
+            fontFamily: "Bravura",
+            lineHeight: 0.5
+        },
+        timeSignatureOffset: -12,
     },
     note: {
         margin: 2,
@@ -2353,9 +2385,8 @@ let tablatureStyle = {
         },
         flagSpacing: 4,
         tuplet: {
-            fontSize: 12,
-            fontFamily: "Times New Roman",
-            fontStyle: "italic"
+            fontSize: 20,
+            fontFamily: "Bravura",
         },
     },
     ornaments: {
@@ -2668,7 +2699,7 @@ var TR;
             return bounds;
         }
         drawTuplet(tuplet, x, y) {
-            return this.drawText(tuplet, x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
+            return this.drawText(PrimitiveRenderer.convertToSmuflNumber(tuplet, 0xe880), x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
         }
         drawLine(x1, y1, x2, y2) {
             let line = new fabric.Line([x1, y1, x2, y2]);
@@ -3009,6 +3040,156 @@ var TR;
         }
         drawArpeggioDown(x, y, direction) {
             this.drawOrnamentImageFromURL("arpeggio_down.svg", x, y, direction);
+        }
+        static fixedFromCharCode(codePt) {
+            if (codePt > 0xFFFF) {
+                codePt -= 0x10000;
+                return String.fromCharCode(0xD800 + (codePt >> 10), 0xDC00 + (codePt & 0x3FF));
+            }
+            else {
+                return String.fromCharCode(codePt);
+            }
+        }
+        static convertToSmuflNumber(n, base) {
+            return n.toString().split('').map((c) => PrimitiveRenderer.fixedFromCharCode(parseInt(c) + base)).join();
+        }
+        static convertToSmuflNote(noteValue) {
+            switch (noteValue) {
+                case BaseNoteValue.Large:
+                    return "\ue1d1"; //todo: smufl does not provide an individual large note
+                case BaseNoteValue.Long:
+                    return "\ue1d1"; //todo: smufl does not provide an individual large note
+                case BaseNoteValue.Double:
+                    return "\ue1d0";
+                case BaseNoteValue.Whole:
+                    return "\ue1d2";
+                case BaseNoteValue.Half:
+                    return "\ue1d3";
+                case BaseNoteValue.Quater:
+                    return "\ue1d5";
+                case BaseNoteValue.Eighth:
+                    return "\ue1d7";
+                case BaseNoteValue.Sixteenth:
+                    return "\ue1d9";
+                case BaseNoteValue.ThirtySecond:
+                    return "\ue1db";
+                case BaseNoteValue.SixtyFourth:
+                    return "\ue1dd";
+                case BaseNoteValue.HundredTwentyEighth:
+                    return "\ue1df";
+                case BaseNoteValue.TwoHundredFiftySixth:
+                    return "\ue1e1";
+            }
+        }
+        drawTimeSignature(x, y, beats, timeValue) {
+            let textValue;
+            if (beats === 4 && timeValue === 4) {
+                textValue = PrimitiveRenderer.fixedFromCharCode(0xe08a); // common time
+            }
+            else {
+                textValue = `${PrimitiveRenderer.convertToSmuflNumber(beats.toString(), 0xe080)}\n${PrimitiveRenderer.convertToSmuflNumber(timeValue.toString(), 0xe080)}`;
+            }
+            let text = this.drawText(textValue, x, y + this.style.bar.timeSignatureOffset, "center", "center", this.style.bar.timeSignature);
+            text.textAlign = "center";
+            return text.getBoundingRect();
+        }
+        drawTabHeader(x, y) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let imageFile = ResourceManager.getTablatureResource("tab_header.svg");
+                let group = yield this.drawSVGFromURLAsync(imageFile, x, y, group => {
+                    group.originX = "left";
+                    group.originY = "center";
+                });
+                this.callbackWith(group.getBoundingRect());
+            });
+        }
+        drawTranspositionText(x, y, key) {
+            let textValue = `transpose to ${key}`;
+            let text = this.drawText(textValue, x, y, "left", "bottom", this.style.documentState.transposition);
+            return text.getBoundingRect();
+        }
+        drawTempoSignature(x, y, noteValue, beats) {
+            let textValue = `${PrimitiveRenderer.convertToSmuflNote(noteValue)} = ${beats}`;
+            let text = this.drawText(textValue, x, y, "left", "bottom", this.style.documentState.tempo);
+            return text.getBoundingRect();
+        }
+        drawSection(x, y, section) {
+            let text = this.drawText(section, x, y, "left", "bottom", this.style.documentState.section);
+            let bounds = text.getBoundingRect();
+            const padding = this.style.documentState.sectionTextPadding;
+            let rect = new fabric.Rect({
+                left: bounds.left - padding,
+                top: bounds.top - padding,
+                width: bounds.width + padding * 2,
+                height: bounds.height + padding * 2,
+                stroke: "black",
+                fill: "",
+                strokeWidth: 1
+            });
+            this.canvas.add(rect);
+            return rect.getBoundingRect();
+        }
+        drawAlternativeEndingText(x, y, alternationText) {
+            this.drawText(alternationText, x + this.style.documentState.alternativeEndingTextPadding, y, "left", "top", this.style.documentState.alternativeEndingText);
+        }
+        drawStartAlternation(x0, x1, y0, y1, alternationText) {
+            y1 -= this.style.documentState.alternativeEndingHeight;
+            this.drawAlternativeEndingText(x0 + this.style.documentState.alternativeEndingTextPadding, y1 + this.style.documentState.alternativeEndingTextPadding, alternationText);
+            let polyline = new fabric.Polyline([
+                { x: x0, y: y0 },
+                { x: x0, y: y1 },
+                { x: x1, y: y1 }
+            ], {
+                stroke: "black",
+                fill: "",
+                strokeWidth: 1
+            });
+            this.canvas.add(polyline);
+            return polyline.getBoundingRect();
+        }
+        drawStartAndEndAlternation(x0, x1, y0, y1, alternationText) {
+            y1 -= this.style.documentState.alternativeEndingHeight;
+            x1 -= this.style.documentState.endAlternativeEndingRightMargin;
+            this.drawAlternativeEndingText(x0 + this.style.documentState.alternativeEndingTextPadding, y1 + this.style.documentState.alternativeEndingTextPadding, alternationText);
+            let polyline = new fabric.Polyline([
+                { x: x0, y: y0 },
+                { x: x0, y: y1 },
+                { x: x1, y: y1 },
+                { x: x1, y: y0 },
+            ], {
+                stroke: "black",
+                fill: "",
+                strokeWidth: 1
+            });
+            this.canvas.add(polyline);
+            return polyline.getBoundingRect();
+        }
+        drawAlternationLine(x0, x1, y1) {
+            y1 -= this.style.documentState.alternativeEndingHeight;
+            let line = new fabric.Line([
+                x0, y1, x1, y1
+            ], {
+                stroke: "black",
+                fill: "",
+                strokeWidth: 1
+            });
+            this.canvas.add(line);
+            return line.getBoundingRect();
+        }
+        drawEndAlternation(x0, x1, y0, y1) {
+            y1 -= this.style.documentState.alternativeEndingHeight;
+            x1 -= this.style.documentState.endAlternativeEndingRightMargin;
+            let polyline = new fabric.Polyline([
+                { x: x0, y: y1 },
+                { x: x1, y: y1 },
+                { x: x1, y: y0 }
+            ], {
+                stroke: "black",
+                fill: "",
+                strokeWidth: 1
+            });
+            this.canvas.add(polyline);
+            return polyline.getBoundingRect();
         }
         debugDrawHeightMap(points) {
             let polyline = new fabric.Polyline(points, {

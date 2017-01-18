@@ -11,3 +11,20 @@ span {
     width: 800px;
     height: 1200px;
 }
+
+@font-face
+{
+    font-family: "Norfork Std";
+    src: url('resources/fonts/NorfolkStd.otf'),
+    url('resources/fonts/NorfolkStd.eot'); /* IE9 */
+}
+
+@font-face
+{
+    font-family: "Brauvra";
+    src: url('resources/fonts/Bravura/otf/Bravura.otf') format('otf'),
+         url('resources/fonts/Bravura/svg/Bravura.svg') format('svg'),
+         url('resources/fonts/Bravura/woff/Bravura.woff2') format('woff2'),
+         url('resources/fonts/Bravura/woff/Bravura.woff') format('woff'),
+         url('resources/fonts/Bravura/eot/Bravura.eot') format('eot'),
+}

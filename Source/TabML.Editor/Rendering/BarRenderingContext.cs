@@ -15,19 +15,24 @@ namespace TabML.Editor.Rendering
     class BarRenderingContext : RenderingContextBase<RowRenderingContext>
     {
         public Size AvailableSize { get; }
+        public bool IsFirstBarInRow { get; }
         public PrimitiveRenderer PrimitiveRenderer => this.Owner.PrimitiveRenderer;
         public TablatureStyle Style => this.Owner.Style;
         public Point Location { get; }
         public BarColumnRenderingInfo[] ColumnRenderingInfos { get; set; }
         public TablatureRenderingContext TablatureRenderingContext => this.Owner.TablatureRenderingContext;
+
+        public bool IsSectionRenderingPostponed { get; set; }
+
         private readonly Dictionary<Beam, BeamSlope> _beamSlopes;
 
 
-        public BarRenderingContext(RowRenderingContext owner, Point location, Size availableSize)
+        public BarRenderingContext(RowRenderingContext owner, Point location, Size availableSize, bool isFirstBarInRow)
             : base(owner)
         {
             this.Location = location;
             this.AvailableSize = availableSize;
+            this.IsFirstBarInRow = isFirstBarInRow;
             _beamSlopes = new Dictionary<Beam, BeamSlope>();
         }
 
@@ -78,12 +83,12 @@ namespace TabML.Editor.Rendering
         }
 
 
-        public void DrawBarLine(OpenBarLine line, double position)
+        public void DrawOpenBarLine(OpenBarLine line, double position)
         {
             this.PrimitiveRenderer.DrawBarLine((BarLine)line, this.Location.X + position, this.Owner.GetStringPosition(0));
         }
 
-        public void DrawBarLine(CloseBarLine line, double position)
+        public void DrawCloseBarLine(CloseBarLine line, double position)
         {
             this.PrimitiveRenderer.DrawBarLine((BarLine)line, this.Location.X + position, this.Owner.GetStringPosition(0));
         }
@@ -148,6 +153,22 @@ namespace TabML.Editor.Rendering
             var y = this.Owner.GetHeight(voicePart, x);
             var bounds = await this.PrimitiveRenderer.DrawConnectionInstruction(x, y, instruction, voicePart.ToOffBarDirection());
             this.EnsureHeightForOrnament(voicePart, bounds);
+        }
+
+        public async Task DrawTransposition(NoteName key, double x)
+        {
+            x += this.Location.X;
+            var y = this.Owner.GetHeight(VoicePart.Treble, x);
+            var bounds = await this.PrimitiveRenderer.DrawTranspositionText(x, y, key.ToString());
+            this.EnsureHeightForOrnament(VoicePart.Treble, bounds);
+        }
+
+        public async Task DrawTempoSignature(Tempo tempo, double x)
+        {
+            x += this.Location.X;
+            var y = this.Owner.GetHeight(VoicePart.Treble, x);
+            var bounds = await this.PrimitiveRenderer.DrawTempoSignature(x, y, tempo.NoteValue, tempo.Beats);
+            this.EnsureHeightForOrnament(VoicePart.Treble, bounds);
         }
 
         public async Task DrawArtificialHarmonicText(VoicePart voicePart, double x, string text)
@@ -383,5 +404,74 @@ namespace TabML.Editor.Rendering
             await this.PrimitiveRenderer.DrawLyrics(lyrics, x, y);
         }
 
+        public async Task<double> DrawTimeSignature(Time time, double x)
+        {
+            var bounds =
+                await this.PrimitiveRenderer.DrawTimeSignature(x + this.Location.X,
+                                                               this.Owner.GetBodyCenter(),
+                                                               time.Beats,
+                                                               time.NoteValue.GetInvertedDuration());
+
+            return bounds.Width;
+        }
+
+
+        public async Task<double> DrawTabHeader()
+        {
+            var bounds =
+                await this.PrimitiveRenderer.DrawTabHeader(this.Location.X, this.Owner.GetBodyCenter());
+
+            return bounds.Width;
+        }
+
+        public async Task DrawSection(string currentSectionName)
+        {
+            var y = this.Owner.GetHeight(VoicePart.Treble, this.Location.X);
+            var bounds = await this.PrimitiveRenderer.DrawSection(this.Location.X, y, currentSectionName);
+            this.EnsureHeightForOrnament(VoicePart.Treble, bounds);
+        }
+
+        public async Task DrawStartAlternation(string text)
+        {
+
+            var bounds = await this.PrimitiveRenderer.DrawStartAlternation(
+                                       this.Location.X,
+                                       this.Location.X + this.AvailableSize.Width,
+                                       this.Owner.GetBodyCeiling(),
+                                       this.Owner.GetHeight(VoicePart.Treble, this.Location.X),
+                                       text);
+            this.EnsureHeightForOrnament(VoicePart.Treble, bounds);
+        }
+
+        public async Task DrawAlternationLine()
+        {
+            var bounds = await this.PrimitiveRenderer.DrawAlternationLine(
+                                       this.Location.X,
+                                       this.Location.X + this.AvailableSize.Width,
+                                       this.Owner.GetHeight(VoicePart.Treble, this.Location.X));
+
+            this.EnsureHeightForOrnament(VoicePart.Treble, bounds);
+        }
+
+        public async Task DrawEndAlternation()
+        {
+            var bounds = await this.PrimitiveRenderer.DrawEndAlternation(
+                                       this.Location.X,
+                                       this.Location.X + this.AvailableSize.Width,
+                                       this.Owner.GetBodyCeiling(),
+                                       this.Owner.GetHeight(VoicePart.Treble, this.Location.X));
+            this.EnsureHeightForOrnament(VoicePart.Treble, bounds);
+        }
+
+        public async Task DrawStartAndEndAlternation(string text)
+        {
+            var bounds = await this.PrimitiveRenderer.DrawStartAndEndAlternation(
+                                       this.Location.X,
+                                       this.Location.X + this.AvailableSize.Width,
+                                       this.Owner.GetBodyCeiling(),
+                                       this.Owner.GetHeight(VoicePart.Treble, this.Location.X),
+                                       text);
+            this.EnsureHeightForOrnament(VoicePart.Treble, bounds);
+        }
     }
 }

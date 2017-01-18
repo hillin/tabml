@@ -7,12 +7,25 @@ namespace TR {
         page: {
             width: number,
             height: number,
-        }
+        },
+
+        documentState: {
+            transposition: ITablatureTextStyle,
+            tempo: ITablatureTextStyle,
+            section: ITablatureTextStyle,
+            sectionTextPadding: number,
+            alternativeEndingText: ITablatureTextStyle,
+            alternativeEndingTextPadding: number,
+            alternativeEndingHeight:number,
+            endAlternativeEndingRightMargin: number
+        },
 
         bar: {
             lineHeight: number;
             beamThickness: number,
-            beamSpacing: number
+            beamSpacing: number,
+            timeSignature: ITablatureTextStyle,
+            timeSignatureOffset: number
         }
 
         note: {

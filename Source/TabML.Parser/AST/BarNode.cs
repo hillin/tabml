@@ -47,6 +47,16 @@ namespace TabML.Parser.AST
 
             context.AddBar(bar);
 
+            // check if this bar terminates an alternative ending, must be done AFTER adding this bar to context
+            if ((bar.CloseLine == CloseBarLine.End || bar.CloseLine == CloseBarLine.EndRepeat)
+                && context.DocumentState.CurrentAlternation != null)
+            {
+                using (var state = context.AlterDocumentState())
+                {
+                    state.CurrentAlternation = null;
+                }
+            }
+            
             return true;
         }
 
@@ -122,7 +132,7 @@ namespace TabML.Parser.AST
                     column.VoiceBeats[1].StrumTechnique = StrumTechnique.None;
                 }
             }
-
+            
             return true;
         }
 

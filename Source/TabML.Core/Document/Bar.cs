@@ -112,12 +112,40 @@ namespace TabML.Core.Document
         #endregion
 
         #region States
-        
+
+        public Bar PreviousBar { get; set; }
+        public Bar NextBar { get; set; }
+
         /// <summary>
         /// The logically previous bar of this bar. For most bars, it's the previous neighbor on the tablature, but
         /// for bars starting an alternation, it could be a remote one
         /// </summary>
         public Bar LogicalPreviousBar { get; set; }
+
+        public AlternativeEndingPosition AlternativeEndingPosition
+        {
+            get
+            {
+                var alternation = this.DocumentState.CurrentAlternation;
+
+                if (alternation == null)
+                    return AlternativeEndingPosition.None;
+
+                var isStart = this.PreviousBar == null
+                              || this.PreviousBar.DocumentState.CurrentAlternation != alternation;
+
+                var isEnd = this.NextBar == null
+                    || this.NextBar.DocumentState.CurrentAlternation != alternation;
+
+                if (isStart)
+                    return isEnd ? AlternativeEndingPosition.StartAndEnd : AlternativeEndingPosition.Start;
+
+                if (isEnd)
+                    return AlternativeEndingPosition.End;
+
+                return AlternativeEndingPosition.Inside;
+            }
+        }
 
         #endregion
 
@@ -138,7 +166,7 @@ namespace TabML.Core.Document
                     throw new ArgumentOutOfRangeException(nameof(part), part, null);
             }
         }
-        
-        
+
+
     }
 }

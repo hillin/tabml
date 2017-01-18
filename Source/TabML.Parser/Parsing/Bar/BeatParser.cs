@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
 using TabML.Parser.AST;
@@ -90,6 +91,12 @@ namespace TabML.Parser.Parsing.Bar
 
                     scanner.SkipWhitespaces();
                 } while (scanner.Expect(','));
+            }
+
+            // all notes are tied, which is equal to the beat being tied
+            if (!isTied && result.Notes.All(n => n.Tie != null))
+            {
+                isTied = true;
             }
 
             // post-connection is allowed for tied beat, so we check it here

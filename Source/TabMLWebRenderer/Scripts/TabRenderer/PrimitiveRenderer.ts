@@ -201,7 +201,7 @@ namespace TR {
         }
 
         drawTuplet(tuplet: string, x: number, y: number): IBoundingBox {
-            return this.drawText(tuplet, x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
+            return this.drawText(PrimitiveRenderer.convertToSmuflNumber(tuplet, 0xe880), x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
         }
 
 
@@ -581,6 +581,195 @@ namespace TR {
 
         drawArpeggioDown(x: number, y: number, direction: OffBarDirection) {
             this.drawOrnamentImageFromURL("arpeggio_down.svg", x, y, direction);
+        }
+
+        static fixedFromCharCode (codePt: number): string {
+            if (codePt > 0xFFFF) {
+                codePt -= 0x10000;
+                return String.fromCharCode(0xD800 + (codePt >> 10), 0xDC00 + (codePt & 0x3FF));
+            }
+            else {
+                return String.fromCharCode(codePt);
+            }
+        }
+
+        static convertToSmuflNumber(n: string, base: number) : string {
+            return n.toString().split('').map((c:string) => PrimitiveRenderer.fixedFromCharCode(parseInt(c) + base)).join();
+        }
+
+        static convertToSmuflNote(noteValue:BaseNoteValue) : string {
+            switch(noteValue)
+            {
+                case BaseNoteValue.Large:
+                    return "\ue1d1";    //todo: smufl does not provide an individual large note
+                case BaseNoteValue.Long:
+                    return "\ue1d1";    //todo: smufl does not provide an individual large note
+                case BaseNoteValue.Double:
+                    return "\ue1d0";
+                case BaseNoteValue.Whole:
+                    return "\ue1d2";
+                case BaseNoteValue.Half:
+                    return "\ue1d3";
+                case BaseNoteValue.Quater:
+                    return "\ue1d5";
+                case BaseNoteValue.Eighth:
+                    return "\ue1d7";
+                case BaseNoteValue.Sixteenth:
+                    return "\ue1d9";
+                case BaseNoteValue.ThirtySecond:
+                    return "\ue1db";
+                case BaseNoteValue.SixtyFourth:
+                    return "\ue1dd";
+                case BaseNoteValue.HundredTwentyEighth:
+                    return "\ue1df";
+                case BaseNoteValue.TwoHundredFiftySixth:
+                    return "\ue1e1";
+            }
+        }
+
+        drawTimeSignature(x:number, y:number, beats:number, timeValue:number) : IBoundingBox {
+            let textValue: string;
+            if(beats === 4 && timeValue === 4) {
+                textValue = PrimitiveRenderer.fixedFromCharCode(0xe08a);  // common time
+            }
+            else
+            {
+                textValue = `${PrimitiveRenderer.convertToSmuflNumber(beats.toString(), 0xe080)}\n${PrimitiveRenderer.convertToSmuflNumber(timeValue.toString(), 0xe080)}`;
+            }
+
+            let text = this.drawText(textValue, x, y + this.style.bar.timeSignatureOffset, "center", "center", this.style.bar.timeSignature);
+            text.textAlign = "center";
+            return text.getBoundingRect();
+        }
+
+        async drawTabHeader(x:number, y:number) {
+            let imageFile = ResourceManager.getTablatureResource("tab_header.svg");
+
+            let group = await this.drawSVGFromURLAsync(imageFile, x, y, group => {
+                group.originX = "left";
+                group.originY = "center";
+            });
+
+            this.callbackWith(group.getBoundingRect());    
+        }
+
+        drawTranspositionText(x:number, y:number, key: string) : IBoundingBox {
+            let textValue = `transpose to ${key}`;
+            let text = this.drawText(textValue, x, y, "left", "bottom", this.style.documentState.transposition);
+            return text.getBoundingRect();
+        }
+
+        drawTempoSignature(x:number, y:number, noteValue:BaseNoteValue, beats:number) : IBoundingBox {
+            let textValue = `${PrimitiveRenderer.convertToSmuflNote(noteValue)} = ${beats}`;
+            let text = this.drawText(textValue, x, y, "left", "bottom", this.style.documentState.tempo);
+            return text.getBoundingRect();
+        }
+
+        drawSection(x:number, y:number, section: string) : IBoundingBox {
+            let text = this.drawText(section, x, y, "left", "bottom", this.style.documentState.section);
+            let bounds = text.getBoundingRect();
+            const padding = this.style.documentState.sectionTextPadding;
+            let rect = new fabric.Rect({
+                left: bounds.left - padding,
+                top: bounds.top - padding,
+                width: bounds.width + padding * 2,
+                height: bounds.height + padding * 2,
+                stroke: "black",
+                fill: "",
+                strokeWidth: 1
+            });
+            this.canvas.add(rect);
+            return rect.getBoundingRect();
+        }
+
+        private drawAlternativeEndingText(x:number, y:number, alternationText: string) {
+           this.drawText(alternationText, 
+                         x + this.style.documentState.alternativeEndingTextPadding, 
+                         y, 
+                         "left",
+                         "top",
+                         this.style.documentState.alternativeEndingText);
+        }
+
+        drawStartAlternation(x0:number, x1:number,  y0:number,  y1:number, alternationText: string): IBoundingBox {
+
+            y1 -= this.style.documentState.alternativeEndingHeight;
+
+           this.drawAlternativeEndingText(x0 + this.style.documentState.alternativeEndingTextPadding, 
+                                          y1 + this.style.documentState.alternativeEndingTextPadding,
+                                          alternationText);
+
+            let polyline = new fabric.Polyline([
+                { x: x0, y: y0 },
+                { x: x0, y: y1 },
+                { x: x1, y: y1 }
+            ], {
+                stroke: "black",
+                fill: "",
+                strokeWidth: 1
+            });
+            
+            this.canvas.add(polyline);
+            return polyline.getBoundingRect();
+        }
+
+        drawStartAndEndAlternation(x0:number, x1:number, y0:number, y1:number, alternationText: string): IBoundingBox {
+
+            y1 -= this.style.documentState.alternativeEndingHeight;
+            x1 -= this.style.documentState.endAlternativeEndingRightMargin;
+
+           this.drawAlternativeEndingText(x0 + this.style.documentState.alternativeEndingTextPadding, 
+                                          y1 + this.style.documentState.alternativeEndingTextPadding,
+                                          alternationText);
+
+            let polyline = new fabric.Polyline([
+                { x: x0, y: y0 },
+                { x: x0, y: y1 },
+                { x: x1, y: y1 },
+                { x: x1, y: y0 },
+            ], {
+                stroke: "black",
+                fill: "",
+                strokeWidth: 1
+            });
+            
+            this.canvas.add(polyline);
+            return polyline.getBoundingRect();
+        }
+
+        drawAlternationLine(x0:number, x1:number, y1:number) : IBoundingBox {
+
+            y1 -= this.style.documentState.alternativeEndingHeight;
+
+            let line = new fabric.Line([
+                x0, y1, x1, y1
+            ], {
+                stroke: "black",
+                fill: "",
+                strokeWidth: 1
+            });
+
+            this.canvas.add(line);
+            return line.getBoundingRect();
+        }
+
+        drawEndAlternation(x0:number, x1:number,  y0:number,  y1:number): IBoundingBox {
+            
+            y1 -= this.style.documentState.alternativeEndingHeight;
+            x1 -= this.style.documentState.endAlternativeEndingRightMargin;
+
+            let polyline = new fabric.Polyline([
+                { x: x0, y: y1 },
+                { x: x1, y: y1 },
+                { x: x1, y: y0 }
+            ], {
+                stroke: "black",
+                fill: "",
+                strokeWidth: 1
+            });
+            
+            this.canvas.add(polyline);
+            return polyline.getBoundingRect();
         }
 
         debugDrawHeightMap(points: { x:number, y:number }[]) {
