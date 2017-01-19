@@ -440,7 +440,7 @@ namespace TabML.Editor.Rendering
                                        this.Owner.GetBodyCeiling(),
                                        this.Owner.GetHeight(VoicePart.Treble, this.Location.X),
                                        text);
-            this.EnsureHeightForOrnament(VoicePart.Treble, bounds);
+            this.Owner.EnsureHeight(VoicePart.Treble, bounds);
         }
 
         public async Task DrawAlternationLine()
@@ -450,7 +450,7 @@ namespace TabML.Editor.Rendering
                                        this.Location.X + this.AvailableSize.Width,
                                        this.Owner.GetHeight(VoicePart.Treble, this.Location.X));
 
-            this.EnsureHeightForOrnament(VoicePart.Treble, bounds);
+            this.Owner.EnsureHeight(VoicePart.Treble, bounds);
         }
 
         public async Task DrawEndAlternation()
@@ -460,7 +460,7 @@ namespace TabML.Editor.Rendering
                                        this.Location.X + this.AvailableSize.Width,
                                        this.Owner.GetBodyCeiling(),
                                        this.Owner.GetHeight(VoicePart.Treble, this.Location.X));
-            this.EnsureHeightForOrnament(VoicePart.Treble, bounds);
+            this.Owner.EnsureHeight(VoicePart.Treble, bounds);
         }
 
         public async Task DrawStartAndEndAlternation(string text)
@@ -471,7 +471,7 @@ namespace TabML.Editor.Rendering
                                        this.Owner.GetBodyCeiling(),
                                        this.Owner.GetHeight(VoicePart.Treble, this.Location.X),
                                        text);
-            this.EnsureHeightForOrnament(VoicePart.Treble, bounds);
+            this.Owner.EnsureHeight(VoicePart.Treble, bounds);
         }
     }
 }

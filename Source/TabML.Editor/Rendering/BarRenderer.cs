@@ -194,16 +194,19 @@ namespace TabML.Editor.Rendering
 
         private async Task RenderAlternation()
         {
+
             switch (this.Element.AlternativeEndingPosition)
             {
                 case AlternativeEndingPosition.Start:
                     await _barRenderingContext.DrawStartAlternation(this.Element.DocumentState.CurrentAlternation.GetFormattedIndices());
                     break;
                 case AlternativeEndingPosition.Inside:
-                    await _barRenderingContext.DrawAlternationLine();
+                    if (this.RenderingContext.Style.DrawFullAlternationEnding)
+                        await _barRenderingContext.DrawAlternationLine();
                     break;
                 case AlternativeEndingPosition.End:
-                    await _barRenderingContext.DrawEndAlternation();
+                    if (this.RenderingContext.Style.DrawFullAlternationEnding)
+                        await _barRenderingContext.DrawEndAlternation();
                     break;
                 case AlternativeEndingPosition.StartAndEnd:
                     await

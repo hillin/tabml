@@ -48,6 +48,9 @@ namespace TabML.Editor
         public double BeatOrnamentMargin { get; set; } = 4;
         public double BrushlikeTechniqueMargin { get; set; } = 4;
         
+
+        public bool DrawFullAlternationEnding { get; set; }
+
         public FormattedText MakeFormattedLyrics(string lyricsText)
         {
             return new FormattedText(lyricsText, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
