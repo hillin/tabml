@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
+using TabML.Editor.Tablature;
 using TabML.Editor.Tablature.Layout;
 
 namespace TabML.Editor.Rendering
@@ -71,30 +72,30 @@ namespace TabML.Editor.Rendering
             var targetBeat = tieTarget ?? this.Element;
             var renderingContext = this.Root.GetRenderer<Beat, BeatRenderer>(targetBeat).RenderingContext;
             var beatPosition = this.GetStemPosition(targetBeat);
-            
+
             switch (targetBeat.StrumTechnique)
             {
                 case StrumTechnique.Rasgueado:
                     await renderingContext.DrawRasgueadoText(targetBeat.VoicePart, beatPosition);
                     break;
-                case StrumTechnique.PickstrokeDown:
-                    await renderingContext.DrawPickstrokeDown(targetBeat.VoicePart, beatPosition);
-                    break;
-                case StrumTechnique.PickstrokeUp:
-                    await renderingContext.DrawPickstrokeUp(targetBeat.VoicePart, beatPosition);
-                    break;
-                case StrumTechnique.BrushDown:
-                    await renderingContext.DrawBrushDown(targetBeat.VoicePart, beatPosition);
-                    break;
-                case StrumTechnique.BrushUp:
-                    await renderingContext.DrawBrushUp(targetBeat.VoicePart, beatPosition);
-                    break;
-                case StrumTechnique.ArpeggioDown:
-                    await renderingContext.DrawArpeggioDown(targetBeat.VoicePart, beatPosition);
-                    break;
-                case StrumTechnique.ArpeggioUp:
-                    await renderingContext.DrawArpeggioUp(targetBeat.VoicePart, beatPosition);
-                    break;
+                //case StrumTechnique.PickstrokeDown:
+                //    await renderingContext.DrawPickstrokeDown(targetBeat.VoicePart, beatPosition);
+                //    break;
+                //case StrumTechnique.PickstrokeUp:
+                //    await renderingContext.DrawPickstrokeUp(targetBeat.VoicePart, beatPosition);
+                //    break;
+                //case StrumTechnique.BrushDown:
+                //    await renderingContext.DrawBrushDown(targetBeat.VoicePart, beatPosition);
+                //    break;
+                //case StrumTechnique.BrushUp:
+                //    await renderingContext.DrawBrushUp(targetBeat.VoicePart, beatPosition);
+                //    break;
+                //case StrumTechnique.ArpeggioDown:
+                //    await renderingContext.DrawArpeggioDown(targetBeat.VoicePart, beatPosition);
+                //    break;
+                //case StrumTechnique.ArpeggioUp:
+                //    await renderingContext.DrawArpeggioUp(targetBeat.VoicePart, beatPosition);
+                //    break;
             }
 
             switch (targetBeat.Accent)
@@ -199,6 +200,7 @@ namespace TabML.Editor.Rendering
             else
             {
                 var beatRenderingContext = new BeatRenderingContext(renderingContext);
+
                 foreach (var renderer in _noteRenderers.OrderBy(n => n.Element.Fret))
                 {
                     _noteRenderers.AssignRenderingContexts(beatRenderingContext);
@@ -228,7 +230,7 @@ namespace TabML.Editor.Rendering
 
                     // todo: replace magic number
                     const double tolerance = 15;
-                    var instructionGroups = beatRenderingContext.ConnectionInstructions.GroupBy(c => Math.Round(c.Position/tolerance)*tolerance);
+                    var instructionGroups = beatRenderingContext.ConnectionInstructions.GroupBy(c => Math.Round(c.Position / tolerance) * tolerance);
                     foreach (var group in instructionGroups)
                     {
                         var instructions = group.ToArray();
@@ -319,7 +321,7 @@ namespace TabML.Editor.Rendering
             var position1 = this.GetStemPosition(beat1);
             var position2 = this.GetStemPosition(beat2);
 
-            var beamWidth = Math.Min(this.RenderingContext.Style.MaximumSemiBeamWidth, (position2 - position1)/2);
+            var beamWidth = Math.Min(this.RenderingContext.Style.MaximumSemiBeamWidth, (position2 - position1) / 2);
 
             double x0, x1;
             if (isLastOfBeam)

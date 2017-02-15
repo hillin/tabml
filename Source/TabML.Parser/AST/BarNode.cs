@@ -35,7 +35,7 @@ namespace TabML.Parser.AST
         internal override bool Apply(TablatureContext context, ILogger logger)
         {
             Bar bar;
-            if (!this.ToDocumentElement(context, logger, out bar))
+            if (!this.ToDocumentElement(context, logger, null, out bar))
                 return false;
 
             if (bar.Rhythm != null && bar.Lyrics != null)
@@ -60,7 +60,7 @@ namespace TabML.Parser.AST
             return true;
         }
 
-        public bool ToDocumentElement(TablatureContext context, ILogger logger, out Bar bar)
+        public bool ToDocumentElement(TablatureContext context, ILogger logger, Bar template, out Bar bar)
         {
             bar = new Bar
             {
@@ -73,7 +73,10 @@ namespace TabML.Parser.AST
             context.CurrentBar = bar;
 
             if (this.Rhythm == null)
-                bar.Rhythm = null;
+            {
+                if (template != null)
+                    bar.Rhythm = template.Rhythm.Clone();
+            }
             else
             {
                 Rhythm rhythm;
@@ -83,11 +86,11 @@ namespace TabML.Parser.AST
                     return false;
                 }
 
-                if (context.DocumentState.RhythmTemplate != null)
-                    rhythm = context.DocumentState.RhythmTemplate.Apply(rhythm, logger);
-
                 bar.Rhythm = rhythm;
             }
+
+            if (context.DocumentState.RhythmTemplate != null)
+                bar.Rhythm = context.DocumentState.RhythmTemplate.Apply(bar.Rhythm, logger);
 
             if (this.Lyrics == null)
                 bar.Lyrics = null;

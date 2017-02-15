@@ -8,7 +8,6 @@ namespace TabML.Parser.AST
 {
     class ChordFingeringNode : Node
     {
-        public const int FingeringSkipString = -1;
 
         public List<ChordFingeringNoteNode> Fingerings { get; }
 
@@ -26,7 +25,7 @@ namespace TabML.Parser.AST
             var ignoreFingerIndices = false;
             foreach (var fingering in this.Fingerings)
             {
-                if (fingering.Fret.Value == FingeringSkipString || fingering.Fret.Value == 0)
+                if (fingering.Fret.Value == ChordFingeringNote.FingeringSkipString || fingering.Fret.Value == 0)
                     continue;
 
                 if (fingerIndexSpecified == null)

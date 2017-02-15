@@ -141,7 +141,8 @@ namespace TabML.Parser.AST
 
         private bool Validate(TablatureContext context, ILogger logger, Beat beat)
         {
-            if (beat.StrumTechnique != StrumTechniqueEnum.None)
+            if (beat.StrumTechnique != StrumTechniqueEnum.None
+                && this.StrumTechnique != null) // strum technique == null means we are derived from a template
             {
                 if (beat.IsTied)
                 {

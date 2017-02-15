@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
+using TabML.Editor.Tablature;
 
 namespace TabML.Editor.Rendering
 {
@@ -32,6 +33,28 @@ namespace TabML.Editor.Rendering
                         minString = note.String;
                     if (note.String > maxString)
                         maxString = note.String;
+                }
+
+                if (minString == int.MaxValue || maxString == int.MinValue)
+                {
+
+                    var chord = this.Element.Chord.Resolve(this.Element.OwnerBar.DocumentState);
+                    if (chord != null)
+                    {
+                        var notes = chord.Fingering.Notes.ToArray();
+                        var noteOfFirstString =
+                            notes.FirstOrDefault(n => n.Fret != ChordFingeringNote.FingeringSkipString);
+
+                        if (noteOfFirstString != null)
+                        {
+                            var noteOfLastString =
+                                notes.LastOrDefault(n => n.Fret != ChordFingeringNote.FingeringSkipString);
+
+                            // string index here is inverted
+                            minString = this.RenderingContext.Style.StringCount - Array.IndexOf(notes, noteOfLastString) - 1;
+                            maxString = this.RenderingContext.Style.StringCount - Array.IndexOf(notes, noteOfFirstString) - 1;
+                        }
+                    }
                 }
 
                 if (minString == int.MaxValue || maxString == int.MinValue)
@@ -66,18 +89,27 @@ namespace TabML.Editor.Rendering
 
         public async Task PostRender()
         {
+            var columnInfo = this.RenderingContext.ColumnRenderingInfos[this.Element.ColumnIndex];
 
             if (this.Element.Lyrics != null)
             {
-                var columnPosition = this.RenderingContext.ColumnRenderingInfos[this.Element.ColumnIndex].Position;
-                await this.RenderingContext.DrawLyrics(columnPosition, this.Element.Lyrics.Text);
+                await this.RenderingContext.DrawLyrics(columnInfo.Position, this.Element.Lyrics.Text);
+            }
+
+            if (this.Element.Chord != null && this.Element.IsFirstColumnOfSegment)
+            {
+                var chord = this.Element.Chord.Resolve(this.Element.OwnerBar.DocumentState);
+                if (chord != null)  // todo: report error if chord is null
+                {
+                    await this.RenderingContext.DrawChord(columnInfo.Position, chord);
+                }
             }
         }
 
 
         public async Task Render()
         {
-            
+
         }
     }
 }

@@ -2330,12 +2330,16 @@ else {
     fabric.StaticCanvas.prototype._setBackstoreDimension = function (t, e) { return origSetBackstoreDimension.call(this, t, e), this.nodeCanvas[t] = e, this; }, fabric.Canvas && (fabric.Canvas.prototype._setBackstoreDimension = fabric.StaticCanvas.prototype._setBackstoreDimension);
 } }();
 let tablatureStyle = {
+    stringCount: 6,
+    smuflText: {
+        fontFamily: "Bravura"
+    },
     fallback: {
         fontFamily: "Segoe UI",
     },
     page: {
         width: 1200,
-        height: 1600
+        height: 3200
     },
     documentState: {
         transposition: {
@@ -2389,6 +2393,30 @@ let tablatureStyle = {
             fontFamily: "Bravura",
         },
     },
+    chordDiagram: {
+        gridThickness: 1,
+        nutThickness: 3,
+        elementSpacing: 2,
+        cellHeight: 11,
+        cellWidth: 7,
+        nameText: {
+            fontSize: 14,
+            fontFamily: "Times New Roman",
+            fontStyle: "bold"
+        },
+        fingeringText: {
+            fontSize: 10,
+            fontFamily: "Times New Roman",
+            fontStyle: "italic"
+        },
+        fretText: {
+            fontSize: 10,
+            fontFamily: "Times New Roman",
+            fontStyle: "italic"
+        },
+        fingeringTokenRadius: 2.5,
+        specialStringTokenPadding: { top: -24, bottom: -8 }
+    },
     ornaments: {
         artificialHarmonicsText: {
             fontSize: 12,
@@ -2429,6 +2457,8 @@ window.onload = () => {
     //let fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
     let fabricCanvas = new fabric.Canvas(canvas, tablatureStyle.page);
     renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
+    renderer.drawChord(113.557998657227, 169.242, "F#m", [{ fret: 2, finger: 1, }, { fret: 4, finger: 3, }, { fret: 4, finger: 4, }, { fret: 2, finger: 1, }, { fret: 2, finger: 1, }, { fret: 2, finger: 1, },]);
+    renderer.drawChord(440, 169.242, "D", ['x', 'x', 0, { fret: 2, finger: 1, }, { fret: 3, finger: 3, }, { fret: 2, finger: 2, },]);
     //renderer.drawFretNumber("2", 100, 100, true);
     //renderer.drawTitle("test!!!", 400, 100);
     //renderer.drawBarLine(Core.MusicTheory.BarLine.BeginAndEndRepeat, 100, 100);
@@ -2512,6 +2542,117 @@ var Core;
         })(OffBarDirection = MusicTheory.OffBarDirection || (MusicTheory.OffBarDirection = {}));
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
+var Core;
+(function (Core) {
+    const SmuflGlyphes = {
+        //Time signatures (U+E080 – U+E09F)
+        'timeSig0': 0xE080,
+        'timeSig1': 0xE081,
+        'timeSig2': 0xE082,
+        'timeSig3': 0xE083,
+        'timeSig4': 0xE084,
+        'timeSig5': 0xE085,
+        'timeSig6': 0xE086,
+        'timeSig7': 0xE087,
+        'timeSig8': 0xE088,
+        'timeSig9': 0xE089,
+        'timeSigCommon': 0xE08A,
+        //Individual notes (U+E1D0 – U+E1EF)
+        'noteDoubleWhole': 0xE1D0,
+        'noteDoubleWholeSquare': 0xE1D1,
+        'noteWhole': 0xE1D2,
+        'noteHalfUp': 0xE1D3,
+        'noteHalfDown': 0xE1D4,
+        'noteQuarterUp': 0xE1D5,
+        'noteQuarterDown': 0xE1D6,
+        'note8thUp': 0xE1D7,
+        'note8thDown': 0xE1D8,
+        'note16thUp': 0xE1D9,
+        'note16thDown': 0xE1DA,
+        'note32ndUp': 0xE1DB,
+        'note32ndDown': 0xE1DC,
+        'note64thUp': 0xE1DD,
+        'note64thDown': 0xE1DE,
+        'note128thUp': 0xE1DF,
+        'note128thDown': 0xE1E0,
+        'note256thUp': 0xE1E1,
+        'note256thDown': 0xE1E2,
+        'note512thUp': 0xE1E3,
+        'note512thDown': 0xE1E4,
+        'note1024thUp': 0xE1E5,
+        'note1024thDown': 0xE1E6,
+        'augmentationDot': 0xE1E7,
+        //Chord diagrams (U+E850 ‒ U+E85F)
+        'fretboardFilledCircle': 0xE858,
+        'fretboardX': 0xE859,
+        'fretboardO': 0xE85A,
+        //Tuplets (U+E880 – U+E88F)
+        'tuplet0': 0XE880,
+        'tuplet1': 0XE881,
+        'tuplet2': 0XE882,
+        'tuplet3': 0XE883,
+        'tuplet4': 0XE884,
+        'tuplet5': 0XE885,
+        'tuplet6': 0XE886,
+        'tuplet7': 0XE887,
+        'tuplet8': 0XE888,
+        'tuplet9': 0XE889,
+        'tupletColon': 0xE88A
+    };
+    class Smufl {
+        static fixedFromCharCode(codePt) {
+            if (codePt > 0xFFFF) {
+                codePt -= 0x10000;
+                return String.fromCharCode(0xD800 + (codePt >> 10), 0xDC00 + (codePt & 0x3FF));
+            }
+            else {
+                return String.fromCharCode(codePt);
+            }
+        }
+        static GetCharacter(name) {
+            let codePt = typeof name === "string" ? SmuflGlyphes[name] : name;
+            return Smufl.fixedFromCharCode(codePt);
+        }
+        static GetNumber(value, base) {
+            return value.toString().split('').map((c) => Smufl.fixedFromCharCode(parseInt(c) + base)).join();
+        }
+        static GetTimeSignatureNumber(value) {
+            return Smufl.GetNumber(value, SmuflGlyphes['timeSig0']);
+        }
+        static GetTupletNumber(value) {
+            return Smufl.GetNumber(value, SmuflGlyphes['tuplet0']);
+        }
+        static GetNoteValue(noteValue) {
+            switch (noteValue) {
+                case BaseNoteValue.Large:
+                    return Smufl.GetCharacter('noteDoubleWhole'); //todo: smufl does not provide an individual large note
+                case BaseNoteValue.Long:
+                    return Smufl.GetCharacter('noteDoubleWhole'); //todo: smufl does not provide an individual large note
+                case BaseNoteValue.Double:
+                    return Smufl.GetCharacter('noteDoubleWhole');
+                case BaseNoteValue.Whole:
+                    return Smufl.GetCharacter('noteWhole');
+                case BaseNoteValue.Half:
+                    return Smufl.GetCharacter('noteHalfUp');
+                case BaseNoteValue.Quater:
+                    return Smufl.GetCharacter('noteQuarterUp');
+                case BaseNoteValue.Eighth:
+                    return Smufl.GetCharacter('note8thUp');
+                case BaseNoteValue.Sixteenth:
+                    return Smufl.GetCharacter('note16thUp');
+                case BaseNoteValue.ThirtySecond:
+                    return Smufl.GetCharacter('note32ndUp');
+                case BaseNoteValue.SixtyFourth:
+                    return Smufl.GetCharacter('note64thUp');
+                case BaseNoteValue.HundredTwentyEighth:
+                    return Smufl.GetCharacter('note128thUp');
+                case BaseNoteValue.TwoHundredFiftySixth:
+                    return Smufl.GetCharacter('note256thUp');
+            }
+        }
+    }
+    Core.Smufl = Smufl;
+})(Core || (Core = {}));
 // object.Assign implementation
 if (typeof Object.assign != 'function') {
     (function () {
@@ -2557,6 +2698,7 @@ var OffBarDirection = Core.MusicTheory.OffBarDirection;
 var NoteValueAugment = Core.MusicTheory.NoteValueAugment;
 var GlissDirection = Core.MusicTheory.GlissDirection;
 var NoteRenderingFlags = TR.NoteRenderingFlags;
+var Smufl = Core.Smufl;
 var TR;
 (function (TR) {
     class PrimitiveRenderer {
@@ -2571,6 +2713,12 @@ var TR;
         }
         getScale() {
             return this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
+        }
+        getSmuflTextStyle(size) {
+            return {
+                fontFamily: this.style.smuflText.fontFamily,
+                fontSize: size
+            };
         }
         static inflateBounds(bounds, extension) {
             if (bounds === undefined)
@@ -2587,13 +2735,14 @@ var TR;
             let originY = direction == OffBarDirection.Top ? "bottom" : "top";
             return this.drawText(text, x, y, "center", originY, style);
         }
-        drawText(text, x, y, originX, originY, options) {
+        drawText(text, x, y, originX, originY, options, addToCanvas = true) {
             let textElement = new fabric.Text(text, options);
             textElement.originX = originX;
             textElement.originY = originY;
             textElement.left = x;
             textElement.top = y;
-            this.canvas.add(textElement);
+            if (addToCanvas)
+                this.canvas.add(textElement);
             return textElement;
         }
         drawTitle(title, x, y) {
@@ -2699,7 +2848,7 @@ var TR;
             return bounds;
         }
         drawTuplet(tuplet, x, y) {
-            return this.drawText(PrimitiveRenderer.convertToSmuflNumber(tuplet, 0xe880), x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
+            return this.drawText(Smufl.GetTupletNumber(tuplet), x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
         }
         drawLine(x1, y1, x2, y2) {
             let line = new fabric.Line([x1, y1, x2, y2]);
@@ -3041,53 +3190,13 @@ var TR;
         drawArpeggioDown(x, y, direction) {
             this.drawOrnamentImageFromURL("arpeggio_down.svg", x, y, direction);
         }
-        static fixedFromCharCode(codePt) {
-            if (codePt > 0xFFFF) {
-                codePt -= 0x10000;
-                return String.fromCharCode(0xD800 + (codePt >> 10), 0xDC00 + (codePt & 0x3FF));
-            }
-            else {
-                return String.fromCharCode(codePt);
-            }
-        }
-        static convertToSmuflNumber(n, base) {
-            return n.toString().split('').map((c) => PrimitiveRenderer.fixedFromCharCode(parseInt(c) + base)).join();
-        }
-        static convertToSmuflNote(noteValue) {
-            switch (noteValue) {
-                case BaseNoteValue.Large:
-                    return "\ue1d1"; //todo: smufl does not provide an individual large note
-                case BaseNoteValue.Long:
-                    return "\ue1d1"; //todo: smufl does not provide an individual large note
-                case BaseNoteValue.Double:
-                    return "\ue1d0";
-                case BaseNoteValue.Whole:
-                    return "\ue1d2";
-                case BaseNoteValue.Half:
-                    return "\ue1d3";
-                case BaseNoteValue.Quater:
-                    return "\ue1d5";
-                case BaseNoteValue.Eighth:
-                    return "\ue1d7";
-                case BaseNoteValue.Sixteenth:
-                    return "\ue1d9";
-                case BaseNoteValue.ThirtySecond:
-                    return "\ue1db";
-                case BaseNoteValue.SixtyFourth:
-                    return "\ue1dd";
-                case BaseNoteValue.HundredTwentyEighth:
-                    return "\ue1df";
-                case BaseNoteValue.TwoHundredFiftySixth:
-                    return "\ue1e1";
-            }
-        }
         drawTimeSignature(x, y, beats, timeValue) {
             let textValue;
             if (beats === 4 && timeValue === 4) {
-                textValue = PrimitiveRenderer.fixedFromCharCode(0xe08a); // common time
+                textValue = Smufl.GetCharacter("timeSigCommon"); // common time
             }
             else {
-                textValue = `${PrimitiveRenderer.convertToSmuflNumber(beats.toString(), 0xe080)}\n${PrimitiveRenderer.convertToSmuflNumber(timeValue.toString(), 0xe080)}`;
+                textValue = `${Smufl.GetTimeSignatureNumber(beats)}\n${Smufl.GetTimeSignatureNumber(timeValue)}`;
             }
             let text = this.drawText(textValue, x, y + this.style.bar.timeSignatureOffset, "center", "center", this.style.bar.timeSignature);
             text.textAlign = "center";
@@ -3109,7 +3218,7 @@ var TR;
             return text.getBoundingRect();
         }
         drawTempoSignature(x, y, noteValue, beats) {
-            let textValue = `${PrimitiveRenderer.convertToSmuflNote(noteValue)} = ${beats}`;
+            let textValue = `${Smufl.GetNoteValue(noteValue)} = ${beats}`;
             let text = this.drawText(textValue, x, y, "left", "bottom", this.style.documentState.tempo);
             return text.getBoundingRect();
         }
@@ -3166,9 +3275,7 @@ var TR;
         }
         drawAlternationLine(x0, x1, y1) {
             y1 -= this.style.documentState.alternativeEndingHeight;
-            let line = new fabric.Line([
-                x0, y1, x1, y1
-            ], {
+            let line = new fabric.Line([x0, y1, x1, y1], {
                 stroke: "black",
                 fill: "",
                 strokeWidth: 1
@@ -3197,6 +3304,234 @@ var TR;
                 fill: ""
             });
             this.canvas.add(polyline);
+        }
+        drawChordSpecialStringTokens(x, y, fingering, bounds) {
+            var SpecialStringTokens;
+            (function (SpecialStringTokens) {
+                SpecialStringTokens[SpecialStringTokens["None"] = 0] = "None";
+                SpecialStringTokens[SpecialStringTokens["Open"] = 1] = "Open";
+                SpecialStringTokens[SpecialStringTokens["Skip"] = 2] = "Skip";
+            })(SpecialStringTokens || (SpecialStringTokens = {}));
+            ;
+            let tokens = fingering.map(f => {
+                if (f.fret === -1)
+                    return SpecialStringTokens.Skip;
+                return f.fret === 0 ? SpecialStringTokens.Open : SpecialStringTokens.None;
+            });
+            if (!tokens.reduce((result, t) => (t != SpecialStringTokens.None) || result, false)) {
+                return;
+            }
+            let cellX = x;
+            let textStyle = this.getSmuflTextStyle(32);
+            y -= this.style.chordDiagram.specialStringTokenPadding.bottom;
+            tokens.forEach(t => {
+                if (t != SpecialStringTokens.None) {
+                    let textContent;
+                    switch (t) {
+                        case SpecialStringTokens.Open:
+                            textContent = Smufl.GetCharacter('fretboardO');
+                            break;
+                        case SpecialStringTokens.Skip:
+                            textContent = Smufl.GetCharacter('fretboardX');
+                            break;
+                    }
+                    let text = this.drawText(textContent, cellX, y, "center", "bottom", textStyle);
+                    PrimitiveRenderer.inflateBounds(bounds, text.getBoundingRect());
+                }
+                cellX += this.style.chordDiagram.cellWidth;
+            });
+            bounds.top -= this.style.chordDiagram.elementSpacing + this.style.chordDiagram.specialStringTokenPadding.top;
+        }
+        drawChordDiagramGrid(x, y, minFret, maxFret, bounds) {
+            let width = this.style.chordDiagram.cellWidth * (this.style.stringCount - 1);
+            let fretY = y;
+            let group = new fabric.Group();
+            for (let fret = maxFret + 1; fret >= minFret; --fret) {
+                if (fret == 1) {
+                    let rect = new fabric.Rect({
+                        left: x,
+                        top: fretY - this.style.chordDiagram.nutThickness + this.style.chordDiagram.gridThickness,
+                        width: width,
+                        height: this.style.chordDiagram.nutThickness,
+                        fill: "black",
+                        stroke: "black"
+                    });
+                    group.addWithUpdate(rect);
+                }
+                else {
+                    let line = new fabric.Line([x, fretY, x + width, fretY], {
+                        stroke: "black",
+                        fill: "",
+                        strokeWidth: this.style.chordDiagram.gridThickness
+                    });
+                    group.addWithUpdate(line);
+                    if (fret > minFret)
+                        fretY -= this.style.chordDiagram.cellHeight;
+                }
+            }
+            let stringX = x;
+            for (let stringIndex = 0; stringIndex < this.style.stringCount; ++stringIndex) {
+                let line = new fabric.Line([stringX, y, stringX, fretY], {
+                    stroke: "black",
+                    fill: "",
+                    strokeWidth: this.style.chordDiagram.gridThickness
+                });
+                group.addWithUpdate(line);
+                stringX += this.style.chordDiagram.cellWidth;
+            }
+            this.canvas.add(group);
+            PrimitiveRenderer.inflateBounds(bounds, group.getBoundingRect());
+            bounds.top -= this.style.chordDiagram.elementSpacing;
+        }
+        drawChordSingleFingering(x, y) {
+            let circle = new fabric.Circle({
+                radius: this.style.chordDiagram.fingeringTokenRadius,
+                left: x,
+                top: y,
+                originX: "center",
+                originY: "center",
+                fill: "black",
+            });
+            this.canvas.add(circle);
+        }
+        drawChordBarre(fromX, toX, y) {
+            if (fromX == toX) {
+                this.drawChordSingleFingering(fromX, y);
+                return;
+            }
+            this.drawChordSingleFingering(fromX, y);
+            this.drawChordSingleFingering(toX, y);
+            let rect = new fabric.Rect({
+                left: fromX,
+                width: toX - fromX,
+                top: y,
+                height: this.style.chordDiagram.fingeringTokenRadius * 2,
+                originX: "left",
+                originY: "center",
+                fill: "black",
+                stroke: ""
+            });
+            this.canvas.add(rect);
+        }
+        drawChordFingering(x, y, minFret, maxFret, fingering, bounds) {
+            let getStringX = (stringIndex) => x + stringIndex * this.style.chordDiagram.cellWidth + this.style.chordDiagram.gridThickness / 2;
+            let fretY = y - this.style.chordDiagram.cellHeight / 2;
+            for (let fret = maxFret; fret >= minFret; --fret) {
+                let finger = null;
+                let barreFrom = null;
+                let barreTo = null;
+                for (let stringIndex = 0; stringIndex < fingering.length; ++stringIndex) {
+                    let note = fingering[stringIndex];
+                    if (note.fret != fret)
+                        continue;
+                    if (note.finger === null && finger === null) {
+                        this.drawChordSingleFingering(getStringX(stringIndex), fretY);
+                        continue;
+                    }
+                    if (note.finger !== null) {
+                        if (finger === null)
+                            barreFrom = barreTo = stringIndex;
+                        else {
+                            if (finger === note.finger)
+                                barreTo = stringIndex;
+                            else {
+                                this.drawChordBarre(getStringX(barreFrom), getStringX(barreTo), fretY);
+                                barreFrom = barreTo = stringIndex;
+                            }
+                        }
+                        finger = note.finger;
+                    }
+                    else {
+                        if (finger !== null) {
+                            this.drawChordBarre(getStringX(barreFrom), getStringX(barreTo), fretY);
+                            barreFrom = barreTo = null;
+                            finger = null;
+                        }
+                        else {
+                            this.drawChordSingleFingering(getStringX(stringIndex), fretY);
+                        }
+                    }
+                }
+                if (finger !== null)
+                    this.drawChordBarre(getStringX(barreFrom), getStringX(barreTo), fretY);
+                fretY -= this.style.chordDiagram.cellHeight;
+            }
+        }
+        drawChordFingerIndices(x, y, fingering, bounds) {
+            const finger_skip = 0;
+            const finger_unknown = -1;
+            let fingers = fingering.map(f => {
+                if (f.fret <= 0)
+                    return finger_skip;
+                return f.finger === null ? finger_unknown : f.finger;
+            });
+            if (fingers.reduce((count, f) => (f > 0) ? count + 1 : count, 0) === 0) {
+                return;
+            }
+            let cellX = x;
+            fingers.forEach(f => {
+                let textContent;
+                if (f == finger_skip)
+                    textContent = "-";
+                else if (f == finger_unknown)
+                    textContent = "?";
+                else
+                    textContent = f.toString();
+                let text = this.drawText(textContent, cellX, y, "center", "bottom", this.style.chordDiagram.fingeringText);
+                PrimitiveRenderer.inflateBounds(bounds, text.getBoundingRect());
+                cellX += this.style.chordDiagram.cellWidth;
+            });
+            bounds.top -= this.style.chordDiagram.elementSpacing;
+        }
+        drawChordFretOffset(x, y, fret, bounds) {
+            let text = this.drawText(`${fret}fr`, x, y, "left", "center", this.style.chordDiagram.fretText);
+            PrimitiveRenderer.inflateBounds(bounds, text.getBoundingRect());
+        }
+        static explicifyChordFingering(fingering) {
+            return fingering.map(f => {
+                if (f === "x")
+                    return { fret: -1 };
+                if (typeof f === "number")
+                    return { fret: f };
+                return f;
+            });
+        }
+        drawChord(x, y, name, fingering) {
+            let bounds = { left: x, top: y, width: 0, height: 0 };
+            if (fingering.length > 0) {
+                let explicitFingering = PrimitiveRenderer.explicifyChordFingering(fingering);
+                this.drawChordFingerIndices(x, y, explicitFingering, bounds);
+                let frets = explicitFingering.map(f => f.fret).filter(f => f > 0);
+                if (frets.length === 0) {
+                    this.drawChordDiagramGrid(bounds.left, bounds.top, 1, 3, bounds);
+                    this.drawChordSpecialStringTokens(bounds.left, bounds.top, explicitFingering, bounds);
+                    return bounds;
+                }
+                let minFret = Math.min(...frets);
+                let maxFret = Math.max(...frets);
+                let fretSpan = maxFret - minFret + 1;
+                if (fretSpan < 3) {
+                    if (maxFret < 3) {
+                        maxFret = 3;
+                        minFret = maxFret - 2;
+                    }
+                    else if (maxFret < 4)
+                        minFret = 1;
+                    else
+                        minFret = maxFret - 2;
+                }
+                let diagramX = bounds.left;
+                let diagramY = bounds.top;
+                this.drawChordDiagramGrid(diagramX, diagramY, minFret, maxFret, bounds);
+                this.drawChordFingering(diagramX, diagramY, minFret, maxFret, explicitFingering, bounds);
+                if (minFret !== 1) {
+                    this.drawChordFretOffset(bounds.left + bounds.width + this.style.chordDiagram.elementSpacing, bounds.top + this.style.chordDiagram.cellHeight / 2, minFret, bounds);
+                }
+                this.drawChordSpecialStringTokens(bounds.left, bounds.top, explicitFingering, bounds);
+            }
+            let text = this.drawText(name, bounds.left + this.style.chordDiagram.cellWidth * (this.style.stringCount - 1) / 2, bounds.top, "center", "bottom", this.style.chordDiagram.nameText);
+            PrimitiveRenderer.inflateBounds(bounds, text.getBoundingRect());
+            return bounds;
         }
     }
     TR.PrimitiveRenderer = PrimitiveRenderer;

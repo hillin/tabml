@@ -40,11 +40,11 @@ namespace TabML.Parser.AST
                 if (barNode.Lyrics != null)
                 {
                     logger.Report(LogLevel.Warning, barNode.Lyrics.Range,
-                                    Messages.Warning_TemplateBarCannotContainLyrics);
+                                  Messages.Warning_TemplateBarCannotContainLyrics);
                 }
 
                 Bar bar;
-                if (!barNode.ToDocumentElement(context, logger, out bar))
+                if (!barNode.ToDocumentElement(context, logger, null, out bar))
                     return false;
 
                 templateBars.Add(bar);
@@ -78,15 +78,7 @@ namespace TabML.Parser.AST
                 return true;
             }
 
-            if (!instanceNode.ToDocumentElement(context, logger, out instanceBar))
-                return false;
-
-            if (instanceBar.Rhythm != null && instanceBar.Rhythm.Segments.Count > 0) // rhythm already defined
-                return true;
-
-            instanceBar.Rhythm = template.Rhythm.Clone();
-
-            return true;
+            return instanceNode.ToDocumentElement(context, logger, template, out instanceBar);
         }
     }
 }

@@ -1,5 +1,12 @@
 namespace TR {
     export interface ITablatureStyle {
+
+        stringCount: number;
+
+        smuflText: {
+            fontFamily: string,
+        }
+
         fallback: {
             fontFamily: string,
         }
@@ -7,7 +14,7 @@ namespace TR {
         page: {
             width: number,
             height: number,
-        },
+        }
 
         documentState: {
             transposition: ITablatureTextStyle,
@@ -18,7 +25,7 @@ namespace TR {
             alternativeEndingTextPadding: number,
             alternativeEndingHeight:number,
             endAlternativeEndingRightMargin: number
-        },
+        }
 
         bar: {
             lineHeight: number;
@@ -40,6 +47,19 @@ namespace TR {
             flagSpacing : number,
             tuplet : ITablatureTextStyle,
             
+        }
+
+        chordDiagram : {
+            gridThickness: number,
+            nutThickness: number,
+            elementSpacing: number,
+            cellWidth: number,
+            cellHeight: number,
+            nameText: ITablatureTextStyle,
+            fingeringText: ITablatureTextStyle,
+            fretText: ITablatureTextStyle,
+            fingeringTokenRadius: number,
+            specialStringTokenPadding: { top:number, bottom:number }
         }
 
         ornaments : {

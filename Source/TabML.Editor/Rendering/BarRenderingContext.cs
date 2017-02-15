@@ -136,7 +136,7 @@ namespace TabML.Editor.Rendering
         {
             var y = this.Owner.GetHeight(voicePart, x + this.Location.X);
 
-            var bounds = await this.PrimitiveRenderer.DrawTuplet(tuplet.ToString(), x + this.Location.X, y);
+            var bounds = await this.PrimitiveRenderer.DrawTuplet(tuplet, x + this.Location.X, y);
 
             this.Owner.EnsureHeight(voicePart, bounds);
         }
@@ -404,6 +404,13 @@ namespace TabML.Editor.Rendering
             await this.PrimitiveRenderer.DrawLyrics(lyrics, x, y);
         }
 
+        public async Task DrawChord(double x, IChordDefinition chord)
+        {
+            x += this.Location.X;
+            var y = this.Owner.GetHeight(VoicePart.Treble, x);
+            await this.PrimitiveRenderer.DrawChord(chord, x, y);
+        }
+
         public async Task<double> DrawTimeSignature(Time time, double x)
         {
             var bounds =
@@ -473,5 +480,6 @@ namespace TabML.Editor.Rendering
                                        text);
             this.Owner.EnsureHeight(VoicePart.Treble, bounds);
         }
+
     }
 }

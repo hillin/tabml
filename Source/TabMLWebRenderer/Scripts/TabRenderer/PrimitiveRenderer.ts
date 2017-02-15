@@ -4,7 +4,9 @@ import OffBarDirection = Core.MusicTheory.OffBarDirection;
 import NoteValueAugment = Core.MusicTheory.NoteValueAugment;
 import GlissDirection = Core.MusicTheory.GlissDirection;
 import NoteRenderingFlags = TR.NoteRenderingFlags;
+import Smufl = Core.Smufl;
 
+type point = { x: number, y: number };
 
 interface CallbackObject {
     callback(result: any): void;
@@ -16,7 +18,6 @@ namespace TR {
 
     export interface IBoundingBox {
         left: number; top: number; width: number; height: number;
-
     }
 
     export class PrimitiveRenderer {
@@ -40,6 +41,13 @@ namespace TR {
             return this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
         }
 
+        private getSmuflTextStyle(size: number) {
+            return {
+                fontFamily: this.style.smuflText.fontFamily,
+                fontSize: size
+            };
+        }
+
         private static inflateBounds(bounds: IBoundingBox, extension: IBoundingBox): IBoundingBox {
             if (bounds === undefined)
                 return extension;
@@ -60,13 +68,15 @@ namespace TR {
             return this.drawText(text, x, y, "center", originY, style);
         }
 
-        private drawText(text: string, x: number, y: number, originX: string, originY: string, options?: fabric.IITextOptions): fabric.IText {
+        private drawText(text: string, x: number, y: number, originX: string, originY: string, options?: fabric.IITextOptions, addToCanvas: boolean = true): fabric.IText {
             let textElement = new fabric.Text(text, options);
             textElement.originX = originX;
             textElement.originY = originY;
             textElement.left = x;
             textElement.top = y;
-            this.canvas.add(textElement);
+
+            if (addToCanvas)
+                this.canvas.add(textElement);
 
             return textElement;
         }
@@ -194,14 +204,14 @@ namespace TR {
         measureLyrics(lyrics: string): IBoundingBox {
             let textElement = new fabric.Text(lyrics, this.style.lyrics);
             this.canvas.add(textElement);       // for now we'll just add and remove it
-                                                // later we should refactor it so all elements are created at once, and re-arranged later
+            // later we should refactor it so all elements are created at once, and re-arranged later
             let bounds = textElement.getBoundingRect();
             this.canvas.remove(textElement);
             return bounds;
         }
 
-        drawTuplet(tuplet: string, x: number, y: number): IBoundingBox {
-            return this.drawText(PrimitiveRenderer.convertToSmuflNumber(tuplet, 0xe880), x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
+        drawTuplet(tuplet: number, x: number, y: number): IBoundingBox {
+            return this.drawText(Smufl.GetTupletNumber(tuplet), x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
         }
 
 
@@ -351,7 +361,7 @@ namespace TR {
             polygon.stroke = "black";
             this.canvas.add(polygon);
 
-            return polygon.getBoundingRect(); 
+            return polygon.getBoundingRect();
         }
 
         drawNoteValueAugment(augment: NoteValueAugment, x: number, y: number) {
@@ -480,39 +490,39 @@ namespace TR {
             return this.drawOrnamentText(x, y, "rasg.", this.style.ornaments.rasgueadoText, direction).getBoundingRect();
         }
 
-        
-        private async drawInlineBrushlikeTechnique(x:number, y:number, stringSpan: number, technique:string, isUp: Boolean) {
+
+        private async drawInlineBrushlikeTechnique(x: number, y: number, stringSpan: number, technique: string, isUp: Boolean) {
             let imageFile = ResourceManager.getTablatureResource(`${technique}_up_inline_${stringSpan}.svg`);
 
             let group = await this.drawSVGFromURLAsync(imageFile, x, y, group => {
                 group.originX = "center";
                 group.originY = "center";
 
-                if(!isUp)
+                if (!isUp)
                     group.flipY = true;
             });
 
             this.callbackWith(group.getBoundingRect());
         }
 
-        async drawInlineBrushDown(x:number, y:number, stringSpan:number) {
-            await this.drawInlineBrushlikeTechnique(x,y,stringSpan, "brush", false);
+        async drawInlineBrushDown(x: number, y: number, stringSpan: number) {
+            await this.drawInlineBrushlikeTechnique(x, y, stringSpan, "brush", false);
         }
 
-        async drawInlineBrushUp(x:number, y:number, stringSpan:number) {
-            await this.drawInlineBrushlikeTechnique(x,y,stringSpan, "brush", true);
+        async drawInlineBrushUp(x: number, y: number, stringSpan: number) {
+            await this.drawInlineBrushlikeTechnique(x, y, stringSpan, "brush", true);
         }
 
-        async drawInlineArpeggioDown(x:number, y:number, stringSpan:number) {
-            await this.drawInlineBrushlikeTechnique(x,y,stringSpan, "arpeggio", false);
+        async drawInlineArpeggioDown(x: number, y: number, stringSpan: number) {
+            await this.drawInlineBrushlikeTechnique(x, y, stringSpan, "arpeggio", false);
         }
 
-        async drawInlineArpeggioUp(x:number, y:number, stringSpan:number) {
-            await this.drawInlineBrushlikeTechnique(x,y,stringSpan, "arpeggio", true);
+        async drawInlineArpeggioUp(x: number, y: number, stringSpan: number) {
+            await this.drawInlineBrushlikeTechnique(x, y, stringSpan, "arpeggio", true);
         }
 
-        async drawInlineRasgueado(x:number, y:number, stringSpan:number) {
-            await this.drawInlineBrushlikeTechnique(x,y,stringSpan, "arpeggio", false);
+        async drawInlineRasgueado(x: number, y: number, stringSpan: number) {
+            await this.drawInlineBrushlikeTechnique(x, y, stringSpan, "arpeggio", false);
         }
 
         private async drawOrnamentImageFromURL(urlResourceName: string, x: number, y: number, direction: OffBarDirection, postProcessing?: (group: fabric.IPathGroup) => void) {
@@ -521,10 +531,10 @@ namespace TR {
                 group.originX = "center";
                 group.originY = direction == OffBarDirection.Top ? "bottom" : "top";
 
-                if(direction == OffBarDirection.Bottom)
+                if (direction == OffBarDirection.Bottom)
                     group.flipY = true;
 
-                if(postProcessing!=null)
+                if (postProcessing != null)
                     postProcessing(group);
             });
 
@@ -583,58 +593,13 @@ namespace TR {
             this.drawOrnamentImageFromURL("arpeggio_down.svg", x, y, direction);
         }
 
-        static fixedFromCharCode (codePt: number): string {
-            if (codePt > 0xFFFF) {
-                codePt -= 0x10000;
-                return String.fromCharCode(0xD800 + (codePt >> 10), 0xDC00 + (codePt & 0x3FF));
+        drawTimeSignature(x: number, y: number, beats: number, timeValue: number): IBoundingBox {
+            let textValue: string;
+            if (beats === 4 && timeValue === 4) {
+                textValue = Smufl.GetCharacter("timeSigCommon");  // common time
             }
             else {
-                return String.fromCharCode(codePt);
-            }
-        }
-
-        static convertToSmuflNumber(n: string, base: number) : string {
-            return n.toString().split('').map((c:string) => PrimitiveRenderer.fixedFromCharCode(parseInt(c) + base)).join();
-        }
-
-        static convertToSmuflNote(noteValue:BaseNoteValue) : string {
-            switch(noteValue)
-            {
-                case BaseNoteValue.Large:
-                    return "\ue1d1";    //todo: smufl does not provide an individual large note
-                case BaseNoteValue.Long:
-                    return "\ue1d1";    //todo: smufl does not provide an individual large note
-                case BaseNoteValue.Double:
-                    return "\ue1d0";
-                case BaseNoteValue.Whole:
-                    return "\ue1d2";
-                case BaseNoteValue.Half:
-                    return "\ue1d3";
-                case BaseNoteValue.Quater:
-                    return "\ue1d5";
-                case BaseNoteValue.Eighth:
-                    return "\ue1d7";
-                case BaseNoteValue.Sixteenth:
-                    return "\ue1d9";
-                case BaseNoteValue.ThirtySecond:
-                    return "\ue1db";
-                case BaseNoteValue.SixtyFourth:
-                    return "\ue1dd";
-                case BaseNoteValue.HundredTwentyEighth:
-                    return "\ue1df";
-                case BaseNoteValue.TwoHundredFiftySixth:
-                    return "\ue1e1";
-            }
-        }
-
-        drawTimeSignature(x:number, y:number, beats:number, timeValue:number) : IBoundingBox {
-            let textValue: string;
-            if(beats === 4 && timeValue === 4) {
-                textValue = PrimitiveRenderer.fixedFromCharCode(0xe08a);  // common time
-            }
-            else
-            {
-                textValue = `${PrimitiveRenderer.convertToSmuflNumber(beats.toString(), 0xe080)}\n${PrimitiveRenderer.convertToSmuflNumber(timeValue.toString(), 0xe080)}`;
+                textValue = `${Smufl.GetTimeSignatureNumber(beats)}\n${Smufl.GetTimeSignatureNumber(timeValue)}`;
             }
 
             let text = this.drawText(textValue, x, y + this.style.bar.timeSignatureOffset, "center", "center", this.style.bar.timeSignature);
@@ -642,7 +607,7 @@ namespace TR {
             return text.getBoundingRect();
         }
 
-        async drawTabHeader(x:number, y:number) {
+        async drawTabHeader(x: number, y: number) {
             let imageFile = ResourceManager.getTablatureResource("tab_header.svg");
 
             let group = await this.drawSVGFromURLAsync(imageFile, x, y, group => {
@@ -650,22 +615,22 @@ namespace TR {
                 group.originY = "center";
             });
 
-            this.callbackWith(group.getBoundingRect());    
+            this.callbackWith(group.getBoundingRect());
         }
 
-        drawTranspositionText(x:number, y:number, key: string) : IBoundingBox {
+        drawTranspositionText(x: number, y: number, key: string): IBoundingBox {
             let textValue = `transpose to ${key}`;
             let text = this.drawText(textValue, x, y, "left", "bottom", this.style.documentState.transposition);
             return text.getBoundingRect();
         }
 
-        drawTempoSignature(x:number, y:number, noteValue:BaseNoteValue, beats:number) : IBoundingBox {
-            let textValue = `${PrimitiveRenderer.convertToSmuflNote(noteValue)} = ${beats}`;
+        drawTempoSignature(x: number, y: number, noteValue: BaseNoteValue, beats: number): IBoundingBox {
+            let textValue = `${Smufl.GetNoteValue(noteValue)} = ${beats}`;
             let text = this.drawText(textValue, x, y, "left", "bottom", this.style.documentState.tempo);
             return text.getBoundingRect();
         }
 
-        drawSection(x:number, y:number, section: string) : IBoundingBox {
+        drawSection(x: number, y: number, section: string): IBoundingBox {
             let text = this.drawText(section, x, y, "left", "bottom", this.style.documentState.section);
             let bounds = text.getBoundingRect();
             const padding = this.style.documentState.sectionTextPadding;
@@ -682,45 +647,45 @@ namespace TR {
             return rect.getBoundingRect();
         }
 
-        private drawAlternativeEndingText(x:number, y:number, alternationText: string) {
-           this.drawText(alternationText, 
-                         x + this.style.documentState.alternativeEndingTextPadding, 
-                         y, 
-                         "left",
-                         "top",
-                         this.style.documentState.alternativeEndingText);
+        private drawAlternativeEndingText(x: number, y: number, alternationText: string) {
+            this.drawText(alternationText,
+                x + this.style.documentState.alternativeEndingTextPadding,
+                y,
+                "left",
+                "top",
+                this.style.documentState.alternativeEndingText);
         }
 
-        drawStartAlternation(x0:number, x1:number,  y0:number,  y1:number, alternationText: string): IBoundingBox {
+        drawStartAlternation(x0: number, x1: number, y0: number, y1: number, alternationText: string): IBoundingBox {
 
             y1 -= this.style.documentState.alternativeEndingHeight;
 
-           this.drawAlternativeEndingText(x0 + this.style.documentState.alternativeEndingTextPadding, 
-                                          y1 + this.style.documentState.alternativeEndingTextPadding,
-                                          alternationText);
+            this.drawAlternativeEndingText(x0 + this.style.documentState.alternativeEndingTextPadding,
+                y1 + this.style.documentState.alternativeEndingTextPadding,
+                alternationText);
 
             let polyline = new fabric.Polyline([
                 { x: x0, y: y0 },
                 { x: x0, y: y1 },
                 { x: x1, y: y1 }
             ], {
-                stroke: "black",
-                fill: "",
-                strokeWidth: 1
-            });
-            
+                    stroke: "black",
+                    fill: "",
+                    strokeWidth: 1
+                });
+
             this.canvas.add(polyline);
             return polyline.getBoundingRect();
         }
 
-        drawStartAndEndAlternation(x0:number, x1:number, y0:number, y1:number, alternationText: string): IBoundingBox {
+        drawStartAndEndAlternation(x0: number, x1: number, y0: number, y1: number, alternationText: string): IBoundingBox {
 
             y1 -= this.style.documentState.alternativeEndingHeight;
             x1 -= this.style.documentState.endAlternativeEndingRightMargin;
 
-           this.drawAlternativeEndingText(x0 + this.style.documentState.alternativeEndingTextPadding, 
-                                          y1 + this.style.documentState.alternativeEndingTextPadding,
-                                          alternationText);
+            this.drawAlternativeEndingText(x0 + this.style.documentState.alternativeEndingTextPadding,
+                y1 + this.style.documentState.alternativeEndingTextPadding,
+                alternationText);
 
             let polyline = new fabric.Polyline([
                 { x: x0, y: y0 },
@@ -728,22 +693,20 @@ namespace TR {
                 { x: x1, y: y1 },
                 { x: x1, y: y0 },
             ], {
-                stroke: "black",
-                fill: "",
-                strokeWidth: 1
-            });
-            
+                    stroke: "black",
+                    fill: "",
+                    strokeWidth: 1
+                });
+
             this.canvas.add(polyline);
             return polyline.getBoundingRect();
         }
 
-        drawAlternationLine(x0:number, x1:number, y1:number) : IBoundingBox {
+        drawAlternationLine(x0: number, x1: number, y1: number): IBoundingBox {
 
             y1 -= this.style.documentState.alternativeEndingHeight;
 
-            let line = new fabric.Line([
-                x0, y1, x1, y1
-            ], {
+            let line = new fabric.Line([x0, y1, x1, y1], {
                 stroke: "black",
                 fill: "",
                 strokeWidth: 1
@@ -753,8 +716,8 @@ namespace TR {
             return line.getBoundingRect();
         }
 
-        drawEndAlternation(x0:number, x1:number,  y0:number,  y1:number): IBoundingBox {
-            
+        drawEndAlternation(x0: number, x1: number, y0: number, y1: number): IBoundingBox {
+
             y1 -= this.style.documentState.alternativeEndingHeight;
             x1 -= this.style.documentState.endAlternativeEndingRightMargin;
 
@@ -763,16 +726,16 @@ namespace TR {
                 { x: x1, y: y1 },
                 { x: x1, y: y0 }
             ], {
-                stroke: "black",
-                fill: "",
-                strokeWidth: 1
-            });
-            
+                    stroke: "black",
+                    fill: "",
+                    strokeWidth: 1
+                });
+
             this.canvas.add(polyline);
             return polyline.getBoundingRect();
         }
 
-        debugDrawHeightMap(points: { x:number, y:number }[]) {
+        debugDrawHeightMap(points: { x: number, y: number }[]) {
             let polyline = new fabric.Polyline(points, {
                 stroke: "green",
                 fill: ""
@@ -781,5 +744,297 @@ namespace TR {
             this.canvas.add(polyline);
         }
 
+        private drawChordSpecialStringTokens(x: number, y: number, fingering: Core.MusicTheory.IExplicitChordFingeringNote[], bounds: IBoundingBox) {
+            enum SpecialStringTokens {
+                None,
+                Open,
+                Skip,
+            };
+
+            let tokens = fingering.map(f => {
+                if (f.fret === -1)
+                    return SpecialStringTokens.Skip;
+                return f.fret === 0 ? SpecialStringTokens.Open : SpecialStringTokens.None;
+            });
+
+            if (!tokens.reduce((result, t) => (t != SpecialStringTokens.None) || result, false)) {
+                return;
+            }
+
+            let cellX = x;
+            let textStyle: any = this.getSmuflTextStyle(32);
+            y -= this.style.chordDiagram.specialStringTokenPadding.bottom;
+
+            tokens.forEach(t => {
+
+                if (t != SpecialStringTokens.None) {
+                    let textContent: string;
+                    switch (t) {
+                        case SpecialStringTokens.Open: textContent = Smufl.GetCharacter('fretboardO'); break;
+                        case SpecialStringTokens.Skip: textContent = Smufl.GetCharacter('fretboardX'); break;
+                    }
+
+                    let text = this.drawText(textContent, cellX, y, "center", "bottom", textStyle);
+                    PrimitiveRenderer.inflateBounds(bounds, text.getBoundingRect());
+                }
+
+                cellX += this.style.chordDiagram.cellWidth;
+            });
+
+            bounds.top -= this.style.chordDiagram.elementSpacing + this.style.chordDiagram.specialStringTokenPadding.top;
+        }
+
+        private drawChordDiagramGrid(x: number, y: number, minFret: number, maxFret: number, bounds: IBoundingBox) {
+
+            let width = this.style.chordDiagram.cellWidth * (this.style.stringCount - 1);
+
+            let fretY = y;
+
+            let group = new fabric.Group();
+            for (let fret = maxFret + 1; fret >= minFret; --fret) {
+
+                if (fret == 1) {
+                    let rect = new fabric.Rect({
+                        left: x,
+                        top: fretY - this.style.chordDiagram.nutThickness + this.style.chordDiagram.gridThickness,
+                        width: width,
+                        height: this.style.chordDiagram.nutThickness,
+                        fill: "black",
+                        stroke: "black"
+                    });
+
+                    group.addWithUpdate(rect);
+                }
+                else {
+                    let line = new fabric.Line([x, fretY, x + width, fretY], {
+                        stroke: "black",
+                        fill: "",
+                        strokeWidth: this.style.chordDiagram.gridThickness
+                    });
+
+                    group.addWithUpdate(line);
+
+                    if (fret > minFret)
+                        fretY -= this.style.chordDiagram.cellHeight;
+                }
+
+            }
+
+            let stringX = x;
+            for (let stringIndex = 0; stringIndex < this.style.stringCount; ++stringIndex) {
+                let line = new fabric.Line([stringX, y, stringX, fretY], {
+                    stroke: "black",
+                    fill: "",
+                    strokeWidth: this.style.chordDiagram.gridThickness
+                });
+                group.addWithUpdate(line);
+                stringX += this.style.chordDiagram.cellWidth;
+            }
+
+            this.canvas.add(group);
+            PrimitiveRenderer.inflateBounds(bounds, group.getBoundingRect());
+
+            bounds.top -= this.style.chordDiagram.elementSpacing;
+        }
+
+        private drawChordSingleFingering(x: number, y: number) {
+            let circle = new fabric.Circle({
+                radius: this.style.chordDiagram.fingeringTokenRadius,
+                left: x,
+                top: y,
+                originX: "center",
+                originY: "center",
+                fill: "black",
+            });
+
+            this.canvas.add(circle);
+        }
+
+        private drawChordBarre(fromX: number, toX: number, y: number) {
+
+            if (fromX == toX) {
+                this.drawChordSingleFingering(fromX, y);
+                return;
+            }
+            this.drawChordSingleFingering(fromX, y);
+            this.drawChordSingleFingering(toX, y);
+
+            let rect = new fabric.Rect({
+                left: fromX,
+                width: toX - fromX,
+                top: y,
+                height: this.style.chordDiagram.fingeringTokenRadius * 2,
+                originX: "left",
+                originY: "center",
+                fill: "black",
+                stroke: ""
+            });
+            this.canvas.add(rect);
+        }
+
+
+        private drawChordFingering(x: number, y: number, minFret: number, maxFret: number, fingering: Core.MusicTheory.IExplicitChordFingeringNote[], bounds: IBoundingBox) {
+
+            let getStringX = (stringIndex: number) => x + stringIndex * this.style.chordDiagram.cellWidth + this.style.chordDiagram.gridThickness / 2;
+
+            let fretY = y - this.style.chordDiagram.cellHeight / 2;
+            for (let fret = maxFret; fret >= minFret; --fret) {
+
+                let finger = <number>null;
+                let barreFrom = <number>null;
+                let barreTo = <number>null;
+
+                for (let stringIndex = 0; stringIndex < fingering.length; ++stringIndex) {
+                    let note = fingering[stringIndex];
+
+                    if (note.fret != fret)
+                        continue;
+
+                    if (note.finger === null && finger === null) {
+                        this.drawChordSingleFingering(getStringX(stringIndex), fretY);
+                        continue;
+                    }
+
+                    if (note.finger !== null) {
+                        if (finger === null)
+                            barreFrom = barreTo = stringIndex;
+                        else {
+                            if (finger === note.finger)
+                                barreTo = stringIndex;
+                            else {
+                                this.drawChordBarre(getStringX(barreFrom), getStringX(barreTo), fretY);
+                                barreFrom = barreTo = stringIndex;
+                            }
+                        }
+                        finger = note.finger;
+                    }
+                    else {
+                        if (finger !== null) {
+                            this.drawChordBarre(getStringX(barreFrom), getStringX(barreTo), fretY);
+                            barreFrom = barreTo = null;
+                            finger = null;
+                        }
+                        else {
+                            this.drawChordSingleFingering(getStringX(stringIndex), fretY);
+                        }
+                    }
+                }
+
+                if (finger !== null)
+                    this.drawChordBarre(getStringX(barreFrom), getStringX(barreTo), fretY);
+
+                fretY -= this.style.chordDiagram.cellHeight;
+            }
+        }
+
+        private drawChordFingerIndices(x: number, y: number, fingering: Core.MusicTheory.IExplicitChordFingeringNote[], bounds: IBoundingBox) {
+
+            const finger_skip = 0;
+            const finger_unknown = -1;
+
+            let fingers = fingering.map(f => {
+                if (f.fret <= 0)
+                    return finger_skip;
+                return f.finger === null ? finger_unknown : f.finger;
+            });
+
+            if (fingers.reduce((count, f) => (f > 0) ? count + 1 : count, 0) === 0) {
+                return;
+            }
+
+            let cellX = x;
+
+            fingers.forEach(f => {
+                let textContent: string;
+                if (f == finger_skip) textContent = "-";
+                else if (f == finger_unknown) textContent = "?";
+                else textContent = f.toString();
+
+                let text = this.drawText(textContent, cellX, y, "center", "bottom", this.style.chordDiagram.fingeringText);
+                PrimitiveRenderer.inflateBounds(bounds, text.getBoundingRect());
+
+                cellX += this.style.chordDiagram.cellWidth;
+            });
+
+            bounds.top -= this.style.chordDiagram.elementSpacing;
+
+        }
+
+        private drawChordFretOffset(x: number, y: number, fret: number, bounds: IBoundingBox) {
+            let text = this.drawText(`${fret}fr`, x, y, "left", "center", this.style.chordDiagram.fretText);
+            PrimitiveRenderer.inflateBounds(bounds, text.getBoundingRect());
+        }
+
+        private static explicifyChordFingering(fingering: Core.MusicTheory.IChordFingeringNote[]): Core.MusicTheory.IExplicitChordFingeringNote[] {
+            return fingering.map(f => {
+                if (f === "x")
+                    return { fret: -1 };
+                if (typeof f === "number")
+                    return { fret: f };
+                return f;
+            });
+        }
+
+        drawChord(x: number, y: number, name: string, fingering: Core.MusicTheory.IChordFingeringNote[]): IBoundingBox {
+
+            let bounds: IBoundingBox = { left: x, top: y, width: 0, height: 0 };
+
+            if (fingering.length > 0) {
+
+                let explicitFingering = PrimitiveRenderer.explicifyChordFingering(fingering);
+
+                this.drawChordFingerIndices(x, y, explicitFingering, bounds);
+
+                let frets = explicitFingering.map<number>(f => f.fret).filter(f => f > 0);
+
+                if (frets.length === 0) {
+                    this.drawChordDiagramGrid(bounds.left, bounds.top, 1, 3, bounds);
+                    this.drawChordSpecialStringTokens(bounds.left, bounds.top, explicitFingering, bounds);
+                    return bounds;
+                }
+
+                let minFret = Math.min(...frets);
+                let maxFret = Math.max(...frets);
+                let fretSpan = maxFret - minFret + 1;
+
+                if (fretSpan < 3) {
+                    if (maxFret < 3) {
+                        maxFret = 3;
+                        minFret = maxFret - 2;
+                    }
+                    else if (maxFret < 4)
+                        minFret = 1;
+                    else
+                        minFret = maxFret - 2;
+                }
+
+                let diagramX = bounds.left;
+                let diagramY = bounds.top;
+                this.drawChordDiagramGrid(diagramX, diagramY, minFret, maxFret, bounds);
+
+                this.drawChordFingering(diagramX, diagramY, minFret, maxFret, explicitFingering, bounds);
+
+                if (minFret !== 1) {
+                    this.drawChordFretOffset(bounds.left + bounds.width + this.style.chordDiagram.elementSpacing,
+                        bounds.top + this.style.chordDiagram.cellHeight / 2,
+                        minFret,
+                        bounds);
+                }
+
+                this.drawChordSpecialStringTokens(bounds.left, bounds.top, explicitFingering, bounds);
+            }
+
+
+            let text = this.drawText(name,
+                bounds.left + this.style.chordDiagram.cellWidth * (this.style.stringCount - 1) / 2,
+                bounds.top,
+                "center",
+                "bottom",
+                this.style.chordDiagram.nameText);
+
+            PrimitiveRenderer.inflateBounds(bounds, text.getBoundingRect());
+
+            return bounds;
+        }
     }
 }

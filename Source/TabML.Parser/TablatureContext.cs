@@ -57,7 +57,8 @@ namespace TabML.Parser
         {
             return new Tablature
             {
-                Bars = this.Bars.ToArray()
+                Bars = this.Bars.ToArray(),
+                DocumentState = this.DocumentState
             };
         }
 

@@ -10,14 +10,16 @@ namespace TabML.Core.Document
 {
     public class BarColumn : VirtualElement
     {
+        public Bar OwnerBar { get; }
         public int ColumnIndex { get; }
         public List<Beat> VoiceBeats { get; }
         public Chord Chord { get; set; }
         public LyricsSegment Lyrics { get; set; }
         public bool IsFirstColumnOfSegment { get; set; }
 
-        public BarColumn(int columnIndex)
+        public BarColumn(Bar ownerBar, int columnIndex)
         {
+            this.OwnerBar = ownerBar;
             this.ColumnIndex = columnIndex;
             this.VoiceBeats = new List<Beat>();
         }

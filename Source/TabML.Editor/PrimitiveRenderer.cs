@@ -17,6 +17,15 @@ namespace TabML.Editor
 {
     class PrimitiveRenderer
     {
+        class JsonString
+        {
+            public string Json { get; }
+            public JsonString(string json)
+            {
+                this.Json = json;
+            }
+        }
+
 
         private readonly ChromiumWebBrowser _browser;
         private IFrame BrowserMainFrame => _browser.GetBrowser().MainFrame;
@@ -75,6 +84,10 @@ namespace TabML.Editor
 
         private static string FormatArg(object arg)
         {
+            var jsonArg = arg as JsonString;
+            if (jsonArg != null)
+                return jsonArg.Json;
+
             if (arg is string)
                 return $"\"{arg}\"";
 
@@ -122,7 +135,7 @@ namespace TabML.Editor
             => this.InvokeRenderMethod("drawRest", (int)noteValue, x, y);
         public Task<Rect> MeasureRest(BaseNoteValue noteValue)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("measureRest", noteValue);
-        public Task<Rect> DrawTuplet(string tuplet, double x, double y)
+        public Task<Rect> DrawTuplet(int tuplet, double x, double y)
             => this.InvokeRenderMethodReturnBoundingBox("drawTuplet", tuplet, x, y);
         public Task<Rect> DrawTie(double x0, double x1, double y, OffBarDirection direction)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawTie", x0, x1, y, (int)direction);
@@ -135,7 +148,7 @@ namespace TabML.Editor
         public Task<Rect> DrawRasgueadoText(double x, double y, OffBarDirection direction)
             => this.InvokeRenderMethodReturnBoundingBox("drawRasgueadoText", x, y, direction);
 
-        public Task<Rect> DrawPickstrokeDown(double x, double y, OffBarDirection direction) 
+        public Task<Rect> DrawPickstrokeDown(double x, double y, OffBarDirection direction)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawPickstrokeDown", x, y, direction);
 
         public Task<Rect> DrawPickstrokeUp(double x, double y, OffBarDirection direction)
@@ -146,10 +159,10 @@ namespace TabML.Editor
 
         public Task<Rect> DrawHeavilyAccented(double x, double y, OffBarDirection direction)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawHeavilyAccented", x, y, direction);
-        
+
         public Task<Rect> DrawFermata(double x, double y, OffBarDirection direction)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawFermata", x, y, direction);
-        
+
         public Task<Rect> DrawStaccato(double x, double y, OffBarDirection direction)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawStaccato", x, y, direction);
 
@@ -174,19 +187,19 @@ namespace TabML.Editor
         public Task<Rect> DrawArpeggioDown(double x, double y, OffBarDirection direction)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawArpeggioDown", x, y, direction);
 
-        public Task<Rect> DrawInlineBrushDown(double x, double y, int stringSpan) 
+        public Task<Rect> DrawInlineBrushDown(double x, double y, int stringSpan)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawInlineBrushDown", x, y, stringSpan);
 
-        public Task<Rect> DrawInlineBrushUp(double x, double y, int stringSpan) 
+        public Task<Rect> DrawInlineBrushUp(double x, double y, int stringSpan)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawInlineBrushUp", x, y, stringSpan);
 
-        public Task<Rect> DrawInlineArpeggioDown(double x, double y, int stringSpan) 
+        public Task<Rect> DrawInlineArpeggioDown(double x, double y, int stringSpan)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawInlineArpeggioDown", x, y, stringSpan);
 
-        public Task<Rect> DrawInlineArpeggioUp(double x, double y, int stringSpan) 
+        public Task<Rect> DrawInlineArpeggioUp(double x, double y, int stringSpan)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawInlineArpeggioUp", x, y, stringSpan);
 
-        public Task<Rect> DrawInlineRasgueado(double x, double y, int stringSpan) 
+        public Task<Rect> DrawInlineRasgueado(double x, double y, int stringSpan)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("drawInlineRasgueado", x, y, stringSpan);
 
         public Task<Rect> DrawTimeSignature(double x, double y, int beats, int timeValue)
@@ -194,7 +207,7 @@ namespace TabML.Editor
 
         public Task<Rect> DrawTranspositionText(double x, double y, string key)
             => this.InvokeRenderMethodReturnBoundingBox("drawTranspositionText", x, y, key);
-        
+
         public Task<Rect> DrawTempoSignature(double x, double y, BaseNoteValue noteValue, int beats)
             => this.InvokeRenderMethodReturnBoundingBox("drawTempoSignature", x, y, noteValue, beats);
 
@@ -203,7 +216,7 @@ namespace TabML.Editor
 
         public Task<Rect> DrawSection(double x, double y, string sectionName)
             => this.InvokeRenderMethodReturnBoundingBox("drawSection", x, y, sectionName);
-        
+
         public Task<Rect> DrawStartAlternation(double x0, double x1, double y0, double y1, string text)
             => this.InvokeRenderMethodReturnBoundingBox("drawStartAlternation", x0, x1, y0, y1, text);
 
@@ -237,5 +250,57 @@ namespace TabML.Editor
             this.BrowserMainFrame.ExecuteJavaScriptAsync(builder.ToString());
         }
 
+        public Task<Rect> DrawChord(IChordDefinition chord, double x, double y)
+        {
+            var name = chord.DisplayName;
+            var fingering = "null";
+
+            if (chord.Fingering != null)
+            {
+                var builder = new StringBuilder();
+
+                builder.Append('[');
+
+                foreach (var note in chord.Fingering.Notes)
+                {
+                    switch (note.Fret)
+                    {
+                        case ChordFingeringNote.FingeringSkipString:
+                            builder.Append("'x'");
+                            break;
+                        case 0:
+                            builder.Append("0");
+                            break;
+                        default:
+
+                            builder.Append('{');
+
+                            builder.Append("fret:")
+                                   .Append(note.Fret)
+                                   .Append(',');
+
+                            if (note.FingerIndex != null)
+                                builder.Append("finger:")
+                                    .Append((int)note.FingerIndex.Value)
+                                    .Append(',');
+
+                            if (note.IsImportant)
+                                builder.Append("important: true,");
+
+                            builder.Append('}');
+                            break;
+                    }
+
+                    builder.Append(',');
+                }
+
+
+                builder.Append(']');
+
+                fingering = builder.ToString();
+            }
+
+            return this.InvokeRenderMethodReturnBoundingBox("drawChord", x, y, name, new JsonString(fingering));
+        }
     }
 }

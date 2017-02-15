@@ -41,8 +41,8 @@ namespace TabML.Parser.AST
         public bool ToDocumentElement(TablatureContext context, ILogger logger, out ChordDefinition element)
         {
             if (context.DocumentState.DefinedChords.Any(
-                c => c.DisplayName.Equals(this.DisplayName.Value,
-                                          StringComparison.InvariantCultureIgnoreCase)))
+                           c => c.Name.Equals(this.Name.Value,
+                                              StringComparison.InvariantCultureIgnoreCase)))
             {
                 logger.Report(LogLevel.Warning, this.Range, Messages.Warning_ChordAlreadyDefined);
                 element = null;
@@ -65,6 +65,11 @@ namespace TabML.Parser.AST
             };
 
             return true;
+        }
+
+        public string GetDisplayName()
+        {
+            return !string.IsNullOrEmpty(this.DisplayName?.Value) ? this.DisplayName.Value : this.Name.Value;
         }
     }
 }

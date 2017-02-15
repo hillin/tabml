@@ -13,7 +13,7 @@ namespace TabML.Parser.AST
         private readonly DocumentBar _bar;
         private readonly Dictionary<VoicePart, Beat> _previousBeats;
 
-        public BarArranger(TablatureContext context,  DocumentBar bar)
+        public BarArranger(TablatureContext context, DocumentBar bar)
         {
             _context = context;
             _bar = bar;
@@ -26,7 +26,7 @@ namespace TabML.Parser.AST
 
         public void Arrange()
         {
-            _bar.Duration = _bar.Rhythm.GetDuration();
+            _bar.Duration = _bar.Rhythm?.GetDuration() ?? _context.DocumentState.TimeSignature.Time.GetDuration();
 
             this.ArrangeBeatsAndNotes();
             this.ArrangeColumns();
@@ -123,7 +123,7 @@ namespace TabML.Parser.AST
                 foreach (var group in groups)
                 {
                     var columnIndex = _bar.Columns.Count;
-                    var column = new BarColumn(columnIndex);
+                    var column = new BarColumn(_bar, columnIndex);
 
                     foreach (var beat in group)
                     {
@@ -135,7 +135,7 @@ namespace TabML.Parser.AST
 
                     if (isFirstBeat)
                         column.IsFirstColumnOfSegment = true;
-                    
+
                     isFirstBeat = false;
 
                     _bar.Columns.Add(column);

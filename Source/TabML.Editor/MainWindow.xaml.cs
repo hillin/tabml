@@ -43,12 +43,13 @@ namespace TabML.Editor
             var primitiveRenderer = new PrimitiveRenderer(this.Browser);
             //var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\temptest.txt"));
             //var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\my home town.txt"));
-            var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\bartest.txt"));
+            //var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\bartest.txt"));
+            var tablature = TabMLParser.TryParse(File.ReadAllText(@"..\..\..\..\..\Documentations\samples\yellow.txt"));
             var style = new TablatureStyle();
             var location = new Point(style.Padding.Left, style.Padding.Top);
             var size = new Size(
                 1200 - style.Padding.Left - style.Padding.Right,
-                1600 - style.Padding.Top - style.Padding.Bottom);
+                3200 - style.Padding.Top - style.Padding.Bottom);
 
             var renderingContext = new RenderingContext();
 

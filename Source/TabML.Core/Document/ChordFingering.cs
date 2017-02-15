@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TabML.Core.Document
 {
-    public class ChordFingering : Element
+    public class ChordFingering : Element, IChordFingering
     {
         public ChordFingeringNote[] Notes { get; set; }
         public override IEnumerable<Element> Children
@@ -14,6 +15,8 @@ namespace TabML.Core.Document
                         yield return note;
             }
         }
+        
+        IReadOnlyList<IChordFingeringNote> IChordFingering.Notes => this.Notes;
 
         public ChordFingering Clone()
         {

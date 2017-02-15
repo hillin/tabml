@@ -1,6 +1,11 @@
 ﻿
 let tablatureStyle: TR.ITablatureStyle =
     {
+        stringCount: 6,
+
+        smuflText: {
+            fontFamily: "Bravura"
+        },
 
         fallback: {
             fontFamily: "Segoe UI",
@@ -8,7 +13,7 @@ let tablatureStyle: TR.ITablatureStyle =
 
         page: {
             width: 1200,
-            height: 1600
+            height: 3200
         },
 
         documentState: {
@@ -67,6 +72,31 @@ let tablatureStyle: TR.ITablatureStyle =
 
         },
 
+        chordDiagram : {
+            gridThickness: 1,
+            nutThickness: 3,
+            elementSpacing: 2,
+            cellHeight: 11,
+            cellWidth: 7,
+            nameText: {
+                fontSize: 14,
+                fontFamily: "Times New Roman",
+                fontStyle: "bold"
+            },
+            fingeringText: {
+                fontSize: 10,
+                fontFamily: "Times New Roman",
+                fontStyle: "italic"
+            },
+            fretText: {
+                fontSize: 10,
+                fontFamily: "Times New Roman",
+                fontStyle: "italic"
+            },
+            fingeringTokenRadius: 2.5,
+            specialStringTokenPadding: { top:-24, bottom:-8 }
+        },
+
         ornaments: {
             artificialHarmonicsText : {
                 fontSize: 12,
@@ -117,6 +147,9 @@ window.onload = () => {
     let fabricCanvas = new fabric.Canvas(canvas, tablatureStyle.page);
 
     renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
+    renderer.drawChord(113.557998657227, 169.242, "F#m", [{fret:2,finger:1,},{fret:4,finger:3,},{fret:4,finger:4,},{fret:2,finger:1,},{fret:2,finger:1,},{fret:2,finger:1,},]);
+
+    renderer.drawChord(440, 169.242, "D", ['x','x',0,{fret:2,finger:1,},{fret:3,finger:3,},{fret:2,finger:2,},])
     //renderer.drawFretNumber("2", 100, 100, true);
     //renderer.drawTitle("test!!!", 400, 100);
     //renderer.drawBarLine(Core.MusicTheory.BarLine.BeginAndEndRepeat, 100, 100);

@@ -31,10 +31,11 @@ namespace TabML.Editor.Rendering
         {
             get
             {
-                if (this.Column.Chord?.Fingering == null)
+                var chord = this.Column.Chord.Resolve(this.Column.OwnerBar.DocumentState);
+                if (chord == null)
                     return false;
 
-                return this.Column.VoiceBeats.All(b => b.Notes.All(n => n.MatchesChord(this.Column.Chord.Fingering)));
+                return this.Column.VoiceBeats.All(b => b.Notes.All(n => n.MatchesChord(chord.Fingering)));
             }
         }
 

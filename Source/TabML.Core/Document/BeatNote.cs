@@ -44,7 +44,7 @@ namespace TabML.Core.Document
             return (BeatNote)this.MemberwiseClone();
         }
 
-        public bool MatchesChord(ChordFingering chord)
+        public bool MatchesChord(IChordFingering chord)
         {
             return chord.Notes?[this.String]?.Fret == this.Fret;
         }

@@ -77,6 +77,10 @@ namespace TabML.Editor.Rendering
                     }
                 }
 
+                var height = availableSize.Height - location.Y + startY;
+                if (height <= 0)
+                    return;
+
                 await this.RenderRow(renderingContext, barRenders, location,
                                      new Size(availableSize.Width,
                                               availableSize.Height - location.Y + startY),

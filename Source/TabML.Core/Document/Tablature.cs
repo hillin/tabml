@@ -6,5 +6,6 @@ namespace TabML.Core.Document
     {
         public Bar[] Bars { get; set; }
         public override IEnumerable<Element> Children => this.Bars;
+        public DocumentState DocumentState { get; set; }
     }
 }

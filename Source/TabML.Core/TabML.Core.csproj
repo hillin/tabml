@@ -103,6 +103,9 @@
     <Compile Include="Document\IBeatElement.cs" />
     <Compile Include="Document\IBeatElementContainer.cs" />
     <Compile Include="Document\BeatElementContainerExtensions.cs" />
+    <Compile Include="Document\IChordDefinition.cs" />
+    <Compile Include="Document\IChordFingering.cs" />
+    <Compile Include="Document\IChordFingeringNote.cs" />
     <Compile Include="Document\IInternalBeatElement.cs" />
     <Compile Include="Document\KeySignature.cs" />
     <Compile Include="Document\Lyrics.cs" />
@@ -223,9 +226,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tablature\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

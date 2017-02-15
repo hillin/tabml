@@ -112,6 +112,7 @@
     <Compile Include="Rendering\BarColumnRenderer.cs" />
     <Compile Include="Rendering\BeatRenderingContext.cs" />
     <Compile Include="Rendering\BoundingBoxUnion.cs" />
+    <Compile Include="Rendering\ChordExtensions.cs" />
     <Compile Include="Rendering\ElementRenderer.cs" />
     <Compile Include="Rendering\ElementRendererExtensions.cs" />
     <Compile Include="Rendering\HeightMap.cs" />
@@ -144,6 +145,8 @@
     <Compile Include="Tablature\ChordDiagramGridRow.xaml.cs">
       <DependentUpon>ChordDiagramGridRow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Tablature\ChordLibrary.cs" />
+    <Compile Include="Tablature\InlineChordDefinition.cs" />
     <Compile Include="Tablature\Layout\ArrangedBeatConnection.cs" />
     <Compile Include="Rendering\BeamSlope.cs" />
     <Compile Include="Tablature\Test\ChordTest.xaml.cs">
@@ -224,6 +227,11 @@
       <Project>{847ceac8-742a-4e4e-bd86-424fe1bad537}</Project>
       <Name>TabML.Parser</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\standard_chords.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

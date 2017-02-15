@@ -18,7 +18,8 @@ namespace TabML.Parser.Parsing
 
         protected void Report(LogLevel level, TextRange? position, string message, params object[] args)
         {
-            Debug.WriteLine($"[{level}] [{position}] {string.Format(message, args)}");
+            message = string.Format(message, args);
+            Debug.WriteLine($"[{level}] [{position}] {message}");
 
             if (level == LogLevel.Error)
                 this.HasError = true;
