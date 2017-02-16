@@ -14,8 +14,8 @@ namespace TabML.Editor.Rendering
         public static double GetStemTailPosition(this Beat beat, BarRenderingContext rc)
         {
             double from, to;
-            rc.GetStemOffsetRange(beat.GetNearestStringIndex(), beat.VoicePart, out from, out to);
-            return beat.VoicePart == VoicePart.Treble ? Math.Min(from, to) : Math.Max(from, to);
+            rc.GetStemOffsetRange(beat.GetNearestStringIndex(), beat.GetStemRenderVoicePart(), out from, out to);
+            return beat.GetStemRenderVoicePart() == VoicePart.Treble ? Math.Min(from, to) : Math.Max(from, to);
         }
 
         public static int GetNearestStringIndex(this Beat beat)
@@ -30,10 +30,12 @@ namespace TabML.Editor.Rendering
                     return beat.PreviousBeat.GetNearestStringIndex();
             }
 
-            if (beat.Notes == null || beat.Notes.Length == 0)
-                return beat.VoicePart == VoicePart.Bass ? 5 : 0;
+            var voicePart = beat.GetStemRenderVoicePart();
 
-            return beat.VoicePart == VoicePart.Bass
+            if (beat.Notes == null || beat.Notes.Length == 0)
+                return voicePart == VoicePart.Bass ? 5 : 0;
+            
+            return voicePart == VoicePart.Bass
                 ? beat.Notes.Max(n => n.String)
                 : beat.Notes.Min(n => n.String);
         }
@@ -51,10 +53,9 @@ namespace TabML.Editor.Rendering
                     return beat.PreviousBeat.GetNoteStrings();
             }
 
-            if (beat.Notes == null || beat.Notes.Length == 0)
-                return new[] { beat.VoicePart == VoicePart.Bass ? 5 : 0 };
-            else
-                return beat.Notes.Select(n => n.String).ToArray();
+            return beat.Notes == null || beat.Notes.Length == 0
+                ? new[] { beat.GetStemRenderVoicePart() == VoicePart.Bass ? 5 : 0 }
+                : beat.Notes.Select(n => n.String).ToArray();
         }
 
         public static double GetAlternationOffset(this Beat beat, BarRenderingContext rc, int? stringIndex = null, Beat tieTarget = null)

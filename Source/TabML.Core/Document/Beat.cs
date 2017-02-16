@@ -28,7 +28,9 @@ namespace TabML.Core.Document
         public Beat NextBeat { get; set; }
         public PreciseDuration Position { get; set; }
         public BarColumn OwnerColumn { get; set; }
-        public Beam OwnerBeam { get; private set; }
+        public Beam OwnerBeam => this.BeatElementOwner as Beam;
+        internal IBeatElementContainer BeatElementOwner { get; private set; }
+        public Bar OwnerBar => this.BeatElementOwner.OwnerBar;
         public VoicePart VoicePart { get; set; }
 
         public PreBeatConnection PreConnection { get; set; }
@@ -52,7 +54,6 @@ namespace TabML.Core.Document
 
         public Beat()
         {
-            
         }
 
         public Beat GetTieHead()
@@ -93,16 +94,15 @@ namespace TabML.Core.Document
                 DurationEffect = this.DurationEffect,
                 Accent = this.Accent,
                 Notes = this.Notes?.Select(n => n.Clone()).ToArray(),
-                OwnerBeam = this.OwnerBeam,
+                BeatElementOwner = this.BeatElementOwner,
                 VoicePart = this.VoicePart
             };
         }
 
-        void IInternalBeatElement.SetOwnerBeam(Beam owner)
+        void IInternalBeatElement.SetOwner(IBeatElementContainer owner)
         {
-            this.OwnerBeam = owner;
+            this.BeatElementOwner = owner;
         }
-
 
         IInternalBeatElement IInternalBeatElement.Clone() => this.Clone();
     }

@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace TabML.Core.Document
 {
-    abstract class BarElement : Element
+    public interface IBarElement
     {
-        protected virtual void PostArrange()
-        {
-            
-        }
+        Bar OwnerBar { get; }
     }
 }

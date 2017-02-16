@@ -8,7 +8,7 @@ using TabML.Core.MusicTheory;
 
 namespace TabML.Core.Document
 {
-    public class BarColumn : VirtualElement
+    public class BarColumn : VirtualElement, IBarElement
     {
         public Bar OwnerBar { get; }
         public int ColumnIndex { get; }

@@ -28,25 +28,28 @@ namespace TabML.Core.Document
 
 
         public BaseNoteValue BeatNoteValue { get; internal set; }
-        public VoicePart VoicePart { get; }
+        public VoicePart VoicePart => this.OwnerVoice.VoicePart;
+        public Bar OwnerBar => this.OwnerVoice.OwnerBar;
+        public Voice OwnerVoice { get; }
         public bool IsRoot { get; }
         public List<IBeatElement> Elements { get; }
         public int? Tuplet { get; set; }
         public Beam RootBeam => this.IsRoot ? this : this.OwnerBeam?.RootBeam;
-        public Beam OwnerBeam { get; private set; }
+        public Beam OwnerBeam => this.BeatElementOwner as Beam;
+        internal IBeatElementContainer BeatElementOwner { get; private set; }
 
-        public Beam(BaseNoteValue beatNoteValue, VoicePart voicePart, bool isRoot)
+        public Beam(BaseNoteValue beatNoteValue, Voice ownerVoice, bool isRoot)
         {
             this.BeatNoteValue = beatNoteValue;
-            this.VoicePart = voicePart;
+            this.OwnerVoice = ownerVoice;
             this.IsRoot = isRoot;
             this.Elements = new List<IBeatElement>();
         }
 
-        public Beam(Beam owner, BaseNoteValue beatNoteValue, VoicePart voicePart)
-            : this(beatNoteValue, voicePart, false)
+        internal Beam(Beam owner, BaseNoteValue beatNoteValue, Voice ownerVoice)
+            : this(beatNoteValue, ownerVoice, false)
         {
-            this.OwnerBeam = owner;
+            this.BeatElementOwner = owner;
         }
 
         public PreciseDuration GetDuration() => this.Elements.Sum(b => b.GetDuration());
@@ -55,16 +58,21 @@ namespace TabML.Core.Document
             this.Elements.ForEach(e => e.ClearRange());
         }
 
+        void IInternalBeatElement.SetOwner(IBeatElementContainer owner)
+        {
+            this.BeatElementOwner = owner;
+        }
+
         public Beam Clone()
         {
-            var clone = new Beam(this.BeatNoteValue, this.VoicePart, this.IsRoot)
+            var clone = new Beam(this.BeatNoteValue, this.OwnerVoice, this.IsRoot)
             {
                 Tuplet = this.Tuplet
             };
             foreach (var element in this.Elements.Cast<IInternalBeatElement>())
             {
                 var clonedElement = element.Clone();
-                clonedElement.SetOwnerBeam(clone);
+                clonedElement.SetOwner(clone);
                 clone.Elements.Add(clonedElement);
             }
 
@@ -88,10 +96,7 @@ namespace TabML.Core.Document
                 || this.Tuplet == beat.NoteValue.Tuplet;       // or our tuplet exactly matches
         }
 
-        void IInternalBeatElement.SetOwnerBeam(Beam owner)
-        {
-            this.OwnerBeam = owner;
-        }
+
 
 #if DEBUG
         private string DebugString

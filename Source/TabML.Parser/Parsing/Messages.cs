@@ -265,7 +265,7 @@ namespace TabML.Parser.Parsing
             "This beat is a rest, so all other specifiers are omitted";
 
         public const string Hint_RedundantModifiersInTiedBeat =
-            "This is a tied beat a rest, you don't need to write it again";
+            "This is a tied beat, you don't need to write it again";
 
         public const string Warning_InconsistentAlternationTextExplicity =
             "Either specify all alternation texts explicitly, or leave them empty at all";

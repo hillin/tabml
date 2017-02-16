@@ -95,7 +95,7 @@ namespace TabML.Parser.AST
 
         public bool ToDocumentElement(TablatureContext context, ILogger logger, RhythmSegmentVoice ownerVoice, out Beat beat)
         {
-            beat = new Beat
+            beat = new Beat()
             {
                 Range = this.Range,
                 StrumTechnique = this.StrumTechnique?.Value ?? (StrumTechniqueEnum?)this.AllStringStrumTechnique?.Value ?? StrumTechniqueEnum.None,

@@ -18,6 +18,7 @@ namespace TabML.Editor.Rendering
         private BarRenderer _ownerBar;
         public BarRenderer OwnerBar => _ownerBar ?? (_ownerBar = BeatElementRenderer.FindOwnerBarRenderer(this));
 
+
         private readonly List<NoteRenderer> _noteRenderers;
 
         public BeatRenderer(ElementRenderer owner, Beat beat)
@@ -61,7 +62,7 @@ namespace TabML.Editor.Rendering
             await this.DrawHead(beamSlope, targetBeat);
 
             if (!this.Element.IsRest)
-                await this.DrawStemAndFlag(beamSlope, targetBeat, tieTarget);
+                await this.DrawStemAndFlag(beamSlope, targetBeat);
 
             this.DrawNoteValueAugment(tieTarget);
             await this.DrawBeatOrnaments(tieTarget);
@@ -137,7 +138,9 @@ namespace TabML.Editor.Rendering
             var noteValue = tieTarget?.NoteValue ?? this.Element.NoteValue;
             if (noteValue.Augment != NoteValueAugment.None)
             {
-                this.RenderingContext.DrawNoteValueAugment(noteValue.Augment, noteValue.Base, this.Element.OwnerColumn.GetPosition(this.RenderingContext), this.Element.GetNoteStrings(), this.Element.VoicePart);
+                this.RenderingContext.DrawNoteValueAugment(noteValue.Augment, noteValue.Base,
+                                                           this.Element.OwnerColumn.GetPosition(this.RenderingContext),
+                                                           this.Element.GetNoteStrings(), tieTarget.GetStemRenderVoicePart());
             }
         }
 
@@ -194,7 +197,7 @@ namespace TabML.Editor.Rendering
                 renderingContext.DrawRest(targetNoteValue.Base, position, this.Element.VoicePart);
                 if (this.Element.OwnerBeam == null && targetNoteValue.Tuplet != null)
                 {
-                    await renderingContext.DrawTuplet(targetNoteValue.Tuplet.Value, position, this.Element.VoicePart);
+                    await renderingContext.DrawTuplet(targetNoteValue.Tuplet.Value, position, targetBeat.GetStemRenderVoicePart());
                 }
             }
             else
@@ -218,7 +221,9 @@ namespace TabML.Editor.Rendering
                             await renderingContext.DrawArtificialHarmonicText(this.Element.VoicePart, position, "A.H.");
                         else
                         {
-                            var orderedFrets = this.Element.VoicePart == VoicePart.Treble ? beatRenderingContext.ArtificialHarmonicFrets.OrderByDescending(f => f.StringIndex) : beatRenderingContext.ArtificialHarmonicFrets.OrderBy(f => f.StringIndex);
+                            var orderedFrets = this.Element.VoicePart == VoicePart.Treble
+                                ? beatRenderingContext.ArtificialHarmonicFrets.OrderByDescending(f => f.StringIndex)
+                                : beatRenderingContext.ArtificialHarmonicFrets.OrderBy(f => f.StringIndex);
 
                             foreach (var fretInfo in orderedFrets)
                             {
@@ -255,31 +260,32 @@ namespace TabML.Editor.Rendering
         }
 
 
-        private async Task DrawStemAndFlag(BeamSlope beamSlope, Beat targetBeat, Beat tieTarget)
+        private async Task DrawStemAndFlag(BeamSlope beamSlope, Beat targetBeat)
         {
             var stemTailPosition = 0.0;
 
             var renderingContext = this.GetRenderingContext(targetBeat);
 
             var position = this.GetStemPosition(targetBeat);
+            var stemVoicePart = targetBeat.GetStemRenderVoicePart();
 
             if (targetBeat.NoteValue.Base <= BaseNoteValue.Half)
             {
                 double from;
-                renderingContext.GetStemOffsetRange(this.Element.GetNearestStringIndex(), this.Element.VoicePart, out from, out stemTailPosition);
+                renderingContext.GetStemOffsetRange(targetBeat.GetNearestStringIndex(), stemVoicePart, out from, out stemTailPosition);
 
                 if (beamSlope != null)
                     stemTailPosition = beamSlope.GetY(position);
 
-                renderingContext.DrawStem(this.Element.VoicePart, position, from, stemTailPosition);
+                renderingContext.DrawStem(stemVoicePart, position, from, stemTailPosition);
             }
 
             if (targetBeat.OwnerBeam == null)
             {
-                await renderingContext.DrawFlag(targetBeat.NoteValue.Base, position, stemTailPosition, this.Element.VoicePart);
+                await renderingContext.DrawFlag(targetBeat.NoteValue.Base, position, stemTailPosition, stemVoicePart);
 
                 if (targetBeat.NoteValue.Tuplet != null)
-                    await renderingContext.DrawTuplet(targetBeat.NoteValue.Tuplet.Value, position, this.Element.VoicePart);
+                    await renderingContext.DrawTuplet(targetBeat.NoteValue.Tuplet.Value, position, stemVoicePart);
             }
             else
             {
@@ -287,7 +293,7 @@ namespace TabML.Editor.Rendering
                 var isLastOfBeam = targetBeat == targetBeat.OwnerBeam.Elements[targetBeat.OwnerBeam.Elements.Count - 1];
                 while (baseNoteValue != targetBeat.OwnerBeam.BeatNoteValue)
                 {
-                    await this.DrawSemiBeam(targetBeat, baseNoteValue, this.Element.VoicePart, beamSlope, isLastOfBeam);
+                    await this.DrawSemiBeam(targetBeat, baseNoteValue, stemVoicePart, beamSlope, isLastOfBeam);
                     baseNoteValue = baseNoteValue.Double();
                 }
             }

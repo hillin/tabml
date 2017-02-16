@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace TabML.Core.Document
 {
-    internal interface IBeatElementContainer : IBarVoiceElement
+    public interface IBarVoiceElement : IBarElement
     {
-        List<IBeatElement> Elements { get; }
+        VoicePart VoicePart { get; }
     }
 }

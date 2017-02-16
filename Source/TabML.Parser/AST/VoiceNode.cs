@@ -56,7 +56,7 @@ namespace TabML.Parser.AST
                 
                 foreach (var factor in factors)
                 {
-                    var beat = new Beat
+                    var beat = new Beat()
                     {
                         NoteValue = new NoteValue(factor),
                         IsRest = true,

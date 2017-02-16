@@ -13,14 +13,11 @@ namespace TabML.Editor.Rendering
         private BarRenderer _ownerBar;
         public BarRenderer OwnerBar => _ownerBar ?? (_ownerBar = BeatElementRenderer.FindOwnerBarRenderer(this));
 
-        public Beam Beam { get; }
-
         private readonly List<IBeatElementRenderer> _beatElementRenderers;
 
         public BeamRenderer(ElementRenderer owner, Beam beam)
             : base(owner, beam)
         {
-            this.Beam = beam;
             _beatElementRenderers = new List<IBeatElementRenderer>();
         }
 
@@ -28,7 +25,7 @@ namespace TabML.Editor.Rendering
         {
             base.Initialize();
 
-            _beatElementRenderers.AddRange(this.Beam.Elements.Select(e => BeatElementRenderer.Create(this, e)));
+            _beatElementRenderers.AddRange(this.Element.Elements.Select(e => BeatElementRenderer.Create(this, e)));
             _beatElementRenderers.ForEach(e => e.Initialize());
         }
 
@@ -40,8 +37,8 @@ namespace TabML.Editor.Rendering
 
         public override async Task Render()
         {
-            var firstBeat = this.Beam.GetFirstBeat();
-            var lastBeat = this.Beam.GetLastBeat();
+            var firstBeat = this.Element.GetFirstBeat();
+            var lastBeat = this.Element.GetLastBeat();
             var x0 = this.RenderingContext.ColumnRenderingInfos[firstBeat.OwnerColumn.ColumnIndex].Position
                 + firstBeat.GetAlternationOffset(this.RenderingContext);
             var x1 = this.RenderingContext.ColumnRenderingInfos[lastBeat.OwnerColumn.ColumnIndex].Position
@@ -60,18 +57,17 @@ namespace TabML.Editor.Rendering
             }
 
             // beam must be rendered first, so the height map will be updated correctly
-            await this.RenderingContext.DrawBeam(this.Beam.BeatNoteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), this.Beam.VoicePart);
+            await this.RenderingContext.DrawBeam(this.Element.BeatNoteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), this.Element.GetStemRenderVoicePart());
 
             foreach (var renderer in _beatElementRenderers)
                 await renderer.Render();
 
-
-            if (this.Beam.Tuplet != null)
+            if (this.Element.Tuplet != null)
             {
-                if (this.Beam.IsRoot || this.Beam.RootBeam.Tuplet != this.Beam.Tuplet)
+                if (this.Element.IsRoot || this.Element.RootBeam.Tuplet != this.Element.Tuplet)
                 {
                     var tupletX = (x1 + x0) / 2;
-                    await this.RenderingContext.DrawTuplet(this.Beam.Tuplet.Value, tupletX, this.Beam.VoicePart);
+                    await this.RenderingContext.DrawTuplet(this.Element.Tuplet.Value, tupletX, this.Element.GetStemRenderVoicePart());
                 }
             }
         }
@@ -90,7 +86,7 @@ namespace TabML.Editor.Rendering
             {
                 var restBounds = await this.RenderingContext.MeasureRest(shortestRest.NoteValue.Base);
                 var halfBarSpaceHeight = this.RenderingContext.Style.BarLineHeight / 2;
-                beamOffset = this.Element.VoicePart == VoicePart.Treble
+                beamOffset = this.Element.GetStemRenderVoicePart() == VoicePart.Treble
                     ? restBounds.Top - halfBarSpaceHeight
                     : restBounds.Bottom + halfBarSpaceHeight;
             }

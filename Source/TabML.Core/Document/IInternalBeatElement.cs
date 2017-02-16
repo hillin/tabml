@@ -8,7 +8,7 @@ namespace TabML.Core.Document
 {
     interface IInternalBeatElement : IBeatElement
     {
-        void SetOwnerBeam(Beam owner);
+        void SetOwner(IBeatElementContainer owner);
         IInternalBeatElement Clone();
     }
 }

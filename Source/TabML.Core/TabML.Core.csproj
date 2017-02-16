@@ -86,7 +86,6 @@
     <Compile Include="Document\AlternativeEndingPosition.cs" />
     <Compile Include="Document\Bar.cs" />
     <Compile Include="Document\BarColumn.cs" />
-    <Compile Include="Document\BarElement.cs" />
     <Compile Include="Document\Beam.cs" />
     <Compile Include="Document\Beat.cs" />
     <Compile Include="Document\BeatNote.cs" />
@@ -100,6 +99,8 @@
     <Compile Include="Document\Element.cs" />
     <Compile Include="Document\ElementBase.cs" />
     <Compile Include="Document\Explicity.cs" />
+    <Compile Include="Document\IBarElement.cs" />
+    <Compile Include="Document\IBarVoiceElement.cs" />
     <Compile Include="Document\IBeatElement.cs" />
     <Compile Include="Document\IBeatElementContainer.cs" />
     <Compile Include="Document\BeatElementContainerExtensions.cs" />

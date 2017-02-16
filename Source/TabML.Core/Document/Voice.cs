@@ -9,7 +9,8 @@ namespace TabML.Core.Document
         public List<IBeatElement> BeatElements { get; }
         List<IBeatElement> IBeatElementContainer.Elements => this.BeatElements;
 
-        public VoicePart Part { get; }
+        public Bar OwnerBar { get; }
+        public VoicePart VoicePart { get; }
 
 
         private bool _isTerminatedWithRest;
@@ -31,9 +32,10 @@ namespace TabML.Core.Document
         /// </summary>
         public BeatNote[] LastNoteOnStrings { get; } = new BeatNote[Defaults.Strings];
 
-        public Voice(VoicePart part)
+        public Voice(Bar ownerBar, VoicePart voicePart)
         {
-            this.Part = part;
+            this.OwnerBar = ownerBar;
+            this.VoicePart = voicePart;
             this.BeatElements = new List<IBeatElement>();
         }
         public PreciseDuration GetDuration() => this.BeatElements.Sum(n => n.GetDuration());

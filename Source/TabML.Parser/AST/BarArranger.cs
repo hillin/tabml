@@ -66,12 +66,12 @@ namespace TabML.Parser.AST
 
         private void ArrangeVoices()
         {
-            var bassBeatArranger = new BeatArranger(_context.DocumentState.Time.NoteValue, VoicePart.Bass);
-            var trebleBeatArranger = new BeatArranger(_context.DocumentState.Time.NoteValue, VoicePart.Treble);
+            _bar.BassVoice = new Voice(_bar, VoicePart.Bass);
+            _bar.TrebleVoice = new Voice(_bar, VoicePart.Treble);
 
-            _bar.BassVoice = new Voice(VoicePart.Bass);
-            _bar.TrebleVoice = new Voice(VoicePart.Treble);
-
+            var bassBeatArranger = new BeatArranger(_context.DocumentState.Time.NoteValue, _bar.BassVoice);
+            var trebleBeatArranger = new BeatArranger(_context.DocumentState.Time.NoteValue, _bar.TrebleVoice);
+            
             foreach (var segment in _bar.Rhythm.Segments)
             {
                 if (segment.IsOmittedByTemplate)
@@ -82,10 +82,7 @@ namespace TabML.Parser.AST
             }
 
             bassBeatArranger.Finish();
-            _bar.BassVoice.BeatElements.AddRange(bassBeatArranger.GetRootBeats());
-
             trebleBeatArranger.Finish();
-            _bar.TrebleVoice.BeatElements.AddRange(trebleBeatArranger.GetRootBeats());
         }
 
         private void AppendAndArrangeVoice(RhythmSegmentVoice voice, BeatArranger beatArranger)
