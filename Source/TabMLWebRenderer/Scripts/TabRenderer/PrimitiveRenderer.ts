@@ -216,8 +216,9 @@ namespace TR {
 
 
         private drawLine(x1: number, y1: number, x2: number, y2: number): fabric.ILine {
-            let line = new fabric.Line([x1, y1, x2, y2]);
-            line.stroke = "black";
+            let line = new fabric.Line([x1, y1, x2, y2], {
+                stroke: "black",
+            });
             this.canvas.add(line);
             return line;
         }
@@ -498,6 +499,8 @@ namespace TR {
                 group.originX = "center";
                 group.originY = "center";
 
+                group.scaleX = 1.2;
+
                 if (!isUp)
                     group.flipY = true;
             });
@@ -608,6 +611,7 @@ namespace TR {
         }
 
         async drawTabHeader(x: number, y: number) {
+
             let imageFile = ResourceManager.getTablatureResource("tab_header.svg");
 
             let group = await this.drawSVGFromURLAsync(imageFile, x, y, group => {

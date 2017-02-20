@@ -8,6 +8,7 @@ namespace TabML.Parser.Parsing
     abstract class ParserBase<TNode> : ILogger
         where TNode : Node
     {
+        public bool SupressMessages { get; set; }
         public bool HasError { get; private set; }
         public abstract bool TryParse(Scanner scanner, out TNode result);
 
@@ -18,6 +19,9 @@ namespace TabML.Parser.Parsing
 
         protected void Report(LogLevel level, TextRange? position, string message, params object[] args)
         {
+            if (this.SupressMessages)
+                return;
+
             message = string.Format(message, args);
             Debug.WriteLine($"[{level}] [{position}] {message}");
 

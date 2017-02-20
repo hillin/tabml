@@ -37,7 +37,7 @@ namespace TabML.Parser.AST
 
             _scanner = new Scanner(chordName.Trim());
             NoteNameNode noteNameNode;
-            if (!new NoteNameParser().TryParse(_scanner, out noteNameNode))
+            if (!new NoteNameParser { SupressMessages = true }.TryParse(_scanner, out noteNameNode))
                 return false;
 
             var root = noteNameNode.ToNoteName();
@@ -120,7 +120,7 @@ namespace TabML.Parser.AST
 
             chord = Chord.Construct(chordName, root, _intervals.ToArray());
             chord.Bass = bass;
-            
+
             return true;
         }
 

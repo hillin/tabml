@@ -135,12 +135,13 @@ namespace TabML.Editor.Rendering
 
         private void DrawNoteValueAugment(Beat tieTarget)
         {
-            var noteValue = tieTarget?.NoteValue ?? this.Element.NoteValue;
+            var targetBeat = tieTarget ?? this.Element;
+            var noteValue = targetBeat.NoteValue;
             if (noteValue.Augment != NoteValueAugment.None)
             {
                 this.RenderingContext.DrawNoteValueAugment(noteValue.Augment, noteValue.Base,
-                                                           this.Element.OwnerColumn.GetPosition(this.RenderingContext),
-                                                           this.Element.GetNoteStrings(), tieTarget.GetStemRenderVoicePart());
+                                                           targetBeat.OwnerColumn.GetPosition(this.RenderingContext),
+                                                           targetBeat.GetNoteStrings(), targetBeat.GetStemRenderVoicePart());
             }
         }
 

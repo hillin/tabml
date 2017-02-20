@@ -36,6 +36,8 @@ namespace TabML.Parser.Parsing
                 return false;
             }
 
+            scanner.SkipWhitespaces();
+
             var name = scanner.Read(c => char.IsLetterOrDigit(c) || c == '-');
             Type parserType;
             if (!CommandletParsers.TryGetValue(name.ToLowerInvariant(), out parserType))

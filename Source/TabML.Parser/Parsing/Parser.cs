@@ -24,7 +24,7 @@ namespace TabML.Parser.Parsing
 
         public static bool TryReadChordName(Scanner scanner, ILogger logger, out LiteralNode<string> chordName)
         {
-            var name = scanner.Read(@"[a-zA-Z0-9\*\$\#♯♭\-\+\?'\`\~\&\^\!]+");
+            var name = scanner.Read(@"[a-zA-Z0-9][a-zA-Z0-9\*\$\#♯♭\-\+\?'\`\~\&\^\!]*");
             chordName = string.IsNullOrEmpty(name) ? null : new LiteralNode<string>(name, scanner.LastReadRange);
             return true;
         }

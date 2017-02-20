@@ -2851,8 +2851,9 @@ var TR;
             return this.drawText(Smufl.GetTupletNumber(tuplet), x, y, "center", "center", this.style.note.tuplet).getBoundingRect();
         }
         drawLine(x1, y1, x2, y2) {
-            let line = new fabric.Line([x1, y1, x2, y2]);
-            line.stroke = "black";
+            let line = new fabric.Line([x1, y1, x2, y2], {
+                stroke: "black",
+            });
             this.canvas.add(line);
             return line;
         }
@@ -3106,6 +3107,7 @@ var TR;
                 let group = yield this.drawSVGFromURLAsync(imageFile, x, y, group => {
                     group.originX = "center";
                     group.originY = "center";
+                    group.scaleX = 1.2;
                     if (!isUp)
                         group.flipY = true;
                 });

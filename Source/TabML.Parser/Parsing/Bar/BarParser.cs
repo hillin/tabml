@@ -19,7 +19,7 @@ namespace TabML.Parser.Parsing.Bar
 
         private bool IsEndOfBlock(Scanner scanner)
         {
-            return scanner.EndOfInput || (this.InBraces && scanner.Peek() == '}');
+            return scanner.EndOfInput || scanner.Peek() == '+' ||  (this.InBraces && scanner.Peek() == '}');
         }
 
         public bool IsEndOfBar(Scanner scanner)

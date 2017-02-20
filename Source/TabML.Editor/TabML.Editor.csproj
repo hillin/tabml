@@ -113,6 +113,7 @@
     <Compile Include="Rendering\BarColumnRenderer.cs" />
     <Compile Include="Rendering\BeatRenderingContext.cs" />
     <Compile Include="Rendering\BoundingBoxUnion.cs" />
+    <Compile Include="Rendering\ChordDefinitionExtensions.cs" />
     <Compile Include="Rendering\ChordExtensions.cs" />
     <Compile Include="Rendering\ElementRenderer.cs" />
     <Compile Include="Rendering\ElementRendererExtensions.cs" />

@@ -99,12 +99,16 @@ namespace TabML.Editor.Rendering
             _voiceRenderers.AssignRenderingContexts(_barRenderingContext);
 
             var width = size.Width;
-            if (this.Element.OpenLine != null)
-                _barRenderingContext.DrawOpenBarLine(this.Element.OpenLine.Value, 0.0);
 
             var position = 0.0;
             if (isFirstBarInRow)
+            {
+                _barRenderingContext.DrawOpenBarLine(OpenBarLine.Standard, position);   //todo: implement this in DrawTabHeader
                 position += await _barRenderingContext.DrawTabHeader();
+            }
+
+            if (this.Element.OpenLine != null)
+                _barRenderingContext.DrawOpenBarLine(this.Element.OpenLine.Value, position);
 
             position += _barRenderingContext.Style.BarHorizontalPadding;
 
@@ -136,6 +140,8 @@ namespace TabML.Editor.Rendering
 
             if (this.Element.CloseLine != null)
                 _barRenderingContext.DrawCloseBarLine(this.Element.CloseLine.Value, width);
+            else if (this.Element.NextBar == null)
+                _barRenderingContext.DrawCloseBarLine(CloseBarLine.End, width);
 
             if (this.Element.AlternativeEndingPosition == AlternativeEndingPosition.Start)
                 _barRenderingContext.IsSectionRenderingPostponed = true;
