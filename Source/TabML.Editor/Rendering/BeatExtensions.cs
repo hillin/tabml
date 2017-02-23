@@ -11,24 +11,9 @@ namespace TabML.Editor.Rendering
     static class BeatExtensions
     {
 
-        public static double GetStemTailPosition(this Beat beat, BarRenderingContext rc)
+        public static int GetOutmostStringIndex(this Beat beat)
         {
-            double from, to;
-            rc.GetStemOffsetRange(beat.GetNearestStringIndex(), beat.GetStemRenderVoicePart(), out from, out to);
-            return beat.GetStemRenderVoicePart() == VoicePart.Treble ? Math.Min(from, to) : Math.Max(from, to);
-        }
-
-        public static int GetNearestStringIndex(this Beat beat)
-        {
-            if (beat.IsTied)
-            {
-                if (beat.PreviousBeat == null)
-                {
-                    // todo: handle cross-bar ties
-                }
-                else
-                    return beat.PreviousBeat.GetNearestStringIndex();
-            }
+            beat = beat.NotesDefiner;
 
             var voicePart = beat.GetStemRenderVoicePart();
 
@@ -55,33 +40,11 @@ namespace TabML.Editor.Rendering
 
         public static int[] GetNoteStrings(this Beat beat)
         {
-            if (beat.IsTied)
-            {
-                if (beat.PreviousBeat == null)
-                {
-                    // todo: handle cross-bar ties
-                }
-                else
-                    return beat.PreviousBeat.GetNoteStrings();
-            }
+            beat = beat.NotesDefiner;
 
             return beat.Notes == null || beat.Notes.Length == 0
                 ? new[] { beat.GetStemRenderVoicePart() == VoicePart.Bass ? 5 : 0 }
                 : beat.Notes.Select(n => n.String).ToArray();
-        }
-
-        public static double GetAlternationOffset(this Beat beat, BarRenderingContext rc, int? stringIndex = null, Beat tieTarget = null)
-        {
-            var targetBeat = tieTarget ?? beat;
-
-            var column = rc.ColumnRenderingInfos[targetBeat.OwnerColumn.ColumnIndex];
-
-            if (column.HasBrushlikeTechnique && column.MatchesChord)    // in this case we will just draw the technique directly
-                return 0;
-
-            var hasHarmonics = beat.Notes.Any(n => n.IsHarmonics);
-            var ratio = column.GetNoteAlternationOffsetRatio(stringIndex ?? beat.GetNearestStringIndex());
-            return rc.GetNoteAlternationOffset(ratio, hasHarmonics) + column.BrushlikeTechniqueSize + rc.Style.BrushlikeTechniqueMargin;
         }
 
         public static TiePosition GetTiePosition(this Beat beat)

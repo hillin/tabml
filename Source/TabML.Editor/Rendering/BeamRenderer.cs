@@ -39,10 +39,11 @@ namespace TabML.Editor.Rendering
         {
             var firstBeat = this.Element.GetFirstBeat();
             var lastBeat = this.Element.GetLastBeat();
-            var x0 = this.RenderingContext.ColumnRenderingInfos[firstBeat.OwnerColumn.ColumnIndex].Position
-                + firstBeat.GetAlternationOffset(this.RenderingContext);
-            var x1 = this.RenderingContext.ColumnRenderingInfos[lastBeat.OwnerColumn.ColumnIndex].Position
-                + lastBeat.GetAlternationOffset(this.RenderingContext);
+            var firstBeatRenderer = this.Root.GetRenderer<Beat, BeatRenderer>(firstBeat);
+            var lastBeatRenderrer = this.Root.GetRenderer<Beat, BeatRenderer>(lastBeat);
+
+            var x0 = firstBeatRenderer.GetNoteRenderingPosition();
+            var x1 = lastBeatRenderrer.GetNoteRenderingPosition();
 
             var beamSlope = this.RenderingContext.GetBeamSlope(this.Element);
 
@@ -50,8 +51,8 @@ namespace TabML.Editor.Rendering
             {
                 var beamOffset = await this.CalculateBeamOffset();
 
-                var y0 = firstBeat.GetStemTailPosition(this.RenderingContext) + beamOffset;
-                var y1 = lastBeat.GetStemTailPosition(this.RenderingContext) + beamOffset;
+                var y0 = firstBeatRenderer.GetStemTailPosition() + beamOffset;
+                var y1 = lastBeatRenderrer.GetStemTailPosition() + beamOffset;
                 beamSlope = new BeamSlope(x0, y0, (y1 - y0) / (x1 - x0));
                 this.RenderingContext.SetBeamSlope(this.Element, beamSlope);
             }

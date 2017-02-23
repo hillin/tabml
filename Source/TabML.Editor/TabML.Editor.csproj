@@ -119,6 +119,7 @@
     <Compile Include="Rendering\ElementRendererExtensions.cs" />
     <Compile Include="Rendering\HeightMap.cs" />
     <Compile Include="Rendering\BarVoiceElementExtensions.cs" />
+    <Compile Include="Rendering\GapCollection.cs" />
     <Compile Include="Rendering\IBeatElementRenderer.cs" />
     <Compile Include="Rendering\IElementRendererWithContext.cs" />
     <Compile Include="Rendering\IRootElementRenderer.cs" />
@@ -132,7 +133,6 @@
     <Compile Include="Rendering\BeamRenderer.cs" />
     <Compile Include="Rendering\BeatExtensions.cs" />
     <Compile Include="Rendering\BeatRenderer.cs" />
-    <Compile Include="Rendering\NoteExtensions.cs" />
     <Compile Include="Rendering\NoteRenderer.cs" />
     <Compile Include="Rendering\OffBarDirection.cs" />
     <Compile Include="Rendering\RomanNumerals.cs" />

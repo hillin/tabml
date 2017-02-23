@@ -3396,16 +3396,21 @@ var TR;
             });
             this.canvas.add(circle);
         }
-        drawChordBarre(fromX, toX, y) {
-            if (fromX == toX) {
-                this.drawChordSingleFingering(fromX, y);
+        drawChordGetStringX(x, stringIndex) {
+            return x + stringIndex * this.style.chordDiagram.cellWidth + this.style.chordDiagram.gridThickness / 2;
+        }
+        drawChordBarre(barredStrings, x, y) {
+            let from = this.drawChordGetStringX(x, barredStrings[0]);
+            let to = this.drawChordGetStringX(x, barredStrings[barredStrings.length - 1]);
+            if (barredStrings.length === 1 || from === to) {
+                this.drawChordSingleFingering(from, y);
                 return;
             }
-            this.drawChordSingleFingering(fromX, y);
-            this.drawChordSingleFingering(toX, y);
+            this.drawChordSingleFingering(from, y);
+            this.drawChordSingleFingering(to, y);
             let rect = new fabric.Rect({
-                left: fromX,
-                width: toX - fromX,
+                left: from,
+                width: to - from,
                 top: y,
                 height: this.style.chordDiagram.fingeringTokenRadius * 2,
                 originX: "left",
@@ -3415,38 +3420,46 @@ var TR;
             });
             this.canvas.add(rect);
         }
-        drawChordFingering(x, y, minFret, maxFret, fingering, bounds) {
+        drawChordFingering(x, y, minFret, maxFret, notes, bounds) {
             let getStringX = (stringIndex) => x + stringIndex * this.style.chordDiagram.cellWidth + this.style.chordDiagram.gridThickness / 2;
             let fretY = y - this.style.chordDiagram.cellHeight / 2;
             for (let fret = maxFret; fret >= minFret; --fret) {
                 let finger = null;
-                let barreFrom = null;
-                let barreTo = null;
-                for (let stringIndex = 0; stringIndex < fingering.length; ++stringIndex) {
-                    let note = fingering[stringIndex];
-                    if (note.fret != fret)
+                let barredStrings = new Array();
+                for (let stringIndex = 0; stringIndex < notes.length; ++stringIndex) {
+                    let note = notes[stringIndex];
+                    if (note.fret > fret)
                         continue;
+                    else if (note.fret < fret) {
+                        // break barre if it's blocking a lower fret note
+                        if (barredStrings.length > 0) {
+                            this.drawChordBarre(barredStrings, x, fretY);
+                            barredStrings.length = 0;
+                        }
+                        continue;
+                    }
                     if (note.finger === null && finger === null) {
                         this.drawChordSingleFingering(getStringX(stringIndex), fretY);
                         continue;
                     }
                     if (note.finger !== null) {
                         if (finger === null)
-                            barreFrom = barreTo = stringIndex;
+                            barredStrings.push(stringIndex);
                         else {
                             if (finger === note.finger)
-                                barreTo = stringIndex;
+                                barredStrings.push(stringIndex);
                             else {
-                                this.drawChordBarre(getStringX(barreFrom), getStringX(barreTo), fretY);
-                                barreFrom = barreTo = stringIndex;
+                                this.drawChordBarre(barredStrings, x, fretY);
+                                barredStrings.length = 0;
+                                barredStrings.push(stringIndex);
                             }
                         }
                         finger = note.finger;
                     }
                     else {
                         if (finger !== null) {
-                            this.drawChordBarre(getStringX(barreFrom), getStringX(barreTo), fretY);
-                            barreFrom = barreTo = null;
+                            this.drawChordBarre(barredStrings, x, fretY);
+                            barredStrings.length = 0;
                             finger = null;
                         }
                         else {
@@ -3455,7 +3468,7 @@ var TR;
                     }
                 }
                 if (finger !== null)
-                    this.drawChordBarre(getStringX(barreFrom), getStringX(barreTo), fretY);
+                    this.drawChordBarre(barredStrings, x, fretY);
                 fretY -= this.style.chordDiagram.cellHeight;
             }
         }

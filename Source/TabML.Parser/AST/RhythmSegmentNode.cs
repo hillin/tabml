@@ -40,33 +40,28 @@ namespace TabML.Parser.AST
             if (!this.FillRhythmSegmentVoices(context, logger, rhythmSegment))
                 return false;
 
-            if (this.Fingering != null)
+            ChordFingering chordFingering = null;
+
+            if (this.ChordName != null || this.Fingering != null)
             {
-                ChordFingering chordFingering;
-                if (!this.Fingering.ToDocumentElement(context, logger, out chordFingering))
-                    return false;
+                if (this.Fingering != null)
+                {
+                    if (!this.Fingering.ToDocumentElement(context, logger, out chordFingering))
+                        return false;
+                }
+
+                var range = this.ChordName == null
+                    // ReSharper disable once PossibleNullReferenceException
+                    ? this.Fingering.Range
+                    : this.Fingering == null
+                        ? this.ChordName.Range
+                        : this.ChordName.Range.Union(this.Fingering.Range);
 
                 rhythmSegment.Chord = new DocumentChord
                 {
                     Name = this.ChordName?.Value,
                     Fingering = chordFingering,
-                    Range = this.ChordName?.Range.Union(this.Fingering.Range) ?? this.Fingering.Range
-                };
-            }
-            else if (this.ChordName != null)
-            {
-                ChordFingering fingering;
-                TheoreticalChord theoreticalChord;
-                if (!context.DocumentState.LookupChord(this.ChordName.Value, out fingering, out theoreticalChord))
-                {
-                    logger.Report(LogLevel.Suggestion, this.ChordName.Range, Messages.Suggestion_UnknownChord, this.ChordName.Value);
-                }
-
-                rhythmSegment.Chord = new DocumentChord
-                {
-                    Name = this.ChordName.Value,
-                    Fingering = fingering,
-                    Range = this.ChordName.Range
+                    Range = range
                 };
             }
 

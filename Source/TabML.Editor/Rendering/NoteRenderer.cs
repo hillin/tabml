@@ -21,8 +21,7 @@ namespace TabML.Editor.Rendering
         /// </remarks>
         public async Task Render(Beat beat, BeamSlope beamSlope)
         {
-
-            var x = this.Element.GetRenderPosition(this.RenderingContext.Owner, beat);
+            var x = this.Root.GetRenderer<Beat, BeatRenderer>(beat).GetNoteRenderingPosition(this.Element.String);
 
             var flags = this.GetNoteRenderingFlags(beat);
 

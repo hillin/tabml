@@ -59,8 +59,8 @@ namespace TabML.Parser.AST
             element = new ChordDefinition
             {
                 Range = this.Range,
-                DisplayName = this.DisplayName.Value,
-                Name = this.Name?.Value,
+                DisplayName = this.GetDisplayName(),
+                Name = this.Name.Value,
                 Fingering = chordFingering
             };
 
@@ -69,7 +69,7 @@ namespace TabML.Parser.AST
 
         public string GetDisplayName()
         {
-            return !string.IsNullOrEmpty(this.DisplayName?.Value) ? this.DisplayName.Value : this.Name.Value;
+            return string.IsNullOrEmpty(this.DisplayName?.Value) ? this.Name.Value : this.DisplayName.Value;
         }
     }
 }

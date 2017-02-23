@@ -37,6 +37,26 @@ namespace TabML.Core.Document
         public PostBeatConnection PostConnection { get; set; }
         public TiePosition? TiePosition { get; set; }
 
+        /// <summary>
+        /// Get the beat to which this beat is tied. If this beat is not tied, the value is null.
+        /// </summary>
+        public Beat TieHead
+        {
+            get
+            {
+                if (!this.IsTied)
+                    return null;
+
+                return this.PreviousBeat.IsTied ? this.PreviousBeat.TieHead : this.PreviousBeat;
+            }
+        }
+
+        /// <summary>
+        /// Get the beat which defines the nodes for this beat. As in, if this beat is tied,
+        /// the tie head will be the notes definer
+        /// </summary>
+        public Beat NotesDefiner => this.IsTied ? this.TieHead : this;
+
         public override IEnumerable<Element> Children
         {
             get

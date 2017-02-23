@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define DRAW_STRUM_TECHNIQUE_ORNAMENTS
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -79,24 +81,27 @@ namespace TabML.Editor.Rendering
                 case StrumTechnique.Rasgueado:
                     await renderingContext.DrawRasgueadoText(targetBeat.VoicePart, beatPosition);
                     break;
-                //case StrumTechnique.PickstrokeDown:
-                //    await renderingContext.DrawPickstrokeDown(targetBeat.VoicePart, beatPosition);
-                //    break;
-                //case StrumTechnique.PickstrokeUp:
-                //    await renderingContext.DrawPickstrokeUp(targetBeat.VoicePart, beatPosition);
-                //    break;
-                //case StrumTechnique.BrushDown:
-                //    await renderingContext.DrawBrushDown(targetBeat.VoicePart, beatPosition);
-                //    break;
-                //case StrumTechnique.BrushUp:
-                //    await renderingContext.DrawBrushUp(targetBeat.VoicePart, beatPosition);
-                //    break;
-                //case StrumTechnique.ArpeggioDown:
-                //    await renderingContext.DrawArpeggioDown(targetBeat.VoicePart, beatPosition);
-                //    break;
-                //case StrumTechnique.ArpeggioUp:
-                //    await renderingContext.DrawArpeggioUp(targetBeat.VoicePart, beatPosition);
-                //    break;
+
+#if DRAW_STRUM_TECHNIQUE_ORNAMENTS
+                case StrumTechnique.PickstrokeDown:
+                    await renderingContext.DrawPickstrokeDown(targetBeat.VoicePart, beatPosition);
+                    break;
+                case StrumTechnique.PickstrokeUp:
+                    await renderingContext.DrawPickstrokeUp(targetBeat.VoicePart, beatPosition);
+                    break;
+                case StrumTechnique.BrushDown:
+                    await renderingContext.DrawBrushDown(targetBeat.VoicePart, beatPosition);
+                    break;
+                case StrumTechnique.BrushUp:
+                    await renderingContext.DrawBrushUp(targetBeat.VoicePart, beatPosition);
+                    break;
+                case StrumTechnique.ArpeggioDown:
+                    await renderingContext.DrawArpeggioDown(targetBeat.VoicePart, beatPosition);
+                    break;
+                case StrumTechnique.ArpeggioUp:
+                    await renderingContext.DrawArpeggioUp(targetBeat.VoicePart, beatPosition);
+                    break;
+#endif
             }
 
             switch (targetBeat.Accent)
@@ -139,9 +144,15 @@ namespace TabML.Editor.Rendering
             var noteValue = targetBeat.NoteValue;
             if (noteValue.Augment != NoteValueAugment.None)
             {
-                this.RenderingContext.DrawNoteValueAugment(noteValue.Augment, noteValue.Base,
-                                                           targetBeat.OwnerColumn.GetPosition(this.RenderingContext),
-                                                           targetBeat.GetNoteStrings(), targetBeat.GetStemRenderVoicePart());
+                var renderer = this.Root.GetRenderer<Beat, BeatRenderer>(targetBeat);
+                var stemRenderVoicePart = targetBeat.GetStemRenderVoicePart();
+                foreach (var stringIndex in targetBeat.GetNoteStrings())
+                {
+                    this.RenderingContext.DrawNoteValueAugment(noteValue.Augment, noteValue.Base,
+                                                               renderer.GetNoteRenderingPosition(stringIndex),
+                                                               stringIndex, stemRenderVoicePart);
+                }
+
             }
         }
 
@@ -205,9 +216,10 @@ namespace TabML.Editor.Rendering
             {
                 var beatRenderingContext = new BeatRenderingContext(renderingContext);
 
+                _noteRenderers.AssignRenderingContexts(beatRenderingContext);
+
                 foreach (var renderer in _noteRenderers.OrderBy(n => n.Element.Fret))
                 {
-                    _noteRenderers.AssignRenderingContexts(beatRenderingContext);
                     await renderer.Render(targetBeat, beamSlope);
                 }
 
@@ -273,7 +285,7 @@ namespace TabML.Editor.Rendering
             if (targetBeat.NoteValue.Base <= BaseNoteValue.Half)
             {
                 double from;
-                renderingContext.GetStemOffsetRange(targetBeat.GetNearestStringIndex(), stemVoicePart, out from, out stemTailPosition);
+                renderingContext.GetStemOffsetRange(targetBeat.GetOutmostStringIndex(), stemVoicePart, out from, out stemTailPosition);
 
                 if (beamSlope != null)
                     stemTailPosition = beamSlope.GetY(position);
@@ -302,8 +314,7 @@ namespace TabML.Editor.Rendering
 
         private double GetStemPosition(Beat beat)
         {
-            var renderingContext = this.GetRenderingContext(beat);
-            return beat.OwnerColumn.GetPosition(renderingContext) + beat.GetAlternationOffset(renderingContext);
+            return this.Root.GetRenderer<Beat, BeatRenderer>(beat).GetNoteRenderingPosition();
         }
 
         private BarRenderingContext GetRenderingContext(Beat beat)
@@ -343,6 +354,33 @@ namespace TabML.Editor.Rendering
             }
 
             await this.RenderingContext.DrawBeam(noteValue, x0, beamSlope.GetY(x0), x1, beamSlope.GetY(x1), voicePart);
+        }
+
+        public double GetStemTailPosition()
+        {
+            double from, to;
+            this.RenderingContext.GetStemOffsetRange(this.Element.GetOutmostStringIndex(), this.Element.GetStemRenderVoicePart(), out from, out to);
+            return this.Element.GetStemRenderVoicePart() == VoicePart.Treble ? Math.Min(from, to) : Math.Max(from, to);
+        }
+
+        public double GetNoteAlternationOffset(int? stringIndex = null)
+        {
+            var column = this.RenderingContext.ColumnRenderingInfos[this.Element.OwnerColumn.ColumnIndex];
+
+            if (column.HasBrushlikeTechnique && column.MatchesChord)    // in this case we will just draw the technique directly
+                return 0;
+
+            var hasHarmonics = this.Element.NotesDefiner.Notes.Any(n => n.IsHarmonics);
+            var ratio = column.GetNoteAlternationOffsetRatio(stringIndex ?? this.Element.GetOutmostStringIndex());
+            return this.RenderingContext.GetNoteAlternationOffset(ratio, hasHarmonics)
+                + column.BrushlikeTechniqueSize
+                + this.RenderingContext.Style.BrushlikeTechniqueMargin;
+        }
+
+        public double GetNoteRenderingPosition(int? stringIndex = null)
+        {
+            var column = this.RenderingContext.ColumnRenderingInfos[this.Element.OwnerColumn.ColumnIndex];
+            return column.Position + this.GetNoteAlternationOffset(stringIndex);
         }
     }
 }

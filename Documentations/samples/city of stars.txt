@@ -1,5 +1,5 @@
 +tuning: standard
-+chord Gm1<Gm>: 3<3> 1<1> 0 0 3<4> x
++chord Gm1<Gm>: 3 1<1> 0 0 3 x
 +chord G*<G>: 320033
 +time: 4/4
 +key: C

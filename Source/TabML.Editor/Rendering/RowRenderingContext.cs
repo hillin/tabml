@@ -12,8 +12,8 @@ namespace TabML.Editor.Rendering
     class RowRenderingContext : RenderingContextBase<TablatureRenderingContext>
     {
         private const int HeightMapSampleRate = 1;
-
-        private readonly double[] _stringCarets;
+        
+        private readonly GapCollection[] _stringBarlineGaps;
 
         private readonly Dictionary<VoicePart, HeightMap> _heightMaps;
         public Point Location { get; }
@@ -32,8 +32,12 @@ namespace TabML.Editor.Rendering
             this.AvailableSize = availableSize;
 
             this.PreviousDocumentState = owner.PreviousDocumentState;
+            
+            _stringBarlineGaps = new GapCollection[this.Style.StringCount];
 
-            _stringCarets = new double[this.Style.StringCount];
+            for (var i = 0; i < this.Style.StringCount; ++i)
+                _stringBarlineGaps[i] = new GapCollection();
+
             _heightMaps = new Dictionary<VoicePart, HeightMap>
             {
                 {VoicePart.Bass, this.CreatehHeightMap(availableSize)},
@@ -63,27 +67,27 @@ namespace TabML.Editor.Rendering
 
         public void UpdateHorizontalBarLine(int stringIndex, double left, double right)
         {
-            this.DrawHorizontalBarLineTo(stringIndex, left - this.Style.NoteMargin);
-            _stringCarets[stringIndex] = right + this.Style.NoteMargin;
+            var gapList = _stringBarlineGaps[stringIndex];
+
+            gapList.Add(left, right);
         }
 
         public void FinishHorizontalBarLines(double width)
         {
-            for (var i = 0; i < _stringCarets.Length; ++i)
+            for (var i = 0; i < _stringBarlineGaps.Length; ++i)
             {
-                if (!(_stringCarets[i] < width))
-                    continue;
+                var x = 0.0;
 
-                this.DrawHorizontalBarLineTo(i, width);
-                _stringCarets[i] = width;
+                var y = this.GetStringPosition(i);
+                foreach (var gap in _stringBarlineGaps[i])
+                {
+                    this.PrimitiveRenderer.DrawHorizontalBarLine(this.Location.X + x, y, gap.Left - x);
+                    x = gap.Right;
+                }
+
+                if (x < width)
+                    this.PrimitiveRenderer.DrawHorizontalBarLine(this.Location.X + x, y, width - x);
             }
-        }
-
-        private void DrawHorizontalBarLineTo(int stringIndex, double position)
-        {
-            this.PrimitiveRenderer.DrawHorizontalBarLine(this.Location.X + _stringCarets[stringIndex],
-                                                         this.GetStringPosition(stringIndex),
-                                                         position - _stringCarets[stringIndex]);
         }
 
         /// <summary>
@@ -96,7 +100,7 @@ namespace TabML.Editor.Rendering
         /// </summary>
         public double GetBodyFloor() => this.GetBodyCeiling() + this.Style.BarLineHeight * this.Style.StringCount;
 
-        public double GetBodyCenter() => this.GetStringSpacePosition(this.Style.StringCount/2.0);
+        public double GetBodyCenter() => this.GetStringSpacePosition(this.Style.StringCount / 2.0);
 
         public double GetStringPosition(double stringIndex) => this.Location.Y + this.Style.BarTopMargin + (stringIndex + 0.5) * this.Style.BarLineHeight;
         public double GetStringSpacePosition(double stringIndex) => this.Location.Y + this.Style.BarTopMargin + stringIndex * this.Style.BarLineHeight;
@@ -193,7 +197,7 @@ namespace TabML.Editor.Rendering
 
         public void SealHeightMaps()
         {
-            foreach (var heightMap in  _heightMaps)
+            foreach (var heightMap in _heightMaps)
                 heightMap.Value.Seal();
         }
 

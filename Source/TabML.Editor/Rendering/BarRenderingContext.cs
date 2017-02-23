@@ -213,16 +213,15 @@ namespace TabML.Editor.Rendering
         }
 
         public void DrawNoteValueAugment(NoteValueAugment noteValueAugment, BaseNoteValue noteValue, double position,
-                                         int[] strings, VoicePart voicePart)
+                                         int stringIndex, VoicePart voicePart)
         {
             var x = this.Location.X + position + this.Style.NoteValueAugmentOffset;
 
-            var spaceOffset = voicePart == VoicePart.Treble ? -1 : 0;
-            foreach (var stringIndex in strings)
-            {
-                var y = this.Owner.GetStringSpacePosition(stringIndex + spaceOffset);
-                this.PrimitiveRenderer.DrawNoteValueAugment(noteValueAugment, x, y);
-            }
+            var spaceOffset = voicePart == VoicePart.Treble ? 0 : 1;
+
+            var y = this.Owner.GetStringSpacePosition(stringIndex + spaceOffset);
+            this.PrimitiveRenderer.DrawNoteValueAugment(noteValueAugment, x, y);
+
         }
 
         public async Task DrawBeam(BaseNoteValue noteValue, double x0, double y0, double x1, double y1, VoicePart voicePart)

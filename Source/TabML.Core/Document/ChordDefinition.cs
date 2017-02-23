@@ -14,7 +14,7 @@ namespace TabML.Core.Document
 
         public string GetDisplayName()
         {
-            return !string.IsNullOrEmpty(this.DisplayName) ? this.DisplayName : this.Name;
+            return string.IsNullOrEmpty(this.DisplayName) ? this.Name : this.DisplayName;
         }
     }
 }
