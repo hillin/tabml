@@ -1,4 +1,5 @@
 ﻿using TabML.Core.Document;
+using TabML.Core.MusicTheory;
 
 namespace TabML.Editor.Rendering
 {

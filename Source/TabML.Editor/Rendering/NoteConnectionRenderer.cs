@@ -31,34 +31,27 @@ namespace TabML.Editor.Rendering
 
             foreach (var stringIndex in stringIndices)
             {
-                var currentBounds = toContext.GetNoteBoundingBox(to.OwnerColumn, stringIndex);
-                var previousBounds = fromContext.GetNoteBoundingBox(from.OwnerColumn, stringIndex); 
+                var currentBounds = toContext.GetNoteBoundingBox(to.OwnerColumn.ColumnIndex, stringIndex);
+                var previousBounds = fromContext.GetNoteBoundingBox(from.OwnerColumn.ColumnIndex, stringIndex); 
                 Debug.Assert(currentBounds != null, "currentBounds != null");
                 Debug.Assert(previousBounds != null, "previousBounds != null");
 
                 var fromX = previousBounds.Value.Right + toContext.Style.NoteMargin;
                 var toX = currentBounds.Value.Left - toContext.Style.NoteMargin;
 
-                if (toContext.Owner == fromContext.Owner)
+                if (toContext.Owner == fromContext.Owner)   // both in same row
                 {
                     bounds.AddBounds(await toContext.Owner.DrawTie(fromX, toX, stringIndex, tiePosition, null, 0));
-                    //if (!string.IsNullOrEmpty(instruction))
-                    //    await toContext.DrawConnectionInstruction(to.VoicePart, (toX + fromX)/2, instruction);
                 }
                 else
                 {
-                    bounds.AddBounds(await toContext.Owner.DrawTie(toContext.Owner.Location.X,
+                    bounds.AddBounds(await toContext.Owner.DrawTie(toContext.Owner.Location.X + toContext.Owner.HeaderWidth,
                                                                    toX, stringIndex, tiePosition, null, 0));
 
                     await fromContext.Owner.DrawTie(fromX,
                                                     fromContext.Owner.BottomRight.X,
                                                     stringIndex, tiePosition, null, 0);
 
-                    //if (!string.IsNullOrEmpty(instruction))
-                    //{
-                    //    await toContext.DrawConnectionInstruction(to.VoicePart, (toX + toContext.Owner.Location.X) / 2, $"({instruction})");
-                    //    await fromContext.DrawConnectionInstruction(to.VoicePart, (fromX + fromContext.Owner.BottomRight.X) / 2, instruction);
-                    //}
                 }
             }
 
@@ -66,8 +59,9 @@ namespace TabML.Editor.Rendering
             return bounds.Bounds;
         }
 
-        public static async Task<Rect> DrawGliss(IRootElementRenderer rootRenderer, Beat beat, IEnumerable<int> stringIndices,
-                                           GlissDirection direction)
+        public static async Task<Rect> DrawGliss(IRootElementRenderer rootRenderer, Beat beat,
+                                                 IEnumerable<int> stringIndices,
+                                                 GlissDirection direction)
         {
             var beatRenderer = rootRenderer.GetRenderer<Beat, BeatRenderer>(beat);
             var renderingContext = beatRenderer.RenderingContext;
@@ -76,7 +70,7 @@ namespace TabML.Editor.Rendering
 
             foreach (var stringIndex in stringIndices)
             {
-                var noteBounds = renderingContext.GetNoteBoundingBox(beat.OwnerColumn, stringIndex);
+                var noteBounds = renderingContext.GetNoteBoundingBox(beat.OwnerColumn.ColumnIndex, stringIndex);
                 Debug.Assert(noteBounds != null);
 
                 double x;

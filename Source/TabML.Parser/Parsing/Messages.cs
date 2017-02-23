@@ -280,6 +280,9 @@ namespace TabML.Parser.Parsing
         public const string Hint_LastCloseBarLineMissing = "Missing close bar line, end line assumed";
         public const string Warning_BarLineMissing = "Missing bar line, standard line assumed";
 
+        public const string Warning_DoubleBarLineCannotBeOpenLine =
+            "Double bar line cannot be used as an open bar line, standard line assumed. Try to place it at the end of the previous bar";
+
         public const string Warning_TooManyChordsToMatchRhythmTemplate =
             "This bar has more chords than it's allowed in the rhythm template. The exceeding chords will be omitted";
 

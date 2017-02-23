@@ -91,17 +91,17 @@ namespace TabML.Editor.Rendering
             return Math.Max(columnRegularWidth, columnMinWidth);
         }
 
-        public async Task Render(Point location, Size size, bool isFirstBarInRow)
+        public async Task Render(Point location, Size size, BarInRowPosition inRowPosition)
         {
 
-            _barRenderingContext = new BarRenderingContext(this.RenderingContext, location, size, isFirstBarInRow);
+            _barRenderingContext = new BarRenderingContext(this.RenderingContext, location, size, inRowPosition);
             _columnRenderers.AssignRenderingContexts(_barRenderingContext);
             _voiceRenderers.AssignRenderingContexts(_barRenderingContext);
 
             var width = size.Width;
 
             var position = 0.0;
-            if (isFirstBarInRow)
+            if (inRowPosition == BarInRowPosition.First)
             {
                 _barRenderingContext.DrawOpenBarLine(OpenBarLine.Standard, position);   //todo: implement this in DrawTabHeader
                 position += await _barRenderingContext.DrawTabHeader();
@@ -109,6 +109,8 @@ namespace TabML.Editor.Rendering
 
             if (this.Element.OpenLine != null)
                 _barRenderingContext.DrawOpenBarLine(this.Element.OpenLine.Value, position);
+
+            _barRenderingContext.Owner.HeaderWidth = position;
 
             position += _barRenderingContext.Style.BarHorizontalPadding;
 
@@ -142,6 +144,8 @@ namespace TabML.Editor.Rendering
                 _barRenderingContext.DrawCloseBarLine(this.Element.CloseLine.Value, width);
             else if (this.Element.NextBar == null)
                 _barRenderingContext.DrawCloseBarLine(CloseBarLine.End, width);
+            else if(inRowPosition == BarInRowPosition.Last)
+                _barRenderingContext.DrawCloseBarLine(CloseBarLine.Standard, width);
 
             if (this.Element.AlternativeEndingPosition == AlternativeEndingPosition.Start)
                 _barRenderingContext.IsSectionRenderingPostponed = true;

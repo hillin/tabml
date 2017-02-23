@@ -127,18 +127,23 @@ namespace TabML.Editor.Rendering
                 availableWidth -= minSize;
                 averageWidth = availableWidth / count;
             }
+            
 
-            var isFirstBarInRow = true;
-
-            foreach (var bar in barRenderers)
+            for (int i = 0; i < barRenderers.Count; i++)
             {
+                var bar = barRenderers[i];
                 var minSize = bar.GetMinSize();
                 var width = Math.Min(availableSize.Width, Math.Max(minSize, averageWidth));
                 var size = new Size(width, availableSize.Height);
 
-                await bar.Render(location, size, isFirstBarInRow);
+                var inRowPosition = i == 0
+                    ? BarInRowPosition.First
+                    : i == barRenderers.Count - 1
+                        ? BarInRowPosition.Last
+                        : BarInRowPosition.Middle;
 
-                isFirstBarInRow = false;
+                await bar.Render(location, size, inRowPosition);
+                
 
                 location.X += size.Width;
             }

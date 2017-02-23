@@ -13,35 +13,6 @@
 
 ||: A | Asus4 | E | Esus4 | D | Dsus2 | A | Asus4 |
 
-+section "Phase 1"  
-
-+pattern A | A | E | E | Dsus2 | Dsus2 |
-{
-  @ -Look at the- stars  
-| @ -Look how they- shine- for
-| @ -you
-| @ -and every-- thing- you do
-| 
-| @ --(yeah they) were all- ye-llow
-| @ -I came along
-| @ -I wrote a- song- for 
-| @ -you
-| @ -and all the- things you- do
-| 
-| @ --(and it) was called- ye-llow
-}
-
-+alternate I
-| A
-| A       @ -and so I- took my
-| E       @ -turn
-| E       @ -oh what a- thing to have done
-| Dsus2
-| Dsus2   @ --(and it) was all- ye-llow
-| A
-| Asus4
-| D       @ --and your- skin
-
 +pattern 
     [8d 8d 8d] F#m [8d~8d 8d 8d:accented 16d 16u] E
     | [4d 8d:accented 8d 8d 8d 8d:accented 16d 16u]       D |

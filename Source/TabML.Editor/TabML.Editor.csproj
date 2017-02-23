@@ -106,11 +106,13 @@
     </ApplicationDefinition>
     <Compile Include="BrowserContext.cs" />
     <Compile Include="Rendering\BarExtensions.cs" />
+    <Compile Include="Rendering\BarInRowPosition.cs" />
     <Compile Include="Rendering\BarRenderingContext.cs" />
     <Compile Include="Rendering\BarRenderer.cs" />
     <Compile Include="Rendering\BarColumnExtensions.cs" />
     <Compile Include="Rendering\BarColumnRenderingInfo.cs" />
     <Compile Include="Rendering\BarColumnRenderer.cs" />
+    <Compile Include="Rendering\BeatNoteExtensions.cs" />
     <Compile Include="Rendering\BeatRenderingContext.cs" />
     <Compile Include="Rendering\BoundingBoxUnion.cs" />
     <Compile Include="Rendering\ChordDefinitionExtensions.cs" />
@@ -210,6 +212,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

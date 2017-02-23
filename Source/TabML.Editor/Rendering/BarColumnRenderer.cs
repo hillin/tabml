@@ -22,7 +22,7 @@ namespace TabML.Editor.Rendering
             var columnInfo = this.RenderingContext.ColumnRenderingInfos[this.Element.ColumnIndex];
             if (columnInfo.HasBrushlikeTechnique)
             {
-                var technique = this.Element.VoiceBeats[0].StrumTechnique;
+                var beat = this.Element.VoiceBeats[0];
                 int minString = int.MaxValue, maxString = int.MinValue;
                 foreach (var note in this.Element.VoiceBeats.SelectMany(b => b.Notes))
                 {
@@ -62,28 +62,38 @@ namespace TabML.Editor.Rendering
 
                 double size;
 
-                switch (technique)
+                switch (beat.StrumTechnique)
                 {
                     case StrumTechnique.BrushDown:
-                        size = await this.RenderingContext.DrawInlineBrushDown(columnInfo.Position, minString, maxString);
+                        size = await this.RenderingContext.DrawInlineBrushDown(this.Element.ColumnIndex, minString, maxString);
                         break;
                     case StrumTechnique.BrushUp:
-                        size = await this.RenderingContext.DrawInlineBrushUp(columnInfo.Position, minString, maxString);
+                        size = await this.RenderingContext.DrawInlineBrushUp(this.Element.ColumnIndex, minString, maxString);
                         break;
                     case StrumTechnique.ArpeggioDown:
-                        size = await this.RenderingContext.DrawInlineArpeggioDown(columnInfo.Position, minString, maxString);
+                        size = await this.RenderingContext.DrawInlineArpeggioDown(this.Element.ColumnIndex, minString, maxString);
                         break;
                     case StrumTechnique.ArpeggioUp:
-                        size = await this.RenderingContext.DrawInlineArpeggioUp(columnInfo.Position, minString, maxString);
+                        size = await this.RenderingContext.DrawInlineArpeggioUp(this.Element.ColumnIndex, minString, maxString);
                         break;
                     case StrumTechnique.Rasgueado:
-                        size = await this.RenderingContext.DrawInlineRasgueado(columnInfo.Position, minString, maxString);
+                        size = await this.RenderingContext.DrawInlineRasgueado(this.Element.ColumnIndex, minString, maxString);
                         break;
+                    case StrumTechnique.None:
+                    case StrumTechnique.PickstrokeDown:
+                    case StrumTechnique.PickstrokeUp:
+                        throw new NotSupportedException();
                     default:
                         throw new NotSupportedException();
                 }
 
                 columnInfo.BrushlikeTechniqueSize = size;
+
+                if (beat.IsTied)
+                {
+                    await NoteConnectionRenderer.DrawTie(this.Root, beat.PreviousBeat, beat, beat.GetOutmostStringIndex(beat.GetRenderTieVoicePart()),
+                                                         beat.GetRenderTiePosition());
+                }
             }
         }
 

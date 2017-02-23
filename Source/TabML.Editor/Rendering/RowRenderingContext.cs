@@ -23,7 +23,12 @@ namespace TabML.Editor.Rendering
         public PrimitiveRenderer PrimitiveRenderer => this.Owner.PrimitiveRenderer;
         public TablatureStyle Style => this.Owner.Style;
         public TablatureRenderingContext TablatureRenderingContext => this.Owner;
-        public DocumentState PreviousDocumentState { get; set; }    // used for bar rendering to determine if the document state is changed
+
+        // used for bar rendering to determine if the document state is changed
+        public DocumentState PreviousDocumentState { get; set; }
+        
+        public double HeaderWidth { get; set; }
+
 
         public RowRenderingContext(TablatureRenderingContext owner, Point location, Size availableSize)
             : base(owner)

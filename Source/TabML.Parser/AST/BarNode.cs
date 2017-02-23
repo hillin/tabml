@@ -71,7 +71,7 @@ namespace TabML.Parser.AST
 
             var previousBar = context.CurrentBar;
             context.CurrentBar = bar;
-
+            
             if (this.Rhythm == null)
             {
                 if (template != null)

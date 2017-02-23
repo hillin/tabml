@@ -15,7 +15,7 @@ namespace TabML.Editor.Rendering
     class BarRenderingContext : RenderingContextBase<RowRenderingContext>
     {
         public Size AvailableSize { get; }
-        public bool IsFirstBarInRow { get; }
+        public BarInRowPosition InRowPosition { get; }
         public PrimitiveRenderer PrimitiveRenderer => this.Owner.PrimitiveRenderer;
         public TablatureStyle Style => this.Owner.Style;
         public Point Location { get; }
@@ -27,23 +27,23 @@ namespace TabML.Editor.Rendering
         private readonly Dictionary<Beam, BeamSlope> _beamSlopes;
 
 
-        public BarRenderingContext(RowRenderingContext owner, Point location, Size availableSize, bool isFirstBarInRow)
+        public BarRenderingContext(RowRenderingContext owner, Point location, Size availableSize, BarInRowPosition inRowPosition)
             : base(owner)
         {
             this.Location = location;
             this.AvailableSize = availableSize;
-            this.IsFirstBarInRow = isFirstBarInRow;
+            this.InRowPosition = inRowPosition;
             _beamSlopes = new Dictionary<Beam, BeamSlope>();
         }
 
-        public void SetNoteBoundingBox(BarColumn column, int stringIndex, Rect bounds)
+        public void SetNoteBoundingBox(int columnIndex, int stringIndex, Rect bounds)
         {
-            this.ColumnRenderingInfos[column.ColumnIndex].NoteBoundingBoxes[stringIndex] = bounds;
+            this.ColumnRenderingInfos[columnIndex].NoteBoundingBoxes[stringIndex] = bounds;
         }
 
-        public Rect? GetNoteBoundingBox(BarColumn column, int stringIndex)
+        public Rect? GetNoteBoundingBox(int columnIndex, int stringIndex)
         {
-            return this.ColumnRenderingInfos[column.ColumnIndex].NoteBoundingBoxes[stringIndex];
+            return this.ColumnRenderingInfos[columnIndex].NoteBoundingBoxes[stringIndex];
         }
 
         public BeamSlope GetBeamSlope(IBeatElement beatElement)
@@ -212,7 +212,7 @@ namespace TabML.Editor.Rendering
             return voicePart == VoicePart.Treble ? offset : -offset;
         }
 
-        public void DrawNoteValueAugment(NoteValueAugment noteValueAugment, BaseNoteValue noteValue, double position,
+        public void DrawNoteValueAugment(NoteValue noteValue, double position,
                                          int stringIndex, VoicePart voicePart)
         {
             var x = this.Location.X + position + this.Style.NoteValueAugmentOffset;
@@ -220,7 +220,7 @@ namespace TabML.Editor.Rendering
             var spaceOffset = voicePart == VoicePart.Treble ? 0 : 1;
 
             var y = this.Owner.GetStringSpacePosition(stringIndex + spaceOffset);
-            this.PrimitiveRenderer.DrawNoteValueAugment(noteValueAugment, x, y);
+            this.PrimitiveRenderer.DrawNoteValueAugment(noteValue.Augment, x, y);
 
         }
 
@@ -366,34 +366,43 @@ namespace TabML.Editor.Rendering
             this.EnsureHeightForOrnament(voicePart, bounds);
         }
 
-        public async Task<double> DrawInlineBrushDown(double x, int minString, int maxString)
+        private async Task<double> DrawInlineBrushlikeTechnique(int columnIndex, int minString, int maxString,
+                                                                Func<double, double, int, Task<Rect>> primitiveMethod)
         {
             var y = this.Owner.GetStringPosition(((double)minString + maxString) / 2.0);
-            return (await this.PrimitiveRenderer.DrawInlineBrushDown(x + this.Location.X, y, maxString - minString + 1)).Width;
+
+            var x = this.ColumnRenderingInfos[columnIndex].Position + this.Location.X;
+            var bounds = await primitiveMethod(x, y, maxString - minString + 1);
+
+            for (var i = minString; i <= maxString; ++i)
+                this.SetNoteBoundingBox(columnIndex, i, bounds);
+
+            return bounds.Width;
         }
 
-        public async Task<double> DrawInlineBrushUp(double x, int minString, int maxString)
+        public Task<double> DrawInlineBrushDown(int columnIndex, int minString, int maxString)
         {
-            var y = this.Owner.GetStringPosition(((double)minString + maxString) / 2.0);
-            return (await this.PrimitiveRenderer.DrawInlineBrushUp(x + this.Location.X, y, maxString - minString + 1)).Width;
+            return this.DrawInlineBrushlikeTechnique(columnIndex, minString, maxString, this.PrimitiveRenderer.DrawInlineBrushDown);
         }
 
-        public async Task<double> DrawInlineArpeggioDown(double x, int minString, int maxString)
+        public Task<double> DrawInlineBrushUp(int columnIndex, int minString, int maxString)
         {
-            var y = this.Owner.GetStringPosition(((double)minString + maxString) / 2.0);
-            return (await this.PrimitiveRenderer.DrawInlineArpeggioDown(x + this.Location.X, y, maxString - minString + 1)).Width;
+            return this.DrawInlineBrushlikeTechnique(columnIndex, minString, maxString, this.PrimitiveRenderer.DrawInlineBrushUp);
         }
 
-        public async Task<double> DrawInlineArpeggioUp(double x, int minString, int maxString)
+        public Task<double> DrawInlineArpeggioDown(int columnIndex, int minString, int maxString)
         {
-            var y = this.Owner.GetStringPosition(((double)minString + maxString) / 2.0);
-            return (await this.PrimitiveRenderer.DrawInlineArpeggioUp(x + this.Location.X, y, maxString - minString + 1)).Width;
+            return this.DrawInlineBrushlikeTechnique(columnIndex, minString, maxString, this.PrimitiveRenderer.DrawInlineArpeggioDown);
         }
 
-        public async Task<double> DrawInlineRasgueado(double x, int minString, int maxString)
+        public Task<double> DrawInlineArpeggioUp(int columnIndex, int minString, int maxString)
         {
-            var y = this.Owner.GetStringPosition(((double)minString + maxString) / 2.0);
-            return (await this.PrimitiveRenderer.DrawInlineRasgueado(x + this.Location.X, y, maxString - minString + 1)).Width;
+            return this.DrawInlineBrushlikeTechnique(columnIndex, minString, maxString, this.PrimitiveRenderer.DrawInlineArpeggioUp);
+        }
+
+        public Task<double> DrawInlineRasgueado(int columnIndex, int minString, int maxString)
+        {
+            return this.DrawInlineBrushlikeTechnique(columnIndex, minString, maxString, this.PrimitiveRenderer.DrawInlineRasgueado);
         }
         public async Task DrawLyrics(double x, string lyrics)
         {

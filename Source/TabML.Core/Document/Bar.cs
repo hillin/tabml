@@ -17,23 +17,6 @@ namespace TabML.Core.Document
 
                     return (BarLine)close.Value;
 
-                case OpenBarLine.Double:
-                    switch (close)
-                    {
-                        case null:
-                            return BarLine.Double;
-                        case CloseBarLine.Standard:
-                            return BarLine.Double;
-                        case CloseBarLine.Double:
-                            return BarLine.Double;
-                        case CloseBarLine.End:
-                            return BarLine.End;
-                        case CloseBarLine.EndRepeat:
-                            return BarLine.EndRepeat;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(close), close, null);
-                    }
-
                 case OpenBarLine.BeginRepeat:
                     switch (close)
                     {

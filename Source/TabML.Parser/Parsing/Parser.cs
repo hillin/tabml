@@ -397,8 +397,9 @@ namespace TabML.Parser.Parsing
 
             if (scanner.Expect("||"))
             {
-                barLine = new LiteralNode<OpenBarLine>(OpenBarLine.Double, scanner.LastReadRange);
-                return true;
+                logger.Report(LogLevel.Warning, scanner.LastReadRange, Messages.Warning_DoubleBarLineCannotBeOpenLine);
+                barLine = null;
+                return false;
             }
 
             if (scanner.Expect('|'))

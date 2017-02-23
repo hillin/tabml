@@ -33,205 +33,143 @@ namespace TabML.Editor.Rendering
         {
             base.Initialize();
 
-            if (this.Element.Notes != null)
-                _noteRenderers.AddRange(this.Element.Notes.Select(n => new NoteRenderer(this, n)));
+            var notes = this.Element.NotesDefiner.Notes;
+            if (notes != null)
+            {
+                _noteRenderers.AddRange(this.Element.IsTied
+                                            ? notes.Select(n => new NoteRenderer(this, n.CloneAsTied()))
+                                            : notes.Select(n => new NoteRenderer(this, n)));
+            }
 
             _noteRenderers.Initialize();
         }
 
         public override async Task Render()
         {
-            await this.Render(null);
-        }
+            var beamSlope = this.RenderingContext.GetBeamSlope(this.Element);
 
-        private async Task Render(Beat tieTarget)
-        {
-            if (this.Element.IsTied)
-            {
-                if (tieTarget == null        // don't draw tied beat if we are drawing for a tied target
-                    && !this.Element.IsRest)
-                {
-                    await this.RenderTiedBeat();
-                }
-                return;
-            }
-
-            var targetBeat = tieTarget ?? this.Element;
-            var targetBeatRenderer = this.Root.GetRenderer<Beat, BeatRenderer>(targetBeat);
-
-            var beamSlope = targetBeatRenderer.RenderingContext.GetBeamSlope(targetBeat);
-
-            await this.DrawHead(beamSlope, targetBeat);
+            await this.DrawHead(beamSlope);
 
             if (!this.Element.IsRest)
-                await this.DrawStemAndFlag(beamSlope, targetBeat);
+                await this.DrawStemAndFlag(beamSlope);
 
-            this.DrawNoteValueAugment(tieTarget);
-            await this.DrawBeatOrnaments(tieTarget);
+            this.DrawNoteValueAugment();
+            await this.DrawBeatOrnaments();
         }
 
-        private async Task DrawBeatOrnaments(Beat tieTarget)
+        private async Task DrawBeatOrnaments()
         {
-            var targetBeat = tieTarget ?? this.Element;
-            var renderingContext = this.Root.GetRenderer<Beat, BeatRenderer>(targetBeat).RenderingContext;
-            var beatPosition = this.GetStemPosition(targetBeat);
+            var beatPosition = this.GetStemPosition();
 
-            switch (targetBeat.StrumTechnique)
+            switch (this.Element.StrumTechnique)
             {
                 case StrumTechnique.Rasgueado:
-                    await renderingContext.DrawRasgueadoText(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawRasgueadoText(this.Element.VoicePart, beatPosition);
                     break;
 
 #if DRAW_STRUM_TECHNIQUE_ORNAMENTS
                 case StrumTechnique.PickstrokeDown:
-                    await renderingContext.DrawPickstrokeDown(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawPickstrokeDown(this.Element.VoicePart, beatPosition);
                     break;
                 case StrumTechnique.PickstrokeUp:
-                    await renderingContext.DrawPickstrokeUp(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawPickstrokeUp(this.Element.VoicePart, beatPosition);
                     break;
                 case StrumTechnique.BrushDown:
-                    await renderingContext.DrawBrushDown(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawBrushDown(this.Element.VoicePart, beatPosition);
                     break;
                 case StrumTechnique.BrushUp:
-                    await renderingContext.DrawBrushUp(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawBrushUp(this.Element.VoicePart, beatPosition);
                     break;
                 case StrumTechnique.ArpeggioDown:
-                    await renderingContext.DrawArpeggioDown(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawArpeggioDown(this.Element.VoicePart, beatPosition);
                     break;
                 case StrumTechnique.ArpeggioUp:
-                    await renderingContext.DrawArpeggioUp(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawArpeggioUp(this.Element.VoicePart, beatPosition);
                     break;
 #endif
             }
 
-            switch (targetBeat.Accent)
+            switch (this.Element.Accent)
             {
                 case BeatAccent.Accented:
-                    await renderingContext.DrawAccented(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawAccented(this.Element.VoicePart, beatPosition);
                     break;
                 case BeatAccent.HeavilyAccented:
-                    await renderingContext.DrawHeavilyAccented(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawHeavilyAccented(this.Element.VoicePart, beatPosition);
                     break;
             }
 
-            switch (targetBeat.DurationEffect)
+            switch (this.Element.DurationEffect)
             {
                 case BeatDurationEffect.Fermata:
-                    await renderingContext.DrawFermata(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawFermata(this.Element.VoicePart, beatPosition);
                     break;
                 case BeatDurationEffect.Staccato:
-                    await renderingContext.DrawStaccato(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawStaccato(this.Element.VoicePart, beatPosition);
                     break;
                 case BeatDurationEffect.Tenuto:
-                    await renderingContext.DrawTenuto(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawTenuto(this.Element.VoicePart, beatPosition);
                     break;
             }
 
-            switch (targetBeat.EffectTechnique)
+            switch (this.Element.EffectTechnique)
             {
                 case BeatEffectTechnique.Trill:
-                    await renderingContext.DrawTrill(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawTrill(this.Element.VoicePart, beatPosition);
                     break;
                 case BeatEffectTechnique.Tremolo:
-                    await renderingContext.DrawTremolo(targetBeat.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawTremolo(this.Element.VoicePart, beatPosition);
                     break;
             }
         }
 
-        private void DrawNoteValueAugment(Beat tieTarget)
+        private void DrawNoteValueAugment()
         {
-            var targetBeat = tieTarget ?? this.Element;
-            var noteValue = targetBeat.NoteValue;
-            if (noteValue.Augment != NoteValueAugment.None)
+            if (this.Element.NoteValue.Augment != NoteValueAugment.None)
             {
-                var renderer = this.Root.GetRenderer<Beat, BeatRenderer>(targetBeat);
-                var stemRenderVoicePart = targetBeat.GetStemRenderVoicePart();
-                foreach (var stringIndex in targetBeat.GetNoteStrings())
+                var stemRenderVoicePart = this.Element.GetStemRenderVoicePart();
+                foreach (var stringIndex in this.Element.NotesDefiner.GetNoteStrings())
                 {
-                    this.RenderingContext.DrawNoteValueAugment(noteValue.Augment, noteValue.Base,
-                                                               renderer.GetNoteRenderingPosition(stringIndex),
+                    this.RenderingContext.DrawNoteValueAugment(this.Element.NoteValue,
+                                                               this.GetNoteRenderingPosition(stringIndex),
                                                                stringIndex, stemRenderVoicePart);
                 }
 
             }
         }
 
-        private async Task RenderTiedBeat()
+
+        public async Task DrawHead(BeamSlope beamSlope)
         {
-            // ensure we are at the end of the tie
-            if (this.Element.NextBeat != null && this.Element.NextBeat.IsTied)
-                return;
-
-            // collect chained-tied beats
-            var tiedBeats = new LinkedList<Beat>();
-            var current = this.Element;
-            do
-            {
-                tiedBeats.AddFirst(current);
-                current = current.PreviousBeat;
-            } while (current != null && current.IsTied);
-
-            // this is where all the beats are tied to
-            var headBeat = current;
-
-            if (headBeat == null)
-            {
-                // todo: raise an error?
-                return;
-            }
-
-            var headBeatRenderer = this.Root.GetRenderer<Beat, BeatRenderer>(headBeat);
-
-            var from = headBeat;
-
-            var defaultTiePosition = this.Element.GetTiePosition();
-            var stringIndices = headBeat.Notes.Select(n => n.String).ToArray();
-
-            foreach (var to in tiedBeats)
-            {
-                await headBeatRenderer.Render(to);
-
-                var tiePosition = to.TiePosition ?? defaultTiePosition;
-                await NoteConnectionRenderer.DrawTie(this.Root, @from, to, stringIndices, tiePosition);
-
-                from = to;
-            }
-        }
-
-        public async Task DrawHead(BeamSlope beamSlope, Beat targetBeat)
-        {
-            var renderingContext = this.GetRenderingContext(targetBeat);
-
             if (this.Element.IsRest)
             {
-                var targetNoteValue = targetBeat.NoteValue;
-                var position = targetBeat.OwnerColumn.GetPosition(renderingContext);
-                renderingContext.DrawRest(targetNoteValue.Base, position, this.Element.VoicePart);
-                if (this.Element.OwnerBeam == null && targetNoteValue.Tuplet != null)
+                var position = this.Element.OwnerColumn.GetPosition(this.RenderingContext);
+                this.RenderingContext.DrawRest(this.Element.NoteValue.Base, position, this.Element.VoicePart);
+                if (this.Element.OwnerBeam == null && this.Element.NoteValue.Tuplet != null)
                 {
-                    await renderingContext.DrawTuplet(targetNoteValue.Tuplet.Value, position, targetBeat.GetStemRenderVoicePart());
+                    await this.RenderingContext.DrawTuplet(this.Element.NoteValue.Tuplet.Value, position, this.Element.GetStemRenderVoicePart());
                 }
             }
             else
             {
-                var beatRenderingContext = new BeatRenderingContext(renderingContext);
+                var beatRenderingContext = new BeatRenderingContext(this.RenderingContext);
 
                 _noteRenderers.AssignRenderingContexts(beatRenderingContext);
 
                 foreach (var renderer in _noteRenderers.OrderBy(n => n.Element.Fret))
                 {
-                    await renderer.Render(targetBeat, beamSlope);
+                    await renderer.Render(beamSlope);
                 }
 
-                // only draw A.H. text and connection instructions for self
-                if (targetBeat == this.Element)
+                // don't draw A.H. text or connection instructions for tied beat
+                if (!this.Element.IsTied)
                 {
                     if (beatRenderingContext.ArtificialHarmonicFrets.Count > 0)
                     {
                         var position = this.Element.OwnerColumn.GetPosition(this.RenderingContext);
 
                         if (beatRenderingContext.ArtificialHarmonicFrets.All(n => n.IsOn12thFret))
-                            await renderingContext.DrawArtificialHarmonicText(this.Element.VoicePart, position, "A.H.");
+                            await this.RenderingContext.DrawArtificialHarmonicText(this.Element.VoicePart, position, "A.H.");
                         else
                         {
                             var orderedFrets = this.Element.VoicePart == VoicePart.Treble
@@ -241,7 +179,7 @@ namespace TabML.Editor.Rendering
                             foreach (var fretInfo in orderedFrets)
                             {
                                 var text = fretInfo.IsOn12thFret ? "A.H." : $"A.H. ({fretInfo.ArtificialHarmonicFret})";
-                                await renderingContext.DrawArtificialHarmonicText(this.Element.VoicePart, position, text);
+                                await this.RenderingContext.DrawArtificialHarmonicText(this.Element.VoicePart, position, text);
                             }
                         }
                     }
@@ -257,14 +195,14 @@ namespace TabML.Editor.Rendering
 
                         if (instructions.All(i => i.Instruction == firstInstruction))
                         {
-                            await renderingContext.DrawConnectionInstruction(this.Element.VoicePart, position, firstInstruction);
+                            await this.RenderingContext.DrawConnectionInstruction(this.Element.VoicePart, position, firstInstruction);
                         }
                         else
                         {
                             var orderedInstructions = this.Element.VoicePart == VoicePart.Treble ? instructions.OrderByDescending(i => i.StringIndex) : instructions.OrderBy(i => i.StringIndex);
                             foreach (var instructionInfo in orderedInstructions)
                             {
-                                await renderingContext.DrawConnectionInstruction(this.Element.VoicePart, position, instructionInfo.Instruction);
+                                await this.RenderingContext.DrawConnectionInstruction(this.Element.VoicePart, position, instructionInfo.Instruction);
                             }
                         }
                     }
@@ -273,71 +211,68 @@ namespace TabML.Editor.Rendering
         }
 
 
-        private async Task DrawStemAndFlag(BeamSlope beamSlope, Beat targetBeat)
+        private async Task DrawStemAndFlag(BeamSlope beamSlope)
         {
             var stemTailPosition = 0.0;
 
-            var renderingContext = this.GetRenderingContext(targetBeat);
+            var position = this.GetStemPosition();
+            var stemVoicePart = this.Element.GetStemRenderVoicePart();
 
-            var position = this.GetStemPosition(targetBeat);
-            var stemVoicePart = targetBeat.GetStemRenderVoicePart();
+            var notesDefinerBeat = this.Element.NotesDefiner;
 
-            if (targetBeat.NoteValue.Base <= BaseNoteValue.Half)
+            var noteValue = this.Element.NoteValue;
+            if (noteValue.Base <= BaseNoteValue.Half)
             {
                 double from;
-                renderingContext.GetStemOffsetRange(targetBeat.GetOutmostStringIndex(), stemVoicePart, out from, out stemTailPosition);
+                this.RenderingContext.GetStemOffsetRange(notesDefinerBeat.GetOutmostStringIndex(), stemVoicePart, out from, out stemTailPosition);
 
                 if (beamSlope != null)
                     stemTailPosition = beamSlope.GetY(position);
 
-                renderingContext.DrawStem(stemVoicePart, position, from, stemTailPosition);
+                this.RenderingContext.DrawStem(stemVoicePart, position, from, stemTailPosition);
             }
 
-            if (targetBeat.OwnerBeam == null)
+            var ownerBeam = this.Element.OwnerBeam;
+            if (ownerBeam == null)
             {
-                await renderingContext.DrawFlag(targetBeat.NoteValue.Base, position, stemTailPosition, stemVoicePart);
+                await this.RenderingContext.DrawFlag(noteValue.Base, position, stemTailPosition, stemVoicePart);
 
-                if (targetBeat.NoteValue.Tuplet != null)
-                    await renderingContext.DrawTuplet(targetBeat.NoteValue.Tuplet.Value, position, stemVoicePart);
+                if (noteValue.Tuplet != null)
+                    await this.RenderingContext.DrawTuplet(noteValue.Tuplet.Value, position, stemVoicePart);
             }
             else
             {
-                var baseNoteValue = targetBeat.NoteValue.Base;
-                var isLastOfBeam = targetBeat == targetBeat.OwnerBeam.Elements[targetBeat.OwnerBeam.Elements.Count - 1];
-                while (baseNoteValue != targetBeat.OwnerBeam.BeatNoteValue)
+                var baseNoteValue = noteValue.Base;
+                var isLastOfBeam = this.Element == ownerBeam.Elements[ownerBeam.Elements.Count - 1];
+                while (baseNoteValue != ownerBeam.BeatNoteValue)
                 {
-                    await this.DrawSemiBeam(targetBeat, baseNoteValue, stemVoicePart, beamSlope, isLastOfBeam);
+                    await this.DrawSemiBeam(baseNoteValue, stemVoicePart, beamSlope, isLastOfBeam);
                     baseNoteValue = baseNoteValue.Double();
                 }
             }
         }
 
-        private double GetStemPosition(Beat beat)
+        private double GetStemPosition()
         {
-            return this.Root.GetRenderer<Beat, BeatRenderer>(beat).GetNoteRenderingPosition();
+            return this.GetNoteRenderingPosition();
         }
 
-        private BarRenderingContext GetRenderingContext(Beat beat)
+        private async Task DrawSemiBeam(BaseNoteValue noteValue, VoicePart voicePart, BeamSlope beamSlope, bool isLastOfBeam)
         {
-            return this.Root.GetRenderer<Beat, BeatRenderer>(beat).RenderingContext;
-        }
-
-        private async Task DrawSemiBeam(Beat targetBeat, BaseNoteValue noteValue, VoicePart voicePart, BeamSlope beamSlope, bool isLastOfBeam)
-        {
-            Beat beat1, beat2;
+            BeatRenderer beatRenderer1, beatRenderer2;
             if (isLastOfBeam)
             {
-                beat1 = targetBeat.PreviousBeat;
-                beat2 = targetBeat;
+                beatRenderer1 = this.Root.GetRenderer<Beat, BeatRenderer>(this.Element.PreviousBeat);
+                beatRenderer2 = this;
             }
             else
             {
-                beat1 = targetBeat;
-                beat2 = targetBeat.NextBeat;
+                beatRenderer1 = this;
+                beatRenderer2 = this.Root.GetRenderer<Beat, BeatRenderer>(this.Element.NextBeat);
             }
 
-            var position1 = this.GetStemPosition(beat1);
-            var position2 = this.GetStemPosition(beat2);
+            var position1 = beatRenderer1.GetStemPosition();
+            var position2 = beatRenderer2.GetStemPosition();
 
             var beamWidth = Math.Min(this.RenderingContext.Style.MaximumSemiBeamWidth, (position2 - position1) / 2);
 

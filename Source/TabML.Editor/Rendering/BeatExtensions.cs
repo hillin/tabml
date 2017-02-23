@@ -11,11 +11,11 @@ namespace TabML.Editor.Rendering
     static class BeatExtensions
     {
 
-        public static int GetOutmostStringIndex(this Beat beat)
+        public static int GetOutmostStringIndex(this Beat beat, VoicePart? voicePart = null)
         {
             beat = beat.NotesDefiner;
 
-            var voicePart = beat.GetStemRenderVoicePart();
+            voicePart = voicePart ?? beat.GetStemRenderVoicePart();
 
             if (beat.Notes == null || beat.Notes.Length == 0)
             {
@@ -47,9 +47,19 @@ namespace TabML.Editor.Rendering
                 : beat.Notes.Select(n => n.String).ToArray();
         }
 
-        public static TiePosition GetTiePosition(this Beat beat)
+        public static TiePosition GetRenderTiePosition(this Beat beat)
         {
-            return beat.TiePosition ?? beat.VoicePart.GetDefaultTiePosition();
+            if (beat.TiePosition != null)
+                return beat.TiePosition.Value;
+
+            return beat.OwnerBar.HasSingularVoice()
+                ? TiePosition.Above
+                : beat.VoicePart.GetDefaultTiePosition();
+        }
+
+        public static VoicePart GetRenderTieVoicePart(this Beat beat)
+        {
+            return beat.OwnerBar.HasSingularVoice() ? VoicePart.Treble : beat.VoicePart;
         }
     }
 }

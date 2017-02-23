@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,18 +13,23 @@ namespace TabML.Editor.Rendering
 {
     class NoteRenderer : ElementRenderer<BeatNote, BeatRenderingContext>
     {
-        public NoteRenderer(ElementRenderer owner, BeatNote element) : base(owner, element)
+        public BeatRenderer OwnerBeat { get; set; }
+
+        private bool IsTied => this.OwnerBeat.Element.IsTied || this.Element.IsTied;
+
+        public NoteRenderer(BeatRenderer owner, BeatNote element) : base(owner, element)
         {
+            this.OwnerBeat = owner;
         }
 
         /// <remarks>
         /// <para>beat</para> could be different than <c>this.OwnerBeat</c> because we may draw for tied beats
         /// </remarks>
-        public async Task Render(Beat beat, BeamSlope beamSlope)
+        public async Task Render(BeamSlope beamSlope)
         {
-            var x = this.Root.GetRenderer<Beat, BeatRenderer>(beat).GetNoteRenderingPosition(this.Element.String);
+            var x = this.OwnerBeat.GetNoteRenderingPosition(this.Element.String);
 
-            var flags = this.GetNoteRenderingFlags(beat);
+            var flags = this.GetNoteRenderingFlags();
 
             Rect bounds;
             if (this.Element.EffectTechnique == NoteEffectTechnique.DeadNote)
@@ -36,68 +42,89 @@ namespace TabML.Editor.Rendering
             }
             else
             {
-                bounds = await this.RenderingContext.Owner.DrawNoteFretting(this.Element.String, this.Element.Fret.ToString(), x, flags);
+                bounds =
+                    await
+                        this.RenderingContext.Owner.DrawNoteFretting(this.Element.String, this.Element.Fret.ToString(),
+                                                                     x, flags);
             }
 
-            if (this.Element.EffectTechnique == NoteEffectTechnique.ArtificialHarmonic)
+            if (!this.IsTied && this.Element.EffectTechnique == NoteEffectTechnique.ArtificialHarmonic)
             {
                 this.RenderingContext.AddArtificialHarmonic(this.Element.String,
                                                             this.Element.Fret,
                                                             this.Element.EffectTechniqueParameter == null
                                                                 ? this.Element.Fret + 12
-                                                                : (int) this.Element.EffectTechniqueParameter);
+                                                                : (int)this.Element.EffectTechniqueParameter);
             }
 
-            this.RenderingContext.Owner.SetNoteBoundingBox(beat.OwnerColumn, this.Element.String, bounds);
+            this.RenderingContext.Owner.SetNoteBoundingBox(this.OwnerBeat.Element.OwnerColumn.ColumnIndex, this.Element.String,
+                                                           bounds);
 
-            if (beat == this.Element.OwnerBeat) // only draw connections if we are drawing for ourselves
+            if (this.IsTied)
             {
-                var tiePosition = this.Element.TiePosition ?? this.Element.OwnerBeat.VoicePart.GetDefaultTiePosition();
+                var tiePosition = this.Element.TiePosition ?? this.OwnerBeat.Element.GetRenderTiePosition();
 
-                if (this.Element.IsTied)
+                if (this.OwnerBeat.Element.IsTied)
                 {
-                    await NoteConnectionRenderer.DrawTie(this.Root, this.Element.PreConnectedNote?.OwnerBeat,
-                                                         this.Element.OwnerBeat, this.Element.String, tiePosition);
+                    await NoteConnectionRenderer.DrawTie(this.Root, this.OwnerBeat.Element.PreviousBeat,
+                                                         this.OwnerBeat.Element, this.Element.String, tiePosition);
                 }
                 else
                 {
-                    var preConnection = this.Element.PreConnection == PreNoteConnection.None
-                        ? (NoteConnection)this.Element.OwnerBeat.PreConnection
-                        : (NoteConnection)this.Element.PreConnection;
+                    Debug.Assert(this.OwnerBeat.Element == this.Element.OwnerBeat);
 
-                    if (preConnection != NoteConnection.None)
+                    if (this.Element.IsTied)
                     {
-                        await this.RenderingContext.DrawConnection(this.Root, preConnection,
-                                                                   this.Element.PreConnectedNote?.OwnerBeat,
-                                                                   this.Element.OwnerBeat, this.Element.String,
-                                                                   this.Element.TiePosition ?? tiePosition);
+                        await NoteConnectionRenderer.DrawTie(this.Root, this.Element.PreConnectedNote?.OwnerBeat,
+                                                             this.OwnerBeat.Element, this.Element.String, tiePosition);
+
                     }
+                    else
+                    {
+                        var preConnection = this.Element.PreConnection == PreNoteConnection.None
+                            ? (NoteConnection)this.Element.OwnerBeat.PreConnection
+                            : (NoteConnection)this.Element.PreConnection;
+
+                        if (preConnection != NoteConnection.None)
+                        {
+                            await this.RenderingContext.DrawConnection(this.Root, preConnection,
+                                                                       this.Element.PreConnectedNote?.OwnerBeat,
+                                                                       this.OwnerBeat.Element, this.Element.String,
+                                                                       tiePosition);
+                        }
+                    }
+
+                    var postConnection = this.Element.PostConnection == PostNoteConnection.None
+                        ? (NoteConnection)this.Element.OwnerBeat.PostConnection
+                        : (NoteConnection)this.Element.PostConnection;
+
+                    if (postConnection != NoteConnection.None)
+                        await this.RenderingContext.DrawConnection(this.Root, postConnection, this.OwnerBeat.Element, null, this.Element.String, tiePosition);
                 }
-
-                var postConnection = this.Element.PostConnection == PostNoteConnection.None
-                    ? (NoteConnection)this.Element.OwnerBeat.PostConnection
-                    : (NoteConnection)this.Element.PostConnection;
-
-                if (postConnection != NoteConnection.None)
-                    await this.RenderingContext.DrawConnection(this.Root, postConnection, beat, null, this.Element.String, tiePosition);
             }
+
+            
         }
 
-        private NoteRenderingFlags GetNoteRenderingFlags(Beat beat)
+        private NoteRenderingFlags GetNoteRenderingFlags()
         {
             var flags = NoteRenderingFlags.None;
 
-            if (beat.NoteValue.Base >= BaseNoteValue.Half)
+            if (this.OwnerBeat.Element.NoteValue.Base >= BaseNoteValue.Half)
                 flags |= NoteRenderingFlags.HalfOrLonger;
 
-            if (this.Element.Accent == NoteAccent.Ghost)
-                flags |= NoteRenderingFlags.Ghost;
+            if (!this.IsTied)
+            {
+                if (this.Element.Accent == NoteAccent.Ghost)
+                    flags |= NoteRenderingFlags.Ghost;
 
-            if (this.Element.EffectTechnique == NoteEffectTechnique.ArtificialHarmonic)
-                flags |= NoteRenderingFlags.ArtificialHarmonic;
+                if (this.Element.EffectTechnique == NoteEffectTechnique.ArtificialHarmonic)
+                    flags |= NoteRenderingFlags.ArtificialHarmonic;
 
-            if (this.Element.EffectTechnique == NoteEffectTechnique.NaturalHarmonic)
-                flags |= NoteRenderingFlags.NaturalHarmonic;
+                if (this.Element.EffectTechnique == NoteEffectTechnique.NaturalHarmonic)
+                    flags |= NoteRenderingFlags.NaturalHarmonic;
+            }
+
             return flags;
         }
     }
