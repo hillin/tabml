@@ -5,6 +5,7 @@ namespace TR {
 
         smuflText: {
             fontFamily: string,
+            fontSize: number,
         }
 
         fallback: {

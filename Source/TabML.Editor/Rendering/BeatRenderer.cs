@@ -124,12 +124,12 @@ namespace TabML.Editor.Rendering
             }
         }
 
-        private double GetRestRenderStringSpaceIndex()
+        private double GetRestRenderStringIndex()
         {
             if (this.Element.OwnerBar.HasSingularVoice())
                 return this.RenderingContext.Style.StringCount / 2.0;
 
-            return this.Element.VoicePart == VoicePart.Treble ? 0 : this.RenderingContext.Style.StringCount - 1;
+            return this.Element.VoicePart == VoicePart.Treble ? -1 : this.RenderingContext.Style.StringCount - 2;
         }
 
         public async Task DrawHead()
@@ -137,12 +137,12 @@ namespace TabML.Editor.Rendering
             if (this.Element.IsRest)
             {
                 var position = this.Element.OwnerColumn.GetPosition(this.RenderingContext);
-                var restStringIndex = this.GetRestRenderStringSpaceIndex();
+                var restStringIndex = this.GetRestRenderStringIndex();
                 var restBounds = await this.RenderingContext.DrawRest(this.Element.NoteValue.Base, position, restStringIndex);
 
                 this.RenderingContext.DrawNoteValueAugment(this.Element.NoteValue,
                                                            restBounds.Right - this.RenderingContext.Location.X,
-                                                           restStringIndex);
+                                                           restStringIndex + 1);
 
                 if (this.Element.OwnerBeam == null && this.Element.NoteValue.Tuplet != null)
                 {

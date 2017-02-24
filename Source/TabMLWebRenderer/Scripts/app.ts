@@ -4,7 +4,8 @@ let tablatureStyle: TR.ITablatureStyle =
         stringCount: 6,
 
         smuflText: {
-            fontFamily: "Bravura"
+            fontFamily: "Bravura",
+            fontSize: 38
         },
 
         fallback: {

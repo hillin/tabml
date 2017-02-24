@@ -241,7 +241,7 @@ namespace TabML.Editor.Rendering
 
         public Task<Rect> DrawRest(BaseNoteValue noteValue, double position, double stringIndex)
         {
-            return this.PrimitiveRenderer.DrawRest(noteValue, this.Location.X + position, this.Owner.GetStringSpacePosition(stringIndex));
+            return this.PrimitiveRenderer.DrawRest(noteValue, this.Location.X + position, this.Owner.GetStringPosition(stringIndex));
         }
 
         public Task<Rect> MeasureRest(BaseNoteValue noteValue)

@@ -4,7 +4,7 @@ import OffBarDirection = Core.MusicTheory.OffBarDirection;
 import NoteValueAugment = Core.MusicTheory.NoteValueAugment;
 import GlissDirection = Core.MusicTheory.GlissDirection;
 import NoteRenderingFlags = TR.NoteRenderingFlags;
-import Smufl = Core.Smufl;
+import Smufl = Core.Smufl.Smufl;
 
 type point = { x: number, y: number };
 
@@ -41,10 +41,10 @@ namespace TR {
             return this.style.bar.lineHeight / ResourceManager.referenceBarSpacing;
         }
 
-        private getSmuflTextStyle(size: number) {
+        private getSmuflTextStyle(size: number = null) {
             return {
                 fontFamily: this.style.smuflText.fontFamily,
-                fontSize: size
+                fontSize: size !== null ? size : this.style.smuflText.fontSize
             };
         }
 
@@ -382,49 +382,18 @@ namespace TR {
             }
         }
 
-        private getRestImage(noteValue: BaseNoteValue): string {
-            switch (noteValue) {
-                case BaseNoteValue.Large:
-                case BaseNoteValue.Long:
-                case BaseNoteValue.Double:
-                case BaseNoteValue.Whole:
-                case BaseNoteValue.Half:
-                    return ResourceManager.getTablatureResource("rest_2.svg");
-                case BaseNoteValue.Quater:
-                    return ResourceManager.getTablatureResource("rest_4.svg");
-                case BaseNoteValue.Eighth:
-                    return ResourceManager.getTablatureResource("rest_8.svg");
-                case BaseNoteValue.Sixteenth:
-                    return ResourceManager.getTablatureResource("rest_16.svg");
-                case BaseNoteValue.ThirtySecond:
-                    return ResourceManager.getTablatureResource("rest_32.svg");
-                case BaseNoteValue.SixtyFourth:
-                    return ResourceManager.getTablatureResource("rest_64.svg");
-                case BaseNoteValue.HundredTwentyEighth:
-                    return ResourceManager.getTablatureResource("rest_128.svg");
-                case BaseNoteValue.TwoHundredFiftySixth:
-                    return ResourceManager.getTablatureResource("rest_256.svg");
-                default:
-                    return null;
-            }
-        }
-
         async measureRest(noteValue: BaseNoteValue) {
-            let group = await this.loadSVGFromURLAsync(this.getRestImage(noteValue));
-
-            group.originX = "center";
-            group.originY = "center";
-            group.scale(this.getScale());
-            this.callbackWith(group.getBoundingRect());
+            let text = this.drawText(Smufl.GetRest(noteValue), 0, 0, "center", "center", this.getSmuflTextStyle());
+            let bounds = text.getBoundingRect();
+            this.canvas.remove(text);
+            this.callbackWith(bounds);
         }
 
         async drawRest(noteValue: BaseNoteValue, x: number, y: number) {
-            let group = await this.drawSVGFromURLAsync(this.getRestImage(noteValue), x, y, group => {
-                group.originX = "center";
-                group.originY = "center";
-                group.scale(this.getScale());
-            });
-            this.callbackWith(group.getBoundingRect());
+
+            let text = this.drawText(Smufl.GetRest(noteValue), x, y, "center", "center", this.getSmuflTextStyle());
+
+            this.callbackWith(text.getBoundingRect());
         }
 
         drawConnectionInstruction(x: number, y: number, instruction: string, direction: OffBarDirection): IBoundingBox {
@@ -767,7 +736,7 @@ namespace TR {
             }
 
             let cellX = x;
-            let textStyle: any = this.getSmuflTextStyle(32);
+            let textStyle: any = this.getSmuflTextStyle();
             y -= this.style.chordDiagram.specialStringTokenPadding.bottom;
 
             tokens.forEach(t => {

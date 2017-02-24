@@ -42,7 +42,7 @@ namespace TabML.Editor
         public double BeamThickness { get; set; } = 4;
         public double BeamSpacing { get; set; } = 4;
         public double MaximumSemiBeamWidth { get; set; } = 12;
-        public double NoteValueAugmentOffset { get; set; } = 8;
+        public double NoteValueAugmentOffset { get; set; } = 4;
 
         // ornament = tie instructions, accent marks etc.
         public double BeatOrnamentMargin { get; set; } = 4;
