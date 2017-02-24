@@ -46,6 +46,7 @@ namespace TabML.Editor.Rendering
         {
         }
         public abstract Task Render();
+        public abstract Task PostRender();
     }
     
 

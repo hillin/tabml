@@ -155,13 +155,28 @@ namespace TR {
 
         private drawAdditionalForNote(bounds: IBoundingBox, flags: NoteRenderingFlags): IBoundingBox {
 
-            if ((flags & NoteRenderingFlags.HalfOrLonger) === NoteRenderingFlags.HalfOrLonger && this.style.note.circleOnLongNotes)
-                bounds = this.drawCircleAroundLongNote(bounds);
-
             if ((flags & NoteRenderingFlags.Ghost) === NoteRenderingFlags.Ghost)
                 bounds = this.drawGhostNoteParenthese(bounds);
 
             return bounds;
+        }
+
+        drawEllipseAroundBounds(bounds: IBoundingBox): IBoundingBox {
+
+            var ellipse = new fabric.Ellipse({
+                left: bounds.left + bounds.width / 2,
+                top: bounds.top + bounds.height / 2,
+                rx: bounds.width / Math.SQRT2 - this.style.note.longNoteEllipsePadding,
+                ry: bounds.height / Math.SQRT2 - this.style.note.longNoteEllipsePadding * bounds.height / bounds.width,
+                originX: "center",
+                originY: "center",
+                stroke: "black",
+                fill: ""
+            });
+
+            this.canvas.add(ellipse);
+
+            return ellipse.getBoundingRect();
         }
 
         private drawNaturalHarmonicAsync(x: number, y: number): Promise<fabric.IPathGroup> {
@@ -181,21 +196,6 @@ namespace TR {
             });
         }
 
-        private drawCircleAroundLongNote(bounds: IBoundingBox): IBoundingBox {
-            let radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
-            let circle = new fabric.Circle({
-                radius: radius,
-                left: bounds.left + bounds.width / 2,
-                top: bounds.top + bounds.height / 2,
-                originX: "center",
-                originY: "center",
-                stroke: "black",
-                fill: ""
-            });
-            this.canvas.add(circle);
-
-            return PrimitiveRenderer.inflateBounds(bounds, circle.getBoundingRect());
-        }
 
         drawLyrics(lyrics: string, x: number, y: number): IBoundingBox {
             return this.drawText(lyrics, x, y, "left", "top", this.style.lyrics).getBoundingRect();
@@ -419,11 +419,12 @@ namespace TR {
         }
 
         async drawRest(noteValue: BaseNoteValue, x: number, y: number) {
-            await this.drawSVGFromURLAsync(this.getRestImage(noteValue), x, y, group => {
+            let group = await this.drawSVGFromURLAsync(this.getRestImage(noteValue), x, y, group => {
                 group.originX = "center";
                 group.originY = "center";
                 group.scale(this.getScale());
             });
+            this.callbackWith(group.getBoundingRect());
         }
 
         drawConnectionInstruction(x: number, y: number, instruction: string, direction: OffBarDirection): IBoundingBox {
@@ -902,7 +903,7 @@ namespace TR {
                     else if (note.fret < fret) {
 
                         // break barre if it's blocking a lower fret note
-                        if(barredStrings.length > 0) {
+                        if (barredStrings.length > 0) {
                             this.drawChordBarre(barredStrings, x, fretY);
                             barredStrings.length = 0;
                         }
@@ -1057,5 +1058,7 @@ namespace TR {
 
             return bounds;
         }
+
+
     }
 }

@@ -37,8 +37,8 @@ namespace TR {
 
         note: {
             margin: number,
-            circleOnLongNotes: boolean,
-            longNoteCirclePadding: number,
+            ellipseAroundLongNotes: boolean,
+            longNoteEllipsePadding: number,
             dot: {
                 radius: number,
                 offset: number,

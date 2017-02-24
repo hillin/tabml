@@ -2380,8 +2380,8 @@ let tablatureStyle = {
     },
     note: {
         margin: 2,
-        circleOnLongNotes: true,
-        longNoteCirclePadding: 1,
+        ellipseAroundLongNotes: true,
+        longNoteEllipsePadding: 1,
         dot: {
             radius: 1.5,
             offset: 3,
@@ -2686,10 +2686,9 @@ var TR;
 (function (TR) {
     var NoteRenderingFlags;
     (function (NoteRenderingFlags) {
-        NoteRenderingFlags[NoteRenderingFlags["HalfOrLonger"] = 1] = "HalfOrLonger";
-        NoteRenderingFlags[NoteRenderingFlags["Ghost"] = 2] = "Ghost";
-        NoteRenderingFlags[NoteRenderingFlags["NaturalHarmonic"] = 4] = "NaturalHarmonic";
-        NoteRenderingFlags[NoteRenderingFlags["ArtificialHarmonic"] = 8] = "ArtificialHarmonic";
+        NoteRenderingFlags[NoteRenderingFlags["Ghost"] = 1] = "Ghost";
+        NoteRenderingFlags[NoteRenderingFlags["NaturalHarmonic"] = 2] = "NaturalHarmonic";
+        NoteRenderingFlags[NoteRenderingFlags["ArtificialHarmonic"] = 4] = "ArtificialHarmonic";
     })(NoteRenderingFlags = TR.NoteRenderingFlags || (TR.NoteRenderingFlags = {}));
 })(TR || (TR = {}));
 var BarLine = Core.MusicTheory.BarLine;
@@ -2802,11 +2801,23 @@ var TR;
             });
         }
         drawAdditionalForNote(bounds, flags) {
-            if ((flags & TR.NoteRenderingFlags.HalfOrLonger) === TR.NoteRenderingFlags.HalfOrLonger && this.style.note.circleOnLongNotes)
-                bounds = this.drawCircleAroundLongNote(bounds);
             if ((flags & TR.NoteRenderingFlags.Ghost) === TR.NoteRenderingFlags.Ghost)
                 bounds = this.drawGhostNoteParenthese(bounds);
             return bounds;
+        }
+        drawEllipseAroundBounds(bounds) {
+            var ellipse = new fabric.Ellipse({
+                left: bounds.left + bounds.width / 2,
+                top: bounds.top + bounds.height / 2,
+                rx: bounds.width / Math.SQRT2 - this.style.note.longNoteEllipsePadding,
+                ry: bounds.height / Math.SQRT2 - this.style.note.longNoteEllipsePadding * bounds.height / bounds.width,
+                originX: "center",
+                originY: "center",
+                stroke: "black",
+                fill: ""
+            });
+            this.canvas.add(ellipse);
+            return ellipse.getBoundingRect();
         }
         drawNaturalHarmonicAsync(x, y) {
             let imageFile = ResourceManager.getTablatureResource("natural_harmonic.svg");
@@ -2821,20 +2832,6 @@ var TR;
                 group.originX = "center";
                 group.originY = "center";
             });
-        }
-        drawCircleAroundLongNote(bounds) {
-            let radius = Math.max(bounds.width, bounds.height) / 2 + this.style.note.longNoteCirclePadding;
-            let circle = new fabric.Circle({
-                radius: radius,
-                left: bounds.left + bounds.width / 2,
-                top: bounds.top + bounds.height / 2,
-                originX: "center",
-                originY: "center",
-                stroke: "black",
-                fill: ""
-            });
-            this.canvas.add(circle);
-            return PrimitiveRenderer.inflateBounds(bounds, circle.getBoundingRect());
         }
         drawLyrics(lyrics, x, y) {
             return this.drawText(lyrics, x, y, "left", "top", this.style.lyrics).getBoundingRect();
@@ -3038,11 +3035,12 @@ var TR;
         }
         drawRest(noteValue, x, y) {
             return __awaiter(this, void 0, void 0, function* () {
-                yield this.drawSVGFromURLAsync(this.getRestImage(noteValue), x, y, group => {
+                let group = yield this.drawSVGFromURLAsync(this.getRestImage(noteValue), x, y, group => {
                     group.originX = "center";
                     group.originY = "center";
                     group.scale(this.getScale());
                 });
+                this.callbackWith(group.getBoundingRect());
             });
         }
         drawConnectionInstruction(x, y, instruction, direction) {

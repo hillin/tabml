@@ -60,6 +60,14 @@ namespace TabML.Editor.Rendering
             this.RenderingContext.Owner.SetNoteBoundingBox(this.OwnerBeat.Element.OwnerColumn.ColumnIndex, this.Element.String,
                                                            bounds);
 
+            if (this.OwnerBeat.Element.NoteValue.Augment != NoteValueAugment.None)
+            {
+                var spaceOffset = this.OwnerBeat.Element.GetStemRenderVoicePart() == VoicePart.Treble ? 0 : 1;
+                this.RenderingContext.Owner.DrawNoteValueAugment(this.OwnerBeat.Element.NoteValue,
+                                                                 bounds.Right - this.RenderingContext.Owner.Location.X,
+                                                                 this.Element.String + spaceOffset);
+            }
+
             if (this.IsTied)
             {
                 var tiePosition = this.Element.TiePosition ?? this.OwnerBeat.Element.GetRenderTiePosition();
@@ -109,9 +117,6 @@ namespace TabML.Editor.Rendering
         private NoteRenderingFlags GetNoteRenderingFlags()
         {
             var flags = NoteRenderingFlags.None;
-
-            if (this.OwnerBeat.Element.NoteValue.Base >= BaseNoteValue.Half)
-                flags |= NoteRenderingFlags.HalfOrLonger;
 
             if (!this.IsTied)
             {

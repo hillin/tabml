@@ -131,8 +131,8 @@ namespace TabML.Editor
             => this.InvokeRenderMethodReturnBoundingBox("drawBeam", x1, y1, x2, y2);
         public void DrawNoteValueAugment(NoteValueAugment augment, double x, double y)
             => this.InvokeRenderMethod("drawNoteValueAugment", (int)augment, x, y);
-        public void DrawRest(BaseNoteValue noteValue, double x, double y)
-            => this.InvokeRenderMethod("drawRest", (int)noteValue, x, y);
+        public Task<Rect> DrawRest(BaseNoteValue noteValue, double x, double y)
+            => this.InvokeAsyncRenderMethodReturnBoundingBox("drawRest", (int)noteValue, x, y);
         public Task<Rect> MeasureRest(BaseNoteValue noteValue)
             => this.InvokeAsyncRenderMethodReturnBoundingBox("measureRest", noteValue);
         public Task<Rect> DrawTuplet(int tuplet, double x, double y)
@@ -301,6 +301,18 @@ namespace TabML.Editor
             }
 
             return this.InvokeRenderMethodReturnBoundingBox("drawChord", x, y, name, new JsonString(fingering));
+        }
+
+        public async Task<Rect> DrawEllipseAroundNotes(Rect bounds)
+        {
+            var builder = new StringBuilder();
+            builder.Append($"renderer.drawEllipseAroundBounds({{ left: {bounds.X}, top: {bounds.Y}, width: {bounds.Width}, height: {bounds.Height} }});");
+            
+            Debug.WriteLine(builder.ToString());
+
+            var task = await this.BrowserMainFrame.EvaluateScriptAsync(builder.ToString());
+            var result = (Dictionary<string, object>)task.Result;
+            return PrimitiveRenderer.CreateBoundingBox(result);
         }
     }
 }

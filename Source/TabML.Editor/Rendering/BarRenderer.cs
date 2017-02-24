@@ -196,6 +196,9 @@ namespace TabML.Editor.Rendering
             if (_barRenderingContext.IsSectionRenderingPostponed)
                 await this.RenderSection();
 
+            foreach (var renderer in _voiceRenderers)
+                await renderer.PostRender();
+
             foreach (var barColumnRenderer in _columnRenderers)
                 await barColumnRenderer.PostRender();
 

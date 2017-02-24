@@ -57,8 +57,8 @@ let tablatureStyle: TR.ITablatureStyle =
 
         note: {
             margin: 2,
-            circleOnLongNotes: true,
-            longNoteCirclePadding: 1,
+            ellipseAroundLongNotes: true,
+            longNoteEllipsePadding: 1,
             dot: {
                 radius: 1.5,
                 offset: 3,

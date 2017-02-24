@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TabML.Core.Document;
@@ -71,6 +72,12 @@ namespace TabML.Editor.Rendering
                     await this.RenderingContext.DrawTuplet(this.Element.Tuplet.Value, tupletX, this.Element.GetStemRenderVoicePart());
                 }
             }
+        }
+
+        public override async Task PostRender()
+        {
+            foreach (var renderer in _beatElementRenderers)
+                await renderer.PostRender();
         }
 
         private async Task<double> CalculateBeamOffset()

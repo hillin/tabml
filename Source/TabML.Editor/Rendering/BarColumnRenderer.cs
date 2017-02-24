@@ -119,7 +119,32 @@ namespace TabML.Editor.Rendering
 
         public async Task Render()
         {
+            var notes =
+                this.Element.VoiceBeats.SelectMany(
+                        b => b.NotesDefiner.Notes.Select(n => new { n.String, NoteValue = b.NoteValue.Base }))
+                    .OrderBy(n => n.String);
 
+            var ellipseStrings = new List<int>();
+
+            foreach (var note in notes)
+            {
+                if (note.NoteValue >= BaseNoteValue.Half)
+                {
+                    ellipseStrings.Add(note.String);
+                    continue;
+                }
+
+                if (ellipseStrings.Count > 0)
+                {
+                    await this.RenderingContext.DrawEllipseAroundNotes(this.Element.ColumnIndex, ellipseStrings.ToArray());
+                    ellipseStrings.Clear();
+                }
+            }
+
+            if (ellipseStrings.Count > 0)
+            {
+                await this.RenderingContext.DrawEllipseAroundNotes(this.Element.ColumnIndex, ellipseStrings.ToArray());
+            }
         }
     }
 }

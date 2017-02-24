@@ -40,5 +40,10 @@ namespace TabML.Editor.Rendering
                 await renderer.Render();
         }
 
+        public async Task PostRender()
+        {
+            foreach (var renderer in _beatElementRenderers)
+                await renderer.PostRender();
+        }
     }
 }

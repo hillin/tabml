@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -114,17 +115,20 @@ namespace TabML.Editor.Rendering
             return (hasHarmonics ? this.Style.NoteAlternationOffsetWithHarmonics : this.Style.NoteAlternationOffset) * offsetRatio;
         }
 
-        public void GetStemOffsetRange(int stringIndex, VoicePart voicePart, out double from, out double to)
+        public void GetStemOffsetRange(int columnIndex, int stringIndex, VoicePart voicePart, out double from, out double to)
         {
+            var noteBounds = this.GetNoteBoundingBox(columnIndex, stringIndex);
             if (voicePart == VoicePart.Treble)
             {
-                from = this.Owner.GetStringSpacePosition(stringIndex) - this.Style.NoteStemOffset;
+                var baseFrom = noteBounds?.Top ?? this.Owner.GetStringSpacePosition(stringIndex);
+                from = baseFrom - this.Style.NoteStemOffset;
                 to = Math.Min(from - this.Style.NoteStemHeight,
                                this.Owner.GetBodyCeiling() - this.Style.MinimumNoteTailOffset);
             }
             else
             {
-                from = this.Owner.GetStringSpacePosition(stringIndex + 1) + this.Style.NoteStemOffset;
+                var baseFrom = noteBounds?.Bottom ?? this.Owner.GetStringSpacePosition(stringIndex + 1);
+                from = baseFrom + this.Style.NoteStemOffset;
                 to = Math.Max(from + this.Style.NoteStemHeight, this.Owner.GetBodyFloor() + this.Style.MinimumNoteTailOffset);
             }
 
@@ -212,16 +216,11 @@ namespace TabML.Editor.Rendering
             return voicePart == VoicePart.Treble ? offset : -offset;
         }
 
-        public void DrawNoteValueAugment(NoteValue noteValue, double position,
-                                         int stringIndex, VoicePart voicePart)
+        public void DrawNoteValueAugment(NoteValue noteValue, double position, double stringIndex)
         {
             var x = this.Location.X + position + this.Style.NoteValueAugmentOffset;
-
-            var spaceOffset = voicePart == VoicePart.Treble ? 0 : 1;
-
-            var y = this.Owner.GetStringSpacePosition(stringIndex + spaceOffset);
+            var y = this.Owner.GetStringSpacePosition(stringIndex);
             this.PrimitiveRenderer.DrawNoteValueAugment(noteValue.Augment, x, y);
-
         }
 
         public async Task DrawBeam(BaseNoteValue noteValue, double x0, double y0, double x1, double y1, VoicePart voicePart)
@@ -240,12 +239,9 @@ namespace TabML.Editor.Rendering
             this.Owner.EnsureHeightSloped(voicePart, x0, x1, y0, y1, this.Style.NoteTailVerticalMargin + beamHalfThickness, this.Style.NoteStemHorizontalMargin);
         }
 
-        public void DrawRest(BaseNoteValue noteValue, double position, VoicePart voicePart)
+        public Task<Rect> DrawRest(BaseNoteValue noteValue, double position, double stringIndex)
         {
-            var y = voicePart == VoicePart.Treble
-                ? this.Owner.GetStringSpacePosition(0)   // above the first line
-                : this.Owner.GetStringSpacePosition(this.Style.StringCount - 1);  // between the 5th and 6th line
-            this.PrimitiveRenderer.DrawRest(noteValue, this.Location.X + position, y);
+            return this.PrimitiveRenderer.DrawRest(noteValue, this.Location.X + position, this.Owner.GetStringSpacePosition(stringIndex));
         }
 
         public Task<Rect> MeasureRest(BaseNoteValue noteValue)
@@ -489,5 +485,28 @@ namespace TabML.Editor.Rendering
             this.Owner.EnsureHeight(VoicePart.Treble, bounds);
         }
 
+        [SuppressMessage("ReSharper", "PossibleInvalidOperationException")]
+        public async Task DrawEllipseAroundNotes(int columnIndex, int[] strings)
+        {
+            var bounds = this.GetNoteBoundingBox(columnIndex, strings[0]).Value;
+            var width = Math.Max(bounds.Width, bounds.Height);
+
+            for (var i = 1; i < strings.Length; ++i)
+            {
+                var currentBounds = this.GetNoteBoundingBox(columnIndex, strings[i]).Value;
+                bounds.Union(currentBounds);
+                width = Math.Max(width, Math.Max(currentBounds.Width, currentBounds.Height));
+            }
+
+            if (bounds.Width < width)
+            {
+                bounds.X -= (width - bounds.Width) / 2;
+                bounds.Width = width;
+            }
+
+            var ellipseBounds = await this.PrimitiveRenderer.DrawEllipseAroundNotes(bounds);
+            for (var stringIndex = strings.Min(); stringIndex <= strings.Max(); ++stringIndex)
+                this.UpdateHorizontalBarLine(stringIndex, ellipseBounds);
+        }
     }
 }

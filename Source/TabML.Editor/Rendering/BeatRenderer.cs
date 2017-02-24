@@ -46,15 +46,16 @@ namespace TabML.Editor.Rendering
 
         public override async Task Render()
         {
-            var beamSlope = this.RenderingContext.GetBeamSlope(this.Element);
-
-            await this.DrawHead(beamSlope);
-
+            await this.DrawHead();
             if (!this.Element.IsRest)
-                await this.DrawStemAndFlag(beamSlope);
+                await this.DrawStemAndFlag();
 
-            this.DrawNoteValueAugment();
             await this.DrawBeatOrnaments();
+        }
+
+        public override Task PostRender()
+        {
+            return Task.FromResult(0);
         }
 
         private async Task DrawBeatOrnaments()
@@ -123,28 +124,26 @@ namespace TabML.Editor.Rendering
             }
         }
 
-        private void DrawNoteValueAugment()
+        private double GetRestRenderStringSpaceIndex()
         {
-            if (this.Element.NoteValue.Augment != NoteValueAugment.None)
-            {
-                var stemRenderVoicePart = this.Element.GetStemRenderVoicePart();
-                foreach (var stringIndex in this.Element.NotesDefiner.GetNoteStrings())
-                {
-                    this.RenderingContext.DrawNoteValueAugment(this.Element.NoteValue,
-                                                               this.GetNoteRenderingPosition(stringIndex),
-                                                               stringIndex, stemRenderVoicePart);
-                }
+            if (this.Element.OwnerBar.HasSingularVoice())
+                return this.RenderingContext.Style.StringCount / 2.0;
 
-            }
+            return this.Element.VoicePart == VoicePart.Treble ? 0 : this.RenderingContext.Style.StringCount - 1;
         }
 
-
-        public async Task DrawHead(BeamSlope beamSlope)
+        public async Task DrawHead()
         {
             if (this.Element.IsRest)
             {
                 var position = this.Element.OwnerColumn.GetPosition(this.RenderingContext);
-                this.RenderingContext.DrawRest(this.Element.NoteValue.Base, position, this.Element.VoicePart);
+                var restStringIndex = this.GetRestRenderStringSpaceIndex();
+                var restBounds = await this.RenderingContext.DrawRest(this.Element.NoteValue.Base, position, restStringIndex);
+
+                this.RenderingContext.DrawNoteValueAugment(this.Element.NoteValue,
+                                                           restBounds.Right - this.RenderingContext.Location.X,
+                                                           restStringIndex);
+
                 if (this.Element.OwnerBeam == null && this.Element.NoteValue.Tuplet != null)
                 {
                     await this.RenderingContext.DrawTuplet(this.Element.NoteValue.Tuplet.Value, position, this.Element.GetStemRenderVoicePart());
@@ -158,7 +157,7 @@ namespace TabML.Editor.Rendering
 
                 foreach (var renderer in _noteRenderers.OrderBy(n => n.Element.Fret))
                 {
-                    await renderer.Render(beamSlope);
+                    await renderer.Render(this.RenderingContext.GetBeamSlope(this.Element));
                 }
 
                 // don't draw A.H. text or connection instructions for tied beat
@@ -211,7 +210,7 @@ namespace TabML.Editor.Rendering
         }
 
 
-        private async Task DrawStemAndFlag(BeamSlope beamSlope)
+        private async Task DrawStemAndFlag()
         {
             var stemTailPosition = 0.0;
 
@@ -220,11 +219,13 @@ namespace TabML.Editor.Rendering
 
             var notesDefinerBeat = this.Element.NotesDefiner;
 
+            var beamSlope = this.RenderingContext.GetBeamSlope(this.Element);
+
             var noteValue = this.Element.NoteValue;
             if (noteValue.Base <= BaseNoteValue.Half)
             {
                 double from;
-                this.RenderingContext.GetStemOffsetRange(notesDefinerBeat.GetOutmostStringIndex(), stemVoicePart, out from, out stemTailPosition);
+                this.RenderingContext.GetStemOffsetRange(this.Element.OwnerColumn.ColumnIndex, notesDefinerBeat.GetOutmostStringIndex(), stemVoicePart, out from, out stemTailPosition);
 
                 if (beamSlope != null)
                     stemTailPosition = beamSlope.GetY(position);
@@ -294,7 +295,7 @@ namespace TabML.Editor.Rendering
         public double GetStemTailPosition()
         {
             double from, to;
-            this.RenderingContext.GetStemOffsetRange(this.Element.GetOutmostStringIndex(), this.Element.GetStemRenderVoicePart(), out from, out to);
+            this.RenderingContext.GetStemOffsetRange(this.Element.OwnerColumn.ColumnIndex, this.Element.GetOutmostStringIndex(), this.Element.GetStemRenderVoicePart(), out from, out to);
             return this.Element.GetStemRenderVoicePart() == VoicePart.Treble ? Math.Min(from, to) : Math.Max(from, to);
         }
 
