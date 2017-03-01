@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TabML.Core.MusicTheory;
-using TabML.Core.String;
+using TabML.Core.MusicTheory.String;
 
 namespace TabML.Editor.Tablature.Layout
 {

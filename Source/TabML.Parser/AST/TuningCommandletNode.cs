@@ -2,7 +2,7 @@
 using System.Linq;
 using TabML.Core.Logging;
 using TabML.Core.Document;
-using TabML.Core.String;
+using TabML.Core.MusicTheory.String;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST

@@ -1,6 +1,4 @@
-﻿using TabML.Core.MusicTheory;
-
-namespace TabML.Core.String.Plucked
+﻿namespace TabML.Core.MusicTheory.String.Plucked
 {    /// <remarks>
      /// Part of this type is convertible to <see cref="BeatModifier"/>.
      /// </remarks>

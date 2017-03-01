@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using TabML.Core;
+using TabML.Core.Parsing;
 
 namespace TabML.Parser.Parsing
 {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using TabML.Core.Parsing;
 
 namespace TabML.Core.Document
 {

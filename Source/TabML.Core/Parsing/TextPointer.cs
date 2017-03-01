@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace TabML.Core
+namespace TabML.Core.Parsing
 {
     [DebuggerDisplay("{Row}:{Column}")]
     public struct TextPointer : IComparable<TextPointer>
@@ -38,9 +38,9 @@ namespace TabML.Core
             return new TextRange(this, this, source);
         }
 
-        public TextRange AsRange(TextPointer pointer, TextSource source)
+        public TextRange AsRange(TextPointer to, TextSource source)
         {
-            return new TextRange(pointer, pointer, source);
+            return new TextRange(this, to, source);
         }
 
         public int CompareTo(TextPointer other)
@@ -103,7 +103,7 @@ namespace TabML.Core
             }
         }
 
-        
-        
+
+
     }
 }

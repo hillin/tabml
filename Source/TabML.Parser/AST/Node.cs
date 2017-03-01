@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using TabML.Core;
 using TabML.Core.Logging;
+using TabML.Core.Parsing;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST

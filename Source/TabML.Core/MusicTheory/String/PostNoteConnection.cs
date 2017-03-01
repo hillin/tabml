@@ -1,6 +1,6 @@
-﻿namespace TabML.Core.String
+﻿namespace TabML.Core.MusicTheory.String
 {
-    public enum PostBeatConnection
+    public enum PostNoteConnection
     {
         None = 0,
         SlideOutToHigher = 4,

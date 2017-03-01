@@ -4,6 +4,7 @@ using TabML.Core;
 using TabML.Core.Logging;
 using TabML.Parser.AST;
 using TabML.Core.Document;
+using TabML.Core.Player;
 using TabML.Parser.Parsing.Bar;
 
 namespace TabML.Parser.Parsing

@@ -1,4 +1,5 @@
 ﻿using TabML.Core;
+using TabML.Core.Parsing;
 using TabML.Parser.AST;
 using TabML.Parser.Parsing.Bar;
 

@@ -2,6 +2,7 @@
 using TabML.Core;
 using TabML.Core.Document;
 using TabML.Core.Logging;
+using TabML.Core.Parsing;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST

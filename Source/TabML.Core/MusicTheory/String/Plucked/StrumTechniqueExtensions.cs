@@ -1,7 +1,6 @@
 ﻿using System;
-using TabML.Core.MusicTheory;
 
-namespace TabML.Core.String.Plucked
+namespace TabML.Core.MusicTheory.String.Plucked
 {
     public static class StrumTechniqueExtensions
     {

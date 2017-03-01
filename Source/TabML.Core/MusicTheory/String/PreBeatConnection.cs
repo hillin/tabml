@@ -1,4 +1,4 @@
-﻿namespace TabML.Core.String
+﻿namespace TabML.Core.MusicTheory.String
 {
     public enum PreBeatConnection
     {

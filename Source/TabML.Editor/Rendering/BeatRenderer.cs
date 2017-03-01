@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
-using TabML.Core.String.Plucked;
+using TabML.Core.MusicTheory.String.Plucked;
 using TabML.Editor.Tablature;
 using TabML.Editor.Tablature.Layout;
 

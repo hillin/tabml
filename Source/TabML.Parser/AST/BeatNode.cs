@@ -3,11 +3,11 @@ using System.Linq;
 using TabML.Core.MusicTheory;
 using TabML.Core.Document;
 using TabML.Core.Logging;
-using TabML.Core.String;
+using TabML.Core.MusicTheory.String;
 using TabML.Core.Style;
 using TabML.Parser.Parsing;
-using ChordStrumTechniqueEnum = TabML.Core.String.Plucked.ChordStrumTechnique;
-using StrumTechniqueEnum = TabML.Core.String.Plucked.StrumTechnique;
+using ChordStrumTechniqueEnum = TabML.Core.MusicTheory.String.Plucked.ChordStrumTechnique;
+using StrumTechniqueEnum = TabML.Core.MusicTheory.String.Plucked.StrumTechnique;
 
 namespace TabML.Parser.AST
 {

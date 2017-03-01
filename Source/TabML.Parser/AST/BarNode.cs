@@ -5,7 +5,7 @@ using System.Linq;
 using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
 using TabML.Core.Document;
-using TabML.Core.String.Plucked;
+using TabML.Core.MusicTheory.String.Plucked;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST

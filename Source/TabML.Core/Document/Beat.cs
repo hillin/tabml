@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using TabML.Core.MusicTheory;
-using TabML.Core.String;
-using TabML.Core.String.Plucked;
+using TabML.Core.MusicTheory.String;
+using TabML.Core.MusicTheory.String.Plucked;
 using TabML.Core.Style;
 
 namespace TabML.Core.Document
@@ -16,7 +16,7 @@ namespace TabML.Core.Document
         public bool IsTied { get; set; }
         public StrumTechnique StrumTechnique { get; set; } = StrumTechnique.None;
 
-        public bool HasBrushLikeStrumTechnique =>
+        public bool HasChordStrumTechnique =>
             this.StrumTechnique == StrumTechnique.ArpeggioDown
             || this.StrumTechnique == StrumTechnique.ArpeggioUp
             || this.StrumTechnique == StrumTechnique.BrushDown
@@ -76,18 +76,6 @@ namespace TabML.Core.Document
         public bool IsForceBeamStart { get; set; }
         public bool IsForceBeamEnd { get; set; }
 
-        public Beat()
-        {
-        }
-
-        public Beat GetTieHead()
-        {
-            var beat = this;
-            while (beat.IsTied && beat.PreviousBeat != null)
-                beat = beat.PreviousBeat;
-
-            return beat;
-        }
 
         public PreciseDuration GetDuration()
         {

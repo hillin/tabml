@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
-using TabML.Core.String.Plucked;
+using TabML.Core.MusicTheory.String.Plucked;
 using TabML.Editor.Tablature;
 
 namespace TabML.Editor.Rendering

@@ -1,4 +1,6 @@
-﻿namespace TabML.Core.Logging
+﻿using TabML.Core.Parsing;
+
+namespace TabML.Core.Logging
 {
     public interface ILogger
     {

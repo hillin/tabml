@@ -128,8 +128,8 @@
     <Compile Include="Document\Voice.cs" />
     <Compile Include="Document\VoicePart.cs" />
     <Compile Include="Document\VoicePartExtensions.cs" />
-    <Compile Include="LeftHandFingerIndex.cs" />
-    <Compile Include="LeftHandFingerIndexExtensions.cs" />
+    <Compile Include="Player\LeftHandFingerIndex.cs" />
+    <Compile Include="Player\LeftHandFingerIndexExtensions.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="MusicTheory\BeatAccentExtensions.cs" />
@@ -148,8 +148,8 @@
     <Compile Include="MusicTheory\BaseNoteValueExtensions.cs">
       <DependentUpon>BaseNoteValue.cs</DependentUpon>
     </Compile>
-    <Compile Include="String\Plucked\CapoInfo.cs" />
-    <Compile Include="String\Plucked\ChordStrumTechnique.cs" />
+    <Compile Include="MusicTheory\String\Plucked\CapoInfo.cs" />
+    <Compile Include="MusicTheory\String\Plucked\ChordStrumTechnique.cs" />
     <Compile Include="MusicTheory\GlissDirection.cs" />
     <Compile Include="MusicTheory\HoldAndPauseExtensions.cs" />
     <Compile Include="MusicTheory\KnownTuningAttribute.cs" />
@@ -162,7 +162,7 @@
       <DependentUpon>PreciseDuration.cs</DependentUpon>
     </Compile>
     <Compile Include="MusicTheory\StaffType.cs" />
-    <Compile Include="String\Plucked\StrumTechniqueExtensions.cs" />
+    <Compile Include="MusicTheory\String\Plucked\StrumTechniqueExtensions.cs" />
     <Compile Include="MusicTheory\Tempo.cs" />
     <Compile Include="MusicTheory\Accidental.cs" />
     <Compile Include="MusicTheory\AccidentalExtensions.cs">
@@ -198,37 +198,37 @@
       <DependentUpon>NoteValueAugment.cs</DependentUpon>
     </Compile>
     <Compile Include="MusicTheory\OpenBarLine.cs" />
-    <Compile Include="String\NoteConnection.cs" />
-    <Compile Include="String\PreBeatConnection.cs">
+    <Compile Include="MusicTheory\String\NoteConnection.cs" />
+    <Compile Include="MusicTheory\String\PreBeatConnection.cs">
       <DependentUpon>NoteConnection.cs</DependentUpon>
     </Compile>
-    <Compile Include="String\PostBeatConnection.cs">
+    <Compile Include="MusicTheory\String\PostBeatConnection.cs">
       <DependentUpon>NoteConnection.cs</DependentUpon>
     </Compile>
-    <Compile Include="String\PostNoteConnection.cs">
+    <Compile Include="MusicTheory\String\PostNoteConnection.cs">
       <DependentUpon>NoteConnection.cs</DependentUpon>
     </Compile>
-    <Compile Include="String\PreNoteConnection.cs">
+    <Compile Include="MusicTheory\String\PreNoteConnection.cs">
       <DependentUpon>NoteConnection.cs</DependentUpon>
     </Compile>
-    <Compile Include="String\Plucked\StrumTechnique.cs" />
+    <Compile Include="MusicTheory\String\Plucked\StrumTechnique.cs" />
     <Compile Include="Style\VerticalDirection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MusicTheory\Time.cs" />
     <Compile Include="MusicTheory\Times.cs">
       <DependentUpon>Time.cs</DependentUpon>
     </Compile>
-    <Compile Include="String\Tuning.cs" />
-    <Compile Include="String\Tunings.cs">
+    <Compile Include="MusicTheory\String\Tuning.cs" />
+    <Compile Include="MusicTheory\String\Tunings.cs">
       <DependentUpon>Tuning.cs</DependentUpon>
     </Compile>
-    <Compile Include="RightHandFingerIndex.cs" />
-    <Compile Include="RightHandFingerIndexExtensions.cs">
+    <Compile Include="Player\RightHandFingerIndex.cs" />
+    <Compile Include="Player\RightHandFingerIndexExtensions.cs">
       <DependentUpon>RightHandFingerIndex.cs</DependentUpon>
     </Compile>
-    <Compile Include="TextPointer.cs" />
-    <Compile Include="TextRange.cs" />
-    <Compile Include="TextSource.cs" />
+    <Compile Include="Parsing\TextPointer.cs" />
+    <Compile Include="Parsing\TextRange.cs" />
+    <Compile Include="Parsing\TextSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

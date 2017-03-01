@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using TabML.Core.MusicTheory;
-using TabML.Core.String;
+using TabML.Core.MusicTheory.String;
 using TabML.Core.Style;
 
 namespace TabML.Core.Document

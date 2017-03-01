@@ -45,7 +45,7 @@ namespace TabML.Editor.Rendering
             {
                 if (this.Column.VoiceBeats.Count == 0)
                     return false;
-                return this.Column.VoiceBeats.Any(b=>b.HasBrushLikeStrumTechnique);
+                return this.Column.VoiceBeats.Any(b=>b.HasChordStrumTechnique);
             }
         }
 
@@ -58,7 +58,7 @@ namespace TabML.Editor.Rendering
                 _occupiedStrings = new bool[Defaults.Strings];
                 foreach (var beat in this.Column.VoiceBeats)
                 {
-                    var targetBeat = beat.IsTied ? beat.GetTieHead() : beat;
+                    var targetBeat = beat.NotesDefiner;
                     if (targetBeat == null || targetBeat.IsRest)
                         continue;
 

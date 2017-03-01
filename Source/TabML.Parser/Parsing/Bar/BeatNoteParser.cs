@@ -1,6 +1,6 @@
 ﻿using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
-using TabML.Core.String;
+using TabML.Core.MusicTheory.String;
 using TabML.Core.Style;
 using TabML.Parser.AST;
 

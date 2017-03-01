@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TabML.Core.Player;
 
 namespace TabML.Core.Document
 {

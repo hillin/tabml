@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
-using TabML.Core.String;
+using TabML.Core.MusicTheory.String;
 using TabML.Editor.Tablature.Layout;
 
 namespace TabML.Editor.Rendering

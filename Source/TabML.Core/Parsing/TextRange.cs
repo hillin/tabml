@@ -2,15 +2,12 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-namespace TabML.Core
+namespace TabML.Core.Parsing
 {
     [DebuggerDisplay("{From} - {To}")]
     [DebuggerTypeProxy(typeof(TextRange.DebugView))]
     public struct TextRange : IEquatable<TextRange>
     {
-
-
-
         internal class DebugView
         {
             private readonly TextRange _textRange;
@@ -59,38 +56,16 @@ namespace TabML.Core
 #endif
         }
 
-        internal TextRange(TextPointer position, TextSource source)
-            : this(position, position, source)
-        {
-
-        }
-
         internal TextRange(TextPointer from, int length, TextSource source)
-            : this(from, new TextPointer(from.Row, from.Column + length), source)
-        {
-
-        }
-
-        internal TextRange(TextPointer @base, int offset, int length, TextSource source)
-            : this(new TextPointer(@base.Row, @base.Column + offset), length, source)
+            : this(from, from.OffsetColumn(length), source)
         {
 
         }
 
         internal TextRange(TextRange readRange, Capture capture, TextSource source)
-            : this(readRange.From, capture.Index, capture.Length, source)
+            : this(readRange.From.OffsetColumn(capture.Index), capture.Length, source)
         {
 
-        }
-
-        public TextRange Offset(TextPointer @base)
-        {
-            return new TextRange(this.From.Offset(@base), this.To.Offset(@base), this.Source);
-        }
-
-        public TextRange Extend(int size)
-        {
-            return new TextRange(this.From, this.To.OffsetColumn(size), this.Source);
         }
 
         public TextRange Union(TextRange range)

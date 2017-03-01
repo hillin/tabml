@@ -2,7 +2,8 @@
 using TabML.Core;
 using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
-using TabML.Core.String;
+using TabML.Core.MusicTheory.String;
+using TabML.Core.Parsing;
 using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing.Commandlets

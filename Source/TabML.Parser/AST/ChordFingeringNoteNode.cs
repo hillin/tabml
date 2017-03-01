@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TabML.Core;
 using TabML.Core.Document;
+using TabML.Core.Player;
 using TabML.Parser.Parsing.Bar;
 
 namespace TabML.Parser.AST
