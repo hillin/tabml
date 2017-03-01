@@ -2,6 +2,7 @@
 using System.Linq;
 using TabML.Core.Logging;
 using TabML.Core.Document;
+using TabML.Core.String;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
@@ -60,7 +61,7 @@ namespace TabML.Parser.AST
             {
                 Range = this.Range,
                 Tuning =
-                    new Core.MusicTheory.Tuning(this.Name?.Value, this.StringTunings.Select(t => t.ToPitch()).ToArray())
+                    new Tuning(this.Name?.Value, this.StringTunings.Select(t => t.ToPitch()).ToArray())
             };
 
             return true;

@@ -1,4 +1,4 @@
-﻿namespace TabML.Core.MusicTheory
+﻿namespace TabML.Core.String.Plucked
 {
     public struct CapoInfo
     {

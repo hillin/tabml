@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TabML.Core;
 using TabML.Core.Document;
+using TabML.Core.Style;
 using TabML.Parser.Document;
 
 namespace TabML.Editor.Tablature.Test

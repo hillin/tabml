@@ -168,8 +168,8 @@ export let SmuflRanges : any ={
         "range_end": 0xEB8F, 
         "range_start": 0xEB60
     }, 
-    "articulation": {
-        "description": "Articulation", 
+    "BeatModifier": {
+        "description": "BeatModifier", 
         "glyphs": [
             "articAccentAbove", 
             "articAccentBelow", 
@@ -206,7 +206,7 @@ export let SmuflRanges : any ={
         "range_start": 0xE4A0
     }, 
     "articulationSupplement": {
-        "description": "Articulation supplement", 
+        "description": "BeatModifier supplement", 
         "glyphs": [
             "articSoftAccentAbove", 
             "articSoftAccentBelow", 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TabML.Core.MusicTheory;
+using TabML.Core.String.Plucked;
 
 namespace TabML.Core.Document
 {

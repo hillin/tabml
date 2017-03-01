@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
+using TabML.Core.String;
+using TabML.Core.Style;
 
 namespace TabML.Editor.Rendering
 {
@@ -84,7 +86,7 @@ namespace TabML.Editor.Rendering
         }
 
         public async Task DrawConnection(IRootElementRenderer rootRenderer, NoteConnection connection, Beat from,
-                                         Beat to, int stringIndex, TiePosition tiePosition)
+                                         Beat to, int stringIndex, Core.Style.VerticalDirection tiePosition)
         {
             var bounds = await
                 NoteConnectionRenderer.DrawConnection(rootRenderer, connection, from, to, stringIndex, tiePosition);

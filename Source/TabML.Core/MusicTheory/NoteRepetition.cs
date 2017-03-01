@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TabML.Core
+namespace TabML.Core.MusicTheory
 {
-    public enum ChordBarreStyle
+    public enum NoteRepetition
     {
-        Brace,
-        Lined
+        None,
+        Tremolo
     }
 }

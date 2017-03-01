@@ -4,6 +4,8 @@ using System.Diagnostics;
 using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
 using TabML.Core.Document;
+using TabML.Core.String;
+using TabML.Core.Style;
 using TabML.Parser.Parsing;
 
 namespace TabML.Parser.AST
@@ -13,7 +15,7 @@ namespace TabML.Parser.AST
         public LiteralNode<int> String { get; set; }
         public LiteralNode<int> Fret { get; set; }
         public ExistencyNode Tie { get; set; }
-        public LiteralNode<TiePosition> TiePosition { get; set; }
+        public LiteralNode<VerticalDirection> TiePosition { get; set; }
         public LiteralNode<PreNoteConnection> PreConnection { get; set; }
         public LiteralNode<PostNoteConnection> PostConnection { get; set; }
         public LiteralNode<NoteEffectTechnique> EffectTechnique { get; set; }

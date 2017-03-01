@@ -2,6 +2,9 @@
 using System.Linq;
 using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
+using TabML.Core.String;
+using TabML.Core.String.Plucked;
+using TabML.Core.Style;
 using TabML.Parser.AST;
 
 // ReSharper disable InconsistentNaming
@@ -17,7 +20,7 @@ namespace TabML.Parser.Parsing.Bar
             result = new BeatNode();
 
             ExistencyNode tieNode;
-            LiteralNode<TiePosition> tiePosition;
+            LiteralNode<VerticalDirection> tiePosition;
 
             Parser.TryReadTie(scanner, this, out tieNode, out tiePosition);
             result.Tie = tieNode;
@@ -63,7 +66,7 @@ namespace TabML.Parser.Parsing.Bar
 
             // certain strum techniques (head strum techniques) can be placed before
             // the colon token
-            LiteralNode<AllStringStrumTechnique> strumTechnique;
+            LiteralNode<ChordStrumTechnique> strumTechnique;
             Parser.TryReadAllStringStrumTechnique(scanner, this, out strumTechnique);
 
             if (noteValueIndetemined && result.Notes.Count == 0 && strumTechnique == null)
@@ -74,7 +77,7 @@ namespace TabML.Parser.Parsing.Bar
                 return false;
             }
 
-            result.AllStringStrumTechnique = strumTechnique;
+            result.ChordStrumTechnique = strumTechnique;
 
             scanner.SkipWhitespaces();
 
@@ -138,35 +141,50 @@ namespace TabML.Parser.Parsing.Bar
                 return true;
             }
 
-            LiteralNode<BeatEffectTechnique> beatEffectTechnique;
-            LiteralNode<double> techniqueParameter;
-            if (Parser.TryReadBeatEffectTechnique(scanner, this, out beatEffectTechnique, out techniqueParameter))
+            LiteralNode<Ornament> ornament;
+            LiteralNode<double> ornamentParameter;
+            if (Parser.TryReadOrnament(scanner, this, out ornament, out ornamentParameter))
             {
-                if (result.EffectTechnique != null)
+                if (result.Ornament != null)
                     this.Report(LogLevel.Warning, scanner.LastReadRange,
-                                Messages.Warning_BeatEffectTechniqueAlreadySpecified);
+                                Messages.Warning_OrnamentAlreadySpecified);
                 else
                 {
-                    result.EffectTechnique = beatEffectTechnique;
-                    result.EffectTechniqueParameter = techniqueParameter;
-                    result.Modifiers.Add(beatEffectTechnique);
-                    if (techniqueParameter != null)
-                        result.Modifiers.Add(techniqueParameter);
+                    result.Ornament = ornament;
+                    result.OrnamentParameter = ornamentParameter;
+                    result.Modifiers.Add(ornament);
+                    if (ornamentParameter != null)
+                        result.Modifiers.Add(ornamentParameter);
                 }
 
                 return true;
             }
 
-            LiteralNode<BeatDurationEffect> durationEffect;
-            if (Parser.TryReadNoteDurationEffect(scanner, this, out durationEffect))
+            LiteralNode<NoteRepetition> noteRepetition;
+            if (Parser.TryReadNoteRepetition(scanner, this, out noteRepetition))
             {
-                if (result.DurationEffect != null)
+                if (result.NoteRepetition != null)
                     this.Report(LogLevel.Warning, scanner.LastReadRange,
-                                Messages.Warning_BeatNoteDurationEffectAlreadySpecified);
+                                Messages.Warning_NoteRepetitionAlreadySpecified);
                 else
                 {
-                    result.DurationEffect = durationEffect;
-                    result.Modifiers.Add(durationEffect);
+                    result.NoteRepetition = noteRepetition;
+                    result.Modifiers.Add(noteRepetition);
+                }
+
+                return true;
+            }
+
+            LiteralNode<HoldAndPause> holdAndPause;
+            if (Parser.TryReadNoteHoldAndPause(scanner, this, out holdAndPause))
+            {
+                if (result.HoldAndPause != null)
+                    this.Report(LogLevel.Warning, scanner.LastReadRange,
+                                Messages.Warning_BeatNoteHoldAndPauseEffectAlreadySpecified);
+                else
+                {
+                    result.HoldAndPause = holdAndPause;
+                    result.Modifiers.Add(holdAndPause);
                 }
                 return true;
             }
@@ -174,7 +192,7 @@ namespace TabML.Parser.Parsing.Bar
             LiteralNode<StrumTechnique> strumTechnique;
             if (Parser.TryReadStrumTechnique(scanner, this, out strumTechnique))
             {
-                if (result.StrumTechnique != null || result.AllStringStrumTechnique != null)
+                if (result.StrumTechnique != null || result.ChordStrumTechnique != null)
                     this.Report(LogLevel.Warning, scanner.LastReadRange,
                                 Messages.Warning_BeatStrumTechniqueAlreadySpecified);
                 else

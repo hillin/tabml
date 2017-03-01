@@ -136,7 +136,6 @@
     <Compile Include="Rendering\BeatExtensions.cs" />
     <Compile Include="Rendering\BeatRenderer.cs" />
     <Compile Include="Rendering\NoteRenderer.cs" />
-    <Compile Include="Rendering\OffBarDirection.cs" />
     <Compile Include="Rendering\RomanNumerals.cs" />
     <Compile Include="Rendering\RowRenderingContext.cs" />
     <Compile Include="Rendering\TablatureRenderer.cs" />

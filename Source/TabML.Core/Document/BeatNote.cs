@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using TabML.Core.MusicTheory;
+using TabML.Core.String;
+using TabML.Core.Style;
 
 namespace TabML.Core.Document
 {
@@ -20,7 +22,7 @@ namespace TabML.Core.Document
         public PreNoteConnection PreConnection { get; set; }
         public PostNoteConnection PostConnection { get; set; }
         public bool IsTied { get; set; }
-        public TiePosition? TiePosition { get; set; }
+        public VerticalDirection? TiePosition { get; set; }
         /// <summary>
         /// The note to which this note is pre-connected to, if this note has a valid PreConnection
         /// </summary>

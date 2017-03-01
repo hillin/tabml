@@ -1,12 +1,13 @@
 ﻿namespace TabML.Core.MusicTheory
-{    
+{
     /// <remarks>
     /// This type is convertible to <see cref="BeatModifier"/>.
     /// </remarks>
-    public enum BeatAccent
+    public enum HoldAndPause
     {
-        Normal = 0,
-        Accented = 1,
-        Marcato = 2
+        None = 0,
+        Staccato = 11,
+        Tenuto = 13,
+        Fermata = 14
     }
 }

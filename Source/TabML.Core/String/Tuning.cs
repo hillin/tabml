@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
+using TabML.Core.MusicTheory;
 
-namespace TabML.Core.MusicTheory
+namespace TabML.Core.String
 {
     public class Tuning : IEquatable<Tuning>
     {

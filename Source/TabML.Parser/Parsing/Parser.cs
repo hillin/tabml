@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
+using TabML.Core.String;
+using TabML.Core.String.Plucked;
+using TabML.Core.Style;
 using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing
@@ -119,30 +122,30 @@ namespace TabML.Parser.Parsing
         }
 
         public static bool TryReadAllStringStrumTechnique(Scanner scanner, ILogger logger,
-                                                      out LiteralNode<AllStringStrumTechnique> technique)
+                                                      out LiteralNode<ChordStrumTechnique> technique)
         {
             switch (scanner.ReadAny("rasg", "ad", "au", @"\|", "x", "d", "↑", "u", "↓"))
             {
                 case "|":
                 case "x":
-                    technique = new LiteralNode<AllStringStrumTechnique>(AllStringStrumTechnique.None, scanner.LastReadRange);
+                    technique = new LiteralNode<ChordStrumTechnique>(ChordStrumTechnique.None, scanner.LastReadRange);
                     return true;
                 case "d":
                 case "↑":
-                    technique = new LiteralNode<AllStringStrumTechnique>(AllStringStrumTechnique.BrushDown, scanner.LastReadRange);
+                    technique = new LiteralNode<ChordStrumTechnique>(ChordStrumTechnique.BrushDown, scanner.LastReadRange);
                     return true;
                 case "u":
                 case "↓":
-                    technique = new LiteralNode<AllStringStrumTechnique>(AllStringStrumTechnique.BrushUp, scanner.LastReadRange);
+                    technique = new LiteralNode<ChordStrumTechnique>(ChordStrumTechnique.BrushUp, scanner.LastReadRange);
                     return true;
                 case "ad":
-                    technique = new LiteralNode<AllStringStrumTechnique>(AllStringStrumTechnique.ArpeggioDown, scanner.LastReadRange);
+                    technique = new LiteralNode<ChordStrumTechnique>(ChordStrumTechnique.ArpeggioDown, scanner.LastReadRange);
                     return true;
                 case "au":
-                    technique = new LiteralNode<AllStringStrumTechnique>(AllStringStrumTechnique.ArpeggioUp, scanner.LastReadRange);
+                    technique = new LiteralNode<ChordStrumTechnique>(ChordStrumTechnique.ArpeggioUp, scanner.LastReadRange);
                     return true;
                 case "rasg":
-                    technique = new LiteralNode<AllStringStrumTechnique>(AllStringStrumTechnique.Rasgueado, scanner.LastReadRange);
+                    technique = new LiteralNode<ChordStrumTechnique>(ChordStrumTechnique.Rasgueado, scanner.LastReadRange);
                     return true;
             }
 
@@ -185,7 +188,7 @@ namespace TabML.Parser.Parsing
         }
 
         public static bool TryReadTie(Scanner scanner, ILogger logger, out ExistencyNode tie,
-                                      out LiteralNode<TiePosition> tiePosition)
+                                      out LiteralNode<VerticalDirection> tiePosition)
         {
             switch (scanner.ReadAny(@"⁀", @"‿", @"~\^", @"~v", @"~"))
             {
@@ -196,12 +199,12 @@ namespace TabML.Parser.Parsing
                 case @"⁀":
                 case @"~^":
                     tie = new ExistencyNode() { Range = scanner.LastReadRange };
-                    tiePosition = new LiteralNode<TiePosition>(TiePosition.Above, scanner.LastReadRange);
+                    tiePosition = new LiteralNode<VerticalDirection>(VerticalDirection.Above, scanner.LastReadRange);
                     return true;
                 case @"‿":
                 case @"~v":
                     tie = new ExistencyNode() { Range = scanner.LastReadRange };
-                    tiePosition = new LiteralNode<TiePosition>(TiePosition.Under, scanner.LastReadRange);
+                    tiePosition = new LiteralNode<VerticalDirection>(VerticalDirection.Under, scanner.LastReadRange);
                     return true;
             }
 
@@ -209,7 +212,7 @@ namespace TabML.Parser.Parsing
             tiePosition = null;
             return false;
         }
-        
+
         public static bool TryReadPreBeatConnection(Scanner scanner, ILogger logger,
                                                      out LiteralNode<PreBeatConnection> connection)
         {
@@ -244,7 +247,7 @@ namespace TabML.Parser.Parsing
             connection = null;
             return false;
         }
-        
+
         public static bool TryReadPreNoteConnection(Scanner scanner, ILogger logger,
                                                      out LiteralNode<PreNoteConnection> connection)
         {
@@ -273,17 +276,17 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
-        public static bool TryReadTiePosition(Scanner scanner, ILogger logger, out LiteralNode<TiePosition> tiePosition)
+        public static bool TryReadTiePosition(Scanner scanner, ILogger logger, out LiteralNode<VerticalDirection> tiePosition)
         {
             switch (scanner.ReadAny(@"⁀", @"‿", @"\^", @"v"))
             {
                 case @"⁀":
                 case @"^":
-                    tiePosition = new LiteralNode<TiePosition>(TiePosition.Above, scanner.LastReadRange);
+                    tiePosition = new LiteralNode<VerticalDirection>(VerticalDirection.Above, scanner.LastReadRange);
                     return true;
                 case @"‿":
                 case @"v":
-                    tiePosition = new LiteralNode<TiePosition>(TiePosition.Under, scanner.LastReadRange);
+                    tiePosition = new LiteralNode<VerticalDirection>(VerticalDirection.Under, scanner.LastReadRange);
                     return true;
             }
 
@@ -308,26 +311,37 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
-        public static bool TryReadBeatEffectTechnique(Scanner scanner, ILogger logger,
-                                                       out LiteralNode<BeatEffectTechnique> technique, out LiteralNode<double> argument)
+        public static bool TryReadOrnament(Scanner scanner, ILogger logger,
+                                           out LiteralNode<Ornament> ornament, out LiteralNode<double> argument)
         {
             argument = null;
 
-            switch (scanner.ReadAny("tremolo", "trill", "tr"))
+            switch (scanner.ReadAny("trill", "tr"))
             {
-                case "tremolo":
-                    technique = new LiteralNode<BeatEffectTechnique>(BeatEffectTechnique.Tremolo, scanner.LastReadRange);
-                    return true;
                 case "tr":
                 case "trill":
-                    technique = new LiteralNode<BeatEffectTechnique>(BeatEffectTechnique.Trill, scanner.LastReadRange);
+                    ornament = new LiteralNode<Ornament>(Ornament.Trill, scanner.LastReadRange);
                     return true;
             }
 
-            technique = null;
+            ornament = null;
             return false;
         }
 
+
+        public static bool TryReadNoteRepetition(Scanner scanner, ILogger logger,
+                                                 out LiteralNode<NoteRepetition> ornament)
+        {
+            switch (scanner.ReadAny("tremolo"))
+            {
+                case "tremolo":
+                    ornament = new LiteralNode<NoteRepetition>(NoteRepetition.Tremolo, scanner.LastReadRange);
+                    return true;
+            }
+
+            ornament = null;
+            return false;
+        }
 
         public static bool TryReadNoteEffectTechnique(Scanner scanner, ILogger logger,
                                                        out LiteralNode<NoteEffectTechnique> technique, out LiteralNode<double> argument)
@@ -351,35 +365,36 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
-        public static bool TryReadNoteDurationEffect(Scanner scanner, ILogger logger,
-                                                      out LiteralNode<BeatDurationEffect> technique)
+        public static bool TryReadNoteHoldAndPause(Scanner scanner, ILogger logger,
+                                                   out LiteralNode<HoldAndPause> holdAndPause)
         {
             switch (scanner.ReadAny("fermata", "staccato", "tenuto"))
             {
                 case "fermata":
-                    technique = new LiteralNode<BeatDurationEffect>(BeatDurationEffect.Fermata, scanner.LastReadRange);
+                    holdAndPause = new LiteralNode<HoldAndPause>(HoldAndPause.Fermata, scanner.LastReadRange);
                     return true;
                 case "staccato":
-                    technique = new LiteralNode<BeatDurationEffect>(BeatDurationEffect.Staccato, scanner.LastReadRange);
+                    holdAndPause = new LiteralNode<HoldAndPause>(HoldAndPause.Staccato, scanner.LastReadRange);
                     return true;
                 case "tenuto":
-                    technique = new LiteralNode<BeatDurationEffect>(BeatDurationEffect.Tenuto, scanner.LastReadRange);
+                    holdAndPause = new LiteralNode<HoldAndPause>(HoldAndPause.Tenuto, scanner.LastReadRange);
                     return true;
             }
 
-            technique = null;
+            holdAndPause = null;
             return false;
         }
 
         public static bool TryReadNoteAccent(Scanner scanner, ILogger logger, out LiteralNode<BeatAccent> accent)
         {
-            switch (scanner.ReadAny("accented", "heavy"))
+            switch (scanner.ReadAny("accented", "heavy", "marcato"))
             {
                 case "accented":
                     accent = new LiteralNode<BeatAccent>(BeatAccent.Accented, scanner.LastReadRange);
                     return true;
                 case "heavy":
-                    accent = new LiteralNode<BeatAccent>(BeatAccent.HeavilyAccented, scanner.LastReadRange);
+                case "marcato":
+                    accent = new LiteralNode<BeatAccent>(BeatAccent.Marcato, scanner.LastReadRange);
                     return true;
             }
 

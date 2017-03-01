@@ -149,7 +149,7 @@ Changelog
 - Added slashed sharp/flat accidentals used by John Tavener in his Byzantine-inspired choral works.
 - Added separate noteheads for white mensural notation.
 - Added inverted signum congruentiae.
-- Added combined tenuto-accent articulation.
+- Added combined tenuto-accent BeatModifier.
 - Added quasi-random wiggly lines (wiggleRandom1, wiggleRandom2, wiggleRandom3, wiggleRandom4) to multi-segment lines range.
 - Added flipped and large versions of constant circular motion (wiggleCircularConstantFlipped, wiggleCircularConstantLarge, wiggleCircularConstantFlippedLarge) to multi-segment lines range.
 - Added combining top/middle/bottom segments for black and white rectangular note clusters.
@@ -337,7 +337,7 @@ Changelog
 – Added reversed time signature digits, common time and cut common time (U+ECF0–U+ECFB)
 – Added new 'Fingering' range, containing digits bold 0–5 suitable for keyboard fingering, and a variety of symbols used in guitar fingering (U+ED10–U+ED23)
 – Added new 'Arabic accidentals' range (U+ED30–U+ED38)
-– Added new 'Articulation supplement' range containing so-called "soft accent", plus combinations with staccato and tenuto (U+ED40–U+ED47)
+– Added new 'BeatModifier supplement' range containing so-called "soft accent", plus combinations with staccato and tenuto (U+ED40–U+ED47)
 – Added new 'Stockhausen accidentals (24-EDO)' range (U+ED50–U+ED5E)
 – Added stylistic alternates for cClef and cClefChange in the style of 20th century French publishers
 – Added stylistic alternates for 15/22 octave markings using 16/24, as used by some 20th century French publishers

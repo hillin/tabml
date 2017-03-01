@@ -209,10 +209,14 @@ namespace TabML.Parser.Parsing
             "Strum technique specified for a tied beat, the technique will be ignored";
 
 
-        public const string Warning_BeatEffectTechniqueAlreadySpecified =
-            "Note effect technique is already specified for this note, this one will be ignored";
-        public const string Warning_BeatNoteDurationEffectAlreadySpecified =
-            "Duration effect is already specified for this note, this one will be ignored";
+        public const string Warning_OrnamentAlreadySpecified =
+            "Ornament is already specified for this beat, this one will be ignored";
+
+        public const string Warning_NoteRepetitionAlreadySpecified =
+            "Note repetition is already specified for this beat, this one will be ignored";
+
+        public const string Warning_BeatNoteHoldAndPauseEffectAlreadySpecified =
+            "Hold/pause effect is already specified for this note, this one will be ignored";
         public const string Warning_BeatAccentAlreadySpecified =
             "Accent is already specified for this note, this one will be ignored";
         public const string Warning_BeatConnectionAlreadySpecified =

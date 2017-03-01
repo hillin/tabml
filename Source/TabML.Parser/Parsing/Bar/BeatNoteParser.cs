@@ -1,5 +1,7 @@
 ﻿using TabML.Core.Logging;
 using TabML.Core.MusicTheory;
+using TabML.Core.String;
+using TabML.Core.Style;
 using TabML.Parser.AST;
 
 namespace TabML.Parser.Parsing.Bar
@@ -13,7 +15,7 @@ namespace TabML.Parser.Parsing.Bar
 
             // read tie
             ExistencyNode tieNode;
-            LiteralNode<TiePosition> tiePosition;
+            LiteralNode<VerticalDirection> tiePosition;
             Parser.TryReadTie(scanner, this, out tieNode, out tiePosition);
             result.Tie = tieNode;
             result.TiePosition = tiePosition;

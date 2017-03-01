@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
+using TabML.Core.Style;
 
 namespace TabML.Editor.Rendering
 {
@@ -112,10 +113,10 @@ namespace TabML.Editor.Rendering
 
 
         // from and to are absolute positions
-        public Task<Rect> DrawTie(double from, double to, int stringIndex, TiePosition tiePosition, string instruction,
+        public Task<Rect> DrawTie(double from, double to, int stringIndex, Core.Style.VerticalDirection tiePosition, string instruction,
                                   double instructionY)
         {
-            var spaceIndex = tiePosition == TiePosition.Under ? stringIndex + 1 : stringIndex;
+            var spaceIndex = tiePosition == Core.Style.VerticalDirection.Under ? stringIndex + 1 : stringIndex;
             var y = this.GetStringSpacePosition(spaceIndex);
             return this.PrimitiveRenderer.DrawTie(from, to, y, tiePosition.ToOffBarDirection());
         }

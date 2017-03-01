@@ -155,7 +155,7 @@ namespace TabML.Editor.Rendering
         public async Task DrawConnectionInstruction(VoicePart voicePart, double x, string instruction)
         {
             var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawConnectionInstruction(x, y, instruction, voicePart.ToOffBarDirection());
+            var bounds = await this.PrimitiveRenderer.DrawConnectionInstruction(x, y, instruction, voicePart.ToDirection());
             this.EnsureHeightForOrnament(voicePart, bounds);
         }
 
@@ -179,7 +179,7 @@ namespace TabML.Editor.Rendering
         {
             x += this.Location.X;
             var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawArtificialHarmonicText(x, y, text, voicePart.ToOffBarDirection());
+            var bounds = await this.PrimitiveRenderer.DrawArtificialHarmonicText(x, y, text, voicePart.ToDirection());
             this.EnsureHeightForOrnament(voicePart, bounds);
         }
 
@@ -198,7 +198,7 @@ namespace TabML.Editor.Rendering
             var bounds = await this.PrimitiveRenderer.DrawFlag(noteValue,
                                                                this.Location.X + x,
                                                                this.Location.Y + y,
-                                                               voicePart.ToOffBarDirection());
+                                                               voicePart.ToDirection());
             this.Owner.EnsureHeight(voicePart, bounds.Left - this.Style.NoteStemHorizontalMargin, bounds.Right,
                                     bounds.Top, bounds.Bottom);
         }
@@ -249,84 +249,27 @@ namespace TabML.Editor.Rendering
             return this.PrimitiveRenderer.MeasureRest(noteValue);
         }
 
+        public async Task DrawBeatModifier(BeatModifier modifier, VoicePart voicePart, double x)
+        {
+            x += this.Location.X;
+            var y = this.Owner.GetHeight(voicePart, x);
+            var bounds = await this.PrimitiveRenderer.DrawBeatModifier(x, y, modifier, voicePart.ToDirection());
+            this.EnsureHeightForOrnament(voicePart, bounds);
+        }
+
         public async Task DrawRasgueadoText(VoicePart voicePart, double x)
         {
             x += this.Location.X;
             var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawRasgueadoText(x, y, voicePart.ToOffBarDirection());
+            var bounds = await this.PrimitiveRenderer.DrawRasgueadoText(x, y, voicePart.ToDirection());
             this.EnsureHeightForOrnament(voicePart, bounds);
         }
-
-        public async Task DrawPickstrokeDown(VoicePart voicePart, double x)
-        {
-            x += this.Location.X;
-            var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawPickstrokeDown(x, y, voicePart.ToOffBarDirection());
-            this.EnsureHeightForOrnament(voicePart, bounds);
-        }
-
-        public async Task DrawPickstrokeUp(VoicePart voicePart, double x)
-        {
-            x += this.Location.X;
-            var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawPickstrokeUp(x, y, voicePart.ToOffBarDirection());
-            this.EnsureHeightForOrnament(voicePart, bounds);
-        }
-
-        public async Task DrawAccented(VoicePart voicePart, double x)
-        {
-            x += this.Location.X;
-            var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawAccented(x, y, voicePart.ToOffBarDirection());
-            this.EnsureHeightForOrnament(voicePart, bounds);
-        }
-
-        public async Task DrawHeavilyAccented(VoicePart voicePart, double x)
-        {
-            x += this.Location.X;
-            var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawHeavilyAccented(x, y, voicePart.ToOffBarDirection());
-            this.EnsureHeightForOrnament(voicePart, bounds);
-        }
-
-        public async Task DrawFermata(VoicePart voicePart, double x)
-        {
-            x += this.Location.X;
-            var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawFermata(x, y, voicePart.ToOffBarDirection());
-            this.EnsureHeightForOrnament(voicePart, bounds);
-        }
-
-        public async Task DrawStaccato(VoicePart voicePart, double x)
-        {
-            x += this.Location.X;
-            var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawStaccato(x, y, voicePart.ToOffBarDirection());
-            this.EnsureHeightForOrnament(voicePart, bounds);
-        }
-
-        public async Task DrawTenuto(VoicePart voicePart, double x)
-        {
-            x += this.Location.X;
-            var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawTenuto(x, y, voicePart.ToOffBarDirection());
-            this.EnsureHeightForOrnament(voicePart, bounds);
-        }
-
-
-        public async Task DrawTrill(VoicePart voicePart, double x)
-        {
-            x += this.Location.X;
-            var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawTrill(x, y, voicePart.ToOffBarDirection());
-            this.EnsureHeightForOrnament(voicePart, bounds);
-        }
-
+        
         public async Task DrawTremolo(VoicePart voicePart, double x)
         {
             x += this.Location.X;
             var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawTremolo(x, y, voicePart.ToOffBarDirection());
+            var bounds = await this.PrimitiveRenderer.DrawTremolo(x, y, voicePart.ToDirection());
             this.EnsureHeightForOrnament(voicePart, bounds);
         }
 
@@ -334,7 +277,7 @@ namespace TabML.Editor.Rendering
         {
             x += this.Location.X;
             var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawBrushUp(x, y, voicePart.ToOffBarDirection());
+            var bounds = await this.PrimitiveRenderer.DrawBrushUp(x, y, voicePart.ToDirection());
             this.EnsureHeightForOrnament(voicePart, bounds);
         }
 
@@ -342,7 +285,7 @@ namespace TabML.Editor.Rendering
         {
             x += this.Location.X;
             var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawBrushDown(x, y, voicePart.ToOffBarDirection());
+            var bounds = await this.PrimitiveRenderer.DrawBrushDown(x, y, voicePart.ToDirection());
             this.EnsureHeightForOrnament(voicePart, bounds);
         }
 
@@ -350,7 +293,7 @@ namespace TabML.Editor.Rendering
         {
             x += this.Location.X;
             var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawArpeggioUp(x, y, voicePart.ToOffBarDirection());
+            var bounds = await this.PrimitiveRenderer.DrawArpeggioUp(x, y, voicePart.ToDirection());
             this.EnsureHeightForOrnament(voicePart, bounds);
         }
 
@@ -358,7 +301,7 @@ namespace TabML.Editor.Rendering
         {
             x += this.Location.X;
             var y = this.Owner.GetHeight(voicePart, x);
-            var bounds = await this.PrimitiveRenderer.DrawArpeggioDown(x, y, voicePart.ToOffBarDirection());
+            var bounds = await this.PrimitiveRenderer.DrawArpeggioDown(x, y, voicePart.ToDirection());
             this.EnsureHeightForOrnament(voicePart, bounds);
         }
 

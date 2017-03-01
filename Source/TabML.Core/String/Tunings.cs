@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using static TabML.Core.MusicTheory.Pitches;
+using TabML.Core.MusicTheory;
+
 // ReSharper disable ArrangeStaticMemberQualifier
-namespace TabML.Core.MusicTheory
+namespace TabML.Core.String
 {
     public static class Tunings
     {

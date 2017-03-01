@@ -2458,14 +2458,15 @@ window.onload = () => {
     //let fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
     let fabricCanvas = new fabric.Canvas(canvas, tablatureStyle.page);
     renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
-    renderer.drawChord(113.557998657227, 169.242, "F#m", [{ fret: 2, finger: 1, }, { fret: 4, finger: 3, }, { fret: 4, finger: 4, }, { fret: 2, finger: 1, }, { fret: 2, finger: 1, }, { fret: 2, finger: 1, },]);
-    renderer.drawChord(440, 169.242, "D", ['x', 'x', 0, { fret: 2, finger: 1, }, { fret: 3, finger: 3, }, { fret: 2, finger: 2, },]);
+    //renderer.drawChord(113.557998657227, 169.242, "F#m", [{fret:2,finger:1,},{fret:4,finger:3,},{fret:4,finger:4,},{fret:2,finger:1,},{fret:2,finger:1,},{fret:2,finger:1,},]);
+    //renderer.drawChord(440, 169.242, "D", ['x','x',0,{fret:2,finger:1,},{fret:3,finger:3,},{fret:2,finger:2,},])
     //renderer.drawFretNumber("2", 100, 100, true);
     //renderer.drawTitle("test!!!", 400, 100);
     //renderer.drawBarLine(Core.MusicTheory.BarLine.BeginAndEndRepeat, 100, 100);
     //renderer.drawFlag(BaseNoteValue.SixtyFourth, 100, 100, OffBarDirection.Top);
     //renderer.drawTuplet("3", 100, 100);
     //renderer.drawTie(100, 300, 100, OffBarDirection.Top);
+    renderer.drawBeatModifier(100, 100, Core.MusicTheory.BeatModifier.Tenuto, Core.MusicTheory.OffBarDirection.Bottom);
 };
 var Core;
 (function (Core) {
@@ -2502,6 +2503,28 @@ var Core;
             BaseNoteValue[BaseNoteValue["HundredTwentyEighth"] = -7] = "HundredTwentyEighth";
             BaseNoteValue[BaseNoteValue["TwoHundredFiftySixth"] = -8] = "TwoHundredFiftySixth";
         })(BaseNoteValue = MusicTheory.BaseNoteValue || (MusicTheory.BaseNoteValue = {}));
+    })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
+})(Core || (Core = {}));
+var Core;
+(function (Core) {
+    var MusicTheory;
+    (function (MusicTheory) {
+        var BeatModifier;
+        (function (BeatModifier) {
+            BeatModifier[BeatModifier["Accent"] = 1] = "Accent";
+            BeatModifier[BeatModifier["Marcato"] = 2] = "Marcato";
+            BeatModifier[BeatModifier["Staccato"] = 11] = "Staccato";
+            BeatModifier[BeatModifier["Staccatissimo"] = 12] = "Staccatissimo";
+            BeatModifier[BeatModifier["Tenuto"] = 13] = "Tenuto";
+            BeatModifier[BeatModifier["Fermata"] = 14] = "Fermata";
+            BeatModifier[BeatModifier["PickstrokeDown"] = 21] = "PickstrokeDown";
+            BeatModifier[BeatModifier["PickstrokeUp"] = 22] = "PickstrokeUp";
+            BeatModifier[BeatModifier["Trill"] = 31] = "Trill";
+            BeatModifier[BeatModifier["Mordent"] = 32] = "Mordent";
+            BeatModifier[BeatModifier["LowerMordent"] = 33] = "LowerMordent";
+            BeatModifier[BeatModifier["Turn"] = 34] = "Turn";
+            BeatModifier[BeatModifier["InvertedTurn"] = 35] = "InvertedTurn";
+        })(BeatModifier = MusicTheory.BeatModifier || (MusicTheory.BeatModifier = {}));
     })(MusicTheory = Core.MusicTheory || (Core.MusicTheory = {}));
 })(Core || (Core = {}));
 var Core;
@@ -6325,7 +6348,7 @@ var Core;
     (function (Smufl) {
         var Metadata;
         (function (Metadata) {
-            Metadata.SmuflGlyphes = {
+            Metadata.Glyphes = {
                 "4stringTabClef": {
                     "codepoint": 0xE06E,
                     "description": "4-string tab clef"
@@ -17106,8 +17129,8 @@ var Core;
                     "range_end": 0xEB8F,
                     "range_start": 0xEB60
                 },
-                "articulation": {
-                    "description": "Articulation",
+                "BeatModifier": {
+                    "description": "BeatModifier",
                     "glyphs": [
                         "articAccentAbove",
                         "articAccentBelow",
@@ -17144,7 +17167,7 @@ var Core;
                     "range_start": 0xE4A0
                 },
                 "articulationSupplement": {
-                    "description": "Articulation supplement",
+                    "description": "BeatModifier supplement",
                     "glyphs": [
                         "articSoftAccentAbove",
                         "articSoftAccentBelow",
@@ -20361,25 +20384,15 @@ var Core;
         })(Metadata = Smufl.Metadata || (Smufl.Metadata = {}));
     })(Smufl = Core.Smufl || (Core.Smufl = {}));
 })(Core || (Core = {}));
-var SmuflGlyphes = Core.Smufl.Metadata.SmuflGlyphes;
 var Core;
 (function (Core) {
     var Smufl;
-    (function (Smufl_1) {
-        // const SmuflGlyphes: any = {
-        //     //Time signatures (U+E080 – U+E09F)
-        //     'timeSig0': 0xE080,
-        //     'timeSig1': 0xE081,
-        //     'timeSig2': 0xE082,
-        //     'timeSig3': 0xE083,
-        //     'timeSig4': 0xE084,
-        //     'timeSig5': 0xE085,
-        //     'timeSig6': 0xE086,
-        //     'timeSig7': 0xE087,
-        //     'timeSig8': 0xE088,
-        //     'timeSig9': 0xE089,
-        //     'timeSigCommon': 0xE08A,
-        class Smufl {
+    (function (Smufl) {
+        var Glyphes = Core.Smufl.Metadata.Glyphes;
+        var OffBarDirection = Core.MusicTheory.OffBarDirection;
+        var BeatModifier = Core.MusicTheory.BeatModifier;
+        var BaseNoteValue = Core.MusicTheory.BaseNoteValue;
+        class Utilities {
             static fixedFromCharCode(codePt) {
                 if (codePt > 0xFFFF) {
                     codePt -= 0x10000;
@@ -20390,51 +20403,81 @@ var Core;
                 }
             }
             static GetCharacter(name) {
-                let codePt = typeof name === "string" ? SmuflGlyphes[name].codepoint : name;
-                return Smufl.fixedFromCharCode(codePt);
+                let codePt = typeof name === "string" ? Glyphes[name].codepoint : name;
+                return Utilities.fixedFromCharCode(codePt);
             }
             static GetNumber(value, base) {
-                return value.toString().split('').map((c) => Smufl.fixedFromCharCode(parseInt(c) + base)).join();
+                return value.toString().split('').map((c) => Utilities.fixedFromCharCode(parseInt(c) + base)).join();
             }
             static GetTimeSignatureNumber(value) {
-                return Smufl.GetNumber(value, SmuflGlyphes['timeSig0'].codepoint);
+                return Utilities.GetNumber(value, Glyphes['timeSig0'].codepoint);
             }
             static GetTupletNumber(value) {
-                return Smufl.GetNumber(value, SmuflGlyphes['tuplet0'].codepoint);
+                return Utilities.GetNumber(value, Glyphes['tuplet0'].codepoint);
             }
             static GetNoteValue(noteValue) {
                 switch (noteValue) {
                     case BaseNoteValue.Large:
-                        return Smufl.GetCharacter('noteDoubleWhole'); //todo: smufl does not provide an individual large note
+                        return Utilities.GetCharacter('noteDoubleWhole'); //todo: smufl does not provide an individual large note
                     case BaseNoteValue.Long:
-                        return Smufl.GetCharacter('noteDoubleWhole'); //todo: smufl does not provide an individual large note
+                        return Utilities.GetCharacter('noteDoubleWhole'); //todo: smufl does not provide an individual large note
                     case BaseNoteValue.Double:
-                        return Smufl.GetCharacter('noteDoubleWhole');
+                        return Utilities.GetCharacter('noteDoubleWhole');
                     case BaseNoteValue.Whole:
-                        return Smufl.GetCharacter('noteWhole');
+                        return Utilities.GetCharacter('noteWhole');
                     case BaseNoteValue.Half:
-                        return Smufl.GetCharacter('noteHalfUp');
+                        return Utilities.GetCharacter('noteHalfUp');
                     case BaseNoteValue.Quater:
-                        return Smufl.GetCharacter('noteQuarterUp');
+                        return Utilities.GetCharacter('noteQuarterUp');
                     case BaseNoteValue.Eighth:
-                        return Smufl.GetCharacter('note8thUp');
+                        return Utilities.GetCharacter('note8thUp');
                     case BaseNoteValue.Sixteenth:
-                        return Smufl.GetCharacter('note16thUp');
+                        return Utilities.GetCharacter('note16thUp');
                     case BaseNoteValue.ThirtySecond:
-                        return Smufl.GetCharacter('note32ndUp');
+                        return Utilities.GetCharacter('note32ndUp');
                     case BaseNoteValue.SixtyFourth:
-                        return Smufl.GetCharacter('note64thUp');
+                        return Utilities.GetCharacter('note64thUp');
                     case BaseNoteValue.HundredTwentyEighth:
-                        return Smufl.GetCharacter('note128thUp');
+                        return Utilities.GetCharacter('note128thUp');
                     case BaseNoteValue.TwoHundredFiftySixth:
-                        return Smufl.GetCharacter('note256thUp');
+                        return Utilities.GetCharacter('note256thUp');
+                }
+            }
+            static GetBeatModifier(beatModifier, direction) {
+                switch (beatModifier) {
+                    case BeatModifier.Accent:
+                        return Utilities.GetCharacter(direction == OffBarDirection.Top ? "articAccentAbove" : "articAccentBelow");
+                    case BeatModifier.Marcato:
+                        return Utilities.GetCharacter(direction == OffBarDirection.Top ? "articMarcatoAbove" : "articMarcatoBelow");
+                    case BeatModifier.Staccato:
+                        return Utilities.GetCharacter(direction == OffBarDirection.Top ? "articStaccatoAbove" : "articStaccatoBelow");
+                    case BeatModifier.Staccatissimo:
+                        return Utilities.GetCharacter(direction == OffBarDirection.Top ? "articStaccatissimoAbove" : "articStaccatissimoBelow");
+                    case BeatModifier.Tenuto:
+                        return Utilities.GetCharacter(direction == OffBarDirection.Top ? "articTenutoAbove" : "articTenutoBelow");
+                    case BeatModifier.Fermata:
+                        return Utilities.GetCharacter(direction == OffBarDirection.Top ? "fermataAbove" : "fermataBelow");
+                    case BeatModifier.PickstrokeDown:
+                        return Utilities.GetCharacter("stringsDownBow");
+                    case BeatModifier.PickstrokeUp:
+                        return Utilities.GetCharacter("stringsUpBow");
+                    case BeatModifier.Trill:
+                        return Utilities.GetCharacter("ornamentTrill");
+                    case BeatModifier.Mordent:
+                        return Utilities.GetCharacter("ornamentMordent");
+                    case BeatModifier.LowerMordent:
+                        return Utilities.GetCharacter("ornamentMordentInverted");
+                    case BeatModifier.Turn:
+                        return Utilities.GetCharacter("ornamentTurn");
+                    case BeatModifier.InvertedTurn:
+                        return Utilities.GetCharacter("ornamentTurnInverted");
                 }
             }
             static GetRest(noteValue) {
-                return Smufl.GetCharacter(SmuflGlyphes['restWhole'].codepoint - noteValue);
+                return Utilities.GetCharacter(Glyphes['restWhole'].codepoint - noteValue);
             }
         }
-        Smufl_1.Smufl = Smufl;
+        Smufl.Utilities = Utilities;
     })(Smufl = Core.Smufl || (Core.Smufl = {}));
 })(Core || (Core = {}));
 // object.Assign implementation
@@ -20475,15 +20518,14 @@ var TR;
         NoteRenderingFlags[NoteRenderingFlags["ArtificialHarmonic"] = 4] = "ArtificialHarmonic";
     })(NoteRenderingFlags = TR.NoteRenderingFlags || (TR.NoteRenderingFlags = {}));
 })(TR || (TR = {}));
-var BarLine = Core.MusicTheory.BarLine;
-var BaseNoteValue = Core.MusicTheory.BaseNoteValue;
-var OffBarDirection = Core.MusicTheory.OffBarDirection;
-var NoteValueAugment = Core.MusicTheory.NoteValueAugment;
-var GlissDirection = Core.MusicTheory.GlissDirection;
-var NoteRenderingFlags = TR.NoteRenderingFlags;
-var Smufl = Core.Smufl.Smufl;
 var TR;
 (function (TR) {
+    var BarLine = Core.MusicTheory.BarLine;
+    var BaseNoteValue = Core.MusicTheory.BaseNoteValue;
+    var OffBarDirection = Core.MusicTheory.OffBarDirection;
+    var GlissDirection = Core.MusicTheory.GlissDirection;
+    var NoteRenderingFlags = TR.NoteRenderingFlags;
+    var Smufl = Core.Smufl.Utilities;
     class PrimitiveRenderer {
         constructor(canvas, style) {
             this.canvas = canvas;
@@ -20547,8 +20589,8 @@ var TR;
         }
         drawNoteFretting(fretting, x, y, flags) {
             return __awaiter(this, void 0, void 0, function* () {
-                let drawArtificialHarmonic = (flags & TR.NoteRenderingFlags.ArtificialHarmonic) === TR.NoteRenderingFlags.ArtificialHarmonic;
-                let drawNaturalHarmonic = (flags & TR.NoteRenderingFlags.NaturalHarmonic) === TR.NoteRenderingFlags.NaturalHarmonic;
+                let drawArtificialHarmonic = (flags & NoteRenderingFlags.ArtificialHarmonic) === NoteRenderingFlags.ArtificialHarmonic;
+                let drawNaturalHarmonic = (flags & NoteRenderingFlags.NaturalHarmonic) === NoteRenderingFlags.NaturalHarmonic;
                 let bounds;
                 if (drawNaturalHarmonic)
                     bounds = PrimitiveRenderer.inflateBounds(bounds, (yield this.drawNaturalHarmonicAsync(x, y)).getBoundingRect());
@@ -20585,7 +20627,7 @@ var TR;
             });
         }
         drawAdditionalForNote(bounds, flags) {
-            if ((flags & TR.NoteRenderingFlags.Ghost) === TR.NoteRenderingFlags.Ghost)
+            if ((flags & NoteRenderingFlags.Ghost) === NoteRenderingFlags.Ghost)
                 bounds = this.drawGhostNoteParenthese(bounds);
             return bounds;
         }
@@ -20910,23 +20952,10 @@ var TR;
         drawPickstrokeUp(x, y, direction) {
             this.drawOrnamentImageFromURL("upbow.svg", x, y, direction);
         }
-        drawAccented(x, y, direction) {
-            this.drawOrnamentImageFromURL("accented.svg", x, y, direction);
-        }
-        drawHeavilyAccented(x, y, direction) {
-            this.drawOrnamentImageFromURL("heavily_accented.svg", x, y, direction);
-        }
-        drawFermata(x, y, direction) {
-            this.drawOrnamentImageFromURL("fermata.svg", x, y, direction);
-        }
-        drawStaccato(x, y, direction) {
-            this.drawOrnamentImageFromURL("staccato.svg", x, y, direction);
-        }
-        drawTenuto(x, y, direction) {
-            this.drawOrnamentImageFromURL("tenuto.svg", x, y, direction);
-        }
-        drawTrill(x, y, direction) {
-            this.drawOrnamentImageFromURL("trill.svg", x, y, direction);
+        drawBeatModifier(x, y, beatModifier, direction) {
+            let originY = direction == OffBarDirection.Top ? "bottom" : "top";
+            let text = this.drawText(Smufl.GetBeatModifier(beatModifier, direction), x, y, "center", originY, this.getSmuflTextStyle(28));
+            return TR.Utilities.getExactBoundingRect(this.canvas, text);
         }
         drawTremolo(x, y, direction) {
             this.drawOrnamentImageFromURL("tremolo.svg", x, y, direction);
@@ -21312,5 +21341,91 @@ var TR;
         }
     }
     TR.TabRenderer = TabRenderer;
+})(TR || (TR = {}));
+var TR;
+(function (TR) {
+    class Utilities {
+        static getExactBoundingRect(canvas, target) {
+            let bounds = target.getBoundingRect();
+            if (!canvas.contains(target))
+                return bounds;
+            bounds.left = Math.floor(bounds.left);
+            bounds.top = Math.floor(bounds.top);
+            bounds.width = Math.ceil(bounds.width);
+            bounds.height = Math.ceil(bounds.height);
+            // Get the pixel data from the canvas
+            let data = canvas.getContext().getImageData(bounds.left, bounds.top, bounds.width, bounds.height).data;
+            let first = null;
+            let last = null;
+            let right = null;
+            let left = null;
+            let bottom, top;
+            // 1. get bottom
+            {
+                let row = bounds.height;
+                while (last === null && row > 0) {
+                    --row;
+                    for (let column = 0; column < bounds.width; column++) {
+                        if (data[row * bounds.width * 4 + column * 4 + 3]) {
+                            console.log('last', row);
+                            last = row + 1;
+                            bottom = row + 1;
+                            break;
+                        }
+                    }
+                }
+            }
+            // 2. get top
+            {
+                let row = 0;
+                var checks = [];
+                while (first === null && row < last) {
+                    for (let column = 0; column < bounds.width; column++) {
+                        if (data[row * bounds.width * 4 + column * 4 + 3]) {
+                            console.log('first', row);
+                            first = row - 1;
+                            top = row - 1;
+                            break;
+                        }
+                    }
+                    row++;
+                }
+            }
+            // 3. get right
+            {
+                let column = bounds.width;
+                while (right === null && column > 0) {
+                    column--;
+                    for (let row = 0; row < bounds.height; row++) {
+                        if (data[row * bounds.width * 4 + column * 4 + 3]) {
+                            console.log('last', row);
+                            right = column + 1;
+                            break;
+                        }
+                    }
+                }
+            }
+            // 4. get left
+            {
+                let column = 0;
+                while (left === null && column < right) {
+                    for (let row = 0; row < bounds.height; row++) {
+                        if (data[row * bounds.width * 4 + column * 4 + 3]) {
+                            console.log('left', column - 1);
+                            left = column;
+                            break;
+                        }
+                    }
+                    column++;
+                }
+            }
+            bounds.left = left;
+            bounds.top = top;
+            bounds.width = right - left;
+            bounds.height = bottom - top;
+            return bounds;
+        }
+    }
+    TR.Utilities = Utilities;
 })(TR || (TR = {}));
 //# sourceMappingURL=main.js.map

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using TabML.Core.MusicTheory;
+using TabML.Core.String;
+using TabML.Core.String.Plucked;
+using TabML.Core.Style;
 
 namespace TabML.Core.Document
 {
@@ -20,9 +23,10 @@ namespace TabML.Core.Document
             || this.StrumTechnique == StrumTechnique.BrushUp
             || this.StrumTechnique == StrumTechnique.Rasgueado;
 
-        public BeatEffectTechnique EffectTechnique { get; set; } = BeatEffectTechnique.None;
+        public Ornament Ornament { get; set; } = Ornament.None;
+        public NoteRepetition NoteRepetition { get; set; } = NoteRepetition.None;
         public double EffectTechniqueParameter { get; set; }
-        public BeatDurationEffect DurationEffect { get; set; } = BeatDurationEffect.None;
+        public HoldAndPause HoldAndPause { get; set; } = HoldAndPause.None;
         public BeatAccent Accent { get; set; } = BeatAccent.Normal;
         public Beat PreviousBeat { get; set; }
         public Beat NextBeat { get; set; }
@@ -35,7 +39,7 @@ namespace TabML.Core.Document
 
         public PreBeatConnection PreConnection { get; set; }
         public PostBeatConnection PostConnection { get; set; }
-        public TiePosition? TiePosition { get; set; }
+        public VerticalDirection? TiePosition { get; set; }
 
         /// <summary>
         /// Get the beat to which this beat is tied. If this beat is not tied, the value is null.
@@ -109,9 +113,10 @@ namespace TabML.Core.Document
                 TiePosition = this.TiePosition,
                 PostConnection = this.PostConnection,
                 StrumTechnique = this.StrumTechnique,
-                EffectTechnique = this.EffectTechnique,
+                Ornament = this.Ornament,
+                NoteRepetition = this.NoteRepetition,
                 EffectTechniqueParameter = this.EffectTechniqueParameter,
-                DurationEffect = this.DurationEffect,
+                HoldAndPause = this.HoldAndPause,
                 Accent = this.Accent,
                 Notes = this.Notes?.Select(n => n.Clone()).ToArray(),
                 BeatElementOwner = this.BeatElementOwner,

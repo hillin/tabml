@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
+using TabML.Core.Style;
 
 namespace TabML.Editor.Rendering
 {
@@ -47,13 +48,13 @@ namespace TabML.Editor.Rendering
                 : beat.Notes.Select(n => n.String).ToArray();
         }
 
-        public static TiePosition GetRenderTiePosition(this Beat beat)
+        public static VerticalDirection GetRenderTiePosition(this Beat beat)
         {
             if (beat.TiePosition != null)
                 return beat.TiePosition.Value;
 
             return beat.OwnerBar.HasSingularVoice()
-                ? TiePosition.Above
+                ? Core.Style.VerticalDirection.Above
                 : beat.VoicePart.GetDefaultTiePosition();
         }
 

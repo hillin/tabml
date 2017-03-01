@@ -1,10 +1,4 @@
-import BarLine = Core.MusicTheory.BarLine;
-import BaseNoteValue = Core.MusicTheory.BaseNoteValue;
-import OffBarDirection = Core.MusicTheory.OffBarDirection;
-import NoteValueAugment = Core.MusicTheory.NoteValueAugment;
-import GlissDirection = Core.MusicTheory.GlissDirection;
-import NoteRenderingFlags = TR.NoteRenderingFlags;
-import Smufl = Core.Smufl.Smufl;
+
 
 type point = { x: number, y: number };
 
@@ -15,6 +9,16 @@ interface CallbackObject {
 declare var __callbackObject: CallbackObject;
 
 namespace TR {
+
+    import BarLine = Core.MusicTheory.BarLine;
+    import BaseNoteValue = Core.MusicTheory.BaseNoteValue;
+    import OffBarDirection = Core.MusicTheory.OffBarDirection;
+    import NoteValueAugment = Core.MusicTheory.NoteValueAugment;
+    import GlissDirection = Core.MusicTheory.GlissDirection;
+    import BeatModifier = Core.MusicTheory.BeatModifier;
+    import NoteRenderingFlags = TR.NoteRenderingFlags;
+    import Smufl = Core.Smufl.Utilities;
+
 
     export interface IBoundingBox {
         left: number; top: number; width: number; height: number;
@@ -522,28 +526,10 @@ namespace TR {
             this.drawOrnamentImageFromURL("upbow.svg", x, y, direction);
         }
 
-        drawAccented(x: number, y: number, direction: OffBarDirection) {
-            this.drawOrnamentImageFromURL("accented.svg", x, y, direction);
-        }
-
-        drawHeavilyAccented(x: number, y: number, direction: OffBarDirection) {
-            this.drawOrnamentImageFromURL("heavily_accented.svg", x, y, direction);
-        }
-
-        drawFermata(x: number, y: number, direction: OffBarDirection) {
-            this.drawOrnamentImageFromURL("fermata.svg", x, y, direction);
-        }
-
-        drawStaccato(x: number, y: number, direction: OffBarDirection) {
-            this.drawOrnamentImageFromURL("staccato.svg", x, y, direction);
-        }
-
-        drawTenuto(x: number, y: number, direction: OffBarDirection) {
-            this.drawOrnamentImageFromURL("tenuto.svg", x, y, direction);
-        }
-
-        drawTrill(x: number, y: number, direction: OffBarDirection) {
-            this.drawOrnamentImageFromURL("trill.svg", x, y, direction);
+        drawBeatModifier(x: number, y:number, beatModifier: BeatModifier, direction: OffBarDirection) : IBoundingBox {
+            let originY = direction == OffBarDirection.Top ? "bottom" : "top";
+            let text = this.drawText(Smufl.GetBeatModifier(beatModifier, direction), x, y, "center", originY, this.getSmuflTextStyle(28));
+            return TR.Utilities.getExactBoundingRect(this.canvas, text);
         }
 
         drawTremolo(x: number, y: number, direction: OffBarDirection) {

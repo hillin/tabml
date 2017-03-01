@@ -3,9 +3,11 @@ using System.Linq;
 using TabML.Core.MusicTheory;
 using TabML.Core.Document;
 using TabML.Core.Logging;
+using TabML.Core.String;
+using TabML.Core.Style;
 using TabML.Parser.Parsing;
-using AllStringStrumTechniqueEnum = TabML.Core.MusicTheory.AllStringStrumTechnique;
-using StrumTechniqueEnum = TabML.Core.MusicTheory.StrumTechnique;
+using ChordStrumTechniqueEnum = TabML.Core.String.Plucked.ChordStrumTechnique;
+using StrumTechniqueEnum = TabML.Core.String.Plucked.StrumTechnique;
 
 namespace TabML.Parser.AST
 {
@@ -16,15 +18,16 @@ namespace TabML.Parser.AST
         public ExistencyNode ForceBeamEnd { get; set; }
         public ExistencyNode Rest { get; set; }
         public ExistencyNode Tie { get; set; }
-        public LiteralNode<TiePosition> TiePosition { get; set; }
+        public LiteralNode<VerticalDirection> TiePosition { get; set; }
         public LiteralNode<PreBeatConnection> PreConnection { get; set; }
         public LiteralNode<PostBeatConnection> PostConnection { get; set; }
-        public LiteralNode<AllStringStrumTechniqueEnum> AllStringStrumTechnique { get; set; }
+        public LiteralNode<ChordStrumTechniqueEnum> ChordStrumTechnique { get; set; }
         public List<BeatNoteNode> Notes { get; }
         public LiteralNode<StrumTechniqueEnum> StrumTechnique { get; set; }
-        public LiteralNode<BeatEffectTechnique> EffectTechnique { get; set; }
-        public LiteralNode<double> EffectTechniqueParameter { get; set; }
-        public LiteralNode<BeatDurationEffect> DurationEffect { get; set; }
+        public LiteralNode<Ornament> Ornament { get; set; }
+        public LiteralNode<NoteRepetition> NoteRepetition { get; set; }
+        public LiteralNode<double> OrnamentParameter { get; set; }
+        public LiteralNode<HoldAndPause> HoldAndPause { get; set; }
         public LiteralNode<BeatAccent> Accent { get; set; }
         public List<Node> Modifiers { get; }
 
@@ -32,21 +35,23 @@ namespace TabML.Parser.AST
                                                    || this.Tie != null
                                                    || this.PreConnection != null
                                                    || this.PostConnection != null
-                                                   || this.AllStringStrumTechnique != null
+                                                   || this.ChordStrumTechnique != null
                                                    || this.StrumTechnique != null
-                                                   || this.EffectTechnique != null
-                                                   || this.EffectTechniqueParameter != null
-                                                   || this.DurationEffect != null
+                                                   || this.Ornament != null
+                                                   || this.OrnamentParameter != null
+                                                   || this.NoteRepetition != null
+                                                   || this.HoldAndPause != null
                                                    || this.Accent != null;
 
         public bool HasRedunantSpecifierForTied => this.Rest != null
                                                    || this.PreConnection != null
-                                                   || this.AllStringStrumTechnique != null
+                                                   || this.ChordStrumTechnique != null
                                                    || this.Notes.Count > 0
                                                    || this.StrumTechnique != null
-                                                   || this.EffectTechnique != null
-                                                   || this.EffectTechniqueParameter != null
-                                                   || this.DurationEffect != null
+                                                   || this.Ornament != null
+                                                   || this.OrnamentParameter != null
+                                                   || this.NoteRepetition != null
+                                                   || this.HoldAndPause != null
                                                    || this.Accent != null;
 
         public override IEnumerable<Node> Children
@@ -70,8 +75,8 @@ namespace TabML.Parser.AST
                 if (this.Rest != null)
                     yield return this.Rest;
 
-                if (this.AllStringStrumTechnique != null)
-                    yield return this.AllStringStrumTechnique;
+                if (this.ChordStrumTechnique != null)
+                    yield return this.ChordStrumTechnique;
 
                 foreach (var node in this.Notes)
                     yield return node;
@@ -98,11 +103,12 @@ namespace TabML.Parser.AST
             beat = new Beat()
             {
                 Range = this.Range,
-                StrumTechnique = this.StrumTechnique?.Value ?? (StrumTechniqueEnum?)this.AllStringStrumTechnique?.Value ?? StrumTechniqueEnum.None,
-                Accent = this.Accent?.Value ?? BeatAccent.Normal,
-                DurationEffect = this.DurationEffect?.Value ?? BeatDurationEffect.None,
-                EffectTechnique = this.EffectTechnique?.Value ?? BeatEffectTechnique.None,
-                EffectTechniqueParameter = this.EffectTechniqueParameter?.Value ?? default(double),
+                StrumTechnique = this.StrumTechnique?.Value ?? (StrumTechniqueEnum?)this.ChordStrumTechnique?.Value ?? StrumTechniqueEnum.None,
+                Accent = this.Accent?.Value ?? Core.MusicTheory.BeatAccent.Normal,
+                HoldAndPause = this.HoldAndPause?.Value ?? Core.MusicTheory.HoldAndPause.None,
+                Ornament = this.Ornament?.Value ?? Core.MusicTheory.Ornament.None,
+                NoteRepetition = this.NoteRepetition?.Value ?? Core.MusicTheory.NoteRepetition.None,
+                EffectTechniqueParameter = this.OrnamentParameter?.Value ?? default(double),
                 IsRest = this.Rest != null,
                 IsTied = this.Tie != null,
                 TiePosition = this.TiePosition?.Value,
@@ -168,14 +174,14 @@ namespace TabML.Parser.AST
             if (other == null)
                 return false;
 
-            if (this.AllStringStrumTechnique == null)
+            if (this.ChordStrumTechnique == null)
             {
                 if ((this.StrumTechnique?.Value ?? StrumTechniqueEnum.None) != other.StrumTechnique)
                     return false;
             }
             else
             {
-                if ((StrumTechniqueEnum)(this.AllStringStrumTechnique?.Value ?? AllStringStrumTechniqueEnum.None) != other.StrumTechnique)
+                if ((StrumTechniqueEnum)(this.ChordStrumTechnique?.Value ?? ChordStrumTechniqueEnum.None) != other.StrumTechnique)
                     return false;
             }
 
@@ -197,17 +203,20 @@ namespace TabML.Parser.AST
             if (this.PostConnection?.Value != other.PostConnection)
                 return false;
 
-            if ((this.EffectTechnique?.Value ?? BeatEffectTechnique.None) != other.EffectTechnique)
+            if ((this.Ornament?.Value ?? Core.MusicTheory.Ornament.None) != other.Ornament)
+                return false;
+
+            if ((this.NoteRepetition?.Value ?? Core.MusicTheory.NoteRepetition.None) != other.NoteRepetition)
                 return false;
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if ((this.EffectTechniqueParameter?.Value ?? default(double)) != other.EffectTechniqueParameter)
+            if ((this.OrnamentParameter?.Value ?? default(double)) != other.EffectTechniqueParameter)
                 return false;
 
-            if ((this.DurationEffect?.Value ?? BeatDurationEffect.None) != other.DurationEffect)
+            if ((this.HoldAndPause?.Value ?? Core.MusicTheory.HoldAndPause.None) != other.HoldAndPause)
                 return false;
 
-            if ((this.Accent?.Value ?? BeatAccent.Normal) != other.Accent)
+            if ((this.Accent?.Value ?? Core.MusicTheory.BeatAccent.Normal) != other.Accent)
                 return false;
 
             if (other.Notes.Length != this.Notes.Count)

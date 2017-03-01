@@ -7,17 +7,19 @@ using System.Threading.Tasks;
 using System.Windows;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
+using TabML.Core.String;
+using TabML.Core.Style;
 
 namespace TabML.Editor.Rendering
 {
     static class NoteConnectionRenderer
     {
-        public static async Task DrawTie(IRootElementRenderer rootRenderer, Beat from, Beat to, int stringIndex, TiePosition tiePosition)
+        public static async Task DrawTie(IRootElementRenderer rootRenderer, Beat from, Beat to, int stringIndex, Core.Style.VerticalDirection tiePosition)
         {
             await NoteConnectionRenderer.DrawTie(rootRenderer, from, to, new[] { stringIndex }, tiePosition);
         }
 
-        public static async Task<Rect> DrawTie(IRootElementRenderer rootRenderer, Beat from, Beat to, IEnumerable<int> stringIndices, TiePosition tiePosition)
+        public static async Task<Rect> DrawTie(IRootElementRenderer rootRenderer, Beat from, Beat to, IEnumerable<int> stringIndices, Core.Style.VerticalDirection tiePosition)
         {
             if (to.IsRest || from.IsRest)
                 return default(Rect);
@@ -96,12 +98,12 @@ namespace TabML.Editor.Rendering
         }
 
         public static Task<Rect> DrawConnection(IRootElementRenderer rootRenderer, NoteConnection connection, Beat from,
-                                             Beat to, int stringIndex, TiePosition tiePosition)
+                                             Beat to, int stringIndex, Core.Style.VerticalDirection tiePosition)
         {
             return NoteConnectionRenderer.DrawConnection(rootRenderer, connection, from, to, new[] { stringIndex }, tiePosition);
         }
 
-        public static async Task<Rect> DrawConnection(IRootElementRenderer rootRenderer, NoteConnection connection, Beat from, Beat to, IEnumerable<int> stringIndices, TiePosition tiePosition)
+        public static async Task<Rect> DrawConnection(IRootElementRenderer rootRenderer, NoteConnection connection, Beat from, Beat to, IEnumerable<int> stringIndices, Core.Style.VerticalDirection tiePosition)
         {
             switch (connection)
             {

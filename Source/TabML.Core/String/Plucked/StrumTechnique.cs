@@ -1,5 +1,9 @@
-﻿namespace TabML.Core.MusicTheory
-{
+﻿using TabML.Core.MusicTheory;
+
+namespace TabML.Core.String.Plucked
+{    /// <remarks>
+     /// Part of this type is convertible to <see cref="BeatModifier"/>.
+     /// </remarks>
     public enum StrumTechnique
     {
         None = 0,

@@ -1,4 +1,4 @@
-﻿//#define DRAW_STRUM_TECHNIQUE_ORNAMENTS
+﻿//#define DRAW_BRUSHLIKE_STRUM_TECHNIQUE_ORNAMENTS
 
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using TabML.Core.Document;
 using TabML.Core.MusicTheory;
+using TabML.Core.String.Plucked;
 using TabML.Editor.Tablature;
 using TabML.Editor.Tablature.Layout;
 
@@ -67,14 +68,14 @@ namespace TabML.Editor.Rendering
                 case StrumTechnique.Rasgueado:
                     await this.RenderingContext.DrawRasgueadoText(this.Element.VoicePart, beatPosition);
                     break;
-
-#if DRAW_STRUM_TECHNIQUE_ORNAMENTS
                 case StrumTechnique.PickstrokeDown:
-                    await this.RenderingContext.DrawPickstrokeDown(this.Element.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawBeatModifier(BeatModifier.PickstrokeDown, this.Element.VoicePart, beatPosition);
                     break;
                 case StrumTechnique.PickstrokeUp:
-                    await this.RenderingContext.DrawPickstrokeUp(this.Element.VoicePart, beatPosition);
+                    await this.RenderingContext.DrawBeatModifier(BeatModifier.PickstrokeUp, this.Element.VoicePart, beatPosition);
                     break;
+
+#if DRAW_BRUSHLIKE_STRUM_TECHNIQUE_ORNAMENTS
                 case StrumTechnique.BrushDown:
                     await this.RenderingContext.DrawBrushDown(this.Element.VoicePart, beatPosition);
                     break;
@@ -90,35 +91,19 @@ namespace TabML.Editor.Rendering
 #endif
             }
 
-            switch (this.Element.Accent)
-            {
-                case BeatAccent.Accented:
-                    await this.RenderingContext.DrawAccented(this.Element.VoicePart, beatPosition);
-                    break;
-                case BeatAccent.HeavilyAccented:
-                    await this.RenderingContext.DrawHeavilyAccented(this.Element.VoicePart, beatPosition);
-                    break;
-            }
+            if (this.Element.Accent != BeatAccent.Normal)
+                await this.RenderingContext.DrawBeatModifier(this.Element.Accent.ToBeatModifier(), this.Element.VoicePart, beatPosition);
 
-            switch (this.Element.DurationEffect)
-            {
-                case BeatDurationEffect.Fermata:
-                    await this.RenderingContext.DrawFermata(this.Element.VoicePart, beatPosition);
-                    break;
-                case BeatDurationEffect.Staccato:
-                    await this.RenderingContext.DrawStaccato(this.Element.VoicePart, beatPosition);
-                    break;
-                case BeatDurationEffect.Tenuto:
-                    await this.RenderingContext.DrawTenuto(this.Element.VoicePart, beatPosition);
-                    break;
-            }
+            if (this.Element.HoldAndPause != HoldAndPause.None)
+                await this.RenderingContext.DrawBeatModifier(this.Element.HoldAndPause.ToBeatModifier(),
+                                                             this.Element.VoicePart, beatPosition);
 
-            switch (this.Element.EffectTechnique)
+            if (this.Element.Ornament != Ornament.None)
+                await this.RenderingContext.DrawBeatModifier(this.Element.Ornament.ToBeatModifier(), this.Element.VoicePart, beatPosition);
+
+            switch (this.Element.NoteRepetition)
             {
-                case BeatEffectTechnique.Trill:
-                    await this.RenderingContext.DrawTrill(this.Element.VoicePart, beatPosition);
-                    break;
-                case BeatEffectTechnique.Tremolo:
+                case NoteRepetition.Tremolo:
                     await this.RenderingContext.DrawTremolo(this.Element.VoicePart, beatPosition);
                     break;
             }
