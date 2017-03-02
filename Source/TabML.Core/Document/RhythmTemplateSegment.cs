@@ -2,7 +2,6 @@
 {
     public class RhythmTemplateSegment : RhythmSegmentBase
     {
-        public RhythmTemplate OwnerRhythmTemplate { get; set; }
 
         private static RhythmSegmentVoice InstantializeVoice(RhythmSegmentVoice voice)
         {

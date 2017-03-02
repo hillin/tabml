@@ -39,16 +39,6 @@ namespace TabML.Parser.AST
 
         public abstract IEnumerable<Node> Children { get; }
 
-        public void SetRangeFrom(TextPointer from)
-        {
-            _range.From = from;
-        }
-
-        public void SetRangeTo(TextPointer to)
-        {
-            _range.To = to;
-        }
-
         internal virtual bool Apply(TablatureContext context, ILogger logger)
         {
             return true;

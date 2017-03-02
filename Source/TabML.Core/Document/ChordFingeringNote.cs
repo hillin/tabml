@@ -5,8 +5,6 @@ namespace TabML.Core.Document
 {
     public class ChordFingeringNote : Element, IChordFingeringNote
     {
-        public const int FingeringSkipString = -1;
-
         public int Fret { get; set; }
         public LeftHandFingerIndex? FingerIndex { get; set; }
         public bool IsImportant { get; set; }

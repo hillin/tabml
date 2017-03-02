@@ -25,7 +25,7 @@ namespace TabML.Parser.AST
             var ignoreFingerIndices = false;
             foreach (var fingering in this.Fingerings)
             {
-                if (fingering.Fret.Value == ChordFingeringNote.FingeringSkipString || fingering.Fret.Value == 0)
+                if (fingering.Fret.Value == Chord.FingeringSkipString || fingering.Fret.Value == 0)
                     continue;
 
                 if (fingerIndexSpecified == null)

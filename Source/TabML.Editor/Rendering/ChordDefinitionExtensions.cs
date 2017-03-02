@@ -13,7 +13,7 @@ namespace TabML.Editor.Rendering
         {
             for (var i = 0; i < chord.Fingering.Notes.Count; ++i)
             {
-                if (chord.Fingering.Notes[i].Fret != ChordFingeringNote.FingeringSkipString)
+                if (chord.Fingering.Notes[i].Fret != Chord.FingeringSkipString)
                     return chord.Fingering.Notes.Count - i - 1;
             }
 
@@ -25,7 +25,7 @@ namespace TabML.Editor.Rendering
         {
             for (var i = chord.Fingering.Notes.Count - 1; i >= 0; --i)
             {
-                if (chord.Fingering.Notes[i].Fret != ChordFingeringNote.FingeringSkipString)
+                if (chord.Fingering.Notes[i].Fret != Chord.FingeringSkipString)
                     return chord.Fingering.Notes.Count - i - 1;
             }
 

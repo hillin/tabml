@@ -12,6 +12,7 @@ using TabML.Core.Document;
 using TabML.Core.MusicTheory;
 using TabML.Core.Style;
 using TabML.Editor.Rendering;
+using Chord = TabML.Core.Document.Chord;
 using Rect = System.Windows.Rect;
 
 namespace TabML.Editor
@@ -245,7 +246,7 @@ namespace TabML.Editor
                 {
                     switch (note.Fret)
                     {
-                        case ChordFingeringNote.FingeringSkipString:
+                        case Chord.FingeringSkipString:
                             builder.Append("'x'");
                             break;
                         case 0:

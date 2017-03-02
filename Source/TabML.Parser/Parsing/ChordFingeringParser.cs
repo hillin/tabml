@@ -47,7 +47,7 @@ namespace TabML.Parser.Parsing
                     case "X":
                     case "-":
                         {
-                            var fret = new LiteralNode<int>(ChordFingeringNote.FingeringSkipString, scanner.LastReadRange);
+                            var fret = new LiteralNode<int>(Chord.FingeringSkipString, scanner.LastReadRange);
                             result.Fingerings.Add(new ChordFingeringNoteNode { Fret = fret, Range = scanner.LastReadRange });
                             break;
                         }

@@ -7,6 +7,7 @@ using TabML.Core.Document;
 using TabML.Core.MusicTheory;
 using TabML.Core.MusicTheory.String.Plucked;
 using TabML.Editor.Tablature;
+using Chord = TabML.Core.Document.Chord;
 
 namespace TabML.Editor.Rendering
 {
@@ -44,12 +45,12 @@ namespace TabML.Editor.Rendering
                     {
                         var notes = chord.Fingering.Notes.ToArray();
                         var noteOfFirstString =
-                            notes.FirstOrDefault(n => n.Fret != ChordFingeringNote.FingeringSkipString);
+                            notes.FirstOrDefault(n => n.Fret != Chord.FingeringSkipString);
 
                         if (noteOfFirstString != null)
                         {
                             var noteOfLastString =
-                                notes.LastOrDefault(n => n.Fret != ChordFingeringNote.FingeringSkipString);
+                                notes.LastOrDefault(n => n.Fret != Chord.FingeringSkipString);
 
                             // string index here is inverted
                             minString = this.RenderingContext.Style.StringCount - Array.IndexOf(notes, noteOfLastString) - 1;
