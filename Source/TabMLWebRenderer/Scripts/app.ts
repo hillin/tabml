@@ -143,11 +143,13 @@ window.onerror = function (errorMessage, url, lineNumber) {
 
 window.onload = () => {
     let canvas = document.getElementById("staff") as HTMLCanvasElement;
+    let auxCanvas = document.getElementById("auxiliary") as HTMLCanvasElement;
 
     //let fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
     let fabricCanvas = new fabric.Canvas(canvas, tablatureStyle.page);
+    let fabricAuxCanvas = new fabric.StaticCanvas(auxCanvas);
 
-    renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
+    renderer = new TR.PrimitiveRenderer(fabricCanvas, fabricAuxCanvas, tablatureStyle);
     //renderer.drawChord(113.557998657227, 169.242, "F#m", [{fret:2,finger:1,},{fret:4,finger:3,},{fret:4,finger:4,},{fret:2,finger:1,},{fret:2,finger:1,},{fret:2,finger:1,},]);
     //renderer.drawChord(440, 169.242, "D", ['x','x',0,{fret:2,finger:1,},{fret:3,finger:3,},{fret:2,finger:2,},])
     //renderer.drawFretNumber("2", 100, 100, true);

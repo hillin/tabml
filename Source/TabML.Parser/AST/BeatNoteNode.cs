@@ -112,6 +112,14 @@ namespace TabML.Parser.AST
                 Accent = this.Accent?.Value ?? NoteAccent.Normal
             };
 
+            if (!this.Validate(context, logger, voicePart, element))
+                return false;
+
+            return true;
+        }
+
+        private bool Validate(TablatureContext context, ILogger logger, VoicePart voicePart, BeatNote element)
+        {
             if (!this.ValidateTie(context, logger, element))
                 return false;
 
@@ -120,7 +128,6 @@ namespace TabML.Parser.AST
 
             if (!this.ValidatePostConnection(context, logger, voicePart, element))
                 return false;
-
             return true;
         }
 

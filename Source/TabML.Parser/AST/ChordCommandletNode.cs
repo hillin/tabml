@@ -42,7 +42,7 @@ namespace TabML.Parser.AST
         {
             if (context.DocumentState.DefinedChords.Any(
                            c => c.Name.Equals(this.Name.Value,
-                                              StringComparison.InvariantCultureIgnoreCase)))
+                                              StringComparison.InvariantCulture)))
             {
                 logger.Report(LogLevel.Warning, this.Range, Messages.Warning_ChordAlreadyDefined);
                 element = null;

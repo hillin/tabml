@@ -20,7 +20,7 @@ namespace TabML.Parser.Parsing.Commandlets
 
             while (!scanner.EndOfLine)
             {
-                var text = scanner.Read(@"\w+");
+                var text = scanner.ReadPattern(@"\w+");
 
                 if (!AlternationText.IsValid(text))
                 {

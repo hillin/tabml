@@ -16,7 +16,6 @@ using TabML.Core;
 using TabML.Core.Document;
 using TabML.Core.Player;
 using TabML.Core.Style;
-using TabML.Parser.Document;
 
 namespace TabML.Editor.Tablature.Test
 {

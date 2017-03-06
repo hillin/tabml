@@ -41,7 +41,7 @@ namespace TabML.Parser.AST
                 logger.Report(LogLevel.Warning, this.Range, Messages.Warning_DuplicatedSectionName,
                                 this.SectionName.Value);
                 element = null;
-                return true;
+                return false;
             }
 
             element = new Section

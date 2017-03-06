@@ -227,12 +227,6 @@ namespace TabML.Parser.Parsing
             this.CarriageReturn();
         }
 
-        public void SkipUntil(char nextChar)
-        {
-            while (!this.EndOfInput && this.Peek() != nextChar)
-                this.Skip();
-        }
-
         public bool Expect(char expectedChar)
         {
             if (this.EndOfInput)
@@ -306,7 +300,7 @@ namespace TabML.Parser.Parsing
             }
         }
 
-        private string ReadPattern(string pattern)
+        private string ReadPatternInternal(string pattern)
         {
             using (this.RecordReadRange())
             {
@@ -327,18 +321,18 @@ namespace TabML.Parser.Parsing
         /// if an OR ('|') syntax is used, you must enclose the pattern
         /// with parenthesises
         /// </remarks>
-        public string Read(string pattern)
+        public string ReadPattern(string pattern)
         {
-            return this.ReadPattern($"^{pattern}");
+            return this.ReadPatternInternal($"^{pattern}");
         }
 
-        public string ReadAny(params string[] patterns)
+        public string ReadAnyPatternOf(params string[] patterns)
         {
             if (patterns == null || patterns.Length == 0)
                 return string.Empty;
 
             if (patterns.Length == 1)
-                return this.Read(patterns[0]);
+                return this.ReadPattern(patterns[0]);
 
             var builder = new StringBuilder();
             builder.Append('^');
@@ -346,7 +340,7 @@ namespace TabML.Parser.Parsing
             builder.Append(string.Join("|", patterns));
             builder.Append(')');
 
-            return this.ReadPattern(builder.ToString());
+            return this.ReadPatternInternal(builder.ToString());
         }
 
         public string ReadToLineEnd()
@@ -375,19 +369,6 @@ namespace TabML.Parser.Parsing
 
                 return match;
             }
-        }
-
-        public bool MatchSingle(string pattern, out string result)
-        {
-            var match = this.Match(pattern);
-            if (!match.Success || match.Groups.Count < 2)
-            {
-                result = string.Empty;
-                return false;
-            }
-
-            result = match.Groups[1].Value;
-            return true;
         }
 
         public bool TryReadInteger(out int value)

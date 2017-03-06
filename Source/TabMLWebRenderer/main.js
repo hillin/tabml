@@ -2455,9 +2455,11 @@ window.onerror = function (errorMessage, url, lineNumber) {
 };
 window.onload = () => {
     let canvas = document.getElementById("staff");
+    let auxCanvas = document.getElementById("auxiliary");
     //let fabricCanvas = new fabric.StaticCanvas(canvas, tablatureStyle.page);
     let fabricCanvas = new fabric.Canvas(canvas, tablatureStyle.page);
-    renderer = new TR.PrimitiveRenderer(fabricCanvas, tablatureStyle);
+    let fabricAuxCanvas = new fabric.StaticCanvas(auxCanvas);
+    renderer = new TR.PrimitiveRenderer(fabricCanvas, fabricAuxCanvas, tablatureStyle);
     //renderer.drawChord(113.557998657227, 169.242, "F#m", [{fret:2,finger:1,},{fret:4,finger:3,},{fret:4,finger:4,},{fret:2,finger:1,},{fret:2,finger:1,},{fret:2,finger:1,},]);
     //renderer.drawChord(440, 169.242, "D", ['x','x',0,{fret:2,finger:1,},{fret:3,finger:3,},{fret:2,finger:2,},])
     //renderer.drawFretNumber("2", 100, 100, true);
@@ -20527,8 +20529,9 @@ var TR;
     var NoteRenderingFlags = TR.NoteRenderingFlags;
     var Smufl = Core.Smufl.Utilities;
     class PrimitiveRenderer {
-        constructor(canvas, style) {
+        constructor(canvas, auxCanvas, style) {
             this.canvas = canvas;
+            this.auxCanvas = auxCanvas;
             this.style = style;
             this.clear();
         }
@@ -20952,10 +20955,24 @@ var TR;
         drawPickstrokeUp(x, y, direction) {
             this.drawOrnamentImageFromURL("upbow.svg", x, y, direction);
         }
+        getExactBoundingRect(text) {
+            let clone = fabric.util.object.clone(text);
+            clone.left = 0;
+            clone.top = 0;
+            clone.originX = "left";
+            clone.originY = "top";
+            this.auxCanvas.add(clone);
+            let bounds = TR.Utilities.getExactBoundingRect(this.auxCanvas, clone);
+            let offsetBounds = text.getBoundingRect();
+            bounds.left += offsetBounds.left;
+            bounds.top += offsetBounds.top;
+            this.auxCanvas.clear();
+            return bounds;
+        }
         drawBeatModifier(x, y, beatModifier, direction) {
             let originY = direction == OffBarDirection.Top ? "bottom" : "top";
             let text = this.drawText(Smufl.GetBeatModifier(beatModifier, direction), x, y, "center", originY, this.getSmuflTextStyle(28));
-            return TR.Utilities.getExactBoundingRect(this.canvas, text);
+            return this.getExactBoundingRect(text);
         }
         drawTremolo(x, y, direction) {
             this.drawOrnamentImageFromURL("tremolo.svg", x, y, direction);
@@ -21349,81 +21366,58 @@ var TR;
             let bounds = target.getBoundingRect();
             if (!canvas.contains(target))
                 return bounds;
-            bounds.left = Math.floor(bounds.left);
-            bounds.top = Math.floor(bounds.top);
-            bounds.width = Math.ceil(bounds.width);
-            bounds.height = Math.ceil(bounds.height);
+            let width = Math.ceil(bounds.width);
+            let height = Math.ceil(bounds.height);
             // Get the pixel data from the canvas
-            let data = canvas.getContext().getImageData(bounds.left, bounds.top, bounds.width, bounds.height).data;
-            let first = null;
-            let last = null;
-            let right = null;
-            let left = null;
-            let bottom, top;
-            // 1. get bottom
-            {
-                let row = bounds.height;
-                while (last === null && row > 0) {
-                    --row;
-                    for (let column = 0; column < bounds.width; column++) {
-                        if (data[row * bounds.width * 4 + column * 4 + 3]) {
-                            console.log('last', row);
-                            last = row + 1;
-                            bottom = row + 1;
-                            break;
-                        }
+            let data = canvas.getContext().getImageData(Math.floor(bounds.left), Math.floor(bounds.top), width, height).data;
+            let left = 0;
+            let top = 0;
+            let right = width - 1;
+            let bottom = height - 1;
+            function isVisible(row, column) {
+                return data[row * width * 4 + column * 4 + 3] > 0;
+            }
+            // find top
+            let breaked = false;
+            for (let row = top; !breaked && row <= bottom; ++row) {
+                for (let column = left; !breaked && column <= right; ++column) {
+                    if (isVisible(row, column)) {
+                        top = row;
+                        breaked = true;
                     }
                 }
             }
-            // 2. get top
-            {
-                let row = 0;
-                var checks = [];
-                while (first === null && row < last) {
-                    for (let column = 0; column < bounds.width; column++) {
-                        if (data[row * bounds.width * 4 + column * 4 + 3]) {
-                            console.log('first', row);
-                            first = row - 1;
-                            top = row - 1;
-                            break;
-                        }
-                    }
-                    row++;
-                }
-            }
-            // 3. get right
-            {
-                let column = bounds.width;
-                while (right === null && column > 0) {
-                    column--;
-                    for (let row = 0; row < bounds.height; row++) {
-                        if (data[row * bounds.width * 4 + column * 4 + 3]) {
-                            console.log('last', row);
-                            right = column + 1;
-                            break;
-                        }
+            // find bottom
+            breaked = false;
+            for (let row = bottom; !breaked && row >= top; --row) {
+                for (let column = left; !breaked && column <= right; ++column) {
+                    if (isVisible(row, column)) {
+                        bottom = row;
+                        breaked = true;
                     }
                 }
             }
-            // 4. get left
-            {
-                let column = 0;
-                while (left === null && column < right) {
-                    for (let row = 0; row < bounds.height; row++) {
-                        if (data[row * bounds.width * 4 + column * 4 + 3]) {
-                            console.log('left', column - 1);
-                            left = column;
-                            break;
-                        }
+            // find left
+            breaked = false;
+            for (let column = left; !breaked && column <= right; ++column) {
+                for (let row = top; !breaked && row <= bottom; ++row) {
+                    if (isVisible(row, column)) {
+                        left = column;
+                        breaked = true;
                     }
-                    column++;
                 }
             }
-            bounds.left = left;
-            bounds.top = top;
-            bounds.width = right - left;
-            bounds.height = bottom - top;
-            return bounds;
+            // find right 
+            breaked = false;
+            for (let column = right; !breaked && column >= left; --column) {
+                for (let row = top; !breaked && row <= bottom; ++row) {
+                    if (isVisible(row, column)) {
+                        right = column;
+                        breaked = true;
+                    }
+                }
+            }
+            return { left: left, top: top, width: right - left + 1, height: bottom - top + 1 };
         }
     }
     TR.Utilities = Utilities;

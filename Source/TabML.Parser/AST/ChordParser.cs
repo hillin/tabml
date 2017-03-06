@@ -126,7 +126,7 @@ namespace TabML.Parser.AST
 
         private bool ReadExtended()
         {
-            switch (_scanner.ReadAny("9", "11", "13"))
+            switch (_scanner.ReadAnyPatternOf("9", "11", "13"))
             {
                 case "9":
                     switch (_triadQuality)
@@ -207,7 +207,7 @@ namespace TabML.Parser.AST
         private bool ReadAltered()
         {
             _scanner.SkipWhitespaces();
-            switch (_scanner.ReadAny(@"\+5", @"\#5", "♯5",
+            switch (_scanner.ReadAnyPatternOf(@"\+5", @"\#5", "♯5",
                                      @"\-9", "b9", "♭9",
                                      @"\+9", @"\#9", "♯9",
                                      @"\+11", @"\#11", "♯11"))
@@ -280,7 +280,7 @@ namespace TabML.Parser.AST
         private bool ReadSuspended()
         {
             _scanner.SkipWhitespaces();
-            switch (_scanner.ReadAny("sus2", "sus4", "sus"))
+            switch (_scanner.ReadAnyPatternOf("sus2", "sus4", "sus"))
             {
                 case "sus2":
 
@@ -310,7 +310,7 @@ namespace TabML.Parser.AST
         private bool ReadAddedTone()
         {
             _scanner.SkipWhitespaces();
-            switch (_scanner.ReadAny(@"add\#9", "add♯9", "addb9", "add♭9", "add9", @"add\#11", "add♯11", "add11", @"add\#13", "add♯13", "addb13", "add♭13", "add13"))
+            switch (_scanner.ReadAnyPatternOf(@"add\#9", "add♯9", "addb9", "add♭9", "add9", @"add\#11", "add♯11", "add11", @"add\#13", "add♯13", "addb13", "add♭13", "add13"))
             {
                 case "add#9":
                 case "add♯9":
@@ -404,7 +404,7 @@ namespace TabML.Parser.AST
 
         private bool ReadSimplifiedAddedTone()
         {
-            switch (_scanner.ReadAny(@"6\/9", "69", "2", "4", "6"))
+            switch (_scanner.ReadAnyPatternOf(@"6\/9", "69", "2", "4", "6"))
             {
                 case "6/9":
                 case "69":
@@ -429,7 +429,7 @@ namespace TabML.Parser.AST
 
         private bool ReadDominant()
         {
-            switch (_scanner.ReadAny("dom7", "7", "9", "11", "13"))
+            switch (_scanner.ReadAnyPatternOf("dom7", "7", "9", "11", "13"))
             {
                 case "dom7":
                 case "7":
@@ -452,7 +452,7 @@ namespace TabML.Parser.AST
         private bool ReadSeventh()
         {
             _scanner.SkipWhitespaces();
-            switch (_scanner.ReadAny("maj7", "M7", "Δ7", "7"))
+            switch (_scanner.ReadAnyPatternOf("maj7", "M7", "Δ7", "7"))
             {
                 case "maj7":
                 case "M7":
@@ -483,7 +483,7 @@ namespace TabML.Parser.AST
 
         private bool ReadTriad()
         {
-            switch (_scanner.ReadAny("maj", "min", "aug", "dim", "M", "m", "Δ", @"\+", @"\-", "°"))
+            switch (_scanner.ReadAnyPatternOf("maj", "min", "aug", "dim", "M", "m", "Δ", @"\+", @"\-", "°"))
             {
                 case "":
                 case "maj":

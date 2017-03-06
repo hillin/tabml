@@ -49,7 +49,7 @@ namespace TabML.Parser.Parsing.Commandlets
                 result = discreteResult;
                 while (!scanner.EndOfInput && scanner.Peek() != ')')
                 {
-                    var str = scanner.Read(@"\d");
+                    var str = scanner.ReadPattern(@"\d");
                     int stringNumber;
                     if (string.IsNullOrEmpty(str)
                         || !int.TryParse(str, out stringNumber)

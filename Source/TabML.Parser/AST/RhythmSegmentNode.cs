@@ -2,7 +2,6 @@
 using System.Linq;
 using TabML.Core.Logging;
 using TabML.Core.Document;
-using TabML.Parser.Document;
 using TabML.Parser.Parsing;
 using DocumentChord = TabML.Core.Document.Chord;
 using TheoreticalChord = TabML.Core.MusicTheory.Chord;

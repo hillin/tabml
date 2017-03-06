@@ -26,12 +26,13 @@ namespace TR {
 
     export class PrimitiveRenderer {
 
-
+        private auxCanvas: fabric.IStaticCanvas;
         private canvas: fabric.IStaticCanvas;
         private style: ITablatureStyle;
 
-        constructor(canvas: fabric.IStaticCanvas, style: ITablatureStyle) {
+        constructor(canvas: fabric.IStaticCanvas, auxCanvas: fabric.IStaticCanvas, style: ITablatureStyle) {
             this.canvas = canvas;
+            this.auxCanvas = auxCanvas;
             this.style = style;
             this.clear();
         }
@@ -526,10 +527,25 @@ namespace TR {
             this.drawOrnamentImageFromURL("upbow.svg", x, y, direction);
         }
 
+        private getExactBoundingRect(text: fabric.IText) : IBoundingBox {
+            let clone = fabric.util.object.clone(text) as fabric.IText;
+            clone.left = 0;
+            clone.top = 0;
+            clone.originX = "left";
+            clone.originY = "top";
+            this.auxCanvas.add(clone);
+            let bounds = TR.Utilities.getExactBoundingRect(this.auxCanvas, clone);
+            let offsetBounds = text.getBoundingRect();
+            bounds.left += offsetBounds.left;
+            bounds.top += offsetBounds.top;
+            this.auxCanvas.clear();
+            return bounds;
+        }
+
         drawBeatModifier(x: number, y:number, beatModifier: BeatModifier, direction: OffBarDirection) : IBoundingBox {
             let originY = direction == OffBarDirection.Top ? "bottom" : "top";
             let text = this.drawText(Smufl.GetBeatModifier(beatModifier, direction), x, y, "center", originY, this.getSmuflTextStyle(28));
-            return TR.Utilities.getExactBoundingRect(this.canvas, text);
+            return this.getExactBoundingRect(text);
         }
 
         drawTremolo(x: number, y: number, direction: OffBarDirection) {

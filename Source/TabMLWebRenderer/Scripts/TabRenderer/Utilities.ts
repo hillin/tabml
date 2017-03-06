@@ -3,95 +3,70 @@ namespace TR {
     export class Utilities {
         static getExactBoundingRect(canvas: fabric.IStaticCanvas, target: fabric.IObject): IBoundingBox {
             let bounds = target.getBoundingRect();
+
             if (!canvas.contains(target))
                 return bounds;
 
-            bounds.left = Math.floor(bounds.left);
-            bounds.top = Math.floor(bounds.top);
-            bounds.width = Math.ceil(bounds.width);
-            bounds.height = Math.ceil(bounds.height);
+            let width = Math.ceil(bounds.width);
+            let height = Math.ceil(bounds.height);
 
             // Get the pixel data from the canvas
-            let data = canvas.getContext().getImageData(bounds.left, bounds.top, bounds.width, bounds.height).data;
+            let data = canvas.getContext().getImageData(Math.floor(bounds.left), Math.floor(bounds.top), width, height).data;
 
-            let first: number = null;
-            let last: number = null;
-            let right: number = null;
-            let left: number = null;
+            let left = 0;
+            let top = 0;
+            let right = width - 1;
+            let bottom = height - 1;
 
-            let bottom: number, top: number;
+            function isVisible(row: number, column: number): boolean {
+                return data[row * width * 4 + column * 4 + 3] > 0;
+            }
 
-            // 1. get bottom
-            {
-                let row = bounds.height;
-                while (last === null && row > 0) {
-                    --row;
-                    for (let column = 0; column < bounds.width; column++) {
-                        if (data[row * bounds.width * 4 + column * 4 + 3]) {
-                            console.log('last', row);
-                            last = row + 1;
-                            bottom = row + 1;
-                            break;
-                        }
+            // find top
+            let breaked = false;
+            for (let row = top; !breaked && row <= bottom; ++row) {
+                for (let column = left; !breaked && column <= right; ++column) {
+                    if (isVisible(row, column)) {
+                        top = row;
+                        breaked = true;
                     }
                 }
             }
 
-            // 2. get top
-            {
-                let row = 0;
-                var checks = [];
-                while (first === null && row < last) {
-
-                    for (let column = 0; column < bounds.width; column++) {
-                        if (data[row * bounds.width * 4 + column * 4 + 3]) {
-                            console.log('first', row);
-                            first = row - 1;
-                            top = row - 1;
-                            break;
-                        }
-                    }
-                    row++;
-                }
-            }
-
-            // 3. get right
-            {
-                let column = bounds.width;
-                while (right === null && column > 0) {
-                    column--;
-                    for (let row = 0; row < bounds.height; row++) {
-                        if (data[row * bounds.width * 4 + column * 4 + 3]) {
-                            console.log('last', row);
-                            right = column + 1;
-                            break;
-                        }
+            // find bottom
+            breaked = false;
+            for (let row = bottom; !breaked && row >= top; --row) {
+                for (let column = left; !breaked && column <= right; ++column) {
+                    if (isVisible(row, column)) {
+                        bottom = row;
+                        breaked = true;
                     }
                 }
             }
 
-            // 4. get left
-            {
-                let column = 0;
-                while (left === null && column < right) {
-
-                    for (let row = 0; row < bounds.height; row++) {
-                        if (data[row * bounds.width * 4 + column * 4 + 3]) {
-                            console.log('left', column - 1);
-                            left = column;
-                            break;
-                        }
+            // find left
+            breaked = false;
+            for (let column = left; !breaked && column <= right; ++column) {
+                for (let row = top; !breaked && row <= bottom; ++row) {
+                    if (isVisible(row, column)) {
+                        left = column;
+                        breaked = true;
                     }
-                    column++;
                 }
             }
 
-            bounds.left = left;
-            bounds.top = top;
-            bounds.width = right - left;
-            bounds.height = bottom - top;
+            // find right 
+            breaked = false;
+            for (let column = right; !breaked && column >= left; --column) {
+                for (let row = top; !breaked && row <= bottom; ++row) {
+                    if (isVisible(row, column)) {
+                        right = column;
+                        breaked = true;
+                    }
+                }
+            }
 
-            return bounds;
+            return { left: left, top: top, width: right - left + 1, height: bottom - top + 1 };
         }
     }
 

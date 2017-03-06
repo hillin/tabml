@@ -31,7 +31,7 @@ namespace TabML.Parser.Parsing
             {
                 var noteAnchor = scanner.MakeAnchor();
 
-                var str = isShortForm ? scanner.Read(@"[\dxX\-]") : scanner.ReadAny(@"\d+", @"[xX\-]");
+                var str = isShortForm ? scanner.ReadPattern(@"[\dxX\-]") : scanner.ReadAnyPatternOf(@"\d+", @"[xX\-]");
 
                 if (string.IsNullOrEmpty(str))
                 {
@@ -79,7 +79,7 @@ namespace TabML.Parser.Parsing
                             {
                                 scanner.SkipWhitespaces();
 
-                                var fingerIndexString = scanner.Read(@"[\dtT]");
+                                var fingerIndexString = scanner.ReadPattern(@"[\dtT]");
                                 if (string.IsNullOrEmpty(fingerIndexString))
                                 {
                                     this.Report(LogLevel.Error, scanner.Pointer.AsRange(),
