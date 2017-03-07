@@ -26,7 +26,7 @@ namespace TabML.Parser.AST
 
         public void Arrange()
         {
-            _bar.Duration = _bar.Rhythm?.GetDuration() ?? _context.DocumentState.TimeSignature.Time.GetDuration();
+            _bar.Duration = _bar.Rhythm?.GetDuration() ?? _context.DocumentState.Time.GetDuration();
 
             this.ArrangeBeatsAndNotes();
             this.ArrangeColumns();
@@ -42,7 +42,7 @@ namespace TabML.Parser.AST
                 {
                     this.ArrangeBeatsAndNotes(segment.BassVoice);
                 }
-
+                
                 if (segment.TrebleVoice != null)
                 {
                     this.ArrangeBeatsAndNotes(segment.TrebleVoice);

@@ -13,7 +13,6 @@ namespace TabML.Parser.AST
         private readonly Voice _ownerVoice;
         private readonly Stack<Beam> _beamStack;
         private Beam _currentBeam;
-        private Beam _currentRootBeam;
         private readonly List<IBeatElement> _rootBeats;
 
         private PreciseDuration _currentCapacity;
@@ -27,11 +26,6 @@ namespace TabML.Parser.AST
             _rootBeats = new List<IBeatElement>();
             _currentCapacity = PreciseDuration.Zero;
             _duration = PreciseDuration.Zero;
-        }
-
-        public IEnumerable<IBeatElement> GetRootBeats()
-        {
-            return _rootBeats;
         }
 
         public void Finish()
@@ -166,12 +160,6 @@ namespace TabML.Parser.AST
             this.AddToCurrentBeam(beat);
         }
 
-        private void FinishAndStartChildBeam(int? tuplet)
-        {
-            this.FinishBeam();
-            this.StartChildBeam(tuplet);
-        }
-
         private void InsertUnbeamedBeat(Beat beat)
         {
             this.FinishBeamStack();
@@ -208,7 +196,6 @@ namespace TabML.Parser.AST
         {
             _currentBeam = new Beam(_beamNoteValue.Half(), _ownerVoice, true) { Tuplet = tuplet };
 
-            _currentRootBeam = _currentBeam;
             _rootBeats.Add(_currentBeam);
 
             _beamStack.Push(_currentBeam);
