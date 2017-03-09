@@ -25,6 +25,7 @@ namespace TabML.Parser.Parsing
             LiteralNode<Accidental> accidentalNode;
             if (!Parser.TryReadAccidental(scanner, this, out accidentalNode))
             {
+                this.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_InvalidAccidental);
                 result = null;
                 return false;
             }

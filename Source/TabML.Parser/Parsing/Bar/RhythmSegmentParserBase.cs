@@ -24,6 +24,7 @@ namespace TabML.Parser.Parsing.Bar
             {
                 this.Report(LogLevel.Error, scanner.LastReadRange,
                             Messages.Error_RhythmSegmentExpectOpeningBracket);
+                node = null;
                 return false;
             }
 
@@ -51,6 +52,8 @@ namespace TabML.Parser.Parsing.Bar
                 {
                     this.Report(LogLevel.Error, scanner.Pointer.AsRange(scanner.Source),
                                 Messages.Error_UnrecognizableRhythmSegmentElement);
+                    node = null;
+                    return false;   // todo: should we fail so fast?
                 }
             }
 

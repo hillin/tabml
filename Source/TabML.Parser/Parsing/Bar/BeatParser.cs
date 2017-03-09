@@ -67,7 +67,7 @@ namespace TabML.Parser.Parsing.Bar
             // certain strum techniques (head strum techniques) can be placed before
             // the colon token
             LiteralNode<ChordStrumTechnique> strumTechnique;
-            Parser.TryReadAllStringStrumTechnique(scanner, this, out strumTechnique);
+            Parser.TryReadChordStrumTechnique(scanner, this, out strumTechnique);
 
             if (noteValueIndetemined && result.Notes.Count == 0 && strumTechnique == null)
             {
@@ -128,7 +128,7 @@ namespace TabML.Parser.Parsing.Bar
         private bool TryReadModifier(Scanner scanner, BeatNode result)
         {
             LiteralNode<BeatAccent> accent;
-            if (Parser.TryReadNoteAccent(scanner, this, out accent))
+            if (Parser.TryReadBeatAccent(scanner, this, out accent))
             {
                 if (result.Accent != null)
                     this.Report(LogLevel.Warning, scanner.LastReadRange,

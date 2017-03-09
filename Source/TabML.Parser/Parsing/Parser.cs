@@ -112,7 +112,6 @@ namespace TabML.Parser.Parsing
             Accidental accidental;
             if (!Accidentals.TryParse(accidentalText, out accidental))
             {
-                logger.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_InvalidAccidental);
                 accidentalNode = null;
                 return false;
             }
@@ -121,7 +120,7 @@ namespace TabML.Parser.Parsing
             return true;
         }
 
-        public static bool TryReadAllStringStrumTechnique(Scanner scanner, ILogger logger,
+        public static bool TryReadChordStrumTechnique(Scanner scanner, ILogger logger,
                                                       out LiteralNode<ChordStrumTechnique> technique)
         {
             switch (scanner.ReadAnyPatternOf("rasg", "ad", "au", @"\|", "x", "d", "↑", "u", "↓"))
@@ -216,7 +215,7 @@ namespace TabML.Parser.Parsing
         public static bool TryReadPreBeatConnection(Scanner scanner, ILogger logger,
                                                      out LiteralNode<PreBeatConnection> connection)
         {
-            switch (scanner.ReadAnyPatternOf(@"\/", @"\\", @"\.\/", @"\`\\", "h", "p", "s"))
+            switch (scanner.ReadAnyPatternOf( @"\.\/", @"\`\\"))
             {
                 case @"./":
                     connection = new LiteralNode<PreBeatConnection>(PreBeatConnection.SlideInFromLower, scanner.LastReadRange);
@@ -276,23 +275,6 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
-        public static bool TryReadTiePosition(Scanner scanner, ILogger logger, out LiteralNode<VerticalDirection> tiePosition)
-        {
-            switch (scanner.ReadAnyPatternOf(@"⁀", @"‿", @"\^", @"v"))
-            {
-                case @"⁀":
-                case @"^":
-                    tiePosition = new LiteralNode<VerticalDirection>(VerticalDirection.Above, scanner.LastReadRange);
-                    return true;
-                case @"‿":
-                case @"v":
-                    tiePosition = new LiteralNode<VerticalDirection>(VerticalDirection.Under, scanner.LastReadRange);
-                    return true;
-            }
-
-            tiePosition = null;
-            return false;
-        }
 
         public static bool TryReadPostNoteConnection(Scanner scanner, ILogger logger,
                                                       out LiteralNode<PostNoteConnection> connection)
@@ -385,7 +367,7 @@ namespace TabML.Parser.Parsing
             return false;
         }
 
-        public static bool TryReadNoteAccent(Scanner scanner, ILogger logger, out LiteralNode<BeatAccent> accent)
+        public static bool TryReadBeatAccent(Scanner scanner, ILogger logger, out LiteralNode<BeatAccent> accent)
         {
             switch (scanner.ReadAnyPatternOf("accented", "heavy", "marcato"))
             {
