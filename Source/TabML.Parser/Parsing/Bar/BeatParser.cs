@@ -34,7 +34,8 @@ namespace TabML.Parser.Parsing.Bar
             result.PreConnection = preConnection;
             
             NoteValueNode noteValue;
-            if (!new NoteValueParser().TryParse(scanner, out noteValue))
+            var noteValueParser = new NoteValueParser();
+            if (!noteValueParser.TryParse(scanner, out noteValue))
             {
                 result = null;
                 return false;
@@ -62,7 +63,7 @@ namespace TabML.Parser.Parsing.Bar
                 return false;
             }
 
-            var noteValueIndetemined = noteValue == null && !new NoteValueParser().HasError;
+            var noteValueIndetemined = noteValue == null && !noteValueParser.HasError;
 
             // certain strum techniques (head strum techniques) can be placed before
             // the colon token

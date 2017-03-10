@@ -11,7 +11,6 @@ namespace TabML.Parser.AST
     class RhythmSegmentNode : RhythmSegmentNodeBase
     {
         public LiteralNode<string> ChordName { get; set; }
-        public LiteralNode<Chord> Chord { get; set; }
         public ChordFingeringNode Fingering { get; set; }
 
         public override IEnumerable<Node> Children

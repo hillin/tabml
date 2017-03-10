@@ -17,6 +17,7 @@ namespace TabML.Parser.Parsing.Bar
                 if (new RhythmTemplateSegmentParser(true).TryParse(scanner, out segment))
                 {
                     result.Segments.Add(segment);
+                    result.Range = anchor.Range;
                     return true;
                 }
 

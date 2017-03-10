@@ -69,7 +69,8 @@ namespace TabML.Parser.Parsing
 
                         var note = new ChordFingeringNoteNode
                         {
-                            Fret = new LiteralNode<int>(fretNumber, scanner.LastReadRange)
+                            Fret = new LiteralNode<int>(fretNumber, scanner.LastReadRange),
+                            Range = scanner.LastReadRange
                         };
 
                         if (fretNumber != 0)

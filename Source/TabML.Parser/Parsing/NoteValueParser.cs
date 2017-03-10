@@ -14,6 +14,7 @@ namespace TabML.Parser.Parsing
             LiteralNode<BaseNoteValue> baseNoteValue;
             if (!Parser.TryReadBaseNoteValue(scanner, this, out baseNoteValue))
             {
+                this.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_NoteValueExpected);
                 result = null;
                 return false;
             }
@@ -25,7 +26,7 @@ namespace TabML.Parser.Parsing
                 LiteralNode<int> tuplet;
                 if (!Parser.TryReadInteger(scanner, out tuplet))
                 {
-                    this.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_NoteValueExpected);
+                    this.Report(LogLevel.Error, scanner.LastReadRange, Messages.Error_TupletValueExpected);
                     result = null;
                     return false;
                 }
